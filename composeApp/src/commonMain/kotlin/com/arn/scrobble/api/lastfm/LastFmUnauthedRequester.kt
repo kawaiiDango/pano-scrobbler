@@ -100,21 +100,21 @@ class LastFmUnauthedRequester {
             is Artist -> client.getResult<ArtistInfoResponse> {
                 takeFrom(reqBuilder)
                 parameter("method", "artist.getInfo")
-                parameter("artist", musicEntry.name)
+                doubleEncodePlusParam("artist", musicEntry.name)
             }.map { it.artist as T }
 
             is Album -> client.getResult<AlbumInfoResponse> {
                 takeFrom(reqBuilder)
                 parameter("method", "album.getInfo")
-                parameter("artist", musicEntry.artist!!.name)
-                parameter("album", musicEntry.name)
+                doubleEncodePlusParam("artist", musicEntry.artist!!.name)
+                doubleEncodePlusParam("album", musicEntry.name)
             }.map { it.album as T }
 
             is Track -> client.getResult<TrackInfoResponse> {
                 takeFrom(reqBuilder)
                 parameter("method", "track.getInfo")
-                parameter("artist", musicEntry.artist.name)
-                parameter("track", musicEntry.name)
+                doubleEncodePlusParam("artist", musicEntry.artist.name)
+                doubleEncodePlusParam("track", musicEntry.name)
             }.map {
                 // fix duration returned in millis
                 (it.track.copy(duration = it.track.duration?.div(1000)) as T)
@@ -137,21 +137,21 @@ class LastFmUnauthedRequester {
             is Artist -> client.getResult<TagsResponse> {
                 takeFrom(reqBuilder)
                 parameter("method", "artist.getTopTags")
-                parameter("artist", musicEntry.name)
+                doubleEncodePlusParam("artist", musicEntry.name)
             }
 
             is Album -> client.getResult<TagsResponse> {
                 takeFrom(reqBuilder)
                 parameter("method", "album.getTopTags")
-                parameter("artist", musicEntry.artist!!.name)
-                parameter("album", musicEntry.name)
+                doubleEncodePlusParam("artist", musicEntry.artist!!.name)
+                doubleEncodePlusParam("album", musicEntry.name)
             }
 
             is Track -> client.getResult<TagsResponse> {
                 takeFrom(reqBuilder)
                 parameter("method", "track.getTopTags")
-                parameter("artist", musicEntry.artist.name)
-                parameter("track", musicEntry.name)
+                doubleEncodePlusParam("artist", musicEntry.artist.name)
+                doubleEncodePlusParam("track", musicEntry.name)
             }
         }
     }
@@ -166,7 +166,7 @@ class LastFmUnauthedRequester {
         { it.toptracks }
     ) {
         parameter("method", "artist.getTopTracks")
-        parameter("artist", artist.name)
+        doubleEncodePlusParam("artist", artist.name)
         parameter("autocorrect", if (autocorrect) 1 else 0)
         parameter("limit", limit)
         parameter("page", page)
@@ -184,7 +184,7 @@ class LastFmUnauthedRequester {
         { it.topalbums }
     ) {
         parameter("method", "artist.getTopAlbums")
-        parameter("artist", artist.name)
+        doubleEncodePlusParam("artist", artist.name)
         parameter("autocorrect", if (autocorrect) 1 else 0)
         parameter("limit", limit)
         parameter("page", page)
@@ -199,7 +199,7 @@ class LastFmUnauthedRequester {
     ) = client.getResult<SimilarArtistsResponse> {
         url(Stuff.LASTFM_API_ROOT)
         parameter("method", "artist.getSimilar")
-        parameter("artist", artist.name)
+        doubleEncodePlusParam("artist", artist.name)
         parameter("autocorrect", if (autocorrect) 1 else 0)
         parameter("limit", limit)
         parameter("format", "json")
@@ -214,8 +214,8 @@ class LastFmUnauthedRequester {
     ) = client.getResult<SimilarTracksResponse> {
         url(Stuff.LASTFM_API_ROOT)
         parameter("method", "track.getSimilar")
-        parameter("artist", track.artist.name)
-        parameter("track", track.name)
+        doubleEncodePlusParam("artist", track.artist.name)
+        doubleEncodePlusParam("track", track.name)
         parameter("autocorrect", if (autocorrect) 1 else 0)
         parameter("limit", limit)
         parameter("format", "json")
@@ -283,4 +283,11 @@ class LastFmUnauthedRequester {
         }.map { it.session }
     }
 
+    // lfm double encoding bug
+    private fun HttpRequestBuilder.doubleEncodePlusParam(
+        key: String,
+        value: String?
+    ) {
+        parameter(key, value?.replace("+", "%2B"))
+    }
 }

@@ -448,19 +448,19 @@ open class LastFm(userAccount: UserAccountSerializable) : Scrobblable(userAccoun
         when (entry) {
             is Artist -> {
                 parameter("method", "artist.getTags")
-                parameter("artist", entry.name)
+                doubleEncodePlusParam("artist", entry.name)
             }
 
             is Album -> {
                 parameter("method", "album.getTags")
-                parameter("artist", entry.artist!!.name)
-                parameter("album", entry.name)
+                doubleEncodePlusParam("artist", entry.artist!!.name)
+                doubleEncodePlusParam("album", entry.name)
             }
 
             is Track -> {
                 parameter("method", "track.getTags")
-                parameter("artist", entry.artist.name)
-                parameter("track", entry.name)
+                doubleEncodePlusParam("artist", entry.artist.name)
+                doubleEncodePlusParam("track", entry.name)
             }
         }
 
@@ -502,6 +502,7 @@ open class LastFm(userAccount: UserAccountSerializable) : Scrobblable(userAccoun
     ) =
         client.getPageResult<TrackScrobblesResponse, Track>(transform = { it.trackscrobbles }) {
             parameter("method", "user.getTrackScrobbles")
+            // does not have the double encoding bug for some reason
             parameter("artist", track.artist.name)
             parameter("track", track.name)
             parameter("user", username)
@@ -527,6 +528,13 @@ open class LastFm(userAccount: UserAccountSerializable) : Scrobblable(userAccoun
         return copy(entries = newEntries)
     }
 
+    // lfm double encoding bug
+    private fun HttpRequestBuilder.doubleEncodePlusParam(
+        key: String,
+        value: String?
+    ) {
+        parameter(key, value?.replace("+", "%2B"))
+    }
 
     private object LastfmUnscrobbler {
         suspend fun unscrobble(track: Track, username: String): Unit =

@@ -190,7 +190,6 @@
     <string name="charts_continuous" comment="Continuous date ranges, but in short, like last 7 days, last 30 days, etc">Lanjutan</string>
     <string name="based_on" formatted="true" comment="%1= the word 'artists', 'albums' or 'tracks'">Berdasarkan %1$s</string>
     <string name="not_enough_data" comment="(not enough data to draw a chart etc)">Data tidak cukup</string>
-    <string name="random" comment="Displays a random scrobble or a loved track of the user">Saya merasa beruntung</string>
     <string name="random_not_found">Tidak ada trek yang ditemukan</string>
     <string name="loved_track">Lagu yang disukai</string>
     <string name="random_text">Acak</string>

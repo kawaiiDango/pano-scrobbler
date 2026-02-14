@@ -202,7 +202,6 @@
     <string name="charts_continuous" comment="Continuous date ranges, but in short, like last 7 days, last 30 days, etc">लगातार</string>
     <string name="based_on" formatted="true" comment="%1= the word 'artists', 'albums' or 'tracks'">%1$s मा आधारित</string>
     <string name="not_enough_data" comment="(not enough data to draw a chart etc)">पर्याप्त डेटा छैन</string>
-    <string name="random" comment="Displays a random scrobble or a loved track of the user">म भाग्यशाली महसुस गर्दैछु</string>
     <string name="random_not_found">कुनै ट्र्याक फेला परेन</string>
     <string name="loved_track">Loved track</string>
     <string name="random_text">जुनसुकै</string>

@@ -235,7 +235,6 @@
     <string name="charts_continuous" comment="Continuous date ranges, but in short, like last 7 days, last 30 days, etc">Nuolatinis</string>
     <string name="based_on" formatted="true" comment="%1= the word 'artists', 'albums' or 'tracks'">Pagal %1$s</string>
     <string name="not_enough_data" comment="(not enough data to draw a chart etc)">Nepakanka duomenų</string>
-    <string name="random" comment="Displays a random scrobble or a loved track of the user">Jaučiuosi sėkmingai</string>
     <string name="random_not_found">Nerasta takelių</string>
     <string name="loved_track">Mėgstamas takelis</string>
     <string name="random_text">Atsitiktinis</string>

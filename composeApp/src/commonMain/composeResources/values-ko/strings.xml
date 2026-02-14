@@ -189,7 +189,6 @@
     <string name="charts_continuous" comment="Continuous date ranges, but in short, like last 7 days, last 30 days, etc">연속적</string>
     <string name="based_on" formatted="true" comment="%1= the word 'artists', 'albums' or 'tracks'">%1$s 기준</string>
     <string name="not_enough_data" comment="(not enough data to draw a chart etc)">데이터가 충분하지 않습니다</string>
-    <string name="random" comment="Displays a random scrobble or a loved track of the user">맡겨주세요</string>
     <string name="random_not_found">트랙을 찾을 수 없음</string>
     <string name="loved_track">좋아요한 트랙</string>
     <string name="random_text">무작위</string>

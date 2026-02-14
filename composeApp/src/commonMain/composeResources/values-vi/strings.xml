@@ -107,7 +107,6 @@
     <string name="charts_custom" comment="Custom date range, but in short, used in the charts menu">Tuỳ chỉnh</string>
     <string name="based_on" formatted="true" comment="%1= the word 'artists', 'albums' or 'tracks'">Dựa trên %1$s</string>
     <string name="not_enough_data" comment="(not enough data to draw a chart etc)">Không đủ dữ liệu</string>
-    <string name="random" comment="Displays a random scrobble or a loved track of the user">Tôi đang cảm thấy may mắn</string>
     <string name="random_not_found">Không tìm thấy bài hát</string>
     <string name="loved_track">Bài hát được ưa thích</string>
     <string name="random_text">Ngẫu nhiên</string>

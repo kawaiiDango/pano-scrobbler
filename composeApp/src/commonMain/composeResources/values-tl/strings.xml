@@ -146,7 +146,6 @@
     <string name="charts_no_data">Walang data para sa period na ito</string>
     <string name="based_on" formatted="true" comment="%1= the word 'artists', 'albums' or 'tracks'">Base sa %1$s</string>
     <string name="not_enough_data" comment="(not enough data to draw a chart etc)">Hindi sapat ang data</string>
-    <string name="random" comment="Displays a random scrobble or a loved track of the user">Sinusuwerte ako</string>
     <string name="random_not_found">Walang nahanap na kanta</string>
     <string name="random_text">Random</string>
     <string name="original" comment="Original metadata before editing">Orihinal</string>

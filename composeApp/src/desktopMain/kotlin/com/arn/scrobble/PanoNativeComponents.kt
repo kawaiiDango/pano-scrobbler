@@ -12,6 +12,7 @@ import com.arn.scrobble.media.SessionInfo
 import com.arn.scrobble.media.listenForPlayingTrackEvents
 import com.arn.scrobble.utils.DesktopStuff
 import com.arn.scrobble.utils.PanoTrayUtils
+import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -31,7 +32,7 @@ object PanoNativeComponents {
     fun load() {
         System.load(DesktopStuff.getLibraryPath("pano_native_components"))
 
-        val logFilePath = DesktopStuff.logsDir.resolve("pano-native-components.log")
+        val logFilePath = PlatformStuff.logsDir.resolve("pano-native-components.log")
         setLogFilePath(logFilePath.absolutePath)
     }
 

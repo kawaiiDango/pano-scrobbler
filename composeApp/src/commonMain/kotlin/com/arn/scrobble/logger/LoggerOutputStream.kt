@@ -6,7 +6,6 @@ import java.util.logging.Logger
 
 
 // Custom OutputStream to redirect stderr to Logger
-// LoggerOutputStream.kt
 
 class LoggerOutputStream(
     private val logger: Logger,

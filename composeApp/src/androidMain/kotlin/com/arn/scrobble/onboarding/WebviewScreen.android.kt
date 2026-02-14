@@ -3,8 +3,6 @@ package com.arn.scrobble.onboarding
 import android.os.Build
 import android.view.ViewGroup
 import android.webkit.WebView
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -28,7 +26,6 @@ actual fun WebViewScreen(
     modifier: Modifier,
     userAccountTemp: UserAccountTemp?,
     pleromaOauthClientCreds: PleromaOauthClientCreds?,
-    bottomContent: @Composable ColumnScope.() -> Unit,
     viewModel: WebViewVM,
 ) {
     val webViewClient = remember {
@@ -55,40 +52,34 @@ actual fun WebViewScreen(
         }
     }
 
-    Column(
-        modifier = modifier
-    ) {
-        if (statusText.isEmpty())
-            AndroidView(
-                factory = {
-                    WebView(it).apply {
-                        layoutParams = ViewGroup.LayoutParams(
-                            ViewGroup.LayoutParams.MATCH_PARENT,
-                            ViewGroup.LayoutParams.MATCH_PARENT
-                        )
-                        settings.javaScriptEnabled = true
-                        settings.allowContentAccess = false
-                        settings.allowFileAccess = false
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                            settings.isAlgorithmicDarkeningAllowed = true
-                        }
-
-                        webViewChromeClient.pageTitleState = pageTitleState
-                        webViewClient.callbackUrlAndCookies = viewModel.callbackUrlAndCookies
-
-                        this.webViewClient = webViewClient
-                        this.webChromeClient = webViewChromeClient
-                        loadUrl(initialUrl)
+    if (statusText.isEmpty())
+        AndroidView(
+            factory = {
+                WebView(it).apply {
+                    layoutParams = ViewGroup.LayoutParams(
+                        ViewGroup.LayoutParams.MATCH_PARENT,
+                        ViewGroup.LayoutParams.MATCH_PARENT
+                    )
+                    settings.javaScriptEnabled = true
+                    settings.allowContentAccess = false
+                    settings.allowFileAccess = false
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                        settings.isAlgorithmicDarkeningAllowed = true
                     }
-                },
-                modifier = Modifier.weight(1f)
-            )
-        else
-            Text(
-                text = statusText,
-                modifier = Modifier.weight(1f)
-            )
 
-        bottomContent()
-    }
+                    webViewChromeClient.pageTitleState = pageTitleState
+                    webViewClient.callbackUrlAndCookies = viewModel.callbackUrlAndCookies
+
+                    this.webViewClient = webViewClient
+                    this.webChromeClient = webViewChromeClient
+                    loadUrl(initialUrl)
+                }
+            },
+            modifier = modifier
+        )
+    else
+        Text(
+            text = statusText,
+            modifier = modifier
+        )
 }

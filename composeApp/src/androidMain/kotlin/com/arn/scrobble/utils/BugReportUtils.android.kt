@@ -7,17 +7,17 @@ import androidx.core.net.toUri
 import co.touchlab.kermit.Logger
 import com.arn.scrobble.BuildKonfig
 import com.arn.scrobble.billing.LicenseState
+import com.arn.scrobble.logger.JavaUtilFileLogger
 import com.arn.scrobble.ui.PanoSnackbarVisuals
-import org.jetbrains.compose.resources.getString
-import pano_scrobbler.composeapp.generated.resources.Res
-import pano_scrobbler.composeapp.generated.resources.email
-import pano_scrobbler.composeapp.generated.resources.no_mail_apps
-import java.io.File
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.withContext
 import java.io.IOException
 
 actual object BugReportUtils {
 
-    actual suspend fun mail() {
+    actual fun mail() {
         var bgRam = -1
         val manager =
             AndroidStuff.applicationContext.getSystemService(ActivityManager::class.java)!!
@@ -59,12 +59,15 @@ actual object BugReportUtils {
         text += "\n\n[Describe the issue]\n[If it is related to scrobbling, mention the media player name]\n"
         //keep the email in english
 
-        val emailAddress = getString(Res.string.email)
+        val reportTo = Stuff.xorWithKey(
+            Stuff.BUG_REPORT_TO,
+            BuildKonfig.APP_ID
+        )
         val subject = BuildKonfig.APP_NAME + " - Bug report"
         val uri = "mailto:".toUri() // this filters email-only apps
         val sendToIntent = Intent(Intent.ACTION_SENDTO).apply {
             data = uri
-            putExtra(Intent.EXTRA_EMAIL, arrayOf(emailAddress))
+            putExtra(Intent.EXTRA_EMAIL, arrayOf(reportTo))
             putExtra(Intent.EXTRA_SUBJECT, subject)
             putExtra(Intent.EXTRA_TEXT, text)
             addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
@@ -76,15 +79,14 @@ actual object BugReportUtils {
             e.printStackTrace()
             Stuff.globalSnackbarFlow.tryEmit(
                 PanoSnackbarVisuals(
-                    getString(Res.string.no_mail_apps),
+                    e.redactedMessage,
                     isError = true
                 )
             )
         }
     }
 
-    actual fun saveLogsToFile(): String? {
-
+    actual suspend fun saveLogsToFile(logFile: PlatformFile) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
             AndroidStuff.getScrobblerExitReasons().let {
                 it.take(5).forEachIndexed { index, applicationExitInfo ->
@@ -93,22 +95,26 @@ actual object BugReportUtils {
             }
         }
 
-        val log = exec("logcat -d *:I")
-        val logFile = File(AndroidStuff.applicationContext.cacheDir, "share/pano-scrobbler.log")
-        logFile.parentFile!!.mkdirs()
-        logFile.writeText(log)
+        val command = "logcat -d *:I"
 
-        return logFile.absolutePath
-    }
-
-    private fun exec(command: String): String {
-        var resp = ""
         try {
-            val process = Runtime.getRuntime().exec(command)
-            resp = process.inputStream.bufferedReader().readText()
+            withContext(Dispatchers.IO) {
+                val process = Runtime.getRuntime().exec(command)
+                process.inputStream.use { input ->
+                    logFile.overwrite { output ->
+                        input.copyTo(output)
+                    }
+                }
+            }
+
         } catch (e: IOException) {
-            e.printStackTrace()
+            Logger.e(e) { "Failed to read logcat output" }
         }
-        return resp
+
+        if (PlatformStuff.mainPrefs.data.map { it.logToFileOnAndroid }.first()) {
+            logFile.writeAppend { output ->
+                JavaUtilFileLogger.mergeLogFilesTo(output)
+            }
+        }
     }
 }

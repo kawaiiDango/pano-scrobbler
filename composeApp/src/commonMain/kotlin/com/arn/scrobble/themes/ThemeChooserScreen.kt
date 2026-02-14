@@ -52,7 +52,7 @@ import pano_scrobbler.composeapp.generated.resources.high
 import pano_scrobbler.composeapp.generated.resources.light
 import pano_scrobbler.composeapp.generated.resources.low
 import pano_scrobbler.composeapp.generated.resources.medium
-import pano_scrobbler.composeapp.generated.resources.random_text
+import pano_scrobbler.composeapp.generated.resources.random_on_start
 import pano_scrobbler.composeapp.generated.resources.system_colors
 
 @Composable
@@ -170,7 +170,7 @@ fun ThemeChooserScreen(
         }
 
         LabeledCheckbox(
-            text = stringResource(Res.string.random_text),
+            text = stringResource(Res.string.random_on_start),
             checked = random == true,
             enabled = isLicenseValid,
             onCheckedChange = { random = it }

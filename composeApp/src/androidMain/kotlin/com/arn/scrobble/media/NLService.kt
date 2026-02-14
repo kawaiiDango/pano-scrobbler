@@ -13,6 +13,7 @@ import co.touchlab.kermit.Logger
 import com.arn.scrobble.BuildKonfig
 import com.arn.scrobble.R
 import com.arn.scrobble.api.lastfm.ScrobbleData
+import com.arn.scrobble.logger.JavaUtilFileLogger
 import com.arn.scrobble.utils.AndroidStuff
 import com.arn.scrobble.utils.AndroidStuff.toast
 import com.arn.scrobble.utils.MetadataUtils
@@ -25,6 +26,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
@@ -80,6 +82,15 @@ class NLService : NotificationListenerService() {
     }
 
     private fun init() {
+        coroutineScope.launch {
+            PlatformStuff.mainPrefs.data.map { it.logToFileOnAndroid }.collectLatest {
+                Logger.config.logWriterList
+                    .filterIsInstance<JavaUtilFileLogger>()
+                    .firstOrNull()
+                    ?.isEnabled = it
+            }
+        }
+
         val sessManager = getSystemService(MediaSessionManager::class.java)!!
         scrobbleQueue = ScrobbleQueue(coroutineScope)
 

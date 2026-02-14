@@ -1,7 +1,7 @@
 package com.arn.scrobble.utils
 
 expect object BugReportUtils {
-    suspend fun mail()
+    fun mail()
 
-    fun saveLogsToFile(): String?
+    suspend fun saveLogsToFile(logFile: PlatformFile)
 }

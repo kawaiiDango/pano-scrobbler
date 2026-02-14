@@ -64,6 +64,20 @@ actual object PanoTimeFormatter {
         return dateTime.format(formatter)
     }
 
+    actual fun short(millis: Long): String {
+        val dateTime = ZonedDateTime.ofInstant(
+            java.time.Instant.ofEpochMilli(millis),
+            ZoneId.systemDefault()
+        )
+        val formatter = DateTimeFormatter.ofLocalizedDateTime(
+            FormatStyle.SHORT,
+            FormatStyle.SHORT
+        )
+            .withLocale(Locale.UK)  // uses 24-hour time format
+
+        return dateTime.format(formatter)
+    }
+
     actual fun day(millis: Long): String {
         val dateTime = LocalDateTime.ofInstant(
             java.time.Instant.ofEpochMilli(millis),

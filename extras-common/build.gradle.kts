@@ -13,6 +13,7 @@ kotlin {
     android {
         namespace = "com.arn.scrobble.extras.common"
         compileSdk = libs.versions.targetSdk.get().toInt()
+//        compileSdkPreview = "CinnamonBun"
         minSdk = libs.versions.minSdk.get().toInt()
     }
 

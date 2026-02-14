@@ -125,6 +125,7 @@ data class MainPrefs(
     val tidalSteelSeriesApi: Boolean = true,
     val deezerApi: Boolean = true,
     val lastfmApiAlways: Boolean = false,
+    val logToFileOnAndroid: Boolean = false,
     val extractFirstArtistPackages: Set<String> = emptySet(),
     val discordRpc: DiscordRpcSettings = DiscordRpcSettings(),
 ) {

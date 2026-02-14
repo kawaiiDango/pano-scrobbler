@@ -17,6 +17,8 @@ expect object PlatformStuff {
 
     val cacheDir: File
 
+    val logsDir: File
+
     fun getDeviceIdentifier(): String
 
     val isJava8OrGreater: Boolean

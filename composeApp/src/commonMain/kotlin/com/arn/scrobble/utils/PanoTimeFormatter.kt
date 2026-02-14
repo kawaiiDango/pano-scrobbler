@@ -6,6 +6,8 @@ expect object PanoTimeFormatter {
 
     fun full(millis: Long): String
 
+    fun short(millis: Long): String
+
     fun day(millis: Long): String
 
     fun month(millis: Long): String

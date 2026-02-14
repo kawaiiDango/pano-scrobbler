@@ -32,8 +32,6 @@ object DesktopStuff {
         File(appDataRoot, "webview").also { it.mkdirs() }
     }
 
-    val logsDir by lazy { File(appDataRoot, "logs").also { it.mkdirs() } }
-
     val os = when (BuildKonfig.OS_ORDINAL) {
         Os.Windows.ordinal -> Os.Windows
         Os.Macos.ordinal -> Os.Macos

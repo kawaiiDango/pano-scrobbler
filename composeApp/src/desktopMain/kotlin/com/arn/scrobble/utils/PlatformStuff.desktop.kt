@@ -64,6 +64,8 @@ actual object PlatformStuff {
         File(DesktopStuff.appDataRoot, "cache").also { it.mkdirs() }
     }
 
+    actual val logsDir by lazy { File(DesktopStuff.appDataRoot, "logs").also { it.mkdirs() } }
+
     actual val mainPrefs by lazy {
         DataStoreFactory.create(
             serializer = MainPrefs.dataStoreSerializer,

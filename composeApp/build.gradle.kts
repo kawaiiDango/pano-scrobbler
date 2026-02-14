@@ -67,6 +67,7 @@ kotlin {
 
     android {
         compileSdk = libs.versions.targetSdk.get().toInt()
+//        compileSdkPreview = "CinnamonBun"
         namespace = APP_ID
         minSdk = libs.versions.minSdk.get().toInt()
 

@@ -47,7 +47,7 @@ import com.arn.scrobble.automation.Automation
 import com.arn.scrobble.billing.BillingRepository
 import com.arn.scrobble.crashreporter.CrashReporter
 import com.arn.scrobble.discordrpc.DiscordRpc
-import com.arn.scrobble.logger.JvmLogger
+import com.arn.scrobble.logger.JavaUtilFileLogger
 import com.arn.scrobble.media.PlayingTrackNotifyEvent
 import com.arn.scrobble.media.notifyPlayingTrackEvent
 import com.arn.scrobble.pref.AppItem
@@ -113,9 +113,10 @@ private fun init() {
     // init: run once
 
     Logger.setLogWriters(
-        JvmLogger(
-            logToFile = true,
-            redirectStderr = !BuildKonfig.DEBUG
+        JavaUtilFileLogger(
+            isEnabled = true,
+            redirectStderr = !BuildKonfig.DEBUG,
+            printToStd = true
         )
     )
     Logger.setTag("scrobbler")

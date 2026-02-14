@@ -71,6 +71,8 @@ actual object PlatformStuff {
 
     actual val cacheDir by lazy { applicationContext.cacheDir!! }
 
+    actual val logsDir by lazy { File(filesDir, "logs").also { it.mkdirs() } }
+
     actual fun getDeviceIdentifier(): String {
         val name = Build.BRAND + "|" + Build.MODEL + "|" + Build.DEVICE + "|" + Build.BOARD
         return Stuff.sha256Truncated(name)

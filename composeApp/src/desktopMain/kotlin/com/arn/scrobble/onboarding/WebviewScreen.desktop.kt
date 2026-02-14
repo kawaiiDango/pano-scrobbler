@@ -1,7 +1,6 @@
 package com.arn.scrobble.onboarding
 
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -34,7 +33,6 @@ actual fun WebViewScreen(
     modifier: Modifier,
     userAccountTemp: UserAccountTemp?,
     pleromaOauthClientCreds: PleromaOauthClientCreds?,
-    bottomContent: @Composable ColumnScope.() -> Unit,
     viewModel: WebViewVM,
 ) {
     val title = stringResource(Res.string.login_in_browser)
@@ -65,7 +63,6 @@ actual fun WebViewScreen(
     Column(
         modifier = modifier
     ) {
-
         if (helpButtonShown) {
             ButtonWithIcon(
                 onClick = {
@@ -82,7 +79,5 @@ actual fun WebViewScreen(
         SelectionContainer {
             Text(text = statusText)
         }
-
-        bottomContent()
     }
 }

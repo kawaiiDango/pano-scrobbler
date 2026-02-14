@@ -212,6 +212,7 @@ object Stuff {
 
     const val DISCORD_CLIENT_ID = "1299386213114970172"
     const val EMBEDDED_SERVER_KS = "Jjs5awQQB0YjN10vKCsWPC8AXW0"
+    const val BUG_REPORT_TO = "CA4aTwgbKk8dBB0vEhADEQwBAE8IHkBNHA4"
 
     val DEFAULT_IGNORE_ARTIST_META_WITHOUT_FALLBACK = setOf(
         "com.google.android.youtube",

@@ -24,6 +24,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
@@ -229,10 +230,11 @@ fun BillingScreen(
                                 Column {
                                     Text(
                                         purchaseMethod.displayName,
+                                        style = MaterialTheme.typography.titleMediumEmphasized
                                     )
                                     Text(
                                         purchaseMethod.displayDesc,
-                                        style = MaterialTheme.typography.bodySmallEmphasized
+                                        fontStyle = FontStyle.Italic
                                     )
                                 }
                             }

@@ -18,7 +18,6 @@ expect fun WebViewScreen(
     modifier: Modifier = Modifier,
     userAccountTemp: UserAccountTemp? = null,
     pleromaOauthClientCreds: PleromaOauthClientCreds? = null,
-    bottomContent: @Composable ColumnScope.() -> Unit = {},
     viewModel: WebViewVM = viewModel {
         WebViewVM(
             userAccountTemp,

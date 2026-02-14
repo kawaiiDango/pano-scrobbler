@@ -168,7 +168,6 @@
     <string name="charts_continuous" comment="Continuous date ranges, but in short, like last 7 days, last 30 days, etc">Continu</string>
     <string name="based_on" formatted="true" comment="%1= the word 'artists', 'albums' or 'tracks'">Basat en %1$s</string>
     <string name="not_enough_data" comment="(not enough data to draw a chart etc)">No hi ha prou dades</string>
-    <string name="random" comment="Displays a random scrobble or a loved track of the user">Segur que tinc sort</string>
     <string name="random_not_found">No s'han trobat la cançó</string>
     <string name="loved_track">Cançó preferida</string>
     <string name="random_text">Aleatori</string>

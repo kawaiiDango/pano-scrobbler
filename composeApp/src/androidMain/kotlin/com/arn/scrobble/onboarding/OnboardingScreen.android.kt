@@ -41,7 +41,6 @@ import com.arn.scrobble.utils.AndroidStuff
 import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff
 import com.arn.scrobble.utils.Stuff.collectAsStateWithInitialValue
-import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
 import pano_scrobbler.composeapp.generated.resources.Res
 import pano_scrobbler.composeapp.generated.resources.allow_background
@@ -103,6 +102,7 @@ private fun NotificationListenerStep(
     isDone: Boolean,
     isExpanded: Boolean,
     onDone: () -> Unit,
+    onSkip: () -> Unit
 ) {
     var warningShown by rememberSaveable { mutableStateOf(false) }
     val scope = rememberCoroutineScope()
@@ -160,10 +160,7 @@ private fun NotificationListenerStep(
             icon = Icons.Warning,
             onConfirmation = {
                 warningShown = false
-                scope.launch {
-                    PlatformStuff.mainPrefs.updateData { it.copy(appListWasRun = true) }
-                    onDone()
-                }
+                onSkip()
             },
             onDismissRequest = { warningShown = false },
         )
@@ -221,7 +218,7 @@ actual fun OnboardingScreen(
         }
     }
 
-    LaunchedEffect(doneStatus.all { it }) {
+    LaunchedEffect(doneStatus.toList()) {
         if (doneStatus.all { it }) {
             onDone()
         } else {
@@ -272,12 +269,12 @@ actual fun OnboardingScreen(
                         isExpanded = step == currentStep,
                         onDone = {
                             markAsDone(OnboardingStepType.NOTIFICATION_LISTENER)
-                        }
+                        },
+                        onSkip = onDone
                     )
                 }
 
                 OnboardingStepType.DKMA -> {
-
                     VerticalStepperItem(
                         titleRes = Res.string.allow_background,
                         description = "https://dontkillmyapp.com/",

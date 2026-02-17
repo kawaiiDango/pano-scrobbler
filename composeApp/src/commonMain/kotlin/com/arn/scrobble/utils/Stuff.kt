@@ -14,7 +14,6 @@ import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.arn.scrobble.BuildKonfig
 import com.arn.scrobble.api.AccountType
 import com.arn.scrobble.api.Requesters
 import com.arn.scrobble.api.Requesters.postString
@@ -22,7 +21,6 @@ import com.arn.scrobble.api.Scrobblables
 import com.arn.scrobble.api.UserAccountSerializable
 import com.arn.scrobble.api.UserCached
 import com.arn.scrobble.api.cache.CacheStrategy
-import com.arn.scrobble.billing.BillingClientData
 import com.arn.scrobble.pref.MainPrefs
 import com.arn.scrobble.ui.PanoSnackbarVisuals
 import com.arn.scrobble.updates.UpdateAction
@@ -67,7 +65,6 @@ import kotlin.math.roundToInt
 object Stuff {
     const val SCROBBLER_PROCESS_NAME = "bgScrobbler"
     const val DEEPLINK_SCHEME = "pano-scrobbler"
-    const val PRO_PRODUCT_ID = "pscrobbler_pro"
     const val TYPE_ALL = 0
     const val TYPE_ARTISTS = 1
     const val TYPE_ALBUMS = 2
@@ -292,26 +289,6 @@ object Stuff {
 
     private var mainPrefsCachedValue = MainPrefs()
 
-    val billingClientData by lazy {
-        BillingClientData(
-            proProductId = PRO_PRODUCT_ID,
-            appName = BuildKonfig.APP_NAME,
-            httpPost = { url, body ->
-                Requesters.baseKtorClient.postString(url, body)
-            },
-            lastCheckTime = PlatformStuff.mainPrefs.data.map { it.lastLicenseCheckTime },
-            deviceIdentifier = { PlatformStuff.getDeviceIdentifier() },
-            setLastcheckTime = { time ->
-                PlatformStuff.mainPrefs.updateData { it.copy(lastLicenseCheckTime = time) }
-            },
-            receipt = PlatformStuff.mainPrefs.data.map { it.receipt to it.receiptSignature },
-            setReceipt = { r, s ->
-                PlatformStuff.mainPrefs.updateData { it.copy(receipt = r, receiptSignature = s) }
-            }
-        )
-    }
-
-
     val globalExceptionFlow by lazy { MutableSharedFlow<Throwable>(extraBufferCapacity = 1) }
 
     val globalSnackbarFlow by lazy { MutableSharedFlow<PanoSnackbarVisuals>(extraBufferCapacity = 1) }
@@ -319,6 +296,15 @@ object Stuff {
     val globalUpdateAction by lazy { MutableStateFlow<UpdateAction?>(null) }
 
     fun Number.format() = numberFormat.format(this)!!
+
+    val receiptFlow get() = PlatformStuff.mainPrefs.data.map { it.receipt to it.receiptSignature }
+
+    suspend fun setReceipt(r: String?, s: String?) {
+        PlatformStuff.mainPrefs.updateData { it.copy(receipt = r, receiptSignature = s) }
+    }
+
+    suspend fun httpPost(url: String, body: String) =
+        Requesters.baseKtorClient.postString(url, body)
 
     suspend fun initializeMainPrefsCache(): MainPrefs {
         return if (mainPrefsCachedValue.version == 0)

@@ -1,29 +1,24 @@
 package com.arn.scrobble.billing
 
 import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.stateIn
 
 
-abstract class BaseBillingRepository(
-    protected val context: Any?,
-    protected val clientData: BillingClientData,
-    protected val openInBrowser: (url: String) -> Unit,
-) {
+abstract class BaseBillingRepository(protected val receipt: Flow<Pair<String?, String?>>) {
     protected val scope = GlobalScope
-
-    protected abstract val _proProductDetails: MutableStateFlow<MyProductDetails?>
-    abstract val proProductDetails: StateFlow<MyProductDetails?>
+    protected val checkEveryDays = 30
+    protected val productId = "pscrobbler_pro"
+    abstract val formattedPrice: Flow<String?>
     protected val _licenseError = MutableSharedFlow<LicenseError>()
     val licenseError = _licenseError.asSharedFlow()
     abstract val purchaseMethods: List<PurchaseMethod>
     abstract val needsActivationCode: Boolean
-    val licenseState = clientData.receipt
+    val licenseState = receipt
         .mapLatest { (receipt, signature) ->
             if (receipt == null) {
                 LicenseState.NO_LICENSE

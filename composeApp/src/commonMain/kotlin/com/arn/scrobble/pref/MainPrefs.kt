@@ -35,6 +35,7 @@ import kotlinx.serialization.json.decodeFromStream
 import kotlinx.serialization.json.encodeToStream
 import java.io.InputStream
 import java.io.OutputStream
+import kotlin.time.Duration.Companion.days
 
 
 @Serializable
@@ -125,7 +126,7 @@ data class MainPrefs(
     val tidalSteelSeriesApi: Boolean = true,
     val deezerApi: Boolean = true,
     val lastfmApiAlways: Boolean = false,
-    val logToFileOnAndroid: Boolean = false,
+    private val logToFileOnAndroidSince: Long = -1,
     val extractFirstArtistPackages: Set<String> = emptySet(),
     val discordRpc: DiscordRpcSettings = DiscordRpcSettings(),
 ) {
@@ -230,6 +231,9 @@ data class MainPrefs(
 
     val currentAccount
         get() = scrobbleAccounts.firstOrNull { it.type == currentAccountType }
+
+    val logToFileOnAndroid
+        get() = (System.currentTimeMillis() - logToFileOnAndroidSince) <= 15.days.inWholeMilliseconds
 
     fun allowOrBlockAppCopied(appId: String, allow: Boolean): MainPrefs {
         //create copies

@@ -126,7 +126,7 @@ fun ScrobblesScreen(
         viewModel.pendingScrobbles.collectAsStateWithLifecycle()
     else
         remember { mutableStateOf(emptyList()) }
-    val total by viewModel.total.collectAsStateWithLifecycle(null)
+    val total by viewModel.total.collectAsStateWithLifecycle()
     val pkgMap by viewModel.pkgMap.collectAsStateWithLifecycle()
     val nlsEnabled by viewModel.nlsEnabled.collectAsStateWithLifecycle()
     val scrobblerEnabled by PlatformStuff.mainPrefs.data.collectAsStateWithInitialValue { it.scrobblerEnabled }

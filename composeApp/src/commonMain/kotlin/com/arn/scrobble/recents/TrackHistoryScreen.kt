@@ -55,7 +55,7 @@ fun TrackHistoryScreen(
     val tracks = viewModel.tracks.collectAsLazyPagingItems()
     val firstScrobbleTime by viewModel.firstScrobbleTime.collectAsStateWithLifecycle()
     val total by viewModel.total.collectAsStateWithLifecycle()
-    val deletedTracksCount by viewModel.deletedTracksCount.collectAsStateWithLifecycle(0)
+    val deletedTracksCount by viewModel.deletedTracksCount.collectAsStateWithLifecycle()
     val pkgMap by viewModel.pkgMap.collectAsStateWithLifecycle()
     var expandedKey by rememberSaveable { mutableStateOf<String?>(null) }
     val showScrobbleSources by if (LocalLicenseValidState.current)

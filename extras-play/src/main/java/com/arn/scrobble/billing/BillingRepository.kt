@@ -15,27 +15,33 @@ import com.android.billingclient.api.Purchase
 import com.android.billingclient.api.PurchasesUpdatedListener
 import com.android.billingclient.api.QueryProductDetailsParams
 import com.android.billingclient.api.QueryPurchasesParams
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
+import kotlin.time.Duration.Companion.days
 
 private const val TAG = "BillingRepository"
 private const val PUBLIC_KEY_BASE64 =
     "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAmdJDoSt28Ps1zqsHlMgIXqnLxDOKyT+qUl4dV8eto7RL0B58DrtiUYC0LlhaM+ilx+ClPbNYlYT9VI0u2Yk0/f0uIpy4W8Hxxv5P2/nlwyEzBPd8dvEtFi4c6YB+wA0dwokhVVSLb6S3XyCZ2ONmozwZZ8RT3B+/Zs3ZdnkZDqiYDyA9lQVReCcM/lHSXQpst8zcNo00DzXG+3ptVpa3fnNhWjm+kgqjntzAV+cT53D8Qc53sHpmqQG84pFzDhiQoNH2bCy+IDs0iP40Wdjj1mzm7N0RZ2gxFawZrUwWAhvHrgXWXOV+Vhd3upqZWAhBMeeV4K/4GAR7EOwTib1ngwIDAQAB"
 
 class BillingRepository(
-    context: Context,
-    clientData: BillingClientData,
-    openInBrowser: (url: String) -> Unit
-) : BaseBillingRepository(
-    context,
-    clientData,
-    openInBrowser
-) {
+    receipt: Flow<Pair<String?, String?>>,
+    private val lastCheckTime: Flow<Long>,
+    private val setLastcheckTime: suspend (Long) -> Unit,
+    private val setReceipt: suspend (String?, String?) -> Unit,
 
-    override val _proProductDetails by lazy { MutableStateFlow<MyProductDetails?>(null) }
-    override val proProductDetails by lazy { _proProductDetails.asStateFlow() }
+    httpPost: suspend (url: String, body: String) -> String,
+    deviceIdentifier: () -> String,
+    openInBrowser: (url: String) -> Unit,
+    private val context: Context,
+) : BaseBillingRepository(receipt), BillingClientStateListener {
+
+    private val proProductDetails = MutableStateFlow<ProductDetails?>(null)
+    override val formattedPrice = proProductDetails
+        .map { it?.oneTimePurchaseOfferDetails?.formattedPrice }
     override val purchaseMethods = listOf(
         PurchaseMethod(
             displayName = "Google Play",
@@ -45,49 +51,14 @@ class BillingRepository(
     )
     override val needsActivationCode = false
     private lateinit var playStoreBillingClient: BillingClient
-    private var proProductDetailsList: List<ProductDetails>? = null
     private val PENDING_PURCHASE_NOTIFY_THRESHOLD = 60 * 1000L
 
-
-    val billingClientStateListener: BillingClientStateListener =
-        object : BillingClientStateListener {
-            override fun onBillingSetupFinished(billingResult: BillingResult) {
-                when (billingResult.responseCode) {
-                    BillingClient.BillingResponseCode.OK -> {
-                        fetchProductDetails(clientData.proProductId)
-
-                        // this runs in a separate thread anyways
-                        runBlocking {
-                            queryPurchasesAsync()
-                        }
-                    }
-
-                    BillingClient.BillingResponseCode.BILLING_UNAVAILABLE -> {
-                        Logger.w(TAG) { "BILLING_UNAVAILABLE" }
-                        //Some apps may choose to make decisions based on this knowledge.
-                    }
-
-                    BillingClient.BillingResponseCode.ERROR -> {
-                        Logger.d(TAG) { billingResult.debugMessage }
-                    }
-
-                    else -> {
-                        //do nothing. Someone else will connect it through retry policy.
-                        //May choose to send to server though
-                    }
-                }
-            }
-
-            override fun onBillingServiceDisconnected() {
-                // now handled by enableAutoServiceReconnection()
-            }
-        }
 
     val purchasesUpdatedListener = PurchasesUpdatedListener { billingResult, purchases ->
         when (billingResult.responseCode) {
             BillingClient.BillingResponseCode.OK -> {
                 // will handle server verification, consumables, and updating the local cache
-                purchases?.let { scope.launch { processPurchases(it.toSet()) } }
+                purchases?.let { scope.launch { processPurchases(it) } }
             }
 
             BillingClient.BillingResponseCode.ITEM_ALREADY_OWNED -> {
@@ -104,7 +75,7 @@ class BillingRepository(
     }
 
     override fun initBillingClient() {
-        playStoreBillingClient = BillingClient.newBuilder(context as Context)
+        playStoreBillingClient = BillingClient.newBuilder(context)
             .enablePendingPurchases(
                 PendingPurchasesParams.newBuilder().enableOneTimeProducts().build()
             ) // required or app will crash
@@ -114,7 +85,7 @@ class BillingRepository(
     }
 
     override fun startDataSourceConnections() {
-        playStoreBillingClient.startConnection(billingClientStateListener)
+        playStoreBillingClient.startConnection(this)
     }
 
     override fun endDataSourceConnections() {
@@ -160,107 +131,122 @@ class BillingRepository(
         playStoreBillingClient.queryPurchasesAsync(queryPurchasesParams) { billingResult, purchases ->
             if (billingResult.responseCode == BillingClient.BillingResponseCode.OK) {
                 scope.launch {
-                    processPurchases(purchases.toHashSet())
+                    processPurchases(purchases)
                 }
             }
         }
     }
 
-    private suspend fun processPurchases(purchasesResult: Set<Purchase>) {
-        val validPurchases = HashSet<Purchase>(purchasesResult.size)
+    private suspend fun processPurchases(purchasesResult: List<Purchase>) {
+        val validPurchases = mutableListOf<Purchase>()
         purchasesResult.forEach { purchase ->
-            if (purchase.purchaseState == Purchase.PurchaseState.PURCHASED) {
-                if (verifyPurchase(purchase.originalJson, purchase.signature)) {
-                    clientData.setReceipt(purchase.originalJson, purchase.signature)
-                    validPurchases.add(purchase)
-                }
-            } else if (purchase.purchaseState == Purchase.PurchaseState.PENDING) {
-                if (clientData.proProductId in purchase.products) {
-                    // This doesn't go away after the slow card gets declined. So, only notify recent purchases
-                    if (System.currentTimeMillis() - purchase.purchaseTime < PENDING_PURCHASE_NOTIFY_THRESHOLD)
-                        _licenseError.emit(LicenseError.PENDING)
-                }
-            }
-        }
-        /*
-          As is being done in this sample, for extra reliability you may store the
-          receipts/purchases to a your own remote/local database for until after you
-          disburse entitlements. That way if the Google Play Billing library fails at any
-          given point, you can independently verify whether entitlements were accurately
-          disbursed. In this sample, the receipts are then removed upon entitlement
-          disbursement.
-         */
-//                val testing = localCacheBillingClient.purchaseDao().getPurchases()
-//                Timber.tag(LOG_TAG).d("processPurchases purchases in the lcl db ${testing.size}")
-//                localCacheBillingClient.purchaseDao().insert(*validPurchases.toTypedArray())
-        acknowledgeNonConsumablePurchasesAsync(validPurchases)
-    }
-
-    override fun verifyPurchase(data: String, signature: String?): Boolean {
-        val s = signature ?: return false
-        return Security.verifyPurchase(
-            data,
-            s,
-            PUBLIC_KEY_BASE64,
-        )
-    }
-
-
-    /**
-     * If you do not acknowledge a purchase, the Google Play Store will provide a refund to the
-     * users within a few days of the transaction. Therefore you have to implement
-     * [BillingClient.acknowledgePurchase] inside your app.
-     */
-    private suspend fun acknowledgeNonConsumablePurchasesAsync(nonConsumables: Set<Purchase>) {
-        if (nonConsumables.isEmpty() || !nonConsumables.any { clientData.proProductId in it.products }) {
-            if (licenseState.value == LicenseState.VALID) {
-                clientData.setReceipt(null, null)
-            }
-            return
-        }
-
-        nonConsumables.forEach { purchase ->
-            val params = AcknowledgePurchaseParams.newBuilder().setPurchaseToken(
-                purchase
-                    .purchaseToken
-            ).build()
-            playStoreBillingClient.acknowledgePurchase(params) { billingResult ->
-                when (billingResult.responseCode) {
-                    BillingClient.BillingResponseCode.OK -> {
-//                        if (clientData.proProductId in purchase.products) {
-//                            licenseState.value = LicenseState.VALID
-//                        }
+            when (purchase.purchaseState) {
+                Purchase.PurchaseState.PURCHASED -> {
+                    if (verifyPurchase(purchase.originalJson, purchase.signature)) {
+                        validPurchases.add(purchase)
                     }
+                }
 
-                    BillingClient.BillingResponseCode.ITEM_NOT_OWNED -> {
-                        if (clientData.proProductId in purchase.products) {
-                            scope.launch {
-                                clientData.setReceipt(null, null)
+                Purchase.PurchaseState.PENDING -> {
+                    if (productId in purchase.products) {
+                        // This doesn't go away after the slow card gets declined. So, only notify recent purchases
+                        if (System.currentTimeMillis() - purchase.purchaseTime < PENDING_PURCHASE_NOTIFY_THRESHOLD)
+                            _licenseError.emit(LicenseError.PENDING)
+                    }
+                }
+            }
+        }
+
+        if (validPurchases.isEmpty() || !validPurchases.any { productId in it.products }) {
+            if (licenseState.value == LicenseState.VALID) {
+                val (receipt, signature) = receipt.first()
+
+                val clearReceipt: Boolean
+                if (receipt != null && signature != null && verifyPurchase(receipt, signature)) {
+                    val oldPurchase = Purchase(receipt, signature)
+                    val now = System.currentTimeMillis()
+                    val lastVoidedTime = lastCheckTime.first()
+                    val withinRefundWindow =
+                        now - oldPurchase.purchaseTime in 0..(2.days.inWholeMilliseconds)
+                    val gracePeriodExpired = lastVoidedTime > 0 &&
+                            now - lastVoidedTime > checkEveryDays.days.inWholeMilliseconds
+
+                    if (withinRefundWindow || gracePeriodExpired) {
+                        Logger.d(TAG) { "withinRefundWindow || gracePeriodExpired" }
+                        clearReceipt = true
+                    } else {
+                        Logger.d(TAG) { "!gracePeriodExpired" }
+
+                        clearReceipt = false
+                        if (lastVoidedTime <= 0)
+                            setLastcheckTime(now)
+                    }
+                } else {
+                    clearReceipt = true
+                }
+
+                if (clearReceipt)
+                    setReceipt(null, null)
+            }
+        } else {
+            validPurchases
+                .forEach { purchase ->
+                    if (purchase.isAcknowledged) {
+                        setLastcheckTime(-1)
+                        setReceipt(purchase.originalJson, purchase.signature)
+                    } else {
+                        val params = AcknowledgePurchaseParams.newBuilder()
+                            .setPurchaseToken(purchase.purchaseToken)
+                            .build()
+
+                        playStoreBillingClient.acknowledgePurchase(params) { billingResult ->
+                            when (billingResult.responseCode) {
+                                BillingClient.BillingResponseCode.OK -> {
+                                    scope.launch {
+                                        setLastcheckTime(-1)
+                                        setReceipt(purchase.originalJson, purchase.signature)
+                                    }
+                                }
+
+                                BillingClient.BillingResponseCode.ITEM_NOT_OWNED -> {
+                                    if (productId in purchase.products) {
+                                        Logger.d(TAG) { "Purchase not owned: ${purchase.originalJson}" }
+
+                                        scope.launch {
+                                            setReceipt(null, null)
+                                        }
+                                    }
+                                }
                             }
                         }
                     }
                 }
-            }
-
         }
     }
 
-    private fun findProProduct(): ProductDetails? {
-        val productDetails =
-            proProductDetailsList?.firstOrNull { it.productId == clientData.proProductId }
+    override fun verifyPurchase(data: String, signature: String?): Boolean {
+        return Security.verifyPurchase(
+            data,
+            signature ?: return false,
+            PUBLIC_KEY_BASE64,
+        )
+    }
 
-        return if (productDetails != null && clientData.appName in productDetails.title &&
-            clientData.appName in productDetails.name &&
+    private fun validateProductDetails(productDetails: ProductDetails): ProductDetails? {
+        val appName = context.applicationInfo?.loadLabel(context.packageManager).toString()
+
+        return if (productDetails.productId == productId && appName in productDetails.title &&
+            appName in productDetails.name &&
             productDetails.productId != productDetails.title && productDetails.productId != productDetails.name
         )
             productDetails
-        else if (productDetails != null) {
-            _proProductDetails.value = null
+        else {
+            proProductDetails.value = null
             scope.launch {
-                clientData.setReceipt(null, null)
+                setReceipt(null, null)
             }
             null
-        } else null
+        }
     }
 
 
@@ -281,17 +267,8 @@ class BillingRepository(
         playStoreBillingClient.queryProductDetailsAsync(queryProductDetailsParams) { billingResult, productDetailsResult ->
             when (billingResult.responseCode) {
                 BillingClient.BillingResponseCode.OK -> {
-                    proProductDetailsList = productDetailsResult.productDetailsList
-                    findProProduct()?.let {
-                        _proProductDetails.value =
-                            MyProductDetails(
-                                it.productId,
-                                it.title,
-                                it.name,
-                                it.description,
-                                it.oneTimePurchaseOfferDetails!!.formattedPrice
-                            )
-                    }
+                    proProductDetails.value = productDetailsResult.productDetailsList
+                        .find { it.productId == productId }
                 }
 
                 else -> {
@@ -308,23 +285,55 @@ class BillingRepository(
      */
     override fun launchBillingFlow(purchaseMethod: PurchaseMethod, activity: Any?) {
         if (purchaseMethod.link == null) {
-            findProProduct()?.let { productDetails ->
-                val flowParams = BillingFlowParams.newBuilder()
-                    .setProductDetailsParamsList(
-                        listOf(
-                            ProductDetailsParams.newBuilder()
-                                .setProductDetails(productDetails)
-                                .build()
+            proProductDetails.value
+                ?.let { validateProductDetails(it) }
+                ?.let { productDetails ->
+                    val flowParams = BillingFlowParams.newBuilder()
+                        .setProductDetailsParamsList(
+                            listOf(
+                                ProductDetailsParams.newBuilder()
+                                    .setProductDetails(productDetails)
+                                    .build()
+                            )
                         )
-                    )
-                    .build()
+                        .build()
 
-                playStoreBillingClient.launchBillingFlow(activity as Activity, flowParams)
-            }
+                    playStoreBillingClient.launchBillingFlow(activity as Activity, flowParams)
+                }
         }
     }
 
     override suspend fun checkAndStoreLicense(receipt: String) {
     }
+
+    override fun onBillingSetupFinished(billingResult: BillingResult) {
+        when (billingResult.responseCode) {
+            BillingClient.BillingResponseCode.OK -> {
+                fetchProductDetails(productId)
+                scope.launch {
+                    queryPurchasesAsync()
+                }
+            }
+
+            BillingClient.BillingResponseCode.BILLING_UNAVAILABLE -> {
+                Logger.w(TAG) { "BILLING_UNAVAILABLE" }
+                //Some apps may choose to make decisions based on this knowledge.
+            }
+
+            BillingClient.BillingResponseCode.ERROR -> {
+                Logger.d(TAG) { billingResult.debugMessage }
+            }
+
+            else -> {
+                //do nothing. Someone else will connect it through retry policy.
+                //May choose to send to server though
+            }
+        }
+    }
+
+    override fun onBillingServiceDisconnected() {
+        // now handled by enableAutoServiceReconnection()
+    }
+
 }
 

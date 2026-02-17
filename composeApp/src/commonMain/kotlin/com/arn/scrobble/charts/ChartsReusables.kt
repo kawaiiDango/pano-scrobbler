@@ -196,7 +196,7 @@ fun TimePeriodSelector(
     val timePeriodsList by remember(timePeriods) { mutableStateOf(timePeriods.keys.toList()) }
     val selectedPeriod by viewModel.selectedPeriod.collectAsStateWithLifecycle()
     val refreshCount by viewModel.refreshCount.collectAsStateWithLifecycle()
-    val periodType by viewModel.periodType.collectAsStateWithLifecycle(null)
+    val periodType by viewModel.periodType.collectAsStateWithLifecycle()
     var dropdownTypeShown by rememberSaveable(saver = jsonSerializableSaver<TimePeriodType?>()) {
         mutableStateOf(null)
     }

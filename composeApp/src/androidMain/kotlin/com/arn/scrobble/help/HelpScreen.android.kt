@@ -62,11 +62,19 @@ actual fun HelpScreenContents(
             ) {
                 var menuShown by remember { mutableStateOf(false) }
                 val logToFile by PlatformStuff.mainPrefs.data.collectAsStateWithInitialValue { it.logToFileOnAndroid }
-                var logToFileMutable by remember(logToFile) { mutableStateOf(logToFile) }
 
-                LaunchedEffect(logToFileMutable) {
-                    PlatformStuff.mainPrefs.updateData { prefs ->
-                        prefs.copy(logToFileOnAndroid = logToFileMutable)
+                var newCheckedState by remember { mutableStateOf<Boolean?>(null) }
+
+                LaunchedEffect(newCheckedState) {
+                    newCheckedState?.let { newCheckedState ->
+                        PlatformStuff.mainPrefs.updateData { prefs ->
+                            prefs.copy(
+                                logToFileOnAndroidSince = if (newCheckedState)
+                                    System.currentTimeMillis()
+                                else
+                                    -1
+                            )
+                        }
                     }
                 }
 
@@ -89,9 +97,9 @@ actual fun HelpScreenContents(
                             )
                         },
                         shapes = MenuDefaults.itemShapes(),
-                        checked = logToFileMutable,
+                        checked = logToFile,
                         onCheckedChange = {
-                            logToFileMutable = it
+                            newCheckedState = it
                         }
                     )
                 }
@@ -103,7 +111,6 @@ actual fun HelpScreenContents(
                             }
                         ) {
                             Text(stringResource(Res.string.save_logs))
-
                         }
                     },
                     trailingButton = {

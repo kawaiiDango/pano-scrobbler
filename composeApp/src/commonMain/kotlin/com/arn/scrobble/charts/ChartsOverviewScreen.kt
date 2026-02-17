@@ -157,7 +157,7 @@ fun ChartsOverviewScreen(
     val artistsCount by viewModel.artistCount.collectAsStateWithLifecycle()
     val albumsCount by viewModel.albumCount.collectAsStateWithLifecycle()
     val tracksCount by viewModel.trackCount.collectAsStateWithLifecycle()
-    val scrobblesCount by viewModel.scrobblesCount.collectAsStateWithLifecycle(0)
+    val scrobblesCount by viewModel.scrobblesCount.collectAsStateWithLifecycle()
 
     val tagCloud by viewModel.tagCloud.collectAsStateWithLifecycle()
     val listeningActivity by viewModel.listeningActivity.collectAsStateWithLifecycle()

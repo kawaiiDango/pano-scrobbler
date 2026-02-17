@@ -18,7 +18,7 @@ actual class PlatformFile actual constructor(fileUri: String) {
 
     private val contentResolver by lazy { AndroidStuff.applicationContext.contentResolver }
 
-    actual suspend fun isFileOk() = withContext(Dispatchers.IO) {
+    actual suspend fun isWritable() = withContext(Dispatchers.IO) {
         val cursor = contentResolver.query(
             parsedUri,
             arrayOf(
@@ -41,7 +41,7 @@ actual class PlatformFile actual constructor(fileUri: String) {
         } ?: false
     }
 
-    actual fun getFileName(): String {
+    actual fun name(): String {
         val cursor = contentResolver.query(
             parsedUri,
             arrayOf(DocumentsContract.Document.COLUMN_DISPLAY_NAME),

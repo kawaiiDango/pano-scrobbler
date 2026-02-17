@@ -14,6 +14,9 @@ import com.arn.scrobble.utils.AndroidStuff
 import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff
 import com.arn.scrobble.utils.VariantStuff
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.withContext
 import java.io.File
 
 
@@ -35,10 +38,32 @@ class App : Application(), Configuration.Provider {
 
         Initializer.init(this)
 
+        val lastLicenseCheckTimeFile = applicationContext.noBackupFilesDir
+            .resolve("last_license_check_time.txt")
+
         VariantStuff.billingRepository = BillingRepository(
-            applicationContext,
-            Stuff.billingClientData,
-            PlatformStuff::openInBrowser
+            lastCheckTime = flow {
+                val t = withContext(Dispatchers.IO) {
+                    lastLicenseCheckTimeFile
+                        .takeIf { it.exists() }
+                        ?.readText()
+                        ?.toLongOrNull()
+                } ?: -1L
+
+                emit(t)
+            },
+            setLastcheckTime = { time ->
+                withContext(Dispatchers.IO) {
+                    lastLicenseCheckTimeFile
+                        .writeText(time.toString())
+                }
+            },
+            receipt = Stuff.receiptFlow,
+            setReceipt = Stuff::setReceipt,
+            httpPost = Stuff::httpPost,
+            deviceIdentifier = PlatformStuff::getDeviceIdentifier,
+            openInBrowser = PlatformStuff::openInBrowser,
+            context = applicationContext
         )
 
         val crashReportEnabledFile = File(filesDir, "crash_reporter_disabled.txt")

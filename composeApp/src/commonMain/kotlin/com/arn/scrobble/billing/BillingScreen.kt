@@ -85,7 +85,7 @@ fun BillingScreen(
     modifier: Modifier = Modifier,
 ) {
     val activity = getActivityOrNull()
-    val proProductDetails by viewModel.proProductDetails.collectAsStateWithLifecycle()
+    val formattedPrice by viewModel.formattedPrice.collectAsStateWithLifecycle(null)
     var errorText by rememberSaveable { mutableStateOf<String?>(null) }
 
     val bulletStrings = listOfNotNull(
@@ -179,7 +179,7 @@ fun BillingScreen(
             ) {
                 MediumExtendedFloatingActionButton(
                     onClick = {
-                        if (proProductDetails != null) {
+                        if (formattedPrice != null) {
                             if (purchaseMethods.size > 1) {
                                 purchaseMethodsExpanded = true
                             } else if (activity != null && purchaseMethods.isNotEmpty()) {
@@ -201,7 +201,7 @@ fun BillingScreen(
                             )
 
                             Text(
-                                text = (proProductDetails?.formattedPrice ?: "") +
+                                text = (formattedPrice ?: "") +
                                         ", " + stringResource(Res.string.one_time_purchase),
                                 style = MaterialTheme.typography.bodyMedium
                             )

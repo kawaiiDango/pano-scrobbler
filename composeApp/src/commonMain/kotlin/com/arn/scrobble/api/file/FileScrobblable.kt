@@ -48,7 +48,7 @@ class FileScrobblable(userAccount: UserAccountSerializable) : Scrobblable(userAc
     override suspend fun scrobble(scrobbleData: ScrobbleData): Result<ScrobbleResult> {
 
         return kotlin.runCatching {
-            if (!platformFile.isFileOk())
+            if (!platformFile.isWritable())
                 throw FException("File not writable")
 
             platformFile.writeAppend { outputStream ->
@@ -61,7 +61,7 @@ class FileScrobblable(userAccount: UserAccountSerializable) : Scrobblable(userAc
 
     override suspend fun scrobble(scrobbleDatas: List<ScrobbleData>): Result<ScrobbleResult> {
         return kotlin.runCatching {
-            if (!platformFile.isFileOk())
+            if (!platformFile.isWritable())
                 throw FException("File not writable")
 
             platformFile.writeAppend { outputStream ->
@@ -97,7 +97,7 @@ class FileScrobblable(userAccount: UserAccountSerializable) : Scrobblable(userAc
 
     override suspend fun loveOrUnlove(track: Track, love: Boolean): Result<ScrobbleResult> {
         return kotlin.runCatching {
-            if (!platformFile.isFileOk())
+            if (!platformFile.isWritable())
                 throw FException("File not writable")
 
             val scrobbleData = ScrobbleData(
@@ -139,7 +139,7 @@ class FileScrobblable(userAccount: UserAccountSerializable) : Scrobblable(userAc
             if (cached)
                 throw IllegalStateException("Cache not supported")
 
-            if (!platformFile.isFileOk())
+            if (!platformFile.isWritable())
                 throw FException("File not writable")
 
             val entries = mutableListOf<Track>()
@@ -242,10 +242,10 @@ class FileScrobblable(userAccount: UserAccountSerializable) : Scrobblable(userAc
     }
 
     suspend fun convert(fromFile: PlatformFile, fromType: FileFormat) {
-        if (!platformFile.isFileOk() || !fromFile.isFileOk())
+        if (!platformFile.isWritable() || !fromFile.isWritable())
             throw FException("File not writable")
 
-        val fileName = fromFile.getFileName()
+        val fileName = fromFile.name()
 
         require(fileName.lowercase().endsWith(".${fromType.name}")) {
             "\"$fileName\" must end with .${fromType.name}"
@@ -370,7 +370,7 @@ class FileScrobblable(userAccount: UserAccountSerializable) : Scrobblable(userAc
             format: FileFormat,
         ): Result<UserAccountSerializable> {
             return kotlin.runCatching {
-                val fileName = platformFile.getFileName()
+                val fileName = platformFile.name()
 
                 require(fileName.lowercase().endsWith(".${format.name}")) {
                     "\"$fileName\" must end with .${format.name}"

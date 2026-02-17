@@ -57,7 +57,9 @@ class ScrobblesVM(
     val scrobblerServiceRunning = _scrobblerServiceRunning.asStateFlow()
 
     private val editsAndDeletes = MutableStateFlow<Map<String, Track?>>(emptyMap())
-    val deletedTracksCount = editsAndDeletes.mapLatest { it.count { (k, v) -> v == null } }
+    val deletedTracksCount = editsAndDeletes
+        .mapLatest { it.count { (k, v) -> v == null } }
+        .stateIn(viewModelScope, SharingStarted.Lazily, 0)
     private val _pkgMap = MutableStateFlow<Map<Long, String>>(emptyMap())
     val pkgMap = _pkgMap.asStateFlow()
     private val _input = MutableStateFlow<ScrobblesInput?>(null)

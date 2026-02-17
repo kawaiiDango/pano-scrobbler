@@ -38,7 +38,7 @@ class MainViewModel : ViewModel() {
 
     private val repository = VariantStuff.billingRepository
 
-    val proProductDetails = repository.proProductDetails
+    val formattedPrice = repository.formattedPrice
 
     private val _selectedPackages = MutableSharedFlow<Pair<List<AppItem>, List<AppItem>>>()
     val selectedPackages = _selectedPackages.asSharedFlow()

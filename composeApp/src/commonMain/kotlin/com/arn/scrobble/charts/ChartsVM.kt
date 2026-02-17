@@ -16,13 +16,16 @@ import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff
 import com.arn.scrobble.utils.Stuff.mapConcurrently
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlin.math.log10
 import kotlin.math.pow
@@ -123,7 +126,7 @@ class ChartsVM(
                 ?.getOrNull()?.attr?.total ?: 0
         } else
             0
-    }
+    }.stateIn(viewModelScope, SharingStarted.Lazily, 0)
 
     fun setChartsInput(input: ChartsLoaderInput) {
         _input.value = input
@@ -198,7 +201,7 @@ class ChartsVM(
                 return@launch
             }
 
-            val hiddenTags = PlatformStuff.mainPrefs.data.mapLatest { it.hiddenTags }.first()
+            val hiddenTags = PlatformStuff.mainPrefs.data.map { it.hiddenTags }.first()
 
             val topTags = tags
                 .toList()

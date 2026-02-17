@@ -95,7 +95,7 @@ class ImportVM : ViewModel() {
 
     fun setPlatformFile(platformFile: PlatformFile) {
         viewModelScope.launch(Dispatchers.IO) {
-            if (platformFile.isFileOk()) {
+            if (platformFile.isWritable()) {
                 platformFile.read {
                     val fileText = it.bufferedReader().readText()
                     _jsonText.emit(fileText)

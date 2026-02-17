@@ -6,9 +6,9 @@ import java.io.OutputStream
 expect class PlatformFile(fileUri: String) {
     val uri: String
 
-    suspend fun isFileOk(): Boolean
+    suspend fun isWritable(): Boolean
 
-    fun getFileName(): String
+    fun name(): String
 
     suspend fun writeAppend(block: suspend (OutputStream) -> Unit)
 

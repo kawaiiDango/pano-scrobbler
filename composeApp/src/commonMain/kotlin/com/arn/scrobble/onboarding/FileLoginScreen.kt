@@ -76,7 +76,7 @@ fun FileLoginScreen(
             delay(1000)
 
             val fileNameWithoutExtension =
-                fromFile.getFileName().substringBeforeLast('.')
+                fromFile.name().substringBeforeLast('.')
             filePickerMode = FilePickerMode.Save(fileNameWithoutExtension)
             filePickerType = type
             filePickerShown = true

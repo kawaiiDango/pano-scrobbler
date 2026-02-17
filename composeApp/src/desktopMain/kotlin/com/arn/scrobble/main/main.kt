@@ -129,9 +129,16 @@ private fun init() {
     PanoNativeComponents.init()
 
     VariantStuff.billingRepository = BillingRepository(
-        null,
-        Stuff.billingClientData,
-        PlatformStuff::openInBrowser
+        lastCheckTime = PlatformStuff.mainPrefs.data.map { it.lastLicenseCheckTime },
+        setLastcheckTime = { time ->
+            PlatformStuff.mainPrefs.updateData { it.copy(lastLicenseCheckTime = time) }
+        },
+        receipt = Stuff.receiptFlow,
+        setReceipt = Stuff::setReceipt,
+        httpPost = Stuff::httpPost,
+        deviceIdentifier = PlatformStuff::getDeviceIdentifier,
+        openInBrowser = PlatformStuff::openInBrowser,
+        context = null
     )
 
     VariantStuff.crashReporter = CrashReporter(null)

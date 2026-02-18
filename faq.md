@@ -25,11 +25,11 @@ scrobblers. Disconnect your Spotify account from the last.fm website.
 
 Go to Configure > Use the first artist only
 
-### [android] The app is scrobbling non music videos from YouTube
+### The app is scrobbling non music videos from YouTube
 
-Unfortunately there is no way to detect whether a video is a music video, from the metadata provided
-by the YouTube app. You may block certain channels from scrobbling or turn off YouTube scrobbling
-from settings.
+Unfortunately there is no way to detect whether a video is a music video, from just the video title
+and the channel name, reported to the OS media controls. You may block certain channels from
+scrobbling or turn off YouTube scrobbling entirely, from settings.
 
 ### I cannot edit scrobbles older than 14 days
 

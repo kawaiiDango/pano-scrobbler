@@ -72,6 +72,7 @@ jobs:
           cp -r composeApp/src/desktopMain/composeResources/drawable/ic_launcher_with_bg.svg static-site/composeApp/src/desktopMain/composeResources/drawable/ic_launcher_with_bg.svg
           mkdir -p static-site/composeApp/src/commonMain/composeResources/files/
           cp composeApp/src/commonMain/composeResources/files/crowdin_members.txt static-site/composeApp/src/commonMain/composeResources/files/crowdin_members.txt
+          cp composeApp/src/commonMain/composeResources/files/faq.json static-site/composeApp/src/commonMain/composeResources/files/faq.json
 
       - name: Fix permissions
         run: |

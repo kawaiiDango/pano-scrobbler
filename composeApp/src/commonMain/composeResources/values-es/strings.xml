@@ -440,6 +440,8 @@
     <string name="spotify_consent">¿Obtener imágenes de artista de Spotify?</string>
     <string name="show_track_url">URL del Track</string>
     <string name="edit_extract_track_example" formatted="true" comment="%1$s is the regex pattern">ej. Para extraer metadatos del campo de la pista, si la pista contiene "Artista - Pista", establezca la regex de la pista a %1$s</string>
+    <string name="search_in_media_player" comment="This launches and searches in the media player app directly instead of opening a browser">Buscar en el reproductor de medios directamente</string>
+    <string name="forget_unchecked_apps" comment="Shown in the 'Scrobble From' apps list on desktop">Olvidar aplicaciones sin marcar</string>
     <!--  pro  -->
     <string name="get_pro">Apoya esta aplicación</string>
     <string name="one_time_purchase">Una vez</string>

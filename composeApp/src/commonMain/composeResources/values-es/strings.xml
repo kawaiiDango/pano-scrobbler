@@ -56,6 +56,10 @@
         <item quantity="one">%1$s metadato bloqueado</item>
         <item quantity="other">%1$s metadatos bloqueados</item>
     </plurals>
+    <plurals name="num_hours">
+        <item quantity="one">%1$d hora(s)</item>
+        <item quantity="other">Longitud: %1$d horas</item>
+    </plurals>
     <plurals name="num_pending" comment="Used for pending loves, pending scrobbles">
         <item quantity="one">%1$s pendiente</item>
         <item quantity="other">%1$s pendientes</item>
@@ -153,6 +157,7 @@
     <string name="pending_scrobbles">Scrobbles pendientes</string>
     <string name="following" comment="accounts you are following on lastfm">Siguiendo</string>
     <string name="followers" comment="your lastfm followers">Seguidores</string>
+    <string name="since_time" formatted="true" comment="%1= date of joining lastfm">Desde el %1$s</string>
     <string name="allow_background">Permitir scrobbling en segundo plano</string>
     <string name="grant_notification_access">Permitir acceso a notificaciones</string>
     <string name="grant_notification_access_desc">Es necesario para recuperar los metadatos de las canciones. No se leen las notificaciones que no sean de canción.</string>
@@ -339,6 +344,7 @@
     <string name="regex_rules">Reglas de expresiones regulares</string>
     <string name="pref_blocked_metadata" comment="Block things from scrobbling">Metadatos bloqueados</string>
     <string name="any_value" comment="as in any value, starts with lowercase in english because it will be enclosed in angle brackets">cualquier cosa</string>
+    <string name="existing_value" comment="starts with lowercase in english because it will be enclosed in angle brackets">Datos existentes</string>
     <string name="pref_translate">Traduzca esta aplicación</string>
     <string name="pref_translate_credits">Créditos de traducción</string>
     <string name="pref_oss_credits">Créditos de código abierto</string>
@@ -417,6 +423,25 @@
     <string name="edit_no_save">Esto no será guardado para scrobbles futuros</string>
     <string name="also_available_on" formatted="true" comment="%1$s is the platform name, like Android, PC">Obtén esta app en %1$s</string>
     <string name="first_artist">Usar solo el primer artista</string>
+    <string name="external_metadata">Fuentes de metadatos externos</string>
+    <string name="line_n" formatted="true" comment="%1$s is the line number, currently used in the context of Discord Rich Presence">Línea %1$s</string>
+    <string name="album_art_now_playing">Obtener la imagen del álbum ahora reproduciendo, si es necesario</string>
+    <string name="is_turned_off" formatted="true" comment="%1$s= the name of a web service, e.g. Spotify, %2$s=the section name in settings screen where this setting can be found">%1$s está desactivado en %2$s</string>
+    <string name="discord_compact_view_line">Estaba escuchando el":</string>
+    <string name="available_placeholders" formatted="true" comment="%1 = placeholder strings, e.g. $artist, $title etc.">Marcadores de posición disponibles: %1$s</string>
+    <string name="show_paused_for">Mostrar medios en pausa para</string>
+    <string name="edit_example">ej. Para reemplazar Artist1 por Artist2 manteniendo el resto de los metadatos sin cambios, habilita sólo el campo del artista, y rellenar los valores del artista original y corregido, dejando los otros campos deshabilitados.</string>
+    <string name="when_using" formatted="true" comment="%1$s is the web service or media player name">Al usar %1$s</string>
+    <string name="when_not_using" formatted="true" comment="%1$s is the web service or media player name">Al usar %1$s</string>
+    <string name="as_text" comment="Like copy as text, but in short">Como texto</string>
+    <string name="automation_cli">Argumentos de la línea de comandos</string>
+    <string name="automation_cli_info">Ejecuta el ejecutable pano-scrobbler con uno de estos argumentos de línea de comandos, mientras que una instancia ya se está ejecutando.</string>
+    <string name="album_art_now_playing_desc">Necesita un login de last.fm</string>
+    <string name="spotify_consent">¿Obtener imágenes de artista de Spotify?</string>
+    <string name="show_track_url">URL del Track</string>
+    <string name="edit_extract_track_example" formatted="true" comment="%1$s is the regex pattern">ej. Para extraer metadatos del campo de la pista, si la pista contiene "Artista - Pista", establezca la regex de la pista a %1$s</string>
+    <string name="search_in_media_player" comment="This launches and searches in the media player app directly instead of opening a browser">Buscar en el reproductor de medios directamente</string>
+    <string name="forget_unchecked_apps" comment="Shown in the 'Scrobble From' apps list on desktop">Olvidar aplicaciones sin marcar</string>
     <!--  pro  -->
     <string name="get_pro">Apoya esta aplicación</string>
     <string name="one_time_purchase">Una vez</string>

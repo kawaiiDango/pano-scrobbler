@@ -72,8 +72,6 @@ jobs:
           cp -r composeApp/src/desktopMain/composeResources/drawable/ic_launcher_with_bg.svg static-site/composeApp/src/desktopMain/composeResources/drawable/ic_launcher_with_bg.svg
           mkdir -p static-site/composeApp/src/commonMain/composeResources/files/
           cp composeApp/src/commonMain/composeResources/files/crowdin_members.txt static-site/composeApp/src/commonMain/composeResources/files/crowdin_members.txt
-          cp faq.md static-site/faq.md
-          cp privacy-policy.md static-site/privacy-policy.md
 
       - name: Fix permissions
         run: |
@@ -85,6 +83,11 @@ jobs:
         uses: actions/jekyll-build-pages@v1
         with:
           destination: "./static-site"
+
+      - name: Copy .md files
+        run: |
+          cp faq.md static-site/faq.md
+          cp privacy-policy.md static-site/privacy-policy.md
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v4

@@ -25,6 +25,7 @@ import com.arn.scrobble.edits.RegexEditsTestScreen
 import com.arn.scrobble.edits.SimpleEditsAddScreen
 import com.arn.scrobble.edits.SimpleEditsScreen
 import com.arn.scrobble.help.HelpScreen
+import com.arn.scrobble.help.PrivacyPolicyScreen
 import com.arn.scrobble.info.InfoPagerScreen
 import com.arn.scrobble.info.SimilarTracksScreen
 import com.arn.scrobble.main.HomePagerScreen
@@ -77,6 +78,7 @@ import pano_scrobbler.composeapp.generated.resources.pref_blocked_metadata
 import pano_scrobbler.composeapp.generated.resources.pref_export
 import pano_scrobbler.composeapp.generated.resources.pref_import
 import pano_scrobbler.composeapp.generated.resources.pref_oss_credits
+import pano_scrobbler.composeapp.generated.resources.pref_privacy_policy
 import pano_scrobbler.composeapp.generated.resources.pref_themes
 import pano_scrobbler.composeapp.generated.resources.pref_translate_credits
 import pano_scrobbler.composeapp.generated.resources.random_text
@@ -130,8 +132,7 @@ object PanoNavGraph {
         entry<PanoRoute.Blank> {
         }
 
-        entry<PanoRoute.SelfHomePager>(
-        ) { route ->
+        entry<PanoRoute.SelfHomePager> { route ->
             val currentUserSelf by PlatformStuff.mainPrefs.data
                 .collectAsStateWithInitialValue { it.currentAccount?.user }
 
@@ -163,8 +164,7 @@ object PanoNavGraph {
             }
         }
 
-        entry<PanoRoute.OthersHomePager>(
-        ) { route ->
+        entry<PanoRoute.OthersHomePager> { route ->
             HomePagerScreen(
                 user = route.user,
                 onSetTitle = { title -> onSetTitle(route, title) },
@@ -183,8 +183,7 @@ object PanoNavGraph {
             )
         }
 
-        entry<PanoRoute.Random>(
-        ) { route ->
+        entry<PanoRoute.Random> { route ->
 
             onSetTitleRes(route, Res.string.random_text)
             RandomScreen(
@@ -194,8 +193,7 @@ object PanoNavGraph {
             )
         }
 
-        entry<PanoRoute.OssCredits>(
-        ) { route ->
+        entry<PanoRoute.OssCredits> { route ->
 
             onSetTitleRes(route, Res.string.pref_oss_credits)
             OssCreditsScreen(
@@ -203,8 +201,7 @@ object PanoNavGraph {
             )
         }
 
-        entry<PanoRoute.AppList>(
-        ) { route ->
+        entry<PanoRoute.AppList> { route ->
             onSetTitleRes(
                 route,
                 if (route.isSingleSelect)
@@ -224,8 +221,7 @@ object PanoNavGraph {
             )
         }
 
-        entry<PanoRoute.ThemeChooser>(
-        ) { route ->
+        entry<PanoRoute.ThemeChooser> { route ->
 
             onSetTitleRes(route, Res.string.pref_themes)
             ThemeChooserScreen(
@@ -234,8 +230,7 @@ object PanoNavGraph {
             )
         }
 
-        entry<PanoRoute.DeleteAccount>(
-        ) { route ->
+        entry<PanoRoute.DeleteAccount> { route ->
 
             onSetTitleRes(route, Res.string.delete_account)
             DeleteAccountScreen(
@@ -243,8 +238,7 @@ object PanoNavGraph {
             )
         }
 
-        entry<PanoRoute.BillingTroubleshoot>(
-        ) { route ->
+        entry<PanoRoute.BillingTroubleshoot> { route ->
 
             onSetTitleRes(route, Res.string.help)
             BillingTroubleshootScreen(
@@ -262,8 +256,7 @@ object PanoNavGraph {
             )
         }
 
-        entry<PanoRoute.Prefs>(
-        ) { route ->
+        entry<PanoRoute.Prefs> { route ->
 
             onSetTitleRes(route, Res.string.settings)
             PrefsScreen(
@@ -272,8 +265,7 @@ object PanoNavGraph {
             )
         }
 
-        entry<PanoRoute.SimpleEdits>(
-        ) { route ->
+        entry<PanoRoute.SimpleEdits> { route ->
 
             onSetTitleRes(route, Res.string.simple_edits)
             SimpleEditsScreen(
@@ -282,8 +274,7 @@ object PanoNavGraph {
             )
         }
 
-        entry<PanoRoute.SimpleEditsAdd>(
-        ) { route ->
+        entry<PanoRoute.SimpleEditsAdd> { route ->
 
             onSetTitleRes(route, Res.string.edit)
             SimpleEditsAddScreen(
@@ -299,8 +290,7 @@ object PanoNavGraph {
             )
         }
 
-        entry<PanoRoute.RegexEdits>(
-        ) { route ->
+        entry<PanoRoute.RegexEdits> { route ->
 
             onSetTitleRes(route, Res.string.regex_rules)
             RegexEditsScreen(
@@ -309,8 +299,7 @@ object PanoNavGraph {
             )
         }
 
-        entry<PanoRoute.RegexEditsAdd>(
-        ) { route ->
+        entry<PanoRoute.RegexEditsAdd> { route ->
 
             onSetTitleRes(route, Res.string.edit_regex)
             RegexEditsAddScreen(
@@ -322,8 +311,7 @@ object PanoNavGraph {
             )
         }
 
-        entry<PanoRoute.RegexEditsTest>(
-        ) { route ->
+        entry<PanoRoute.RegexEditsTest> { route ->
 
             onSetTitleRes(route, Res.string.edit_regex_test)
             RegexEditsTestScreen(
@@ -342,8 +330,7 @@ object PanoNavGraph {
             )
         }
 
-        entry<PanoRoute.BlockedMetadatas>(
-        ) { route ->
+        entry<PanoRoute.BlockedMetadatas> { route ->
 
             onSetTitleRes(route, Res.string.pref_blocked_metadata)
             BlockedMetadatasScreen(
@@ -352,8 +339,7 @@ object PanoNavGraph {
             )
         }
 
-        entry<PanoRoute.ImageSearch>(
-        ) { route ->
+        entry<PanoRoute.ImageSearch> { route ->
             onSetTitleString(
                 route,
                 stringResource(Res.string.search) + ": " + stringResource(Res.string.spotify)
@@ -369,16 +355,14 @@ object PanoNavGraph {
             )
         }
 
-        entry<PanoRoute.Translators>(
-        ) { route ->
+        entry<PanoRoute.Translators> { route ->
             onSetTitleRes(route, Res.string.pref_translate_credits)
             TranslatorsScreen(
                 modifier = modifier()
             )
         }
 
-        entry<PanoRoute.Import>(
-        ) { route ->
+        entry<PanoRoute.Import> { route ->
             onSetTitleRes(route, Res.string.pref_import)
             ImportScreen(
                 onBack = goBack,
@@ -386,8 +370,7 @@ object PanoNavGraph {
             )
         }
 
-        entry<PanoRoute.Export>(
-        ) { route ->
+        entry<PanoRoute.Export> { route ->
             onSetTitleRes(route, Res.string.pref_export)
             ExportScreen(
                 onBack = goBack,
@@ -395,8 +378,7 @@ object PanoNavGraph {
             )
         }
 
-        entry<PanoRoute.LoginFile>(
-        ) { route ->
+        entry<PanoRoute.LoginFile> { route ->
             onSetTitleRes(route, Res.string.scrobble_to_file)
 
             FileLoginScreen(
@@ -414,8 +396,7 @@ object PanoNavGraph {
             )
         }
 
-        entry<PanoRoute.LoginListenBrainz>(
-        ) { route ->
+        entry<PanoRoute.LoginListenBrainz> { route ->
 
             onSetTitleRes(route, Res.string.listenbrainz)
             ListenBrainzLoginScreen(
@@ -444,8 +425,7 @@ object PanoNavGraph {
 //        )
 //    }
 
-        entry<PanoRoute.LoginPleroma>(
-        ) { route ->
+        entry<PanoRoute.LoginPleroma> { route ->
             onSetTitleRes(route, Res.string.pleroma)
 
             PleromaLoginScreen(
@@ -457,8 +437,7 @@ object PanoNavGraph {
             )
         }
 
-        entry<PanoRoute.WebView>(
-        ) { route ->
+        entry<PanoRoute.WebView> { route ->
             WebViewScreen(
                 initialUrl = route.url,
                 userAccountTemp = route.userAccountTemp,
@@ -470,8 +449,7 @@ object PanoNavGraph {
             )
         }
 
-        entry<PanoRoute.OobPleromaAuth>(
-        ) { route ->
+        entry<PanoRoute.OobPleromaAuth> { route ->
             onSetTitleRes(route, Res.string.pleroma)
 
             OobPleromaLoginScreen(
@@ -483,8 +461,7 @@ object PanoNavGraph {
             )
         }
 
-        entry<PanoRoute.OobLastfmLibreFmAuth>(
-        ) { route ->
+        entry<PanoRoute.OobLastfmLibreFmAuth> { route ->
             onSetTitleRes(
                 route,
                 if (PlatformStuff.isTv)
@@ -499,8 +476,7 @@ object PanoNavGraph {
             )
         }
 
-        entry<PanoRoute.Search>(
-        ) { route ->
+        entry<PanoRoute.Search> { route ->
             onSetTitleString(
                 route,
                 stringResource(Res.string.search) + ": " + stringResource(Res.string.lastfm)
@@ -523,8 +499,7 @@ object PanoNavGraph {
             )
         }
 
-        entry<PanoRoute.MusicEntryInfoPager>(
-        ) { route ->
+        entry<PanoRoute.MusicEntryInfoPager> { route ->
             onSetTitleString(route, route.artist.name)
 
             InfoPagerScreen(
@@ -550,8 +525,7 @@ object PanoNavGraph {
         }
 
 
-        entry<PanoRoute.ChartsPager>(
-        ) { route ->
+        entry<PanoRoute.ChartsPager> { route ->
             ChartsPagerScreen(
                 user = route.user,
                 tabIdx = getTabIdx(
@@ -573,8 +547,7 @@ object PanoNavGraph {
             )
         }
 
-        entry<PanoRoute.SimilarTracks>(
-        ) { route ->
+        entry<PanoRoute.SimilarTracks> { route ->
             val entry = route.track
             val title = Stuff.formatBigHyphen(
                 entry.artist.name,
@@ -592,18 +565,23 @@ object PanoNavGraph {
             )
         }
 
-        entry<PanoRoute.Help>(
-        ) { route ->
+        entry<PanoRoute.Help> { route ->
             onSetTitleRes(route, Res.string.help)
 
             HelpScreen(
-                modifier = modifier().padding(panoContentPadding())
-                // webview has issues with nested scroll
+                modifier = modifier()
             )
         }
 
-        entry<PanoRoute.TrackHistory>(
-        ) { route ->
+        entry<PanoRoute.PrivacyPolicy> { route ->
+            onSetTitleRes(route, Res.string.pref_privacy_policy)
+
+            PrivacyPolicyScreen(
+                modifier = modifier()
+            )
+        }
+
+        entry<PanoRoute.TrackHistory> { route ->
             val track = route.track
             val user = route.user
 

@@ -250,6 +250,9 @@ sealed interface PanoRoute : NavKey {
     data object Help : PanoRoute
 
     @Serializable
+    data object PrivacyPolicy : PanoRoute
+
+    @Serializable
     data object DiscordRpcSettings : PanoRoute
 
     @Serializable

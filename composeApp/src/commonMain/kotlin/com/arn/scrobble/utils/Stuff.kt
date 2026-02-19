@@ -204,9 +204,6 @@ object Stuff {
     const val HOMEPAGE_URL = "https://kawaiidango.github.io"
     const val REPO_URL = "https://github.com/kawaiiDango/pano-scrobbler"
     const val CROWDIN_URL = "https://crowdin.com/project/pscrobbler"
-    const val PRIVACY_POLICY_URL = "https://kawaiidango.github.io/pano-scrobbler/privacy-policy"
-    const val FAQ_URL = "https://kawaiidango.github.io/pano-scrobbler/faq"
-
     const val DISCORD_CLIENT_ID = "1299386213114970172"
     const val EMBEDDED_SERVER_KS = "Jjs5awQQB0YjN10vKCsWPC8AXW0"
     const val BUG_REPORT_TO = "CA4aTwgbKk8dBB0vEhADEQwBAE8IHkBNHA4"

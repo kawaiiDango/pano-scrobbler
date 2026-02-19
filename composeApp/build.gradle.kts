@@ -3,9 +3,6 @@ import com.codingfeline.buildkonfig.compiler.FieldSpec.Type.BOOLEAN
 import com.codingfeline.buildkonfig.compiler.FieldSpec.Type.INT
 import com.codingfeline.buildkonfig.compiler.FieldSpec.Type.STRING
 import com.google.gson.Gson
-import com.google.gson.GsonBuilder
-import com.google.gson.JsonArray
-import com.google.gson.JsonObject
 import com.mikepenz.aboutlibraries.plugin.DuplicateMode
 import com.mikepenz.aboutlibraries.plugin.StrictMode
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
@@ -966,154 +963,13 @@ tasks.register("copyStringsToAndroid") {
     }
 }
 
-tasks.register("generateFaqJson") {
-    val faqMd = layout.projectDirectory.file("../faq.md")
-    val faqJson = layout.projectDirectory.file("src/commonMain/composeResources/files/faq.json")
+tasks.register<Copy>("copyMds") {
+    from(project.layout.projectDirectory.dir("../"))
+    into(project.layout.projectDirectory.dir("src/commonMain/composeResources/files"))
+    include("faq.md")
 
-    inputs.file(faqMd)
-    outputs.file(faqJson)
-
-    doLast {
-        val lines = faqMd.asFile.readLines()
-        val faqArray = JsonArray()
-        var currentQuestion: String? = null
-        val currentAnswerLines = StringBuilder()
-
-        fun flushEntry() {
-            val q = currentQuestion ?: return
-            val answerText = currentAnswerLines.trim()
-            val entry = JsonObject()
-
-            // Extract platform tags like [android], [desktop]
-            arrayOf("android", "desktop", "tv")
-                .firstOrNull { q.startsWith("[$it]", ignoreCase = true) }
-                .let {
-                    if (it != null)
-                        entry.addProperty("platform", it)
-
-                    val cleanQ = if (it != null)
-                        q.removePrefix("[$it]").trim()
-                    else
-                        q.trim()
-                    
-                    entry.addProperty("question", cleanQ)
-                }
-
-            // Parse inline entities from the answer
-            val entities = JsonArray()
-            val plainBuilder = StringBuilder()
-
-            var i = 0
-            val src = answerText
-
-            while (i < src.length) {
-                // Markdown link: [text](url)
-                if (src[i] == '[') {
-                    val closeBracket = src.indexOf(']', i + 1)
-                    if (closeBracket != -1
-                        && closeBracket + 1 < src.length
-                        && src[closeBracket + 1] == '('
-                    ) {
-                        val closeParen = src.indexOf(')', closeBracket + 2)
-                        if (closeParen != -1) {
-                            val linkText = src.substring(i + 1, closeBracket)
-                            val url = src.substring(closeBracket + 2, closeParen)
-                            val start = plainBuilder.length
-                            plainBuilder.append(linkText)
-                            val end = plainBuilder.length
-
-                            val entity = JsonObject()
-                            entity.addProperty("type", "link")
-                            entity.addProperty("start", start)
-                            entity.addProperty("end", end)
-                            entity.addProperty("url", url)
-                            entities.add(entity)
-
-                            i = closeParen + 1
-                            continue
-                        }
-                    }
-                }
-
-                // Bold: **text** or __text__
-                if (i + 1 < src.length
-                    && ((src[i] == '*' && src[i + 1] == '*')
-                            || (src[i] == '_' && src[i + 1] == '_'))
-                ) {
-                    val delimiter = src.substring(i, i + 2)
-                    val closeIdx = src.indexOf(delimiter, i + 2)
-                    if (closeIdx != -1) {
-                        val boldText = src.substring(i + 2, closeIdx)
-                        val start = plainBuilder.length
-                        plainBuilder.append(boldText)
-                        val end = plainBuilder.length
-
-                        val entity = JsonObject()
-                        entity.addProperty("type", "bold")
-                        entity.addProperty("start", start)
-                        entity.addProperty("end", end)
-                        entities.add(entity)
-
-                        i = closeIdx + 2
-                        continue
-                    }
-                }
-
-                // Inline code: `text`
-                if (src[i] == '`') {
-                    val closeIdx = src.indexOf('`', i + 1)
-                    if (closeIdx != -1) {
-                        val codeText = src.substring(i + 1, closeIdx)
-                        val start = plainBuilder.length
-                        plainBuilder.append(codeText)
-                        val end = plainBuilder.length
-
-                        val entity = JsonObject()
-                        entity.addProperty("type", "code")
-                        entity.addProperty("start", start)
-                        entity.addProperty("end", end)
-                        entities.add(entity)
-
-                        i = closeIdx + 1
-                        continue
-                    }
-                }
-
-                plainBuilder.append(src[i])
-                i++
-            }
-
-            entry.addProperty("answer", plainBuilder.toString())
-
-            if (!entities.isEmpty)
-                entry.add("entities", entities)
-
-            faqArray.add(entry)
-            currentQuestion = null
-            currentAnswerLines.clear()
-        }
-
-        for (line in lines) {
-            when {
-                // H3 = FAQ question
-                line.startsWith("### ") -> {
-                    flushEntry()
-                    currentQuestion = line.removePrefix("### ").trim()
-                }
-                // H1 title line or blank before first question — skip
-                line.startsWith("# ") -> { /* skip title */
-                }
-                // Accumulate answer lines
-                currentQuestion != null -> {
-                    currentAnswerLines.append(line).append(" ")
-                }
-            }
-        }
-        flushEntry()
-
-        val gson = GsonBuilder().disableHtmlEscaping().create()
-        faqJson.asFile.writeText(gson.toJson(faqArray))
-    }
+    inputs.file(project.layout.projectDirectory.file("../faq.md"))
+    outputs.file(project.layout.projectDirectory.file("src/commonMain/composeResources/files/faq.md"))
 }
 
 tasks.configureEach {
@@ -1149,6 +1005,10 @@ tasks.configureEach {
             dependsOn(":androidApp:exportLibraryDefinitions")
             // Optional ordering guard
             mustRunAfter(":androidApp:exportLibraryDefinitions")
+        }
+
+        "copyNonXmlValueResourcesForCommonMain" -> {
+            dependsOn(":composeApp:copyMds")
         }
 
         "updateMaterialSymbols" -> {

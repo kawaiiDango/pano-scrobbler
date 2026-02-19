@@ -32,6 +32,7 @@ captures
 androidApp/src/release/generated
 androidApp/src/releaseGithub/generated
 /composeApp/src/**/composeResources/files/aboutlibraries.json
+/composeApp/src/**/composeResources/files/*.md
 /composeApp/valkyrie-cli
 crowdin.properties
 Gemfile.lock

@@ -110,9 +110,13 @@ To show notifications on Windows, the app's ID must be registered with the OS an
 start menu shortcut. This is done by the installer in install mode. So, it won't work if you
 are using it portable mode or have removed the start menu shortcut.
 
-### How do I get a refund for a 'Support this app' payment?
+### How do I get a refund for a 'Support this app' payment made through Google Play?
 
-For Google Play purchases, you can request a refund within a 48-hour window, from the [Google Play
-website](https://support.google.com/googleplay/answer/15574897). For voluntary donations of
-arbritrary amounts made through Ko-Fi or BuyMeACoffee, there are no refunds, as these are donations
-for supporting the development of this free and open source project, and not purchases.
+You can request a refund within a 48-hour window, from
+the [Google Play website](https://support.google.com/googleplay/answer/15574897).
+
+### [nonplay] How do I get a refund for a 'Support this app' payment made through Ko-Fi or BuyMeACoffee?
+
+For voluntary donations of arbitrary amounts made through Ko-Fi or BuyMeACoffee, there are no
+refunds, as these are donations for supporting the development of this free and open source project,
+and not purchases.

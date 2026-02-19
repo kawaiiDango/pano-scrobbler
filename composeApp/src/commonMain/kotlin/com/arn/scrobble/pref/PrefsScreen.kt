@@ -804,10 +804,7 @@ fun PrefsScreen(
             TextPref(
                 text = stringResource(Res.string.pref_privacy_policy),
                 onClick = {
-                    if (PlatformStuff.isDesktop)
-                        PlatformStuff.openInBrowser(Stuff.PRIVACY_POLICY_URL)
-                    else
-                        onNavigate(PanoRoute.WebView(Stuff.PRIVACY_POLICY_URL))
+                    onNavigate(PanoRoute.PrivacyPolicy)
                 }
             )
         }

@@ -1,8 +1,10 @@
 # Privacy Policy
 
-_Last updated on 2025, Dec 22 UTC_
+#### Last updated
 
-Applicable to the Pano Scrobbler app version 4.0 and later.
+2026, Feb 19 UTC
+
+### Introduction
 
 kawaiiDango built the Pano Scrobbler app as a Free and Open Source app licensed under GPLv3 or
 later. This app is provided by kawaiiDango at no cost and is intended for use as is, without any
@@ -13,14 +15,12 @@ If you choose to use my app, then you agree to the collection and use of informa
 this policy. I will not use or share your information with anyone except as described in this
 Privacy Policy.
 
-### Information collected
-
-#### Personal Information
+### Personal Information Collected
 
 User identifiable information such as a username or API token is used for logging in to music
 tracking services of your choice such as Last.fm, Libre.fm, ListenBrainz and self-hosted instances.
 
-#### Non-Personal Information
+### Non-Personal Information Collected
 
 - The app sends non-personal information such as titles of music playing on the device and other
   music metadata, to the previously mentioned music tracking services of your choice, for its core
@@ -95,8 +95,8 @@ party [Last.fm's children's privacy policy](https://www.cbsinteractive.com/legal
 ### Changes to This Privacy Policy
 
 I may update this Privacy Policy from time to time. Thus, you are advised to review this page
-periodically for any changes. I will notify you of any changes by posting the new Privacy Policy on
-this page. These changes are effective immediately after they are posted on this page.
+periodically for any changes. These changes are effective immediately after they are posted on this
+page.
 
 ### Contact Us
 

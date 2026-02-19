@@ -14,7 +14,6 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.unit.dp
 import com.arn.scrobble.navigation.PanoRoute
 import com.arn.scrobble.utils.PlatformStuff
-import com.arn.scrobble.utils.Stuff
 import com.arn.scrobble.utils.Stuff.collectAsStateWithInitialValue
 import org.jetbrains.compose.resources.stringResource
 import pano_scrobbler.composeapp.generated.resources.Res
@@ -43,7 +42,7 @@ actual fun OnboardingScreen(
 
         TextButton(
             onClick = {
-                PlatformStuff.openInBrowser(Stuff.FAQ_URL)
+                onNavigate(PanoRoute.PrivacyPolicy)
             },
             modifier = Modifier
                 .align(Alignment.End)

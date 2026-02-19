@@ -233,7 +233,7 @@ actual fun OnboardingScreen(
 
         TextButton(
             onClick = {
-                onNavigate(PanoRoute.WebView(Stuff.PRIVACY_POLICY_URL))
+                onNavigate(PanoRoute.PrivacyPolicy)
             },
             modifier = Modifier
                 .align(Alignment.End)

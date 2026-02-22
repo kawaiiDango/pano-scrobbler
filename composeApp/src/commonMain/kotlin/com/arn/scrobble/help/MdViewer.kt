@@ -1,135 +1,93 @@
 package com.arn.scrobble.help
 
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.LocalIndication
+import androidx.compose.foundation.background
+import androidx.compose.foundation.focusable
+import androidx.compose.foundation.indication
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.text.selection.SelectionContainer
-import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.AnnotatedString
-import androidx.compose.ui.text.LinkAnnotation
-import androidx.compose.ui.text.SpanStyle
-import androidx.compose.ui.text.buildAnnotatedString
-import androidx.compose.ui.text.font.FontFamily
-import androidx.compose.ui.text.font.FontStyle
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextDecoration
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import com.arn.scrobble.ui.PanoLazyColumn
 import com.arn.scrobble.ui.panoContentPadding
-import com.arn.scrobble.utils.PlatformStuff
 
-@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
-fun MdViewer(
-    mdItems: List<MdItem>,
+fun MdText(
+    blocks: List<MdNode.Block>,
     modifier: Modifier = Modifier,
-    highlightText: String? = null,
+    markdownStyle: MarkdownStyle = MarkdownStyle(),
+    contentPadding: PaddingValues = panoContentPadding(),
 ) {
     PanoLazyColumn(
-        contentPadding = panoContentPadding(),
-        verticalArrangement = Arrangement.spacedBy(16.dp),
-        modifier = modifier
+        modifier = modifier,
+        contentPadding = contentPadding,
     ) {
-        items(mdItems, key = { it.header }) {
-            Column(
-                verticalArrangement = Arrangement.spacedBy(8.dp),
-            ) {
-                Text(
-                    text = it.header.toAnnotatedString(
-                        highlightText = highlightText,
-                        highlightColor = MaterialTheme.colorScheme.tertiary
-                    ),
-                    style = MaterialTheme.typography.titleLargeEmphasized,
-                    color = MaterialTheme.colorScheme.primary
-                )
-
-                SelectionContainer {
-                    Text(
-                        text = it.content.toAnnotatedString(
-                            highlightText = highlightText,
-                            highlightColor = MaterialTheme.colorScheme.tertiary,
-                            entities = it.entities
-                        ),
-                    )
-                }
+        itemsIndexed(
+            blocks,
+            // Stable key: block index is fine since the list is immutable per Markdown input
+            key = { index, _ -> index },
+            contentType = { _, block ->
+                block::class
             }
-        }
-    }
-}
+        ) { _, block ->
+            val annotated = remember(block, markdownStyle) {
+                block.toAnnotatedString(markdownStyle)
+            }
+            
+            val interactionSource = remember { MutableInteractionSource() }
+            val itemModifier = Modifier
+                .fillMaxWidth()
+                .clip(MaterialTheme.shapes.small)
+                .indication(
+                    interactionSource = interactionSource,
+                    indication = LocalIndication.current
+                )
+                .focusable(interactionSource = interactionSource)
 
-private fun String.toAnnotatedString(
-    highlightText: String?,
-    highlightColor: Color,
-    entities: List<MdEntity> = emptyList(),
-): AnnotatedString {
-    val text = this
-
-    return buildAnnotatedString {
-        append(text)
-
-        entities
-            .sortedBy { it.start }
-            .forEach { e ->
-                val s = e.start.coerceIn(0, text.length)
-                val en = e.end.coerceIn(0, text.length)
-                if (s >= en) return@forEach
-
-                when (e.type) {
-                    MdEntityType.bold -> addStyle(
-                        SpanStyle(fontWeight = FontWeight.Bold),
-                        s,
-                        en
-                    )
-
-                    MdEntityType.italic -> addStyle(
-                        SpanStyle(fontStyle = FontStyle.Italic),
-                        s,
-                        en
-                    )
-
-                    MdEntityType.code -> addStyle(
-                        SpanStyle(
-                            fontFamily = FontFamily.Monospace,
-                        ), s, en
-                    )
-
-                    MdEntityType.link -> {
-                        addStyle(
-                            SpanStyle(
-                                textDecoration = TextDecoration.Underline
-                            ), s, en
+            when (block) {
+                is MdNode.Block.CodeBlock ->
+                    SelectionContainer(
+                        modifier = itemModifier
+                            .padding(vertical = 4.dp)
+                            .background(MaterialTheme.colorScheme.surfaceContainerHigh)
+                            .padding(12.dp)
+                    ) {
+                        Text(
+                            text = annotated,
                         )
-                        e.url?.let { url ->
-                            addLink(
-                                LinkAnnotation.Url(url) {
-                                    PlatformStuff.openInBrowser(url)
-                                },
-                                start = s,
-                                end = en
-                            )
-                        }
                     }
 
-                    null -> {}
-                }
-            }
+                is MdNode.Block.Heading ->
+                    Text(
+                        text = annotated,
+                        style = when (block.level) {
+                            1 -> MaterialTheme.typography.headlineLarge
+                            2 -> MaterialTheme.typography.headlineMedium
+                            3 -> MaterialTheme.typography.headlineSmall
+                            4 -> MaterialTheme.typography.titleMedium
+                            5 -> MaterialTheme.typography.titleSmall
+                            else -> MaterialTheme.typography.bodyLarge
+                        },
+                        color = MaterialTheme.colorScheme.primary,
+                        modifier = itemModifier
+                            .padding(vertical = 8.dp),
+                    )
 
-        if (!highlightText.isNullOrBlank()) {
-            var searchIndex = text.indexOf(highlightText, ignoreCase = true)
-            while (searchIndex >= 0) {
-                val s = searchIndex.coerceIn(0, text.length)
-                val en = (searchIndex + highlightText.length).coerceIn(0, text.length)
-                addStyle(SpanStyle(color = highlightColor), s, en)
-                searchIndex =
-                    text.indexOf(
-                        highlightText,
-                        searchIndex + highlightText.length,
-                        ignoreCase = true
+                is MdNode.Block.Paragraph,
+                is MdNode.Block.UnorderedList ->
+                    Text(
+                        text = annotated,
+                        modifier = itemModifier
+                            .padding(vertical = 4.dp),
                     )
             }
         }

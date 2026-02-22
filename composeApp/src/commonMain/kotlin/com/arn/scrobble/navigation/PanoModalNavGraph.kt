@@ -60,8 +60,9 @@ fun EntryProviderScope<PanoRoute>.panoModalNavGraph(
         )
     }
 
-    modalEntry<PanoRoute.Modal.Changelog> {
+    modalEntry<PanoRoute.Modal.Changelog> { route ->
         ChangelogDialog(
+            text = route.text,
             modifier = modalModifier()
         )
     }

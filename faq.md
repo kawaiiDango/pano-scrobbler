@@ -74,7 +74,7 @@ regex rules for performance reasons, because it has to try out every regex rule 
 This is not a music streaming app. However, you can click the search and play button, to search and
 play the selected song on your favourite music player.
 
-### [android] The search and play button always opens a particular music player
+### [android, tv] The search and play button always opens a particular music player
 
 This can happen if you have set that particular music player as the default. To fix this, go to that
 music player's app info and tap on "Clear defaults".
@@ -88,6 +88,41 @@ Pixel's Now Playing or Ambient Music Mod.
 
 Tasker intents have been replaced with ContentProvider query URIs and an allowlist, which are more
 secure.
+
+### [android] I cannot grant access to read notifications on Android 13 or higher
+
+For apps downloaded from outside app stores on Android 13+, this setting is restricted. Go to App
+info > 3 dot menu > Allow restricted settings. Make sure you've viewed the "Restricted Setting"
+prompt for this app at least once before going to App Info.
+
+### [android, tv] I cannot find any system setting grant access to read notifications on my device [FAQ-nc]
+
+Getting Notification access to work on TVs on Android 8.1 and below is not very straightforward due
+to Android's limitations, as Google didn't provide a UI to do so.
+
+This may also work on devices that do not have a UI to enable notification access, such as WSA or
+old versions of Android Go.
+
+- Open this page on a computer.
+  URL: [kawaiidango.github.io/pano-scrobbler/faq](https://kawaiidango.github.io/pano-scrobbler/faq)
+- Enable Developer Options, if you haven't (Settings > About > (Tap on Build Number 5 times))
+- Enable ADB/USB debugging (Settings > Developer Options)
+- On your PC, download ADB, if you haven't:
+  [developer.android.com/studio/releases/platform-tools](https://developer.android.com/studio/releases/platform-tools)
+- Connect your device to your computer via USB or connect to the same Wi-Fi network and use ADB over
+  Wi-Fi
+- Authorize the ADB connection on your device, if prompted
+- Run the following command in your terminal:
+- On Android 8.1 or higher:
+```
+adb shell cmd notification allow_listener com.arn.scrobble/com.arn.scrobble.media.NLService
+```
+- On Android 8.0 and lower:
+```
+adb shell 'settings put secure enabled_notification_listeners $(settings get secure enabled_notification_listeners):com.arn.scrobble/com.arn.scrobble.media.NLService'
+```
+- Do not add any additional spaces
+- Disable USB debugging on your device when done
 
 ### [desktop] How do I launch the app as minimized to tray?
 
@@ -110,12 +145,32 @@ To show notifications on Windows, the app's ID must be registered with the OS an
 start menu shortcut. This is done by the installer in install mode. So, it won't work if you
 are using it portable mode or have removed the start menu shortcut.
 
-### How do I get a refund for a 'Support this app' payment made through Google Play?
+### The login WebView does not load [FAQ-wv]
+
+Check if you have the required dependencies installed
+
+- Arch:
+```
+sudo pacman -S webkit2gtk-4.1
+```
+- Debian:
+```
+sudo apt install libwebkit2gtk-4.1-0
+```
+- Fedora:
+```
+sudo dnf install webkit2gtk4.1
+```
+- Windows: WebView2 provided by Microsoft Edge Chromium
+
+- Android: Android System WebView
+
+### How do I get a refund for a 'Support this app' payment made through Google Play? [FAQ-rp]
 
 You can request a refund within a 48-hour window, from
 the [Google Play website](https://support.google.com/googleplay/answer/15574897).
 
-### [nonplay] How do I get a refund for a 'Support this app' payment made through Ko-Fi or BuyMeACoffee?
+### [nonplay] How do I get a refund for a 'Support this app' payment made through Ko-Fi or BuyMeACoffee? [FAQ-rn]
 
 For voluntary donations of arbitrary amounts made through Ko-Fi or BuyMeACoffee, there are no
 refunds, as these are donations for supporting the development of this free and open source project,

@@ -429,19 +429,21 @@ fun main(args: Array<String>) {
         // the AWT tray doesn't work on KDE
         if (DesktopStuff.os != DesktopStuff.Os.Linux) {
 
+            var trayMouseListenerSet by remember { mutableStateOf(false) }
+            var trayMenuPos by remember { mutableStateOf<Point?>(null) }
+
             trayData?.let { trayData ->
                 Tray(
                     icon = BitmapPainter(trayData.bitmap),
                     tooltip = trayData.tooltip,
-                    state = trayState
+                    state = trayState,
+                    onAction = ::openIfNeeded
                 )
             }
 
-            var trayMouseListenerSet by remember { mutableStateOf(false) }
-            var trayMenuPos by remember { mutableStateOf<Point?>(null) }
 
             LaunchedEffect(trayData) {
-                var delayJob: Job? = null
+                var trayMenuDelayJob: Job? = null
 
                 if (!trayMouseListenerSet && trayData != null) {
                     val trayIcon = SystemTray.getSystemTray().trayIcons?.firstOrNull()
@@ -452,22 +454,21 @@ fun main(args: Array<String>) {
                                 override fun mouseClicked(e: MouseEvent?) {
                                     // open main window on left double click
                                     when (e?.button) {
-                                        MouseEvent.BUTTON1 if e.clickCount == 2 -> {
-                                            openIfNeeded()
-                                            trayMenuPos = null
-                                            delayJob?.cancel()
-                                        }
-
                                         MouseEvent.BUTTON1 if e.clickCount == 1 -> {
-                                            delayJob = GlobalScope.launch {
+                                            trayMenuDelayJob = GlobalScope.launch {
                                                 delay(100)
                                                 trayMenuPos = e.locationOnScreen
                                             }
                                         }
 
                                         MouseEvent.BUTTON3 -> {
-                                            delayJob?.cancel()
+                                            trayMenuDelayJob?.cancel()
                                             trayMenuPos = e.locationOnScreen
+                                        }
+
+                                        else -> {
+                                            trayMenuDelayJob?.cancel()
+                                            trayMenuPos = null
                                         }
                                     }
                                 }

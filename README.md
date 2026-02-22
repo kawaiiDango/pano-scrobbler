@@ -53,7 +53,7 @@ Installing the non-Play version from the F-Droid compatible repo, IzzyOnDroid or
 
 [![translate](img/crowdin.svg)](https://crowdin.com/project/pscrobbler)
 
-## [FAQ](faq.md) • [Privacy](privacy-policy.md) • [Compiling](instructions.md) • [TV](tv.md)
+## [FAQ](faq.md) • [Privacy](privacy-policy.md) • [Compiling](instructions.md)
 
 ### Features:
 

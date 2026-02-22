@@ -3,6 +3,8 @@ package com.arn.scrobble.navigation
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.pulltorefresh.PullToRefreshState
 import androidx.compose.runtime.Composable
@@ -226,7 +228,9 @@ object PanoNavGraph {
             onSetTitleRes(route, Res.string.pref_themes)
             ThemeChooserScreen(
                 onNavigateToBilling = { navigate(PanoRoute.Billing) },
-                modifier = modifier().addColumnPadding()
+                modifier = modifier()
+                    .verticalScroll(rememberScrollState())
+                    .padding(panoContentPadding(mayHaveBottomFab = true))
             )
         }
 
@@ -444,6 +448,7 @@ object PanoNavGraph {
                 pleromaOauthClientCreds = route.creds,
                 onSetTitle = { title -> onSetTitle(route, title) },
                 onBack = goBack,
+                onNavigate = navigate,
                 modifier = modifier().padding(panoContentPadding())
                 // webview has issues with nested scroll
             )
@@ -569,7 +574,8 @@ object PanoNavGraph {
             onSetTitleRes(route, Res.string.help)
 
             HelpScreen(
-                modifier = modifier()
+                searchTerm = route.searchTerm,
+                modifier = modifier().padding(panoContentPadding())
             )
         }
 

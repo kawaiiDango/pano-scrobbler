@@ -34,20 +34,6 @@
     <string name="discord_rich_presence">Discord Rich Presence</string>
     <string name="log_to_file">Persist scrobble logs</string>
     <string name="affect_performance">Will affect performance</string>
-    <string name="desktop_webview_not_loaded" translatable="false">WebView not loading? Do you have the required dependencies installed?
-
-Arch:
-sudo pacman -S webkit2gtk-4.1
-
-Debian:
-sudo apt install libwebkit2gtk-4.1-0
-
-Fedora:
-sudo dnf install webkit2gtk4.1
-
-Windows:
-WebView2 provided by Microsoft Edge Chromium
-    </string>
 
     <!--  strings for unfinalized stuff  -->
     <string name="random_on_start">Random on process start</string>

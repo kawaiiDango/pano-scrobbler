@@ -31,6 +31,4 @@ extra.apply {
     set("APP_ID", "com.arn.scrobble")
     set("APP_NAME", "Pano Scrobbler")
     set("APP_NAME_NO_SPACES", "pano-scrobbler")
-    val changelogFile = file("changelog.txt")
-    set("CHANGELOG", changelogFile.readText())
 }

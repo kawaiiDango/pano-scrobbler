@@ -54,8 +54,6 @@ val VER_NAME: String by rootProject.extra
 val BUILD_DATE: String by rootProject.extra
 val APP_NAME: String by rootProject.extra
 val APP_NAME_NO_SPACES: String by rootProject.extra
-val CHANGELOG: String by rootProject.extra
-
 val localProperties = gradleLocalProperties(rootDir, project.providers)
     .map { it.key to it.value.toString() }
     .toMap()
@@ -188,7 +186,6 @@ buildkonfig {
         buildConfigField(STRING, "APP_ID", APP_ID, const = true)
         buildConfigField(INT, "VER_CODE", VER_CODE.toString(), const = true)
         buildConfigField(STRING, "VER_NAME", VER_NAME, const = true)
-        buildConfigField(STRING, "CHANGELOG", CHANGELOG, const = true)
         buildConfigField(BOOLEAN, "DEBUG", (!isReleaseBuild).toString(), const = true)
 
         val lastfmKey = localProperties["lastfm.key"]
@@ -964,12 +961,18 @@ tasks.register("copyStringsToAndroid") {
 }
 
 tasks.register<Copy>("copyMds") {
+    val files = arrayOf("faq.md", "changelog.md")
+
     from(project.layout.projectDirectory.dir("../"))
     into(project.layout.projectDirectory.dir("src/commonMain/composeResources/files"))
-    include("faq.md")
 
-    inputs.file(project.layout.projectDirectory.file("../faq.md"))
-    outputs.file(project.layout.projectDirectory.file("src/commonMain/composeResources/files/faq.md"))
+    include(*files)
+    inputs.files(project.layout.projectDirectory.files(*files))
+    outputs.files(
+        project.layout.projectDirectory
+            .dir("src/commonMain/composeResources/files")
+            .files(*files)
+    )
 }
 
 tasks.configureEach {

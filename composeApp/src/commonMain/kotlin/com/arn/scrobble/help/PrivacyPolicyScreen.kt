@@ -20,10 +20,10 @@ fun PrivacyPolicyScreen(
         )
     }
 ) {
-    val mdItems by viewModel.mdItems.collectAsStateWithLifecycle()
+    val mdItems by viewModel.mdBlocks.collectAsStateWithLifecycle()
     if (mdItems != null) {
-        MdViewer(
-            mdItems = mdItems!!,
+        MdText(
+            mdItems!!,
             modifier = modifier
         )
     } else {

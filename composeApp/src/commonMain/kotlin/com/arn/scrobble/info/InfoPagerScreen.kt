@@ -1,7 +1,6 @@
 package com.arn.scrobble.info
 
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
@@ -32,15 +31,11 @@ fun InfoPagerScreen(
     onSetTabIdx: (Int) -> Unit,
     onNavigate: (PanoRoute) -> Unit,
     modifier: Modifier = Modifier,
-    viewModel: InfoMiscVM = viewModel { InfoMiscVM() },
+    viewModel: ArtistMiscVM = viewModel { ArtistMiscVM(artist) },
 ) {
     val artistTopTracks = viewModel.topTracks.collectAsLazyPagingItems()
     val artistTopAlbums = viewModel.topAlbums.collectAsLazyPagingItems()
     val similarArtists = viewModel.similarArtists.collectAsLazyPagingItems()
-
-    LaunchedEffect(artist) {
-        viewModel.setArtist(artist)
-    }
 
     PanoPager(
         selectedPage = tabIdx,

@@ -77,9 +77,7 @@ import androidx.navigation3.ui.NavDisplay
 import androidx.savedstate.serialization.SavedStateConfiguration
 import androidx.window.core.layout.WindowSizeClass.Companion.WIDTH_DP_EXPANDED_LOWER_BOUND
 import androidx.window.core.layout.WindowSizeClass.Companion.WIDTH_DP_MEDIUM_LOWER_BOUND
-import co.touchlab.kermit.Logger
 import coil3.compose.setSingletonImageLoaderFactory
-import com.arn.scrobble.BuildKonfig
 import com.arn.scrobble.api.DrawerData
 import com.arn.scrobble.api.UserCached
 import com.arn.scrobble.icons.Icons
@@ -236,14 +234,6 @@ fun PanoAppContent(
     val bottomSheetStrategy =
         remember { BottomSheetSceneStrategy<PanoRoute>(::removeAllModals) }
 
-    if (BuildKonfig.DEBUG) {
-        LaunchedEffect(backStack.lastOrNull()) {
-            Logger.d {
-                "BackStack: ${backStack.joinToString(" -> ")}"
-            }
-        }
-    }
-
     // show onboarding again when logged out
     LaunchedEffect(currentUser == null) {
         if (currentUser == null && PanoRoute.Onboarding !in backStack)
@@ -288,12 +278,13 @@ fun PanoAppContent(
     LaunchedEffect(Unit) {
         delay(500)
 
-        val changelogHashcode = BuildKonfig.CHANGELOG.hashCode()
+        val changelog = Res.readBytes("files/changelog.md").decodeToString()
+        val changelogHashcode = changelog.hashCode()
         val storedHashcode = PlatformStuff.mainPrefs.data.map { it.changelogSeenHashcode }.first()
 
         if (storedHashcode != changelogHashcode) {
             if (storedHashcode != null) {
-                navigate(PanoRoute.Modal.Changelog)
+                navigate(PanoRoute.Modal.Changelog(changelog))
             }
             // else is fresh install
             PlatformStuff.mainPrefs.updateData { it.copy(changelogSeenHashcode = changelogHashcode) }

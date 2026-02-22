@@ -125,10 +125,7 @@ fun MusicEntryInfoDialog(
     scrollState: ScrollState,
     modifier: Modifier = Modifier,
     viewModel: InfoVM = viewModel { InfoVM(musicEntry, user.name) },
-    miscVM: InfoMiscVM = viewModel { InfoMiscVM() },
 ) {
-    // the arguments can change for this screen
-
     val infoMap by viewModel.infoMap.collectAsStateWithLifecycle()
     val infoLoaded by viewModel.infoLoaded.collectAsStateWithLifecycle()
     val allTypes = remember {
@@ -139,17 +136,11 @@ fun MusicEntryInfoDialog(
             Stuff.TYPE_ALBUM_ARTISTS,
         )
     }
-    var isLoved by rememberSaveable(musicEntry) { mutableStateOf<Boolean?>(null) }
-    var expandedHeaderType by rememberSaveable(musicEntry) { mutableIntStateOf(-1) }
-    var expandedWikiType by rememberSaveable(musicEntry) { mutableIntStateOf(-1) }
+    var isLoved by rememberSaveable { mutableStateOf<Boolean?>(null) }
+    var expandedHeaderType by rememberSaveable { mutableIntStateOf(-1) }
+    var expandedWikiType by rememberSaveable { mutableIntStateOf(-1) }
     val userTags by viewModel.userTags.collectAsStateWithLifecycle()
     val userTagsHistory by viewModel.userTagsHistory.collectAsStateWithLifecycle()
-
-    val similarTracks = miscVM.similarTracks.collectAsLazyPagingItems()
-
-    val artistTopTracks = miscVM.topTracks.collectAsLazyPagingItems()
-    val artistTopAlbums = miscVM.topAlbums.collectAsLazyPagingItems()
-    val similarArtists = miscVM.similarArtists.collectAsLazyPagingItems()
     val accountType by PlatformStuff.mainPrefs.data.collectAsStateWithInitialValue {
         it.currentAccountType
     }
@@ -182,20 +173,6 @@ fun MusicEntryInfoDialog(
     LaunchedEffect(infoMap) {
         if (infoMap != null) {
             isLoved = (infoMap?.get(Stuff.TYPE_TRACKS) as? Track)?.userloved
-        }
-    }
-
-    LaunchedEffect(expandedHeaderType) {
-        when (val expandedEntry = infoMap?.get(expandedHeaderType)) {
-            is Track -> {
-                miscVM.setTrack(expandedEntry)
-            }
-
-            is Artist -> {
-                miscVM.setArtist(expandedEntry)
-            }
-
-            else -> Unit
         }
     }
 
@@ -322,87 +299,26 @@ fun MusicEntryInfoDialog(
                                 )
                             }
                         } else if (entry is Artist && useLastfm) {
-                            EntriesRow(
-                                title = stringResource(Res.string.top_tracks),
-                                entries = artistTopTracks,
-                                fetchAlbumImageIfMissing = true,
-                                showArtists = false,
-                                headerIcon = Icons.MusicNote,
-                                emptyStringRes = Res.string.not_found,
-                                placeholderItem = remember(type) {
-                                    getMusicEntryPlaceholderItem(type)
-                                },
-                                onHeaderClick = {
+                            ArtistMisc(
+                                entry,
+                                isAlbumArtist = type == Stuff.TYPE_ALBUM_ARTISTS,
+                                onHeaderClick = { t ->
                                     onNavigate(
                                         PanoRoute.MusicEntryInfoPager(
                                             artist = entry.copy(wiki = null),
                                             appId = appId,
                                             user = user,
-                                            entryType = Stuff.TYPE_TRACKS
+                                            entryType = t
                                         )
                                     )
                                 },
-                                onItemClick = onHorizontalEntryItemClick,
-                            )
-
-                            EntriesRow(
-                                title = stringResource(Res.string.top_albums),
-                                entries = artistTopAlbums,
-                                fetchAlbumImageIfMissing = false,
-                                showArtists = false,
-                                headerIcon = Icons.Album,
-                                placeholderItem = remember(type) {
-                                    getMusicEntryPlaceholderItem(type)
-                                },
-                                emptyStringRes = Res.string.not_found,
-                                onHeaderClick = {
-                                    onNavigate(
-                                        PanoRoute.MusicEntryInfoPager(
-                                            artist = entry.copy(wiki = null),
-                                            appId = appId,
-                                            user = user,
-                                            entryType = Stuff.TYPE_ALBUMS
-                                        )
-                                    )
-                                },
-                                onItemClick = onHorizontalEntryItemClick,
-                            )
-
-                            EntriesRow(
-                                title = stringResource(Res.string.similar_artists),
-                                entries = similarArtists,
-                                fetchAlbumImageIfMissing = false,
-                                showArtists = true,
-                                headerIcon = Icons.Mic,
-                                emptyStringRes = Res.string.not_found,
-                                placeholderItem = remember(type) {
-                                    getMusicEntryPlaceholderItem(type, showScrobbleCount = false)
-                                },
-                                onHeaderClick = {
-                                    onNavigate(
-                                        PanoRoute.MusicEntryInfoPager(
-                                            artist = entry.copy(wiki = null),
-                                            appId = appId,
-                                            user = user,
-                                            entryType = Stuff.TYPE_ARTISTS
-                                        )
-                                    )
-                                },
-                                onItemClick = onHorizontalEntryItemClick,
+                                onItemClick = onHorizontalEntryItemClick
                             )
                         }
 
                     } else if (entry is Track && useLastfm) {
-                        EntriesRow(
-                            title = stringResource(Res.string.similar_tracks),
-                            entries = similarTracks,
-                            fetchAlbumImageIfMissing = true,
-                            showArtists = true,
-                            headerIcon = Icons.MusicNote,
-                            emptyStringRes = Res.string.not_found,
-                            placeholderItem = remember(type) {
-                                getMusicEntryPlaceholderItem(type)
-                            },
+                        SimilarTracks(
+                            entry,
                             onHeaderClick = {
                                 onNavigate(
                                     PanoRoute.SimilarTracks(
@@ -412,7 +328,7 @@ fun MusicEntryInfoDialog(
                                     )
                                 )
                             },
-                            onItemClick = onHorizontalEntryItemClick,
+                            onItemClick = onHorizontalEntryItemClick
                         )
                     }
                 }
@@ -755,6 +671,90 @@ private fun TrackListTrack(idx: Int, track: Track, modifier: Modifier = Modifier
             text = track.duration?.let { Stuff.humanReadableDuration(it) } ?: "",
         )
     }
+}
+
+@Composable
+private fun ColumnScope.SimilarTracks(
+    entry: Track,
+    onHeaderClick: () -> Unit,
+    onItemClick: (MusicEntry) -> Unit,
+    viewModel: SimilarTracksVM = viewModel { SimilarTracksVM(entry) },
+) {
+    val similarTracks = viewModel.similarTracks.collectAsLazyPagingItems()
+    EntriesRow(
+        title = stringResource(Res.string.similar_tracks),
+        entries = similarTracks,
+        fetchAlbumImageIfMissing = true,
+        showArtists = true,
+        headerIcon = Icons.MusicNote,
+        emptyStringRes = Res.string.not_found,
+        placeholderItem = remember {
+            getMusicEntryPlaceholderItem(Stuff.TYPE_TRACKS)
+        },
+        onHeaderClick = onHeaderClick,
+        onItemClick = onItemClick,
+    )
+}
+
+@Composable
+private fun ColumnScope.ArtistMisc(
+    entry: Artist,
+    isAlbumArtist: Boolean,
+    onHeaderClick: (type: Int) -> Unit,
+    onItemClick: (MusicEntry) -> Unit,
+    viewModel: ArtistMiscVM = viewModel(key = "ArtistMiscVM|$isAlbumArtist") { ArtistMiscVM(entry) },
+) {
+    val artistTopTracks = viewModel.topTracks.collectAsLazyPagingItems()
+    val artistTopAlbums = viewModel.topAlbums.collectAsLazyPagingItems()
+    val similarArtists = viewModel.similarArtists.collectAsLazyPagingItems()
+
+    EntriesRow(
+        title = stringResource(Res.string.top_tracks),
+        entries = artistTopTracks,
+        fetchAlbumImageIfMissing = true,
+        showArtists = false,
+        headerIcon = Icons.MusicNote,
+        emptyStringRes = Res.string.not_found,
+        placeholderItem = remember {
+            getMusicEntryPlaceholderItem(Stuff.TYPE_TRACKS)
+        },
+        onHeaderClick = {
+            onHeaderClick(Stuff.TYPE_TRACKS)
+        },
+        onItemClick = onItemClick,
+    )
+
+    EntriesRow(
+        title = stringResource(Res.string.top_albums),
+        entries = artistTopAlbums,
+        fetchAlbumImageIfMissing = false,
+        showArtists = false,
+        headerIcon = Icons.Album,
+        placeholderItem = remember {
+            getMusicEntryPlaceholderItem(Stuff.TYPE_ALBUMS)
+        },
+        emptyStringRes = Res.string.not_found,
+        onHeaderClick = {
+            onHeaderClick(Stuff.TYPE_ALBUMS)
+        },
+        onItemClick = onItemClick,
+    )
+
+    EntriesRow(
+        title = stringResource(Res.string.similar_artists),
+        entries = similarArtists,
+        fetchAlbumImageIfMissing = false,
+        showArtists = true,
+        headerIcon = Icons.Mic,
+        emptyStringRes = Res.string.not_found,
+        placeholderItem = remember {
+            getMusicEntryPlaceholderItem(Stuff.TYPE_ARTISTS, showScrobbleCount = false)
+        },
+        onHeaderClick = {
+            onHeaderClick(Stuff.TYPE_ARTISTS)
+        },
+        onItemClick = onItemClick,
+    )
 }
 
 @Composable

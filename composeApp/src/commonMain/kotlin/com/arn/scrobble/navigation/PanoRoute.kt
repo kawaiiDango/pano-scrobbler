@@ -247,7 +247,7 @@ sealed interface PanoRoute : NavKey {
     data object AutomationInfo : PanoRoute
 
     @Serializable
-    data object Help : PanoRoute
+    data class Help(val searchTerm: String = "") : PanoRoute
 
     @Serializable
     data object PrivacyPolicy : PanoRoute
@@ -268,7 +268,7 @@ sealed interface PanoRoute : NavKey {
         ) : Modal
 
         @Serializable
-        data object Changelog : Modal
+        data class Changelog(val text: String) : Modal
 
         @Serializable
         data object ChartsLegend : Modal

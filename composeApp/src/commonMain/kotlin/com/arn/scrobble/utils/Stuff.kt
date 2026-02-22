@@ -200,7 +200,6 @@ object Stuff {
         "com.mrsep.musicrecognizer.enqueued_result",
     )
 
-    const val TV_URL = "https://kawaiidango.github.io/pano-scrobbler/tv"
     const val HOMEPAGE_URL = "https://kawaiidango.github.io"
     const val REPO_URL = "https://github.com/kawaiiDango/pano-scrobbler"
     const val CROWDIN_URL = "https://crowdin.com/project/pscrobbler"

@@ -21,6 +21,7 @@ import androidx.compose.material3.SplitButtonLayout
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -233,6 +234,21 @@ fun AppIconsPref(
     onClick: () -> Unit,
 ) {
     val maxIcons = 7
+    var appItems by remember { mutableStateOf<List<AppItem>>(emptyList()) }
+
+    LaunchedEffect(packageNames) {
+        val items = mutableListOf<AppItem>()
+
+        for (packageName in packageNames) {
+            val label = PlatformStuff.loadApplicationLabel(packageName)
+            if (label.isNotEmpty() || PlatformStuff.isDesktop) {
+                items.add(AppItem(packageName, label))
+            }
+            if (items.size >= maxIcons) break
+        }
+
+        appItems = items
+    }
 
     Column(
         verticalArrangement = Arrangement.spacedBy(8.dp),
@@ -259,11 +275,10 @@ fun AppIconsPref(
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
                 modifier = Modifier.height(24.dp)
             ) {
-                packageNames
-                    .take(maxIcons)
+                appItems
                     .forEach {
                         AppIcon(
-                            appItem = AppItem(it, PlatformStuff.loadApplicationLabel(it)),
+                            appItem = it,
                             modifier = Modifier
                                 .size(24.dp)
                         )

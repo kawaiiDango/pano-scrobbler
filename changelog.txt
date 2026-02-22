@@ -1,8 +1,0 @@
-- Supports custom text as the app name in Discord Rich Presence
-- Discord Rich Presence is no longer marked as experimental
-- Liking a track from the tray menu or Android notification now works 100% of the time for ListenBrainz (no longer depends on MBID lookup)
-- Improved handling media players that create multiple instances of media sessions at the same time on Android
-- Can now convert between .csv and .jsonl formats when scrobbling to a file
-- Tab key now advances focus instead of inserting a tab character
-- Bug fixes
-- Translation updates by the translators on Crowdin

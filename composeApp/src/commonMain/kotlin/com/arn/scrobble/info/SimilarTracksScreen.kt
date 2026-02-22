@@ -21,9 +21,8 @@ fun SimilarTracksScreen(
     appId: String?,
     onNavigate: (PanoRoute.Modal) -> Unit,
     modifier: Modifier = Modifier,
-    viewModel: InfoMiscVM = viewModel { InfoMiscVM() },
+    viewModel: SimilarTracksVM = viewModel { SimilarTracksVM(track) },
 ) {
-
     val similarTracks = viewModel.similarTracks.collectAsLazyPagingItems()
 
     EntriesGridOrList(

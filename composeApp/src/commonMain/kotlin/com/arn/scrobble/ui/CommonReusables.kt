@@ -75,7 +75,7 @@ import androidx.compose.ui.input.key.key
 import androidx.compose.ui.input.key.onPreviewKeyEvent
 import androidx.compose.ui.input.key.type
 import androidx.compose.ui.platform.LocalFocusManager
-import androidx.compose.ui.platform.LocalLocale
+import androidx.compose.ui.platform.LocalLocaleList
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -825,9 +825,12 @@ fun YesNoDropdown(
 
 @Composable
 fun rememberLocaleWithCustomWeekday(): Locale {
-    val currentLocale = LocalLocale.current.platformLocale
+    // is empty on desktop
+    val currentLocale = LocalLocaleList.current.localeList.firstOrNull()?.platformLocale
     val firstWeekDay by PlatformStuff.mainPrefs.data.collectAsStateWithInitialValue { it.firstDayOfWeek }
     return remember {
+        val currentLocaleSafe = currentLocale ?: Locale.getDefault()
+
         val firstWeekDayStr = when (firstWeekDay) {
             Calendar.SUNDAY -> "sun"
             Calendar.MONDAY -> "mon"
@@ -836,11 +839,11 @@ fun rememberLocaleWithCustomWeekday(): Locale {
             Calendar.THURSDAY -> "thu"
             Calendar.FRIDAY -> "fri"
             Calendar.SATURDAY -> "sat"
-            else -> return@remember currentLocale
+            else -> return@remember currentLocaleSafe
         }
 
         Locale.Builder()
-            .setLocale(currentLocale)
+            .setLocale(currentLocaleSafe)
             .setUnicodeLocaleKeyword("fw", firstWeekDayStr)
             .build()
     }

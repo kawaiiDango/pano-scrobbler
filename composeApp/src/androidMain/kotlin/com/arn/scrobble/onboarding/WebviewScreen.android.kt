@@ -14,6 +14,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.viewinterop.AndroidView
 import com.arn.scrobble.api.UserAccountTemp
 import com.arn.scrobble.api.pleroma.PleromaOauthClientCreds
+import com.arn.scrobble.navigation.PanoRoute
 import org.jetbrains.compose.resources.stringResource
 import pano_scrobbler.composeapp.generated.resources.Res
 import pano_scrobbler.composeapp.generated.resources.loading
@@ -23,6 +24,7 @@ actual fun WebViewScreen(
     initialUrl: String,
     onSetTitle: (String) -> Unit,
     onBack: () -> Unit,
+    onNavigate: (PanoRoute) -> Unit,
     modifier: Modifier,
     userAccountTemp: UserAccountTemp?,
     pleromaOauthClientCreds: PleromaOauthClientCreds?,
@@ -46,6 +48,7 @@ actual fun WebViewScreen(
         viewModel.loginState.collect { loginState ->
             handleWebViewStatus(
                 loginState,
+                onNavigate = onNavigate,
                 onSetStatusText = { statusText = it },
                 onBack = onBack,
             )

@@ -8,56 +8,39 @@ import androidx.paging.cachedIn
 import com.arn.scrobble.api.lastfm.Artist
 import com.arn.scrobble.api.lastfm.Track
 import com.arn.scrobble.utils.Stuff
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.filterNotNull
-import kotlinx.coroutines.flow.flatMapLatest
 
-class InfoMiscVM : ViewModel() {
-    private val limit = 90
+private const val limit = 90
+private val pagingConfig = PagingConfig(
+    pageSize = limit,
+    initialLoadSize = limit,
+    prefetchDistance = 0,
+    enablePlaceholders = true
+)
 
-    private val artist = MutableStateFlow<Artist?>(null)
-    private val track = MutableStateFlow<Track?>(null)
+class SimilarTracksVM(track: Track) : ViewModel() {
+    val similarTracks = Pager(
+        config = pagingConfig,
+        pagingSourceFactory = { InfoMiscPagingSource(track, Stuff.TYPE_TRACKS) }
+    ).flow
+        .cachedIn(viewModelScope)
+}
 
-    private val pagingConfig = PagingConfig(
-        pageSize = limit,
-        initialLoadSize = limit,
-        prefetchDistance = 0,
-        enablePlaceholders = true
-    )
+class ArtistMiscVM(artist: Artist) : ViewModel() {
+    val topAlbums = Pager(
+        config = pagingConfig,
+        pagingSourceFactory = { InfoMiscPagingSource(artist, Stuff.TYPE_ALBUMS) }
+    ).flow
+        .cachedIn(viewModelScope)
 
-    val similarArtists = artist.filterNotNull().flatMapLatest {
-        Pager(
-            config = pagingConfig,
-            pagingSourceFactory = { InfoMiscPagingSource(it, Stuff.TYPE_ARTISTS) }
-        ).flow
-    }.cachedIn(viewModelScope)
+    val topTracks = Pager(
+        config = pagingConfig,
+        pagingSourceFactory = { InfoMiscPagingSource(artist, Stuff.TYPE_TRACKS) }
+    ).flow
+        .cachedIn(viewModelScope)
 
-    val topAlbums = artist.filterNotNull().flatMapLatest {
-        Pager(
-            config = pagingConfig,
-            pagingSourceFactory = { InfoMiscPagingSource(it, Stuff.TYPE_ALBUMS) }
-        ).flow
-    }.cachedIn(viewModelScope)
-
-    val topTracks = artist.filterNotNull().flatMapLatest {
-        Pager(
-            config = pagingConfig,
-            pagingSourceFactory = { InfoMiscPagingSource(it, Stuff.TYPE_TRACKS) }
-        ).flow
-    }.cachedIn(viewModelScope)
-
-    val similarTracks = track.filterNotNull().flatMapLatest {
-        Pager(
-            config = pagingConfig,
-            pagingSourceFactory = { InfoMiscPagingSource(it, Stuff.TYPE_TRACKS) }
-        ).flow
-    }.cachedIn(viewModelScope)
-
-    fun setArtist(artistp: Artist) {
-        artist.value = artistp
-    }
-
-    fun setTrack(trackp: Track) {
-        track.value = trackp
-    }
+    val similarArtists = Pager(
+        config = pagingConfig,
+        pagingSourceFactory = { InfoMiscPagingSource(artist, Stuff.TYPE_ARTISTS) }
+    ).flow
+        .cachedIn(viewModelScope)
 }

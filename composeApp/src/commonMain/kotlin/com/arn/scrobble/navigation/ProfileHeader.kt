@@ -395,7 +395,7 @@ fun ProfileHeaderDropdown(
                         )
                     },
                     onClick = {
-                        onNavigate(PanoRoute.Help)
+                        onNavigate(PanoRoute.Help())
                         dropDownShown = false
                     }
                 )

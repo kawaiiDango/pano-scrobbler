@@ -146,7 +146,7 @@ private fun NotificationListenerStep(
                 intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                 AndroidStuff.applicationContext.startActivity(intent)
             } else {
-                navigate(PanoRoute.WebView(Stuff.TV_URL))
+                navigate(PanoRoute.Help("[FAQ-nc]"))
             }
         },
         isDone = isDone,

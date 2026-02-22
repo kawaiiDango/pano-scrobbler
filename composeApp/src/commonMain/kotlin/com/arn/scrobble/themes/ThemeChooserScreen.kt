@@ -116,8 +116,7 @@ fun ThemeChooserScreen(
                     onClick = {
                         themeName = themeObj.name
                     },
-                    enabled = isLicenseValid && dynamic != true,
-                    modifier = Modifier
+                    enabled = isLicenseValid && dynamic != true && random != true,
                 )
             }
         }

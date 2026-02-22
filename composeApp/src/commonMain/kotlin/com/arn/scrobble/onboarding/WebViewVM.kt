@@ -103,6 +103,10 @@ class WebViewVM(
                 )
     }
 
+    fun webViewHelp() {
+        loginState.value = WebViewLoginState.Unavailable
+    }
+
     override fun onCleared() {
         // clear cookies
         platformClear()

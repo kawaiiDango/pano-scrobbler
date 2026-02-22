@@ -8,13 +8,15 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.arn.scrobble.BuildKonfig
 import org.jetbrains.compose.resources.stringResource
 import pano_scrobbler.composeapp.generated.resources.Res
 import pano_scrobbler.composeapp.generated.resources.changelog
 
 @Composable
-fun ChangelogDialog(modifier: Modifier = Modifier) {
+fun ChangelogDialog(
+    text: String,
+    modifier: Modifier = Modifier
+) {
     Column(
         verticalArrangement = Arrangement.spacedBy(16.dp),
         modifier = modifier.padding(vertical = 16.dp)
@@ -25,7 +27,7 @@ fun ChangelogDialog(modifier: Modifier = Modifier) {
             color = MaterialTheme.colorScheme.primary,
         )
         Text(
-            text = BuildKonfig.CHANGELOG,
+            text,
             style = MaterialTheme.typography.bodyLarge,
             modifier = Modifier.padding(horizontal = 16.dp)
         )

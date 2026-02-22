@@ -1,0 +1,6 @@
+- FAQs and privacy policy are now shown within the app instead of a browser/webview, so that people actually read them
+- digests now get rescheduled if the user's local time changes on android
+- data fetching for android widget is more reliable
+- double encodes '+' character as a workaround for a lastfm API bug
+- added persistent logging on android, useful for debugging, turned off by default
+- re-added theme randomizer

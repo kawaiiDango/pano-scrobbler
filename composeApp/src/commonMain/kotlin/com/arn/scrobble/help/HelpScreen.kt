@@ -4,7 +4,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -26,14 +25,15 @@ import com.arn.scrobble.ui.FilePicker
 import com.arn.scrobble.ui.FilePickerMode
 import com.arn.scrobble.ui.FileType
 import com.arn.scrobble.ui.SearchField
-import com.arn.scrobble.ui.panoContentPadding
 import com.arn.scrobble.utils.BugReportUtils
 import com.arn.scrobble.utils.PlatformStuff
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
 import pano_scrobbler.composeapp.generated.resources.Res
 import pano_scrobbler.composeapp.generated.resources.bug_report
+import pano_scrobbler.composeapp.generated.resources.faq
 import pano_scrobbler.composeapp.generated.resources.not_found
+import pano_scrobbler.composeapp.generated.resources.search
 
 @Composable
 expect fun HelpSaveLogsButton(
@@ -44,6 +44,7 @@ expect fun HelpSaveLogsButton(
 @Composable
 fun HelpScreen(
     modifier: Modifier = Modifier,
+    searchTerm: String,
     viewModel: MdViewerVM = viewModel {
         MdViewerVM(
             "https://kawaiidango.github.io/pano-scrobbler/faq.md",
@@ -53,22 +54,24 @@ fun HelpScreen(
 ) {
     val scope = rememberCoroutineScope()
     var filePickerShown by remember { mutableStateOf(false) }
-    val mdItems by viewModel.mdItems.collectAsStateWithLifecycle()
-    var searchTerm by rememberSaveable { mutableStateOf("") }
+    val mdItems by viewModel.mdBlocks.collectAsStateWithLifecycle()
+    var searchTerm by rememberSaveable { mutableStateOf(searchTerm) }
 
     LaunchedEffect(searchTerm) {
         viewModel.setFilter(searchTerm)
     }
 
     Column(modifier = modifier) {
-        SearchField(
-            searchTerm = searchTerm,
-            onSearchTermChange = {
-                searchTerm = it
-            },
-            modifier = Modifier
-                .padding(panoContentPadding(bottom = false))
-        )
+
+        if (!PlatformStuff.isTv)
+            SearchField(
+                searchTerm = searchTerm,
+                onSearchTermChange = {
+                    searchTerm = it
+                },
+                label = stringResource(Res.string.search) + ": " + stringResource(Res.string.faq),
+                modifier = Modifier
+            )
 
         EmptyText(
             visible = mdItems?.isEmpty() == true,
@@ -76,9 +79,8 @@ fun HelpScreen(
         )
 
         mdItems?.let { mdItems ->
-            MdViewer(
-                mdItems = mdItems,
-                highlightText = searchTerm,
+            MdText(
+                mdItems,
                 modifier = Modifier.weight(1f).fillMaxWidth()
             )
 

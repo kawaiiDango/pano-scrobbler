@@ -149,6 +149,7 @@ jobs:
         shell: bash
         run: |
           sleep 7
+          gh repo sync kawaiiDango/winget-pkgs -b master
           gh api repos/${{ github.repository }}/dispatches \
             -F event_type='static_site'
 

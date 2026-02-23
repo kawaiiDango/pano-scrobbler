@@ -2,7 +2,7 @@
 
 #### Last updated
 
-2026, Feb 19 UTC
+2026, Feb 23 UTC
 
 ### Introduction
 
@@ -90,7 +90,7 @@ responsibility for the content, privacy policies, or practices of any third-part
 
 This app is intended for a general audience. I do not knowingly collect personally identifiable
 contact information from children under 13. Please refer to our third
-party [Last.fm's children's privacy policy](https://www.cbsinteractive.com/legal/cbsi/privacy-policy/childrens-privacy-policy).
+party [Last.fm's children's privacy policy](https://privacy.paramount.com/en/childrens).
 
 ### Changes to This Privacy Policy
 

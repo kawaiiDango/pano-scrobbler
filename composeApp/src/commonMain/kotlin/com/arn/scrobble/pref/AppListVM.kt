@@ -7,8 +7,6 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
@@ -48,17 +46,12 @@ class AppListVM(packagesOverride: Set<String>?) : ViewModel() {
 
     private fun load(packagesOverride: Set<String>? = null) {
         viewModelScope.launch {
-            val appListWasRun = PlatformStuff.mainPrefs.data.map { it.appListWasRun }.first()
-
             load(
                 packagesOverride = packagesOverride,
                 onSetSelectedPackages = { setSelectedPackages(it) },
                 onSetAppList = { _appList.value = it },
                 onSetHasLoaded = { _hasLoaded.value = true },
-                if (packagesOverride != null)
-                    false
-                else
-                    !appListWasRun
+                false
             )
         }
     }

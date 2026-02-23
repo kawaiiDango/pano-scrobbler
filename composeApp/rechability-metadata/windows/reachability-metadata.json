@@ -1301,9 +1301,28 @@
     },
     {
       "type": "java.lang.Class",
+      "jniAccessible": true,
       "methods": [
         {
-          "name": "getModule",
+          "name": "forName",
+          "parameterTypes": [
+            "java.lang.String"
+          ]
+        },
+        {
+          "name": "forName",
+          "parameterTypes": [
+            "java.lang.String",
+            "boolean",
+            "java.lang.ClassLoader"
+          ]
+        },
+        {
+          "name": "getClassLoader",
+          "parameterTypes": []
+        },
+        {
+          "name": "getName",
           "parameterTypes": []
         }
       ]
@@ -1351,7 +1370,13 @@
     },
     {
       "type": "java.lang.String",
-      "jniAccessible": true
+      "jniAccessible": true,
+      "methods": [
+        {
+          "name": "intern",
+          "parameterTypes": []
+        }
+      ]
     },
     {
       "type": "java.lang.String[]"
@@ -1374,6 +1399,34 @@
       "methods": [
         {
           "name": "currentThread",
+          "parameterTypes": []
+        },
+        {
+          "name": "getContextClassLoader",
+          "parameterTypes": []
+        },
+        {
+          "name": "getId",
+          "parameterTypes": []
+        },
+        {
+          "name": "getName",
+          "parameterTypes": []
+        },
+        {
+          "name": "setContextClassLoader",
+          "parameterTypes": [
+            "java.lang.ClassLoader"
+          ]
+        },
+        {
+          "name": "setName",
+          "parameterTypes": [
+            "java.lang.String"
+          ]
+        },
+        {
+          "name": "yield",
           "parameterTypes": []
         }
       ]

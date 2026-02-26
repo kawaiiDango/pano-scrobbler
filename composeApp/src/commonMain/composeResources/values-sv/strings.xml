@@ -56,6 +56,10 @@
         <item quantity="one">%1$s blockerad metadata</item>
         <item quantity="other">%1$s blockerad metadata</item>
     </plurals>
+    <plurals name="num_hours">
+        <item quantity="one">%1$d timme</item>
+        <item quantity="other">%1$d timmar</item>
+    </plurals>
     <plurals name="num_pending" comment="Used for pending loves, pending scrobbles">
         <item quantity="one">%1$s väntande</item>
         <item quantity="other">%1$s väntande</item>
@@ -106,11 +110,13 @@
     <string name="recents_share_username" formatted="true" comment="%1= artist — track, %2= relative time (with preposition e.g. on Sep 9), %3= username">%3$s lyssnade på\n%1$s %2$s</string>
     <string name="share_sig">(via Pano Scrobbler)</string>
     <string name="share">Dela</string>
+    <string name="grid" comment="Grid view">Rutnät</string>
     <string name="list" comment="Single column list view">Lista</string>
     <string name="more_info">Mer info</string>
     <string name="more" comment="More options menu in short">Mer</string>
     <string name="hide">Göm</string>
     <string name="search">Sök</string>
+    <string name="clear_all_history" comment="(talking about search history, tag history)">Rensa all historik</string>
     <string name="library" comment="search within the library">Bibliotek</string>
     <string name="profile">Profil</string>
     <string name="profile_pic">Profilbild</string>
@@ -139,5 +145,7 @@
     <string name="charts" comment="User's top artists, albums, tracks, line chart of daily scrobble counts and tag cloud">Topplistor</string>
     <string name="details">Detaljer</string>
     <string name="sort">Sortera</string>
+    <string name="save" comment="saves a file">Spara</string>
+    <string name="reports" comment="Like last.week reports and stuff">Rapporter</string>
     <!--  pro  -->
 </resources>

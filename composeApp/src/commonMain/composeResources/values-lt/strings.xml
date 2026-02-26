@@ -84,6 +84,12 @@
         <item quantity="many">%1$s užblokuoto metaduomeno</item>
         <item quantity="other">%1$s užblokuotų metaduomenų</item>
     </plurals>
+    <plurals name="num_hours">
+        <item quantity="one">%1$d valanda</item>
+        <item quantity="few">%1$d valandos</item>
+        <item quantity="many">%1$d valandos</item>
+        <item quantity="other">%1$d valandų</item>
+    </plurals>
     <plurals name="num_pending" comment="Used for pending loves, pending scrobbles">
         <item quantity="one">%1$s laukiama</item>
         <item quantity="few">%1$s laukiama</item>

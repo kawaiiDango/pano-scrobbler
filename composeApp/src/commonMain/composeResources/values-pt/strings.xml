@@ -56,6 +56,10 @@
         <item quantity="one">%1$s metadados bloqueado</item>
         <item quantity="other">%1$s metadados bloqueados</item>
     </plurals>
+    <plurals name="num_hours">
+        <item quantity="one">%1$d hora</item>
+        <item quantity="other">%1$d horas</item>
+    </plurals>
     <plurals name="num_pending" comment="Used for pending loves, pending scrobbles">
         <item quantity="one">%1$s pendente</item>
         <item quantity="other">%1$s pendentes</item>
@@ -421,6 +425,23 @@
     <string name="first_artist">Usar apenas o primeiro artista</string>
     <string name="external_metadata">Fontes de metadados externos</string>
     <string name="line_n" formatted="true" comment="%1$s is the line number, currently used in the context of Discord Rich Presence">Linha %1$s</string>
+    <string name="album_art_now_playing">Obter capa do álbum a partir de A Reproduzir, se necessário</string>
+    <string name="is_turned_off" formatted="true" comment="%1$s= the name of a web service, e.g. Spotify, %2$s=the section name in settings screen where this setting can be found">%1$s está desativado em %2$s</string>
+    <string name="discord_compact_view_line">Mostrar como "A ouvir":</string>
+    <string name="available_placeholders" formatted="true" comment="%1 = placeholder strings, e.g. $artist, $title etc.">Espaços reservados disponíveis: %1$s</string>
+    <string name="show_paused_for">Mostrar multimédia em pausa para</string>
+    <string name="edit_example">ex: Para substituir o Artist1 pelo Artist2, mantendo o resto dos metadados inalterado, ative apenas o campo do artista, e preencha o valor original e corrigido dos artistas, deixando os outros campos desativados.</string>
+    <string name="when_using" formatted="true" comment="%1$s is the web service or media player name">Ao usar %1$s</string>
+    <string name="when_not_using" formatted="true" comment="%1$s is the web service or media player name">Quando não usar %1$s</string>
+    <string name="as_text" comment="Like copy as text, but in short">Como texto</string>
+    <string name="automation_cli">Argumentos da linha de comandos</string>
+    <string name="automation_cli_info">Execute o pano-scrobbler com um desses argumentos da linha de comandos enquanto uma instância já estiver em execução.</string>
+    <string name="album_art_now_playing_desc">Precisa de iniciar sessão no last.fm</string>
+    <string name="spotify_consent">Obter imagens de artistas do Spotify?</string>
+    <string name="show_track_url">URL da faixa</string>
+    <string name="edit_extract_track_example" formatted="true" comment="%1$s is the regex pattern">ex: Para extrair metadados do campo da faixa, se a faixa contém "Artista - Faixa", defina a regex da faixa para %1$s</string>
+    <string name="search_in_media_player" comment="This launches and searches in the media player app directly instead of opening a browser">Pesquisar diretamente no reprodutor multimédia</string>
+    <string name="forget_unchecked_apps" comment="Shown in the 'Scrobble From' apps list on desktop">Esquecer aplicações desmarcadas</string>
     <!--  pro  -->
     <string name="get_pro">Apoiar a aplicação</string>
     <string name="one_time_purchase">Compra única</string>

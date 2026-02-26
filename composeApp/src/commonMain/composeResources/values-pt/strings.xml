@@ -153,6 +153,7 @@
     <string name="pending_scrobbles">Scrobbles Pendentes</string>
     <string name="following" comment="accounts you are following on lastfm">A seguir</string>
     <string name="followers" comment="your lastfm followers">Seguidores</string>
+    <string name="since_time" formatted="true" comment="%1= date of joining lastfm">Desde %1$s</string>
     <string name="allow_background">Permitir scrobbles em segundo plano</string>
     <string name="grant_notification_access">Conceder acesso às notificações</string>
     <string name="grant_notification_access_desc">Necessário para obter metadados da música. Nenhum outro tipo notificação é lida</string>
@@ -419,6 +420,7 @@
     <string name="also_available_on" formatted="true" comment="%1$s is the platform name, like Android, PC">Transferir esta app para %1$s</string>
     <string name="first_artist">Usar apenas o primeiro artista</string>
     <string name="external_metadata">Fontes de metadados externos</string>
+    <string name="line_n" formatted="true" comment="%1$s is the line number, currently used in the context of Discord Rich Presence">Linha %1$s</string>
     <!--  pro  -->
     <string name="get_pro">Apoiar a aplicação</string>
     <string name="one_time_purchase">Compra única</string>

@@ -44,22 +44,6 @@
         <item quantity="one">%1$d overeenkomst</item>
         <item quantity="other">%1$d overeenkomsten</item>
     </plurals>
-    <plurals name="num_simple_edits">
-        <item quantity="one">%1$s bewerking</item>
-        <item quantity="other">%1$s bewerkingen</item>
-    </plurals>
-    <plurals name="num_regex_edits">
-        <item quantity="one">%1$s patroon bewerking</item>
-        <item quantity="other">%1$s patroon bewerkingen</item>
-    </plurals>
-    <plurals name="num_blocked_metadata">
-        <item quantity="one">%1$s geblokkeerde metadata</item>
-        <item quantity="other">%1$s geblokkeerde metadata</item>
-    </plurals>
-    <plurals name="num_pending" comment="Used for pending loves, pending scrobbles">
-        <item quantity="one">%1$s in behandeling</item>
-        <item quantity="other">%1$s in behandeling</item>
-    </plurals>
     <string name="yes">Ja</string>
     <string name="no">Nee</string>
     <string name="reset">Resetten</string>
@@ -95,7 +79,6 @@
     <string name="auto" comment="automatic or default setting">Automatisch</string>
     <string name="music_players">Muziekspelers</string>
     <string name="other_apps" comment="Apps which are not music players or video streaming apps">Andere Apps</string>
-    <string name="offline">Offline. Getoonde data is niet nieuw</string>
     <string name="unavailable_offline">Niet offline beschikbaar</string>
     <string name="tv_url_notice">Open deze URL in een browser op een ander apparaat</string>
     <string name="scrobble_services" comment="Services like lastfm, librefm, listenbrainz etc">Diensten</string>
@@ -106,13 +89,11 @@
     <string name="legend" comment="Chart legend - descriptions of the symbols used">Legenda</string>
     <string name="more_info">Meer informatie</string>
     <string name="more" comment="More options menu in short">Meer</string>
-    <string name="learn" comment="(Learn java regex syntax)">Leren</string>
     <string name="hide">Verbergen</string>
     <string name="rank_change_no_change">Geen verandering</string>
     <string name="rank_change_new">Niet gescrobbeld in de vorige periode</string>
     <string name="search">Zoeken</string>
     <string name="clear_all_history" comment="(talking about search history, tag history)">Wis alle geschiedenis</string>
-    <string name="clear_history_specific" comment="(talking about search history, tag history)">Verwijder dit item uit de geschiedenis?</string>
     <string name="library" comment="search within the library">Bibliotheek</string>
     <string name="global" comment="search globally across lastfm">Globaal</string>
     <string name="reindex">Snel indexeren</string>
@@ -139,7 +120,6 @@
     <string name="love" comment="Love/like a song">Love</string>
     <string name="unlove" comment="Undo a love/like and make it neutral. This is not the same as Dislike">Unlove</string>
     <string name="pending_scrobbles">Wachtende scrobbles</string>
-    <string name="followers" comment="your lastfm followers">Volgers</string>
     <string name="allow_background">Scrobblen in de achtergrond toestaan</string>
     <string name="grant_notification_access">Toegang tot meldingen geven</string>
     <string name="grant_notification_access_desc">Nodig om de muziekmetadata op te halen. Niet-muziek-meldingen worden niet gelezen</string>
@@ -153,7 +133,6 @@
 - De meldingen maken geen geluid""</string>
     <string name="will_not_scrobble">Het overslaan van deze stap zal scrobblen uitschakelen</string>
     <string name="swap" comment="(Swap title and artist)">Wissel</string>
-    <string name="rate_msg">Tevreden over de app?</string>
     <string name="time_just_now">zojuist</string>
     <string name="no_mail_apps">Geen mail apps geïnstalleerd</string>
     <string name="loved" comment="Its a noun">Geloved</string>
@@ -161,7 +140,6 @@
     <string name="simple_edits">Bewerkingen</string>
     <string name="charts" comment="User's top artists, albums, tracks, line chart of daily scrobble counts and tag cloud">Hitlijsten</string>
     <string name="tag_cloud" comment="https://www.google.com/search?&amp;q=tag+cloud">Tagwolk</string>
-    <string name="add_to_hs">Toevoegen aan homescherm</string>
     <string name="details">Details</string>
     <string name="saved_as_pending">Opgeslagen als een wachtende scrobble</string>
     <string name="sort">Sorteren</string>
@@ -189,20 +167,12 @@
     <string name="charts_continuous" comment="Continuous date ranges, but in short, like last 7 days, last 30 days, etc">Doorlopende</string>
     <string name="based_on" formatted="true" comment="%1= the word 'artists', 'albums' or 'tracks'">Gebaseerd op %1$s</string>
     <string name="not_enough_data" comment="(not enough data to draw a chart etc)">Niet genoeg gegevens</string>
-    <string name="random_not_found">Geen nummers gevonden</string>
-    <string name="loved_track">Geloved nummer</string>
     <string name="random_text">Willekeurig</string>
-    <string name="graph_daily">Dagelijkse scrobble aantallen</string>
-    <string name="graph_weekly">Wekelijkse scrobble aantallen</string>
-    <string name="graph_monthly">Maandelijkse scrobble aantallen</string>
-    <string name="graph_yearly">Jaarlijkse scrobble aantallen</string>
     <string name="original" comment="Original metadata before editing">Orginele</string>
     <string name="corrected" comment="Corrected metadata after editing">Gecorrigeerde</string>
     <string name="tag" comment="last.fm tag">Tag</string>
     <string name="taggers" comment="(number of) people who have tagged">Taggers</string>
     <string name="taggings" comment="(total count of) a particular tag">Tags</string>
-    <string name="digest_weekly">Mijn topscrobbles van afgelopen week</string>
-    <string name="digest_monthly">Mijn topscrobbles van afgelopen maand</string>
     <string name="s_top_scrobbles" formatted="true" comment="%1= the word weekly or monthly">%1$s topscrobbles</string>
     <string name="my_tags" comment="Tags, the user has added">Mijn tags</string>
     <string name="close" comment="To close a dialog or something">Sluiten</string>
@@ -210,7 +180,6 @@
     <string name="user_tags_empty">Je hebt nog geen tags toegevoegd</string>
     <string name="appwidget_loading">Laden…</string>
     <string name="appwidget_period" comment="1 week, 1 month, 1 year etc">Periode</string>
-    <string name="appwidget_theme">Thema</string>
     <string name="appwidget_shadow">Schaduw</string>
     <string name="appwidget_show">Weergeven</string>
     <string name="light">Licht</string>
@@ -218,10 +187,7 @@
     <string name="system_colors">Systeemkleuren gebruiken</string>
     <string name="appwidget_alpha">Transparantie achtergrond</string>
     <string name="appwidget_refresh_every" formatted="true" comment="%1= 'n minutes'; n is &gt;= 45">Widget ververst elke %1$s</string>
-    <string name="random_theme">Willekeurig bij elke start van de app</string>
     <string name="edit_regex">Regex-patroon</string>
-    <string name="edit_regex_replacement">Regex vervanging</string>
-    <string name="edit_field" comment="Fields like artist/album/track etc">Velden</string>
     <string name="edit_replace">Vervangen</string>
     <string name="edit_first" comment="First occurrence of a pattern">Eerste</string>
     <string name="edit_all" comment="All occurrences of a pattern">Alle</string>
@@ -231,11 +197,9 @@
     <string name="edit_case_sensitive">Hoofdlettergevoelig</string>
     <string name="edit_regex_test" comment="(Test regex rules)">Test</string>
     <string name="edit_presets" comment="Regex presets">Voorinstellingen</string>
-    <string name="edit_preset_name" formatted="true" comment="%1= preset name">Voorinstelling: %1$s</string>
     <string name="edit_max_patterns" formatted="true" comment="%1= max pattern count">Patroon limiet bereikt (%1$d)</string>
     <string name="edit_drag_handle" comment="screen reader text for drag and drop button">Sleephandvat</string>
     <string name="edit_regex_warning" comment="shown before adding a custom pattern edit">⚠ Zorg ervoor dat u <a href="https://www.google.com/search?q=regex+tutorial">java regex</a> begrijpt voordat u dit gebruikt, of gebruik een van de <b>voorinstellingen</b> die gegeven zijn. Regex matches worden van boven naar beneden geprobeerd</string>
-    <string name="blocked_metadata_info">ℹ️ Meer dan één van deze velden invullen zal een AND operator tussen ze toepassen</string>
     <string name="blocked_metadata_noti" comment="to block and skip a track from scrobbling and playing">Klik om te blokkeren en over te slaan</string>
     <string name="player_actions" comment="music player actions such as skip/mute">Speler acties</string>
     <string name="skip" comment="skip to next track">Overslaan</string>
@@ -262,7 +226,6 @@
     <string name="pref_master_qs_add">Voeg tegel snelle instellingen toe</string>
     <string name="pref_master_qs_already_addded">Tegel snelle instellingen is al toegevoegd</string>
     <string name="pref_noti">Meldingen</string>
-    <string name="pref_lockscreen_noti">Vergrendelscherm meldingen</string>
     <string name="pref_offline_info">ℹ️ Offline scrobbles &amp; loves worden opgeslagen, om later verstuurd te worden.</string>
     <string name="pref_scrobble_from" comment="Scrobble from (these apps)">Scrobble vanaf</string>
     <string name="pref_enabled_apps_summary">ℹ️ Ondersteunt apps die muziek metadata onthullen. Om dubbele scrobbles van Spotify te voorkomen, schakel het alleen in op één plek.</string>
@@ -276,7 +239,6 @@
     <string name="pref_login">Log in</string>
     <string name="pref_about" comment="Info about this app">Over</string>
     <string name="pref_privacy_policy">Privacybeleid</string>
-    <string name="pref_scrobble_only">(Alleen scrobblen)</string>
     <string name="pref_user_label" comment="(Like username)">Gebruiker</string>
     <string name="pref_token_label" comment="For Listenbrainz">Authenticatietoken</string>
     <string name="api_url" comment="For Listenbrainz">API URL</string>
@@ -284,7 +246,6 @@
     <string name="pref_now_playing">Nu aan het spelen doorgeven</string>
     <string name="pref_fetch_album">Ontbrekende albumgegevens ophalen van lastFM</string>
     <string name="pref_locale">Talen</string>
-    <string name="pref_change_locale">Taal wijzigen</string>
     <string name="pref_crashlytics_enabled">Rapporteer fouten automatisch</string>
     <string name="pref_misc">Diversen</string>
     <string name="pref_first_day_of_week" comment="Sunday, Monday etc">Een week begint op</string>
@@ -310,7 +271,6 @@
     <string name="download" comment="Its a verb">Downloaden</string>
     <string name="changelog">Lijst met veranderingen</string>
     <string name="import_hey_wtf">Dat is waarschijnlijk geen Pano Scrobbler exportbestand</string>
-    <string name="export_failed">Exporteren mislukt</string>
     <string name="imported">Geïmporteerd</string>
     <string name="import_options">Importeeropties</string>
     <string name="import_lists_nope">Bewerkingen en blokkeerlijst niet importeren</string>
@@ -325,7 +285,6 @@
     <string name="no_browser">Er is geen browser geïnstalleerd</string>
     <string name="no_player">Er is geen muziekspeler geïnstalleerd</string>
     <string name="not_running">⚠ De scrobbler is gesloten door uw systeem</string>
-    <string name="not_running_fix_action">Maak het</string>
     <string name="login_submit" comment="Verifies the login details">Verifieer</string>
     <string name="submitting_loves" formatted="true">Loves aan het indienen, %1$d resterend</string>
     <string name="pending_batch" comment="For pending scrobbles">Een batch indienen</string>

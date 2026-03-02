@@ -44,22 +44,6 @@
         <item quantity="one">%1$d eşleşme</item>
         <item quantity="other">%1$d eşleşme</item>
     </plurals>
-    <plurals name="num_simple_edits">
-        <item quantity="one">%1$s düzenleme</item>
-        <item quantity="other">%1$s düzenleme</item>
-    </plurals>
-    <plurals name="num_regex_edits">
-        <item quantity="one">%1$s kalıp düzenlemesi</item>
-        <item quantity="other">%1$s kalıp düzenlemesi</item>
-    </plurals>
-    <plurals name="num_blocked_metadata">
-        <item quantity="one">%1$s engellenmiş metaveri</item>
-        <item quantity="other">%1$s engellenmiş metaveri</item>
-    </plurals>
-    <plurals name="num_pending" comment="Used for pending loves, pending scrobbles">
-        <item quantity="one">Askıda: %1$s</item>
-        <item quantity="other">Askıda: %1$s</item>
-    </plurals>
     <string name="yes">Evet</string>
     <string name="no">Hayır</string>
     <string name="reset">Sıfırla</string>
@@ -98,7 +82,6 @@
     <string name="choose_apps">Uygulama seçin</string>
     <string name="choose_an_app">Bir uygulama seçin</string>
     <string name="apps" comment="Currently appears on the regex edit dialog showing the selected apps and allowing the user to add more apps">Uygulamalar</string>
-    <string name="offline">Çevrimdışı. Güncel veriler gösterilemiyor</string>
     <string name="unavailable_offline">Çevrimdışı kullanılamıyor</string>
     <string name="tv_url_notice">Bu bağlantıyı başka bir cihazda tarayıcıdan açın</string>
     <string name="scrobble_services" comment="Services like lastfm, librefm, listenbrainz etc">Hizmetler</string>
@@ -111,14 +94,12 @@
     <string name="list" comment="Single column list view">Liste</string>
     <string name="more_info">Daha fazla bilgi</string>
     <string name="more" comment="More options menu in short">Dahası</string>
-    <string name="learn" comment="(Learn java regex syntax)">Öğren</string>
     <string name="hide">Gizle</string>
     <string name="rank_change" comment="%1= delta change">Sıralama değişikliği: %1$s</string>
     <string name="rank_change_no_change">Değişiklik yok</string>
     <string name="rank_change_new">Bir önceki dönemde skroplanmamış</string>
     <string name="search">Ara</string>
     <string name="clear_all_history" comment="(talking about search history, tag history)">Tüm geçmişi temizle</string>
-    <string name="clear_history_specific" comment="(talking about search history, tag history)">Bu öge geçmişten silinsin mi?</string>
     <string name="library" comment="search within the library">Kitaplık</string>
     <string name="global" comment="search globally across lastfm">Genel</string>
     <string name="reindex">Hızlı dizinleme</string>
@@ -152,7 +133,6 @@
     <string name="unlove" comment="Undo a love/like and make it neutral. This is not the same as Dislike">Beğeniyi kaldır</string>
     <string name="pending_scrobbles">Bekleyen Skroplar</string>
     <string name="following" comment="accounts you are following on lastfm">Takip Edilen</string>
-    <string name="followers" comment="your lastfm followers">Takipçiler</string>
     <string name="allow_background">Arkaplanda skroplamaya izin ver</string>
     <string name="grant_notification_access">Bildirimlere erişim izni ver</string>
     <string name="grant_notification_access_desc">Müzik meta verilerini almak için gerekli. Müzik dışı bildirimler okunmaz</string>
@@ -166,7 +146,6 @@
 - Bildirimler sesli değildir""</string>
     <string name="will_not_scrobble">Bu adımı atlamak skroplamayı devre dışı bırakacaktır</string>
     <string name="swap" comment="(Swap title and artist)">Değiştir</string>
-    <string name="rate_msg">Uygulamamızı beğendiniz mi?</string>
     <string name="time_just_now">şimdi</string>
     <string name="no_mail_apps">Yüklü e-posta istemcisi yok</string>
     <string name="add">Yeni öge ekle</string>
@@ -175,7 +154,6 @@
     <string name="simple_edits">Düzenlemeler</string>
     <string name="charts" comment="User's top artists, albums, tracks, line chart of daily scrobble counts and tag cloud">Listeler</string>
     <string name="tag_cloud" comment="https://www.google.com/search?&amp;q=tag+cloud">Etiket bulutu</string>
-    <string name="add_to_hs">Ana ekrana ekle</string>
     <string name="details">Ayrıntılar</string>
     <string name="saved_as_pending">Bekleyen skrop olarak kaydedildi</string>
     <string name="sort">Tür</string>
@@ -204,20 +182,12 @@
     <string name="charts_continuous" comment="Continuous date ranges, but in short, like last 7 days, last 30 days, etc">Güncel</string>
     <string name="based_on" formatted="true" comment="%1= the word 'artists', 'albums' or 'tracks'">Kategori: %1$s</string>
     <string name="not_enough_data" comment="(not enough data to draw a chart etc)">Yetersiz veri</string>
-    <string name="random_not_found">Parça bulunamadı</string>
-    <string name="loved_track">Beğenilenler</string>
     <string name="random_text">Rastgele</string>
-    <string name="graph_daily">Günlük skrop sayısı</string>
-    <string name="graph_weekly">Haftalık skrop sayısı</string>
-    <string name="graph_monthly">Aylık skrop sayısı</string>
-    <string name="graph_yearly">Yıllık skrop sayısı</string>
     <string name="original" comment="Original metadata before editing">Orijinal</string>
     <string name="corrected" comment="Corrected metadata after editing">Düzeltildi</string>
     <string name="tag" comment="last.fm tag">Etiket</string>
     <string name="taggers" comment="(number of) people who have tagged">Etiketleyenler</string>
     <string name="taggings" comment="(total count of) a particular tag">Etiketlemeler</string>
-    <string name="digest_weekly">Geçen hafta en çok skropladıklarım</string>
-    <string name="digest_monthly">Geçen ay en çok skropladıklarım</string>
     <string name="s_top_scrobbles" formatted="true" comment="%1= the word weekly or monthly">%1$s en çok skroplananlar</string>
     <string name="my_tags" comment="Tags, the user has added">Etiketlerim</string>
     <string name="close" comment="To close a dialog or something">Kapat</string>
@@ -226,7 +196,6 @@
     <string name="user_tags_empty">Henüz bir etiket eklemediniz</string>
     <string name="appwidget_loading">Yükleniyor…</string>
     <string name="appwidget_period" comment="1 week, 1 month, 1 year etc">Süre</string>
-    <string name="appwidget_theme">Tema</string>
     <string name="appwidget_shadow">Gölgelendirme</string>
     <string name="appwidget_show">Göster</string>
     <string name="light">Açık</string>
@@ -234,11 +203,8 @@
     <string name="system_colors">Sistem renkleri</string>
     <string name="appwidget_alpha">Arkaplan Saydamlığı</string>
     <string name="appwidget_refresh_every" formatted="true" comment="%1= 'n minutes'; n is &gt;= 45">Widget her %1$s bir yenilenir</string>
-    <string name="random_theme">Her açılışta rastgele seç</string>
     <string name="edit_name" comment="name for regex pattern">Kolay ad</string>
     <string name="edit_regex">Düzenli ifade kalıbı</string>
-    <string name="edit_regex_replacement">Düzenli ifade değiştirme</string>
-    <string name="edit_field" comment="Fields like artist/album/track etc">Alanlar</string>
     <string name="edit_replace">Değiştir</string>
     <string name="edit_first" comment="First occurrence of a pattern">İlkini</string>
     <string name="edit_all" comment="All occurrences of a pattern">Hepsini</string>
@@ -253,11 +219,9 @@
     <string name="edit_case_sensitive">Büyük küçük harfe duyarlı</string>
     <string name="edit_regex_test" comment="(Test regex rules)">Dene</string>
     <string name="edit_presets" comment="Regex presets">Ön Ayarlar</string>
-    <string name="edit_preset_name" formatted="true" comment="%1= preset name">Ön ayar: %1$s</string>
     <string name="edit_max_patterns" formatted="true" comment="%1= max pattern count">Kalıp sınırına ulaşıldı (%1$d)</string>
     <string name="edit_drag_handle" comment="screen reader text for drag and drop button">Sürükleme yöneticisi</string>
     <string name="edit_regex_warning" comment="shown before adding a custom pattern edit">⚠ Bunu kullanmadan önce <a href="https://www.google.com/search?q=regex+tutorial">java düzenli ifade</a> bildiğinizden emin olun veya burada verilen <b>ön ayarlardan</b> birini kullanın. Düzenli ifade eşleşmeleri yukarıdan aşağıya doğru denenir</string>
-    <string name="blocked_metadata_info">ℹ️ Bu alanların birinden fazlasının doldurulması, aralarında bir AND operatörü uygulamasına yol açacaktır</string>
     <string name="blocked_metadata_noti" comment="to block and skip a track from scrobbling and playing">Engelleyip atlamak için dokunun</string>
     <string name="player_actions" comment="music player actions such as skip/mute">Oynatıcı komutları</string>
     <string name="skip" comment="skip to next track">Atla</string>
@@ -291,7 +255,6 @@
     <string name="pref_master_qs_add">Hızlı ayar karosunu ekle</string>
     <string name="pref_master_qs_already_addded">Hızlı ayar karosu çoktan eklendi</string>
     <string name="pref_noti">Bildirimler</string>
-    <string name="pref_lockscreen_noti">Kilit ekranı bildirimleri</string>
     <string name="pref_offline_info">ℹ️ Çevrmdışı skroplar &amp; beğeniler daha sonra gönderilmek üzere kaydedilecektir.</string>
     <string name="pref_scrobble_from" comment="Scrobble from (these apps)">Müzik uygulamaları</string>
     <string name="pref_enabled_apps_summary">ℹ️ Müzik metaverisini paylaşan uygulamaları destekler. Spotify'da oluşabilecek çift skropları engellemek için sadece bir yerde etkin bırakın.</string>
@@ -308,7 +271,6 @@
     <string name="pref_login">Oturum aç</string>
     <string name="pref_about" comment="Info about this app">Hakkında</string>
     <string name="pref_privacy_policy">Gizlilik politikası</string>
-    <string name="pref_scrobble_only">(Sadece skrop)</string>
     <string name="pref_user_label" comment="(Like username)">Kullanıcı</string>
     <string name="pref_token_label" comment="For Listenbrainz">Kimlik doğrulama tokeni</string>
     <string name="api_url" comment="For Listenbrainz">API adresi</string>
@@ -317,7 +279,6 @@
     <string name="pref_now_playing">Şimdi oynatılanı gönder</string>
     <string name="pref_fetch_album">Eksik albüm verilerini last.fm'den al</string>
     <string name="pref_locale">Diller</string>
-    <string name="pref_change_locale">Dili değiştir</string>
     <string name="pref_crashlytics_enabled">Hataları otomatik olarak bildir</string>
     <string name="pref_misc">Çeşitli</string>
     <string name="pref_first_day_of_week" comment="Sunday, Monday etc">Haftanın ilk günü</string>
@@ -349,13 +310,11 @@
     <string name="update_downloaded">Güncelleme indirildi</string>
     <string name="pref_search_url_template">Arama URL şablonu</string>
     <string name="pref_search_url_template_desc" comment="Do not translate $query as the user has to enter it as it is">$query 'yi arama terimi yer tutucusu olarak kullan</string>
-    <string name="pref_native_file_picker">Dahili dosya seçicisini kullan</string>
     <string name="update_available" formatted="true" comment="%1= the version number">Yeni güncelleme: %1$s</string>
     <string name="downloading">İndiriliyor</string>
     <string name="download" comment="Its a verb">İndir</string>
     <string name="changelog">Değişiklikler</string>
     <string name="import_hey_wtf">Bu muhtemelen Pano Scrobbler'dan dışa aktarılmış bir dosya değil</string>
-    <string name="export_failed">Dışa aktarma başarısız</string>
     <string name="imported">İçe aktarıldı</string>
     <string name="import_options">İçe aktarma seçenekleri</string>
     <string name="import_lists_nope">Düzenlemeleri ve engel listesini içe aktarma</string>
@@ -372,7 +331,6 @@
     <string name="no_player">Yüklü müzik oynatıcı yok</string>
     <string name="not_running">⚠ Skoplayıcı sisteminiz tarafından sonlandırıldı</string>
     <string name="kill_reason" comment="%1= reason for the app kill" formatted="true">Sebep: %1$s</string>
-    <string name="not_running_fix_action">Düzelt</string>
     <string name="login_submit" comment="Verifies the login details">Doğrula</string>
     <string name="submitting_loves" formatted="true">Beğeniler gönderiliyor, %1$d kaldı</string>
     <string name="pending_batch" comment="For pending scrobbles">Skroplar gönderiliyor</string>
@@ -401,7 +359,6 @@
     <string name="done">Tamamlandı</string>
     <string name="retry" comment="Retry loading data from network after it has failed">Tekrar Dene</string>
     <string name="run_on_start">Bilgisayar başladığında çalıştır</string>
-    <string name="use_browser">Lütfen bunun için desteklenen bir cihazda tarayıcıyı kullanın.</string>
     <string name="save_logs" comment="Debug logs to be saved to a text file">Logları kaydet</string>
     <string name="contrast" comment="Color contrast, used in the themes screen">Kontrast</string>
     <string name="high" comment="As in high/medium/low">Yüksek</string>
@@ -413,7 +370,6 @@
     <string name="min_track_duration">Şundan uzun parçaları skropla</string>
     <string name="automation">Pano Scrobbler'ı otomasyon uygulamaları üzerinden kontrol edin</string>
     <string name="country_for_api" formatted="true" comment="%1$s is the name of the streaming service, like Spotify, Apple Music">%1$s üst verileri için ülke</string>
-    <string name="fetch_missing_metadata" formatted="true" comment="%1$s is the name of the streaming service, like Spotify, Apple Music">%1$s için eksik üst verileri al</string>
     <string name="login_in_browser">Oturum açma işlemini tarayıcı penceresinde tamamlayın</string>
     <string name="edit_no_save">Bu, gelecekteki skroplar için kaydedilmeyecek</string>
     <string name="also_available_on" formatted="true" comment="%1$s is the platform name, like Android, PC">Uygulamayı %1$s üzerinden edin</string>

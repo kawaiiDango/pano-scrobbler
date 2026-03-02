@@ -214,7 +214,6 @@
     <string name="pref_delay">स्क्रौब्ल कब करें (जोभी पहले हो)</string>
     <string name="pref_delay_mins" comment="(Scrobble delay in minutes)">मिनिट</string>
     <string name="pref_delay_per" comment="(Scrobble delay in percent)">प्रतिशत</string>
-    <string name="pref_fetch_album">लुप्त एल्बम लास्ट एफ़एम से प्राप्त करें</string>
     <string name="pref_locale">भाषा</string>
     <string name="pref_misc">इत्यादि</string>
     <string name="pref_first_day_of_week" comment="Sunday, Monday etc">सप्ताह काहा से आरंभ करें</string>

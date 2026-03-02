@@ -267,7 +267,6 @@
     <string name="server_url" comment="For self hosted scrobbling services">URL Server</string>
     <string name="listenbrainz_info" formatted="true" comment="%1 = the link to page containing the token">Anda dapat menemukan token autentikasi Anda di: %1$s</string>
     <string name="pref_now_playing">Kirim sekarang sedang diputar</string>
-    <string name="pref_fetch_album">Ambil data album yang hilang dari lastFM</string>
     <string name="pref_locale">Bahasa</string>
     <string name="pref_crashlytics_enabled">Laporkan kesalahan secara otomatis</string>
     <string name="pref_misc">Lainnya.</string>

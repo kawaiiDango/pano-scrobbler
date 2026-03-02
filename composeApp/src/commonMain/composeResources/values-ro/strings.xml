@@ -28,12 +28,10 @@
     <string name="choose_apps">Alege aplicațiile</string>
     <string name="choose_an_app">Alege o aplicație</string>
     <string name="apps" comment="Currently appears on the regex edit dialog showing the selected apps and allowing the user to add more apps">Aplicații</string>
-    <string name="offline">Offline. Datele afișate nu sunt reîmprospătate</string>
     <string name="unavailable_offline">Nu e valabil offline</string>
     <string name="rank_change_new">Nu e valabil offline</string>
     <string name="search">Caută</string>
     <string name="clear_all_history" comment="(talking about search history, tag history)">Curăță istoricul</string>
-    <string name="clear_history_specific" comment="(talking about search history, tag history)">Ștergi acest obiect din istoric?</string>
     <string name="library" comment="search within the library">Librărie</string>
     <string name="global" comment="search globally across lastfm">Global</string>
     <!--  pro  -->

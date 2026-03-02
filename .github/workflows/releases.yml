@@ -13,9 +13,9 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ windows-latest, ubuntu-latest, ubuntu-24.04-arm ]
+        os: [ windows-2025-vs2026, ubuntu-latest, ubuntu-24.04-arm ]
         include:
-          - os: windows-latest
+          - os: windows-2025-vs2026
             resources-dir: windows-x64
           - os: ubuntu-latest
             resources-dir: linux-x64
@@ -107,7 +107,7 @@ jobs:
   
   upload-release:
     needs: [ build ]
-    runs-on: windows-latest
+    runs-on: windows-2025-vs2026
     if: ${{ inputs.upload-release == true }}
     steps:
       - name: Read version and changelog

@@ -247,7 +247,6 @@
     <string name="server_url" comment="For self hosted scrobbling services">Palvelimen URL-osoite</string>
     <string name="listenbrainz_info" formatted="true" comment="%1 = the link to page containing the token">Löydät todennustunnuksen osoitteesta: %1$s</string>
     <string name="pref_now_playing">Lähetä nyt soiva</string>
-    <string name="pref_fetch_album">Hae puuttuvat levyn tiedot lastFM:stä</string>
     <string name="pref_locale">Kielet</string>
     <string name="pref_crashlytics_enabled">Ilmoita virheistä automaattisesti</string>
     <string name="pref_misc">Sekalaista</string>

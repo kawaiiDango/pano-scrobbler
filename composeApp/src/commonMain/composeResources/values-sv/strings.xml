@@ -44,25 +44,9 @@
         <item quantity="one">%1$d träff</item>
         <item quantity="other">%1$d träffar</item>
     </plurals>
-    <plurals name="num_simple_edits">
-        <item quantity="one">%1$s ändring</item>
-        <item quantity="other">%1$s ändringar</item>
-    </plurals>
-    <plurals name="num_regex_edits">
-        <item quantity="one">%1$s mönsterändring</item>
-        <item quantity="other">%1$s mönsterändringar</item>
-    </plurals>
-    <plurals name="num_blocked_metadata">
-        <item quantity="one">%1$s blockerad metadata</item>
-        <item quantity="other">%1$s blockerad metadata</item>
-    </plurals>
     <plurals name="num_hours">
         <item quantity="one">%1$d timme</item>
         <item quantity="other">%1$d timmar</item>
-    </plurals>
-    <plurals name="num_pending" comment="Used for pending loves, pending scrobbles">
-        <item quantity="one">%1$s väntande</item>
-        <item quantity="other">%1$s väntande</item>
     </plurals>
     <string name="yes">Ja</string>
     <string name="no">Nej</string>
@@ -102,7 +86,6 @@
     <string name="choose_apps">Välj appar</string>
     <string name="choose_an_app">Välj en app</string>
     <string name="apps" comment="Currently appears on the regex edit dialog showing the selected apps and allowing the user to add more apps">Appar</string>
-    <string name="offline">Offline. Data visad är inte ny</string>
     <string name="unavailable_offline">Inte tillgänglig offline</string>
     <string name="tv_url_notice">Öppna denna URL i en webbläsare på en annan enhet</string>
     <string name="scrobble_services" comment="Services like lastfm, librefm, listenbrainz etc">Tjänster</string>
@@ -133,7 +116,6 @@
     <string name="unlove" comment="Undo a love/like and make it neutral. This is not the same as Dislike">Oälska</string>
     <string name="pending_scrobbles">Väntande scrobbles</string>
     <string name="following" comment="accounts you are following on lastfm">Följer</string>
-    <string name="followers" comment="your lastfm followers">Följare</string>
     <string name="allow_background">Tillåt scrobbling i bakgrunden</string>
     <string name="grant_notification_access">Bevilja åtkomst till aviseringar</string>
     <string name="grant_notification_access_desc">Krävs för att hämta musikrelaterad metadata. Inga icke-musiknotifieringar läses</string>

@@ -7,8 +7,8 @@ import org.jetbrains.compose.resources.stringResource
 import pano_scrobbler.composeapp.generated.resources.Res
 import pano_scrobbler.composeapp.generated.resources.deezer
 import pano_scrobbler.composeapp.generated.resources.discord_rich_presence
-import pano_scrobbler.composeapp.generated.resources.fetch_missing_metadata
 import pano_scrobbler.composeapp.generated.resources.not_running_desktop
+import pano_scrobbler.composeapp.generated.resources.pref_fetch_missing_album
 import pano_scrobbler.composeapp.generated.resources.pref_master
 import pano_scrobbler.composeapp.generated.resources.pref_offline_info
 import pano_scrobbler.composeapp.generated.resources.run_on_start
@@ -70,7 +70,10 @@ actual object PlatformSpecificPrefs {
         if (DesktopStuff.os == DesktopStuff.Os.Windows) {
             listScope.item(MainPrefs::tidalSteelSeriesApi.name) {
                 SwitchPref(
-                    text = stringResource(Res.string.tidal_steelseries),
+                    text = stringResource(
+                        Res.string.pref_fetch_missing_album,
+                        stringResource(Res.string.tidal_steelseries)
+                    ),
                     summary = stringResource(
                         Res.string.when_using,
                         stringResource(Res.string.tidal)
@@ -87,7 +90,7 @@ actual object PlatformSpecificPrefs {
             listScope.item(MainPrefs::deezerApi.name) {
                 SwitchPref(
                     text = stringResource(
-                        Res.string.fetch_missing_metadata,
+                        Res.string.pref_fetch_missing_album,
                         stringResource(Res.string.deezer)
                     ),
                     summary = stringResource(

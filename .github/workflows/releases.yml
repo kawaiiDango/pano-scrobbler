@@ -55,8 +55,7 @@ jobs:
           export JAVA_HOME=$JAVA_HOME_21_X64
           $ANDROID_HOME/cmdline-tools/**/bin/sdkmanager --update
           $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --list_installed
-          ./gradlew androidApp:assembleReleaseGithub
-          ./gradlew --stop
+          ./gradlew androidApp:assembleReleaseGithub --no-daemon
 
       - name: Install Liberica NIK (GraalVM)
         uses: graalvm/setup-graalvm@v1
@@ -89,8 +88,7 @@ jobs:
       - name: Build desktop jar and native image
         shell: bash
         run: |
-          ./gradlew composeApp:exportLibraryDefinitions -PaboutLibraries.exportVariant=desktop
-          ./gradlew composeApp:packageUberJarForCurrentOS
+          ./gradlew composeApp:exportLibraryDefinitions composeApp:packageUberJarForCurrentOS -PaboutLibraries.exportVariant=desktop --no-daemon
 
       - name: Upload desktop binary
         uses: actions/upload-artifact@v4

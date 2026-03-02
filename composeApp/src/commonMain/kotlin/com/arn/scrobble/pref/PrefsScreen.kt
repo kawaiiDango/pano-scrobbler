@@ -89,7 +89,7 @@ import pano_scrobbler.composeapp.generated.resources.pref_delay_per
 import pano_scrobbler.composeapp.generated.resources.pref_enabled_apps_summary
 import pano_scrobbler.composeapp.generated.resources.pref_export
 import pano_scrobbler.composeapp.generated.resources.pref_export_desc
-import pano_scrobbler.composeapp.generated.resources.pref_fetch_album
+import pano_scrobbler.composeapp.generated.resources.pref_fetch_missing_album
 import pano_scrobbler.composeapp.generated.resources.pref_first_day_of_week
 import pano_scrobbler.composeapp.generated.resources.pref_imexport
 import pano_scrobbler.composeapp.generated.resources.pref_import
@@ -600,7 +600,10 @@ fun PrefsScreen(
 
         item(MainPrefs::fetchAlbum.name) {
             SwitchPref(
-                text = stringResource(Res.string.pref_fetch_album),
+                text = stringResource(
+                    Res.string.pref_fetch_missing_album,
+                    stringResource(Res.string.lastfm)
+                ),
                 value = fetchAlbum,
                 copyToSave = { copy(fetchAlbum = it) }
             )

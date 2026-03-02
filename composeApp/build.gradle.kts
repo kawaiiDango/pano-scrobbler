@@ -1073,6 +1073,10 @@ tasks.configureEach {
             mustRunAfter(":androidApp:exportLibraryDefinitions")
         }
 
+        "copyNonXmlValueResourcesForDesktopMain" -> {
+            mustRunAfter(":composeApp:exportLibraryDefinitions")
+        }
+
         "copyNonXmlValueResourcesForCommonMain" -> {
             dependsOn(":composeApp:copyMds")
         }

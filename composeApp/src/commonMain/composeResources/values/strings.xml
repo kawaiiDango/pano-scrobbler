@@ -730,6 +730,13 @@
     <string name="move_down"
         comment="Screen reader text for drag and drop reordering"
         >Move down</string>
+    <string name="at_least"
+        formatted="true"
+        comment="%1$s=some number"
+        >At least %1$s</string>
+    <string name="code_will_be_sent" formatted="true"
+        comment="%1$s is either Ko-Fi or BuyMeACoffee, %2$s is the donation amount"
+        >The code will be sent to the email address associated with your %1$s account, if you have donated %2$s</string>
 
 <!--  pro  -->
     <string name="get_pro">Support this app</string>

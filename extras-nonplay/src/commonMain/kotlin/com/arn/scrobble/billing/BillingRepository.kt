@@ -22,7 +22,7 @@ class BillingRepository(
     context: Any?,
 ) : BaseBillingRepository(receipt) {
 
-    override val formattedPrice = flowOf("$5 or more")
+    override val formattedPrice = flowOf("$5")
     override val purchaseMethods = listOf(
         PurchaseMethod(
             displayName = "Ko-fi",

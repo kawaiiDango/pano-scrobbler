@@ -53,6 +53,7 @@ import com.arn.scrobble.utils.VariantStuff
 import org.jetbrains.compose.resources.getString
 import org.jetbrains.compose.resources.stringResource
 import pano_scrobbler.composeapp.generated.resources.Res
+import pano_scrobbler.composeapp.generated.resources.at_least
 import pano_scrobbler.composeapp.generated.resources.automation
 import pano_scrobbler.composeapp.generated.resources.billing_block
 import pano_scrobbler.composeapp.generated.resources.billing_max_devices_reached
@@ -166,7 +167,8 @@ fun BillingScreen(
             Text(
                 stringResource(
                     Res.string.code_will_be_sent,
-                    purchaseMethodClicked!!.displayName
+                    purchaseMethodClicked!!.displayName,
+                    stringResource(Res.string.at_least, formattedPrice.orEmpty())
                 ),
                 color = MaterialTheme.colorScheme.tertiary,
                 style = MaterialTheme.typography.titleMediumEmphasized,
@@ -201,7 +203,7 @@ fun BillingScreen(
                             )
 
                             Text(
-                                text = (formattedPrice ?: "") +
+                                text = stringResource(Res.string.at_least, formattedPrice ?: "") +
                                         ", " + stringResource(Res.string.one_time_purchase),
                                 style = MaterialTheme.typography.bodyMedium
                             )

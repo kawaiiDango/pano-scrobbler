@@ -143,10 +143,6 @@ object PanoNativeComponents {
     fun onReceiveIpcCommand(command: String, arg: String) {
         if (command == Automation.DESKTOP_FOCUS_EXISTING) {
             PanoTrayUtils.onTrayMenuItemClickedFn(PanoTrayUtils.ItemId.Open.name)
-            notify(
-                "Already running",
-                "Please close the existing instance before starting a new one."
-            )
         } else {
             val wasSuccessful = Automation.executeAction(command, arg.ifEmpty { null }, null)
             if (!wasSuccessful) {

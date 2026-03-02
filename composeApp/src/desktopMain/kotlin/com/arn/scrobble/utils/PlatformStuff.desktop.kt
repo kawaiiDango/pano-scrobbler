@@ -56,6 +56,14 @@ actual object PlatformStuff {
 
     actual const val hasSystemLocaleStore = false
 
+    actual val appIdPlaceholder
+        get() =
+            if (DesktopStuff.os == DesktopStuff.Os.Linux)
+                "<MPRIS_ID>"
+            else
+                "<AUMID>"
+
+
     actual val filesDir by lazy {
         File(DesktopStuff.appDataRoot, "data").also { it.mkdirs() }
     }

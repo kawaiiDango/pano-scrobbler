@@ -32,9 +32,9 @@ class App : Application(), Configuration.Provider {
     override fun onCreate() {
         super.onCreate()
 
-        if (BuildConfig.DEBUG) {
-            enableStrictMode()
-        }
+//        if (BuildConfig.DEBUG) {
+//            enableStrictMode()
+//        }
 
         Initializer.init(this)
 

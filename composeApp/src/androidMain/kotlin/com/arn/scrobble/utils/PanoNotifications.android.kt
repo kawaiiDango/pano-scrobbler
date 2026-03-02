@@ -641,7 +641,11 @@ actual object PanoNotifications {
         )
         groups += NotificationChannelGroup(
             Stuff.GROUP_NOTI_DIGESTS,
-            context.getString(R.string.charts)
+            context.getString(
+                R.string.s_top_scrobbles,
+                context.getString(R.string.weekly) + " / " +
+                        context.getString(R.string.monthly)
+            )
         )
         groups += NotificationChannelGroup(
             Stuff.GROUP_NOTI_FG_SERVICE,

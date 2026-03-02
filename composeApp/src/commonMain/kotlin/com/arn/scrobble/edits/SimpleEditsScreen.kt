@@ -36,9 +36,9 @@ import com.arn.scrobble.ui.backgroundForShimmer
 import com.arn.scrobble.ui.panoContentPadding
 import com.arn.scrobble.ui.shimmerWindowBounds
 import com.arn.scrobble.utils.Stuff
-import org.jetbrains.compose.resources.pluralStringResource
+import org.jetbrains.compose.resources.stringResource
 import pano_scrobbler.composeapp.generated.resources.Res
-import pano_scrobbler.composeapp.generated.resources.num_simple_edits
+import pano_scrobbler.composeapp.generated.resources.simple_edits
 
 @Composable
 fun SimpleEditsScreen(
@@ -68,7 +68,7 @@ fun SimpleEditsScreen(
 
         EmptyTextWithImportButtonOnTv(
             visible = simpleEdits?.isEmpty() == true,
-            text = pluralStringResource(Res.plurals.num_simple_edits, 0, 0),
+            text = stringResource(Res.string.simple_edits) + ": " + 0,
             onButtonClick = {
                 onNavigate(PanoRoute.Import)
             }

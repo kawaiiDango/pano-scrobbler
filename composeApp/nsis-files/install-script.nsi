@@ -15,14 +15,19 @@
 !define MULTIUSER_MUI
 !define MULTIUSER_USE_PROGRAMFILES64
 
+!define /date CURRENT_YEAR "%Y"
+
 !include LogicLib.nsh
 !include MultiUser.nsh
 !include MUI2.nsh
 !include FileFunc.nsh
 !include shortcut-properties.nsh
 
-!ifndef OUTFILE
-  !error "You must define OUTFILE (e.g. /DOUTFILE=Installer.exe)"
+!ifndef OUTFILENAME
+  !error "You must define OUTFILENAME (e.g. /DOUTFILENAME=Installer.exe)"
+!endif
+!ifndef OUTFILEDIR
+  !error "You must define OUTFILEDIR (e.g. /DOUTFILEDIR=dist)"
 !endif
 !ifndef APPDIR
   !error "You must define APPDIR (e.g. /DAPPDIR=build\win-unpacked)"
@@ -37,8 +42,17 @@
   !error "You must define ICON_FILE (e.g. /DICON_FILE=app-icon.ico)"
 !endif
 
+VIProductVersion "${VERSION_NAME}.0.0"
+VIAddVersionKey "ProductName" "${APP_NAME}"
+VIAddVersionKey "CompanyName" "${DEV_NAME}"
+VIAddVersionKey "LegalCopyright" "(c) ${CURRENT_YEAR} ${DEV_NAME}"
+VIAddVersionKey "FileDescription" "${APP_NAME}"
+VIAddVersionKey "FileVersion" "${VERSION_NAME}"
+VIAddVersionKey "ProductVersion" "${VERSION_NAME}"
+VIAddVersionKey "OriginalFilename" "${OUTFILENAME}"
+
 Name "${APP_NAME} ${VERSION_NAME}"
-OutFile "${OUTFILE}"
+OutFile "${OUTFILEDIR}\\${OUTFILENAME}"
 
 SetCompressor /SOLID BZIP2
 
@@ -96,7 +110,7 @@ Var IsMinimalInteractionMode
     ${ElseIf} $0 == 0
       IntOp $1 $1 + 1
       ${If} $1 < 3
-        Sleep 500
+        Sleep 2000
         Goto loop_kill
       ${EndIf}
     ${Else}
@@ -382,10 +396,10 @@ Section "Install/Extract"
       ${EndIf}
     ${EndIf}
 
-    ; If upgrading, clear install dir
-    !insertmacro KILL_IF_RUNNING
+    ; If upgrading, kill existing proc and clear install dir
 
     ${If} $VersionCodePrev <> ""
+      !insertmacro KILL_IF_RUNNING
       !insertmacro DELETE_FILES_FROM_INSTALL_LOG
       CreateDirectory "$INSTDIR"
     ${EndIf}

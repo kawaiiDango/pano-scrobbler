@@ -89,7 +89,7 @@ import pano_scrobbler.composeapp.generated.resources.desktop
 import pano_scrobbler.composeapp.generated.resources.loved
 import pano_scrobbler.composeapp.generated.resources.no_scrobbles
 import pano_scrobbler.composeapp.generated.resources.not_running
-import pano_scrobbler.composeapp.generated.resources.num_pending
+import pano_scrobbler.composeapp.generated.resources.pending_scrobbles
 import pano_scrobbler.composeapp.generated.resources.random_text
 import pano_scrobbler.composeapp.generated.resources.recents
 import pano_scrobbler.composeapp.generated.resources.reload
@@ -140,8 +140,8 @@ fun ScrobblesScreen(
     var pendingScrobblesExpanded by rememberSaveable { mutableStateOf(false) }
     var expandedKey by rememberSaveable { mutableStateOf<String?>(null) }
     var canExpandNowPlaying by rememberSaveable { mutableStateOf(true) }
-    val pendingScrobblesheader =
-        pluralStringResource(Res.plurals.num_pending, pendingScrobbles.size, pendingScrobbles.size)
+    val pendingScrobblesHeader = stringResource(Res.string.pending_scrobbles) + ": " +
+            pendingScrobbles.size
     val canLove = accountType != AccountType.PLEROMA
     val density = LocalDensity.current
     val listViewportHeight = remember {
@@ -414,7 +414,7 @@ fun ScrobblesScreen(
 
                 if (selectedType == ScrobblesType.RECENTS && user.isSelf) {
                     pendingScrobblesListItems(
-                        headerText = pendingScrobblesheader,
+                        headerText = pendingScrobblesHeader,
                         headerIcon = Icons.HourglassEmpty,
                         items = pendingScrobbles,
                         expanded = pendingScrobblesExpanded,

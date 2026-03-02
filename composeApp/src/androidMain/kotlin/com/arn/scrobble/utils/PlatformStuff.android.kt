@@ -82,6 +82,8 @@ actual object PlatformStuff {
 
     actual val hasSystemLocaleStore = Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU
 
+    actual val appIdPlaceholder = "<package_name>"
+
     actual fun isNotificationListenerEnabled(): Boolean {
         // adapted from NotificationManagerCompat.java
 

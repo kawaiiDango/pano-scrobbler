@@ -1,9 +1,10 @@
 {
     "nsis.compiler.customArguments": [
-        "/DOUTFILE=..\\dist\\pano-scrobbler-windows-x64.exe",
+        "/DOUTFILENAME=pano-scrobbler-windows-x64.exe",
+        "/DOUTFILEDIR=..\\dist",
         "/DAPPDIR=..\\build\\compose\\native\\windows-x64",
         "/DICON_FILE=..\\app-icons\\pano-scrobbler.ico",
-        "/DVERSION_CODE=422",
-        "/DVERSION_NAME=4.22"
+        "/DVERSION_CODE=430",
+        "/DVERSION_NAME=4.30"
     ]
 }

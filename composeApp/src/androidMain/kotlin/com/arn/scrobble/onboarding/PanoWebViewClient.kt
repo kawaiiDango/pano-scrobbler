@@ -5,16 +5,10 @@ import android.webkit.WebResourceError
 import android.webkit.WebResourceRequest
 import android.webkit.WebView
 import android.webkit.WebViewClient
-import com.arn.scrobble.ui.PanoSnackbarVisuals
 import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff
 import io.ktor.http.Url
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.launch
-import org.jetbrains.compose.resources.getString
-import pano_scrobbler.composeapp.generated.resources.Res
-import pano_scrobbler.composeapp.generated.resources.use_browser
 
 class PanoWebViewClient(
     private val disableNavigation: Boolean,
@@ -35,18 +29,7 @@ class PanoWebViewClient(
         if (disableNavigation && firstLoadFinished ||
             Stuff.disallowedWebviewUrls.any { url.startsWith(it) }
         ) {
-            if (!PlatformStuff.isTv) {
-                PlatformStuff.openInBrowser(url)
-            } else {
-                GlobalScope.launch {
-                    Stuff.globalSnackbarFlow.emit(
-                        PanoSnackbarVisuals(
-                            message = getString(Res.string.use_browser),
-                            isError = true
-                        )
-                    )
-                }
-            }
+            PlatformStuff.openInBrowser(url)
             return true
         } else {
             val urlObj = Url(url)

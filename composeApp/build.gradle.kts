@@ -12,6 +12,7 @@ import java.net.HttpURLConnection
 import java.net.URI
 import java.nio.file.Files
 import java.security.MessageDigest
+import java.time.Year
 import javax.xml.parsers.DocumentBuilderFactory
 import kotlin.io.encoding.Base64
 import kotlin.io.path.name
@@ -51,7 +52,6 @@ val resourcesDirName = when {
 val APP_ID: String by rootProject.extra
 val VER_CODE: Int by rootProject.extra
 val VER_NAME: String by rootProject.extra
-val BUILD_DATE: String by rootProject.extra
 val APP_NAME: String by rootProject.extra
 val APP_NAME_NO_SPACES: String by rootProject.extra
 val localProperties = gradleLocalProperties(rootDir, project.providers)
@@ -72,6 +72,8 @@ kotlin {
         androidResources {
             enable = true
         }
+
+        withHostTest {}
     }
 
     jvm("desktop")
@@ -465,7 +467,8 @@ tasks.register<Exec>("packageWindowsNsis") {
 
     commandLine(
         "\"$nsisDir\\makensis\"",
-        "/DOUTFILE=" + distFile.absolutePath,
+        "/DOUTFILENAME=" + distFile.name,
+        "/DOUTFILEDIR=" + distFile.parentFile.absolutePath,
         "/DAPPDIR=" + executableDir.absolutePath,
         "/DVERSION_CODE=$VER_CODE",
         "/DVERSION_NAME=$VER_NAME",
@@ -479,6 +482,55 @@ tasks.register<Exec>("packageLinuxAppImageAndTarball") {
         "bash",
         "../package-for-linux.sh",
     )
+}
+
+tasks.register<Exec>("generateRc") {
+    val rcTemplateFile = file("rc-template.txt")
+    val rcOutputDir = project.layout.buildDirectory.dir("generated-rc").get().asFile
+    val icoFilePath = file("app-icons/pano-scrobbler.ico").absolutePath
+        .replace("\\", "\\\\") // escape backslashes for rc compiler
+    val outputFileName = "$APP_NAME_NO_SPACES.exe"
+    val rcOut = File(rcOutputDir, "$outputFileName.rc")
+    val versionMajor = VER_NAME.substringBefore(".")
+    val versionMinor = VER_NAME.substringAfter(".")
+
+    // find rc.exe
+    val rcExe = File(System.getenv("PROGRAMFILES(x86)") + "\\Windows Kits\\10\\bin")
+        .listFiles()
+        ?.filter { it.isDirectory && it.name.startsWith("10.") }
+        ?.maxByOrNull { it.lastModified() }
+        ?.let { File(it, "x64\\rc.exe") }
+        ?.absolutePath
+
+    if (rcExe == null)
+        throw GradleException("rc.exe not found. Please install Windows 10 SDK.")
+
+    // compile rc to res
+    val command = listOf(
+        rcExe,
+        "/nologo",
+        rcOut.absolutePath
+    )
+
+    commandLine(command)
+
+    doFirst {
+        val fileType = "0x1"
+
+        val iconInfo = "IDI_ICON_1 ICON \"$icoFilePath\""
+
+        val rcContent = rcTemplateFile
+            .readText()
+            .replace("\$versionMajor", versionMajor)
+            .replace("\$versionMinor", versionMinor)
+            .replace("\$fileName", outputFileName)
+            .replace("\$fileType", fileType)
+            .replace("\$iconInfo", iconInfo)
+            .replace("\$year", Year.now().toString())
+
+        rcOutputDir.mkdirs()
+        rcOut.writeText(rcContent)
+    }
 }
 
 // graalvm plugin doesn't seem to support this project structure, so directly use the command
@@ -516,7 +568,8 @@ tasks.register<Exec>("buildNativeImage") {
         else -> throw IllegalStateException("Unsupported OS: $os")
     }
 
-    val winAppResFile = file("app-icons/exe-res.res")
+    val winAppResFile =
+        project.layout.buildDirectory.file("generated-rc/$APP_NAME_NO_SPACES.exe.res")
 
     val nativeLibsDir = file("resources/$resourcesDirName/")
     val iconFile = file("src/desktopMain/composeResources/drawable/ic_launcher_with_bg.svg")
@@ -554,9 +607,10 @@ tasks.register<Exec>("buildNativeImage") {
 //        "--enable-monitoring=nmt",
         "--enable-native-access=ALL-UNNAMED",
         "--include-locales",
+//        "--install-exit-handlers",
         if (os.isWindows) "-H:NativeLinkerOption=/SUBSYSTEM:WINDOWS" else null,
         if (os.isWindows) "-H:NativeLinkerOption=/ENTRY:mainCRTStartup" else null,
-        if (os.isWindows) "-H:NativeLinkerOption=\"${winAppResFile.absolutePath}\"" else null,
+        if (os.isWindows) "-H:NativeLinkerOption=\"${winAppResFile.get().asFile.absolutePath}\"" else null,
         "-jar",
         jarFile.absolutePath,
         "-o",
@@ -606,15 +660,19 @@ tasks.register<Exec>("buildNativeImage") {
             desktopFile.copyTo(File(outputDir, desktopFile.name), overwrite = true)
         }
     }
+
+    if (os.isWindows) {
+        dependsOn("generateRc")
+    }
 }
 
 tasks.register("updateMaterialSymbols") {
     val symbolsDir = layout.buildDirectory.dir("material-symbols-svgs").get().asFile
     outputs.dir(symbolsDir)
 
-    val unfilledNamesFile = file("material-symbols-unfilled.txt")
-    val filledNamesFile = file("material-symbols-filled.txt")
-    val automirroredNamesFile = file("material-symbols-automirrored.txt")
+    val unfilledNamesFile = file("material-symbols-names/unfilled.txt")
+    val filledNamesFile = file("material-symbols-names/filled.txt")
+    val automirroredNamesFile = file("material-symbols-names/automirrored.txt")
 
     inputs.files(
         unfilledNamesFile,
@@ -852,7 +910,9 @@ ${languagesFiltered.joinToString("\n") { "        \"$it\"," }}
                 localeUtilsText.indexOf("// localesSet start") + "// localesSet start".length
             val end = localeUtilsText.indexOf("    // localesSet end")
             val newLocaleUtilsText =
-                localeUtilsText.take(start) + localeUtilsPartialText + localeUtilsText.substring(end)
+                localeUtilsText.take(start) + localeUtilsPartialText + localeUtilsText.substring(
+                    end
+                )
             localeUtilsFile.writeText(newLocaleUtilsText)
 
             println("Crowdin languages fetched successfully.")
@@ -907,7 +967,10 @@ tasks.register("copyStringsToAndroid") {
                                 val textNode = textNodes.item(j)
                                 if (textNode.nodeType == org.w3c.dom.Node.TEXT_NODE) {
                                     textNode.nodeValue =
-                                        textNode.nodeValue.replace("(?<!\\\\)'".toRegex(), "\\\\'")
+                                        textNode.nodeValue.replace(
+                                            "(?<!\\\\)'".toRegex(),
+                                            "\\\\'"
+                                        )
                                 }
                             }
 

@@ -16,11 +16,13 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.OutlinedToggleButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -52,6 +54,7 @@ import com.arn.scrobble.icons.ContentCopy
 import com.arn.scrobble.icons.Delete
 import com.arn.scrobble.icons.Icons
 import com.arn.scrobble.icons.Info
+import com.arn.scrobble.icons.Lock
 import com.arn.scrobble.icons.Mic
 import com.arn.scrobble.icons.MusicNote
 import com.arn.scrobble.main.MainViewModel
@@ -62,7 +65,6 @@ import com.arn.scrobble.panoicons.PanoIcons
 import com.arn.scrobble.pref.AppItem
 import com.arn.scrobble.pref.AppListSaveType
 import com.arn.scrobble.ui.ButtonWithIcon
-import com.arn.scrobble.ui.ButtonWithSpinner
 import com.arn.scrobble.ui.DismissableNotice
 import com.arn.scrobble.ui.ErrorText
 import com.arn.scrobble.ui.HighlighterVisualTransformation
@@ -108,6 +110,7 @@ import pano_scrobbler.composeapp.generated.resources.track
 import java.util.regex.Pattern
 import java.util.regex.PatternSyntaxException
 
+@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun RegexEditsAddScreen(
     mainViewModel: MainViewModel,
@@ -550,18 +553,81 @@ fun RegexEditsAddScreen(
                 modifier = Modifier.fillMaxWidth().padding(8.dp),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
-                ButtonWithSpinner(
-                    prefixText = null,
-                    itemToTexts = mapOf(
-                        RegexMode.Replace to stringResource(Res.string.edit_replace),
-                        RegexMode.Extract to (if (!isLicenseValid) "🔒 " else "") +
-                                stringResource(Res.string.edit_extract),
-                        RegexMode.Block to (if (!isLicenseValid) "🔒 " else "") +
-                                stringResource(Res.string.block)
-                    ),
-                    selected = regexMode,
-                    onItemSelected = { regexMode = it },
-                )
+                var dropDownShown by remember { mutableStateOf(false) }
+                val regexModeString = when (regexMode) {
+                    RegexMode.Replace -> stringResource(Res.string.edit_replace)
+                    RegexMode.Extract -> stringResource(Res.string.edit_extract)
+                    RegexMode.Block -> stringResource(Res.string.block)
+                }
+
+                OutlinedToggleButton(
+                    checked = dropDownShown,
+                    onCheckedChange = { dropDownShown = it },
+                ) {
+                    Text(regexModeString)
+                    Spacer(Modifier.size(ButtonDefaults.IconSpacing))
+                    Icon(Icons.ArrowDropDown, contentDescription = null)
+
+                    DropdownMenu(
+                        expanded = dropDownShown,
+                        onDismissRequest = { dropDownShown = false }
+                    ) {
+                        DropdownMenuItem(
+                            onClick = {
+                                regexMode = RegexMode.Replace
+                                dropDownShown = false
+                            },
+                            enabled = regexMode != RegexMode.Replace,
+                            text = {
+                                Text(stringResource(Res.string.edit_replace))
+                            }
+                        )
+                        DropdownMenuItem(
+                            onClick = {
+                                regexMode = RegexMode.Extract
+                                dropDownShown = false
+
+                                if (!isLicenseValid)
+                                    onNavigate(PanoRoute.Billing)
+                            },
+                            enabled = regexMode != RegexMode.Extract,
+                            text = {
+                                Text(stringResource(Res.string.edit_extract))
+                            },
+                            leadingIcon = if (!isLicenseValid) {
+                                {
+                                    Icon(
+                                        Icons.Lock,
+                                        contentDescription = null,
+                                    )
+                                }
+                            } else null
+                        )
+
+                        DropdownMenuItem(
+                            onClick = {
+                                regexMode = RegexMode.Block
+                                dropDownShown = false
+
+                                if (!isLicenseValid)
+                                    onNavigate(PanoRoute.Billing)
+                            },
+                            enabled = regexMode != RegexMode.Block,
+                            text = {
+                                Text(stringResource(Res.string.block))
+                            },
+                            leadingIcon = if (!isLicenseValid) {
+                                {
+                                    Icon(
+                                        Icons.Lock,
+                                        contentDescription = null,
+                                    )
+                                }
+                            } else null
+                        )
+
+                    }
+                }
 
                 Spacer(
                     modifier = Modifier.weight(1f)

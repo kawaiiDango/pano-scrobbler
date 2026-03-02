@@ -47,25 +47,9 @@
         <item quantity="one">%1$d match</item>
         <item quantity="other">%1$d matches</item>
     </plurals>
-    <plurals name="num_simple_edits">
-        <item quantity="one">%1$s edit</item>
-        <item quantity="other">%1$s edits</item>
-    </plurals>
-    <plurals name="num_regex_edits">
-        <item quantity="one">%1$s pattern edit</item>
-        <item quantity="other">%1$s pattern edits</item>
-    </plurals>
-    <plurals name="num_blocked_metadata">
-        <item quantity="other">%1$s blocked metadata</item>
-    </plurals>
     <plurals name="num_hours">
         <item quantity="one">%1$d hour</item>
         <item quantity="other">%1$d hours</item>
-    </plurals>
-    <plurals name="num_pending"
-        comment="Used for pending loves, pending scrobbles"
-        >
-        <item quantity="other">%1$s pending</item>
     </plurals>
 
     <string name="yes">Yes</string>
@@ -130,7 +114,6 @@
     <string name="apps"
         comment="Currently appears on the regex edit dialog showing the selected apps and allowing the user to add more apps"
         >Apps</string>
-    <string name="offline">Offline. Data shown isn't fresh</string>
     <string name="unavailable_offline">Not available when offline</string>
     <string name="tv_url_notice">Open this URL in a browser on another device</string>
     <string name="scrobble_services"
@@ -157,9 +140,6 @@
     <string name="more"
         comment="More options menu in short"
         >More</string>
-    <string name="learn"
-        comment="(Learn java regex syntax)"
-        >Learn</string>
     <string name="hide">Hide</string>
     <string name="rank_change"
         comment="%1= delta change"
@@ -170,9 +150,6 @@
     <string name="clear_all_history"
         comment="(talking about search history, tag history)"
         >Clear all history</string>
-    <string name="clear_history_specific"
-        comment="(talking about search history, tag history)"
-        >Remove this item from the history?</string>
     <string name="library"
         comment="search within the library"
         >Library</string>
@@ -237,9 +214,6 @@
     <string name="following"
         comment="accounts you are following on lastfm"
         >Following</string>
-    <string name="followers"
-        comment="your lastfm followers"
-        >Followers</string>
     <string name="since_time" formatted="true"
         comment="%1= date of joining lastfm"
         >Since %1$s</string>
@@ -260,7 +234,6 @@
     <string name="swap"
         comment="(Swap title and artist)"
         >Swap</string>
-    <string name="rate_msg">Enjoying this app?</string>
     <string name="time_just_now">just now</string>
     <string name="no_mail_apps">No email client is installed</string>
     <string name="add">Add new item</string>
@@ -277,7 +250,6 @@
     <string name="tag_cloud"
         comment="https://www.google.com/search?&amp;q=tag+cloud"
         >Tag cloud</string>
-    <string name="add_to_hs">Add to homescreen</string>
     <string name="details">Details</string>
     <string name="saved_as_pending">Saved as a pending scrobble</string>
     <string name="sort">Sort</string>
@@ -335,13 +307,7 @@
     <string name="not_enough_data"
         comment="(not enough data to draw a chart etc)"
         >Not enough data</string>
-    <string name="random_not_found">No track found</string>
-    <string name="loved_track">Loved track</string>
     <string name="random_text">Random</string>
-    <string name="graph_daily">Daily scrobble counts</string>
-    <string name="graph_weekly">Weekly scrobble counts</string>
-    <string name="graph_monthly">Monthly scrobble counts</string>
-    <string name="graph_yearly">Yearly scrobble counts</string>
     <string name="original"
         comment="Original metadata before editing"
         >Original</string>
@@ -357,8 +323,6 @@
     <string name="taggings"
         comment="(total count of) a particular tag"
         >Taggings</string>
-    <string name="digest_weekly">My last week's top scrobbles</string>
-    <string name="digest_monthly">My last month's top scrobbles</string>
     <string name="s_top_scrobbles" formatted="true"
         comment="%1= the word weekly or monthly"
         >%1$s top scrobbles</string>
@@ -380,7 +344,6 @@
     <string name="appwidget_period"
         comment="1 week, 1 month, 1 year etc"
         >Period</string>
-    <string name="appwidget_theme">Theme</string>
     <string name="appwidget_shadow">Shadow</string>
     <string name="appwidget_show">Show</string>
     <string name="light">Light</string>
@@ -390,16 +353,11 @@
     <string name="appwidget_refresh_every" formatted="true"
         comment="%1= 'n minutes'; n is >= 45"
         >Widget will refresh every %1$s</string>
-    <string name="random_theme">Randomize on every launch</string>
 
     <string name="edit_name"
         comment="name for regex pattern"
         >Friendly name</string>
     <string name="edit_regex">Regex pattern</string>
-    <string name="edit_regex_replacement">Regex replacement</string>
-    <string name="edit_field"
-        comment="Fields like artist/album/track etc"
-        >Fields</string>
     <string name="edit_replace">Replace</string>
     <string name="edit_first"
         comment="First occurrence of a pattern"
@@ -436,9 +394,6 @@
     <string name="edit_presets"
         comment="Regex presets"
         >Presets</string>
-    <string name="edit_preset_name" formatted="true"
-        comment="%1= preset name"
-        >Preset: %1$s</string>
     <string name="edit_max_patterns" formatted="true"
         comment="%1= max pattern count"
         >Pattern limit reached (%1$d)</string>
@@ -448,7 +403,6 @@
     <string name="edit_regex_warning"
         comment="shown before adding a custom pattern edit"
         >⚠ Make sure you understand <a href="https://www.google.com/search?q=regex+tutorial">java regex</a> before using this, or use one of the <b>presets</b> provided. Regex matches are attempted from top down</string>
-    <string name="blocked_metadata_info">Filling in more than one of these fields will apply an AND operator between them</string>
     <string name="blocked_metadata_noti"
         comment="to block and skip a track from scrobbling and playing"
         >Tap to block and skip</string>
@@ -522,7 +476,6 @@
     <string name="pref_master_qs_add">Add the quick settings tile</string>
     <string name="pref_master_qs_already_addded">Quick settings tile is already added</string>
     <string name="pref_noti">Notifications</string>
-    <string name="pref_lockscreen_noti">Lockscreen notifications</string>
     <string name="pref_offline_info">Offline scrobbles &amp; loves will be saved, to be sent later.</string>
     <string name="pref_scrobble_from"
         comment="Scrobble from (these apps)"
@@ -549,7 +502,6 @@
         comment="Info about this app"
         >About</string>
     <string name="pref_privacy_policy">Privacy policy</string>
-    <string name="pref_scrobble_only">(Scrobble only)</string>
     <string name="pref_user_label"
         comment="(Like username)"
         >User</string>
@@ -569,7 +521,6 @@
     <string name="pref_now_playing">Submit now playing</string>
     <string name="pref_fetch_album">Fetch missing album data from lastFM</string>
     <string name="pref_locale">Languages</string>
-    <string name="pref_change_locale">Change language</string>
     <string name="pref_crashlytics_enabled">Report errors automatically</string>
     <string name="pref_misc">Misc.</string>
     <string name="pref_first_day_of_week"
@@ -627,7 +578,6 @@
     <string name="pref_search_url_template_desc"
         comment="Do not translate $query as the user has to enter it as it is"
         >Use $query as the search term placeholder</string>
-    <string name="pref_native_file_picker">Use native file picker</string>
     <string name="update_available" formatted="true"
         comment="%1= the version number"
         >Update available: %1$s</string>
@@ -638,7 +588,6 @@
     <string name="changelog">Changelog</string>
 
     <string name="import_hey_wtf">That's probably not a Pano Scrobbler export file</string>
-    <string name="export_failed">Export failed</string>
     <string name="imported">Imported</string>
     <string name="import_options">Import options</string>
     <string name="import_lists_nope">Do not import edits and blocklist</string>
@@ -662,7 +611,6 @@
     <string name="kill_reason"
         comment="%1= reason for the app kill"
         formatted="true">Reason: %1$s</string>
-    <string name="not_running_fix_action">Fix it</string>
     <string name="login_submit"
         comment="Verifies the login details"
         >Verify</string>
@@ -710,7 +658,6 @@
     <string name="done">Done</string>
     <string name="retry" comment="Retry loading data from network after it has failed">Retry</string>
     <string name="run_on_start">Run when the computer starts</string>
-    <string name="use_browser">Please use a browser on a supported device for this.</string>
     <string name="save_logs" comment="Debug logs to be saved to a text file">Save logs</string>
     <string name="contrast" comment="Color contrast, used in the themes screen">Contrast</string>
     <string name="high" comment="As in high/medium/low">High</string>
@@ -728,9 +675,6 @@
     <string name="country_for_api" formatted="true"
         comment="%1$s is the name of the streaming service, like Spotify, Apple Music"
         >Country for %1$s metadata</string>
-    <string name="fetch_missing_metadata" formatted="true"
-        comment="%1$s is the name of the streaming service, like Spotify, Apple Music"
-        >Fetch missing metadata for %1$s</string>
     <string name="login_in_browser">Complete the login in the browser window</string>
     <string name="edit_no_save">This will not be saved for future scrobbles</string>
     <string name="also_available_on" formatted="true"
@@ -774,6 +718,18 @@
     <string name="forget_unchecked_apps"
         comment="Shown in the 'Scrobble From' apps list on desktop"
         >Forget unchecked apps</string>
+    <string name="discord_app_name"
+        comment="usually the media player app name, shown in discord rich presence"
+        >App name</string>
+    <string name="convert_file" formatted="true"
+        comment="%1$s is the file extension, used in the context of converting from one file format to another"
+        >Convert from %1$s</string>
+    <string name="move_up"
+        comment="Screen reader text for drag and drop reordering"
+        >Move up</string>
+    <string name="move_down"
+        comment="Screen reader text for drag and drop reordering"
+        >Move down</string>
 
 <!--  pro  -->
     <string name="get_pro">Support this app</string>

@@ -50,6 +50,7 @@ keyboard_arrow_down
 keyboard_arrow_up
 keyboard_double_arrow_down
 keyboard_double_arrow_up
+lock
 match_case
 menu
 mic

@@ -1,7 +1,3 @@
-import java.text.SimpleDateFormat
-import java.util.Date
-import java.util.Locale
-
 plugins {
     // this is necessary to avoid the plugins to be loaded multiple times
     // in each subproject's classloader
@@ -27,7 +23,6 @@ extra.apply {
     val verCode = versionFile.readText().trim().toInt()
     set("VER_CODE", verCode)
     set("VER_NAME", "${verCode / 100}.${verCode % 100}")
-    set("BUILD_DATE", SimpleDateFormat("yyyy, MMM dd", Locale.ENGLISH).format(Date()))
     set("APP_ID", "com.arn.scrobble")
     set("APP_NAME", "Pano Scrobbler")
     set("APP_NAME_NO_SPACES", "pano-scrobbler")

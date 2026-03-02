@@ -25,6 +25,7 @@ import com.arn.scrobble.automation.Automation
 import com.arn.scrobble.billing.LocalLicenseValidState
 import com.arn.scrobble.icons.ContentCopy
 import com.arn.scrobble.icons.Icons
+import com.arn.scrobble.icons.Lock
 import com.arn.scrobble.navigation.PanoRoute
 import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff.collectAsStateWithInitialValue
@@ -58,15 +59,11 @@ fun AutomationInfoScreen(
 
     val isLicenseValid = LocalLicenseValidState.current
 
-    val appIdPlaceholder = if (PlatformStuff.isDesktop)
-        "<APP_ID/MPRIS_ID>"
-    else
-        "<package_name>"
+    val appIdPlaceholder = remember { PlatformStuff.appIdPlaceholder }
 
     Column(
         modifier = modifier.verticalScroll(rememberScrollState())
     ) {
-
         if (!PlatformStuff.isDesktop) {
             AppIconsPref(
                 packageNames = allowedPackages,
@@ -147,7 +144,7 @@ fun AutomationInfoScreen(
                         .padding(8.dp)
                 ) {
                     Text(
-                        text = (if (!isLicenseValid) "🔒 " else "") + commandText,
+                        text = commandText,
                         style = MaterialTheme.typography.bodyLargeEmphasized,
                     )
 
@@ -160,7 +157,7 @@ fun AutomationInfoScreen(
                 }
 
                 Icon(
-                    imageVector = Icons.ContentCopy,
+                    imageVector = if (!isLicenseValid) Icons.Lock else Icons.ContentCopy,
                     contentDescription = null,
                 )
             }

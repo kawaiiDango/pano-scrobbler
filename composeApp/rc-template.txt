@@ -1,0 +1,27 @@
+$iconInfo
+
+1 VERSIONINFO
+FILEVERSION $versionMajor,$versionMinor,0,0
+PRODUCTVERSION $versionMajor,$versionMinor,0,0
+FILEOS 0x40004
+FILETYPE $fileType
+{
+BLOCK "StringFileInfo"
+{
+	BLOCK "040904b0"
+	{
+		VALUE "CompanyName", "kawaiiDango"
+		VALUE "FileDescription", "Pano Scrobbler"
+		VALUE "FileVersion", "$versionMajor.$versionMinor"
+		VALUE "LegalCopyright", "(c) $year kawaiiDango"
+		VALUE "OriginalFilename", "$fileName"
+		VALUE "ProductName", "Pano Scrobbler"
+		VALUE "ProductVersion", "$versionMajor.$versionMinor"
+	}
+}
+
+BLOCK "VarFileInfo"
+{
+	VALUE "Translation", 0x0409 0x04B0
+}
+}

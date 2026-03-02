@@ -38,6 +38,7 @@ import com.arn.scrobble.api.AccountType
 import com.arn.scrobble.api.Scrobblables
 import com.arn.scrobble.icons.Icons
 import com.arn.scrobble.icons.KeyboardArrowDown
+import com.arn.scrobble.icons.Lock
 import com.arn.scrobble.icons.automirrored.KeyboardArrowLeft
 import com.arn.scrobble.icons.automirrored.KeyboardArrowRight
 import com.arn.scrobble.navigation.PanoRoute
@@ -78,7 +79,10 @@ fun SwitchPref(
             .fillMaxWidth()
             .clip(MaterialTheme.shapes.medium)
             .then(
-                if (enabled)
+                if (locked)
+                    Modifier.clickable {
+                        onNavigateToBilling()
+                    } else if (enabled)
                     Modifier.toggleable(
                         value = value,
                         onValueChange = { newValue ->
@@ -86,22 +90,25 @@ fun SwitchPref(
                         },
                         role = Role.Switch
                     )
-                else if (locked)
-                    Modifier.clickable {
-                        onNavigateToBilling()
-                    }
                 else
                     Modifier
             )
             .padding(vertical = 16.dp, horizontal = horizontalOverscanPadding())
-            .alpha(if (enabled) 1f else 0.5f),
+            .alpha(if (enabled && !locked) 1f else 0.5f),
         verticalAlignment = Alignment.CenterVertically,
     ) {
+        if (locked)
+            Icon(
+                imageVector = Icons.Lock,
+                contentDescription = null,
+                modifier = Modifier.padding(end = 8.dp)
+            )
+
         Column(
             modifier = Modifier.weight(1f)
         ) {
             Text(
-                text = (if (locked) "🔒 " else "") + text,
+                text = text,
                 style = MaterialTheme.typography.titleMedium,
             )
 
@@ -143,10 +150,20 @@ fun TextPref(
             .alpha(if (locked || !enabled) 0.5f else 1f),
         verticalArrangement = Arrangement.Center
     ) {
-        Text(
-            text = (if (locked) "🔒 " else "") + text,
-            style = MaterialTheme.typography.titleMedium,
-        )
+        Row(
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            if (locked)
+                Icon(
+                    imageVector = Icons.Lock,
+                    contentDescription = null,
+                    modifier = Modifier.padding(end = 8.dp)
+                )
+            Text(
+                text = text,
+                style = MaterialTheme.typography.titleMedium,
+            )
+        }
 
         if (summary != null) {
             Text(

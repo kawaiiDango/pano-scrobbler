@@ -94,7 +94,7 @@ object Stuff {
     const val FRIENDS_REFRESH_INTERVAL = 60 * 1000L
     const val LASTFM_MAX_PAST_SCROBBLE = 14 * 24 * 60 * 60 * 1000L
     const val FULL_INDEX_ALLOWED_INTERVAL = 24 * 60 * 60 * 1000L
-    const val CHARTS_WIDGET_REFRESH_INTERVAL_HOURS = 6
+    const val CHARTS_WIDGET_REFRESH_INTERVAL_HOURS = 4
     const val META_WAIT = 1000L
     const val MAX_HISTORY_ITEMS = 20
     const val DEFAULT_PAGE_SIZE = 100

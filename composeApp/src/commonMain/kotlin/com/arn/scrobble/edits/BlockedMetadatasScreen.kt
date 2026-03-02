@@ -43,11 +43,10 @@ import com.arn.scrobble.ui.backgroundForShimmer
 import com.arn.scrobble.ui.panoContentPadding
 import com.arn.scrobble.ui.shimmerWindowBounds
 import com.arn.scrobble.utils.Stuff
-import org.jetbrains.compose.resources.pluralStringResource
 import org.jetbrains.compose.resources.stringResource
 import pano_scrobbler.composeapp.generated.resources.Res
 import pano_scrobbler.composeapp.generated.resources.mute
-import pano_scrobbler.composeapp.generated.resources.num_blocked_metadata
+import pano_scrobbler.composeapp.generated.resources.pref_blocked_metadata
 import pano_scrobbler.composeapp.generated.resources.skip
 
 @Composable
@@ -78,7 +77,7 @@ fun BlockedMetadatasScreen(
 
         EmptyTextWithImportButtonOnTv(
             visible = blockedMetadatas?.isEmpty() == true,
-            text = pluralStringResource(Res.plurals.num_blocked_metadata, 0, 0),
+            text = stringResource(Res.string.pref_blocked_metadata) + ": " + 0,
             onButtonClick = {
                 onNavigate(PanoRoute.Import)
             }

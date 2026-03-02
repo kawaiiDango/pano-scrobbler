@@ -70,7 +70,6 @@ import com.arn.scrobble.utils.Stuff.collectAsStateWithInitialValue
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
-import org.jetbrains.compose.resources.pluralStringResource
 import org.jetbrains.compose.resources.stringResource
 import pano_scrobbler.composeapp.generated.resources.Res
 import pano_scrobbler.composeapp.generated.resources.charts_custom
@@ -84,7 +83,7 @@ import pano_scrobbler.composeapp.generated.resources.enable
 import pano_scrobbler.composeapp.generated.resources.item_options
 import pano_scrobbler.composeapp.generated.resources.move_down
 import pano_scrobbler.composeapp.generated.resources.move_up
-import pano_scrobbler.composeapp.generated.resources.num_regex_edits
+import pano_scrobbler.composeapp.generated.resources.regex_rules
 import pano_scrobbler.composeapp.generated.resources.settings
 
 @Composable
@@ -270,7 +269,7 @@ private fun RegexEditsList(
             item(key = "no_custom_regexes") {
                 EmptyTextWithImportButtonOnTv(
                     visible = true,
-                    text = pluralStringResource(Res.plurals.num_regex_edits, 0, 0),
+                    text = stringResource(Res.string.regex_rules) + ": " + 0,
                     onButtonClick = onImport
                 )
             }

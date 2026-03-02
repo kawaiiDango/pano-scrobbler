@@ -37,13 +37,9 @@
 
     <!--  strings for unfinalized stuff  -->
     <string name="random_on_start">Random on process start</string>
-    <string name="discord_app_name">App name</string>
-    <string name="convert_file" formatted="true"
-        comment="%1$s is the file extension"
-        >Convert from %1$s</string>
     <string name="code_will_be_sent" formatted="true"
-        comment="%1$s is either Ko-Fi or BuyMeACoffee"
-        >The code will be sent to the email address associated with your %1$s account</string>
+        comment="%1$s is either Ko-Fi or BuyMeACoffee, %2$s is the donation amount threshold for receiving the code"
+        >The code will be sent to the email address associated with your %1$s account, if you have donated %2$s or more</string>
     <string name="not_running_desktop">The scrobbler has stopped. Check logs.</string>
     <string name="notification_access_tv">This setting is usually at Apps > Special app access > Notification access</string>
     <string name="desktop">PC</string>
@@ -64,8 +60,6 @@ According to Google Play's policies, purchases made through Google Play cannot b
 <!--  make them RTL agnostic  -->
     <string name="move_left" translatable="false">Move left</string>
     <string name="move_right" translatable="false">Move right</string>
-    <string name="move_up" translatable="false">Move up</string>
-    <string name="move_down" translatable="false">Move down</string>
 
     <!-- strings for dev only stuff  -->
     <string name="force_exception" translatable="false">Force log an exception</string>

@@ -6,6 +6,7 @@ import coil3.PlatformContext
 import coil3.disk.DiskCache
 import coil3.disk.directory
 import coil3.memory.MemoryCache
+import coil3.network.DeDupeConcurrentRequestStrategy
 import coil3.network.ktor3.KtorNetworkFetcherFactory
 import coil3.request.crossfade
 import coil3.size.Precision
@@ -38,7 +39,10 @@ fun newImageLoader(
             if (Stuff.isInDemoMode)
                 add(DemoInterceptor())
             add(
-                KtorNetworkFetcherFactory(httpClient = { Requesters.baseKtorClient })
+                KtorNetworkFetcherFactory(
+                    httpClient = { Requesters.baseKtorClient },
+                    concurrentRequestStrategy = { DeDupeConcurrentRequestStrategy() }
+                )
             )
             additionalComponents()
         }

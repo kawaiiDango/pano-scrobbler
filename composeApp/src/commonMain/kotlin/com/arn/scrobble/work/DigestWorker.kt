@@ -1,9 +1,12 @@
 package com.arn.scrobble.work
 
+import com.arn.scrobble.BuildKonfig
 import com.arn.scrobble.api.Scrobblables
 import com.arn.scrobble.api.lastfm.LastfmPeriod
 import com.arn.scrobble.charts.TimePeriod
+import com.arn.scrobble.charts.TimePeriodsGenerator.Companion.toTimePeriod
 import com.arn.scrobble.utils.PanoNotifications
+import com.arn.scrobble.utils.PanoTimeFormatter
 import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff
 import com.arn.scrobble.utils.Stuff.setMidnight
@@ -16,12 +19,11 @@ import kotlinx.coroutines.supervisorScope
 import kotlinx.coroutines.withContext
 import org.jetbrains.compose.resources.getString
 import pano_scrobbler.composeapp.generated.resources.Res
-import pano_scrobbler.composeapp.generated.resources.digest_monthly
-import pano_scrobbler.composeapp.generated.resources.digest_weekly
-import pano_scrobbler.composeapp.generated.resources.graph_yearly
+import pano_scrobbler.composeapp.generated.resources.s_top_scrobbles
 import pano_scrobbler.composeapp.generated.resources.top_albums
 import pano_scrobbler.composeapp.generated.resources.top_artists
 import pano_scrobbler.composeapp.generated.resources.top_tracks
+import pano_scrobbler.composeapp.generated.resources.weekly
 import java.util.Calendar
 
 enum class DigestType {
@@ -136,12 +138,23 @@ class DigestWorker(
                 }
             }
 
-            val notificationTitle = when (lastfmPeriod) {
-                LastfmPeriod.WEEK -> getString(Res.string.digest_weekly)
-                LastfmPeriod.MONTH -> getString(Res.string.digest_monthly)
-                LastfmPeriod.YEAR -> getString(Res.string.graph_yearly)
-                else -> throw IllegalArgumentException("Invalid period")
+            val periodString = lastfmPeriod.toTimePeriod().let {
+                when (lastfmPeriod) {
+                    LastfmPeriod.WEEK ->
+                        getString(Res.string.weekly)
+//                        PanoTimeFormatter.dateRange(it.start, it.end)
+
+                    LastfmPeriod.MONTH ->
+                        PanoTimeFormatter.month(it.start)
+
+                    LastfmPeriod.YEAR ->
+                        PanoTimeFormatter.year(it.start)
+
+                    else -> throw IllegalArgumentException("Invalid period")
+                }
             }
+
+            val notificationTitle = getString(Res.string.s_top_scrobbles, periodString)
 
             PanoNotifications.notifyDigest(
                 lastfmPeriod,
@@ -191,17 +204,13 @@ class DigestWorker(
 
             val nextMonth = cal.timeInMillis
 
-//            cal.timeInMillis = now
-//            cal.setMidnight()
-//            cal.add(Calendar.DAY_OF_YEAR, 1)
-//            cal.add(Calendar.SECOND, secondsToAdd)
-////            cal.add(Calendar.MINUTE, 1)
-//            if (cal.timeInMillis < now)
-//                cal.add(Calendar.DAY_OF_YEAR, 1)
-//            timesMap[DigestType.DIGEST_DAILY] = cal.timeInMillis
+            val test = false
 
-
-            return nextWeek to nextMonth
+            if (BuildKonfig.DEBUG && test) {
+                val nextMinute = System.currentTimeMillis() + 60 * 1000
+                return nextMinute to nextMinute
+            } else
+                return nextWeek to nextMonth
         }
     }
 }

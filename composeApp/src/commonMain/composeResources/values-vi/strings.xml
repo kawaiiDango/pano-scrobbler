@@ -27,9 +27,6 @@
     <plurals name="num_tracks">
         <item quantity="other">%1$s bài hát</item>
     </plurals>
-    <plurals name="num_simple_edits">
-        <item quantity="other">%1$s lần sửa</item>
-    </plurals>
     <string name="yes">Có</string>
     <string name="no">Không</string>
     <string name="reset">Đặt lại</string>
@@ -66,7 +63,6 @@
     <string name="list" comment="Single column list view">Danh sách</string>
     <string name="more_info">Thông tin chi tiết</string>
     <string name="more" comment="More options menu in short">Khác</string>
-    <string name="learn" comment="(Learn java regex syntax)">Tìm hiểu</string>
     <string name="hide">Ẩn</string>
     <string name="rank_change_no_change">Không đổi</string>
     <string name="search">Tìm kiếm</string>
@@ -83,7 +79,6 @@
     <string name="love" comment="Love/like a song">Yêu thích</string>
     <string name="hate" comment="Hate or dislike a song">Không thích</string>
     <string name="following" comment="accounts you are following on lastfm">Đang theo dõi</string>
-    <string name="followers" comment="your lastfm followers">Người theo dõi</string>
     <string name="send_notifications">Cho phép gửi thông báo</string>
     <string name="swap" comment="(Swap title and artist)">Hoán đổi</string>
     <string name="time_just_now">mới đây</string>
@@ -107,21 +102,17 @@
     <string name="charts_custom" comment="Custom date range, but in short, used in the charts menu">Tuỳ chỉnh</string>
     <string name="based_on" formatted="true" comment="%1= the word 'artists', 'albums' or 'tracks'">Dựa trên %1$s</string>
     <string name="not_enough_data" comment="(not enough data to draw a chart etc)">Không đủ dữ liệu</string>
-    <string name="random_not_found">Không tìm thấy bài hát</string>
-    <string name="loved_track">Bài hát được ưa thích</string>
     <string name="random_text">Ngẫu nhiên</string>
     <string name="original" comment="Original metadata before editing">Gốc</string>
     <string name="corrected" comment="Corrected metadata after editing">Đã sửa</string>
     <string name="close" comment="To close a dialog or something">Đóng</string>
     <string name="appwidget_loading">Đang tải…</string>
     <string name="appwidget_period" comment="1 week, 1 month, 1 year etc">Khoảng thời gian</string>
-    <string name="appwidget_theme">Chủ đề</string>
     <string name="appwidget_shadow">Bóng</string>
     <string name="appwidget_show">Hiện</string>
     <string name="light">Sáng</string>
     <string name="dark">Tối</string>
     <string name="system_colors">Màu hệ thống</string>
-    <string name="edit_field" comment="Fields like artist/album/track etc">Mục</string>
     <string name="edit_replace">Thay thế</string>
     <string name="edit_first" comment="First occurrence of a pattern">Đầu tiên</string>
     <string name="edit_all" comment="All occurrences of a pattern">Tất cả</string>
@@ -148,7 +139,6 @@
     <string name="api_url" comment="For Listenbrainz">API URL</string>
     <string name="server_url" comment="For self hosted scrobbling services">URL máy chủ</string>
     <string name="pref_locale">Ngôn ngữ</string>
-    <string name="pref_change_locale">Thay đổi ngôn ngữ</string>
     <string name="pref_misc">Khác</string>
     <string name="pref_first_day_of_week" comment="Sunday, Monday etc">Tuần mới bắt đầu vào</string>
     <string name="pref_export">Xuất</string>
@@ -165,7 +155,6 @@
     <string name="check_nls" formatted="true" comment="%1= the name Pano Scrobbler. Asks the user to check the app in notification access settings">Kiểm tra %1$s</string>
     <string name="no_browser">Không có trình duyệt trên thiết bị</string>
     <string name="kill_reason" comment="%1= reason for the app kill" formatted="true">Lý do: %1$s</string>
-    <string name="not_running_fix_action">Khắc phục</string>
     <string name="login_submit" comment="Verifies the login details">Xác thực</string>
     <string name="fix_it_battery_title">Tắt tối ưu hoá pin</string>
     <string name="fix_it_energy_title">Tắt tối ưu hoá pin</string>
@@ -183,7 +172,6 @@
     <string name="done">Hoàn tất</string>
     <string name="retry" comment="Retry loading data from network after it has failed">Thử lại</string>
     <string name="run_on_start">Chạy khi khởi động máy</string>
-    <string name="use_browser">Hãy sử dụng trình duyệt trên thiết bị được hỗ trợ.</string>
     <string name="save_logs" comment="Debug logs to be saved to a text file">Lưu log</string>
     <string name="contrast" comment="Color contrast, used in the themes screen">Độ tương phản</string>
     <string name="high" comment="As in high/medium/low">Cao</string>

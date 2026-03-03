@@ -298,7 +298,6 @@
     <string name="server_url" comment="For self hosted scrobbling services">URL adresa serveru</string>
     <string name="listenbrainz_info" formatted="true" comment="%1 = the link to page containing the token">Váš ověřovací token můžete najít na: %1$s</string>
     <string name="pref_now_playing">Odeslat právě přehrávané</string>
-    <string name="pref_fetch_album">Načíst chybějící data alba z lastFM</string>
     <string name="pref_locale">Jazyky</string>
     <string name="pref_crashlytics_enabled">Automaticky hlásit chyby</string>
     <string name="pref_misc">Ostatní</string>

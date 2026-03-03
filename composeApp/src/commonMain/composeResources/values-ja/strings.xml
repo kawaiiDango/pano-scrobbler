@@ -261,7 +261,6 @@
     <string name="server_url" comment="For self hosted scrobbling services">サーバーURL</string>
     <string name="listenbrainz_info" formatted="true" comment="%1 = the link to page containing the token">認証トークンは %1$s で確認できます。</string>
     <string name="pref_now_playing">再生中の状態情報を送信する</string>
-    <string name="pref_fetch_album">不足しているアルバムデータをLastFMから取得する</string>
     <string name="pref_locale">言語</string>
     <string name="pref_crashlytics_enabled">エラーを自動的に報告する</string>
     <string name="pref_misc">その他</string>

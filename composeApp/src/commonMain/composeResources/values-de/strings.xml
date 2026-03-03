@@ -277,7 +277,6 @@
     <string name="server_url" comment="For self hosted scrobbling services">Server URL</string>
     <string name="listenbrainz_info" formatted="true" comment="%1 = the link to page containing the token">Du findest deinen Authentifizierungs-Token unter: %1$s</string>
     <string name="pref_now_playing">"Scrobbelt gerade" senden</string>
-    <string name="pref_fetch_album">Fehlende Albumdaten von lastFM abrufen</string>
     <string name="pref_locale">Sprachen</string>
     <string name="pref_crashlytics_enabled">Fehler automatisch melden</string>
     <string name="pref_misc">Sonst.</string>

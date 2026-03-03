@@ -267,7 +267,6 @@
     <string name="server_url" comment="For self hosted scrobbling services">服务器 URL</string>
     <string name="listenbrainz_info" formatted="true" comment="%1 = the link to page containing the token">您可以在 %1$s 找到您的验证 token。</string>
     <string name="pref_now_playing">提交当前播放的音乐</string>
-    <string name="pref_fetch_album">从 lastFM 获取缺失的专辑数据</string>
     <string name="pref_locale">语言</string>
     <string name="pref_crashlytics_enabled">自动上报错误</string>
     <string name="pref_misc">杂项</string>

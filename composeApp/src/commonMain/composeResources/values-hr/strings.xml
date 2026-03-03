@@ -289,7 +289,6 @@
     <string name="server_url" comment="For self hosted scrobbling services">URL poslužitelja</string>
     <string name="listenbrainz_info" formatted="true" comment="%1 = the link to page containing the token">Svoj autentikacijski token možete pronaći na adresi: %1$s</string>
     <string name="pref_now_playing">Dijeli što sada svira</string>
-    <string name="pref_fetch_album">Dohvati nedostale podatke albuma s lastFM-a</string>
     <string name="pref_locale">Jezici</string>
     <string name="pref_crashlytics_enabled">Automatski prijavi greške</string>
     <string name="pref_misc">Razno</string>

@@ -300,7 +300,6 @@
     <string name="server_url" comment="For self hosted scrobbling services">URL сервера</string>
     <string name="listenbrainz_info" formatted="true" comment="%1 = the link to page containing the token">Вы можете найти ваш токен аутентификации на: %1$s</string>
     <string name="pref_now_playing">Отправить сейчас играет</string>
-    <string name="pref_fetch_album">Получить недостающие данные альбома с lastFM</string>
     <string name="pref_locale">Языки</string>
     <string name="pref_crashlytics_enabled">Автоматически сообщать об ошибках</string>
     <string name="pref_misc">Разное</string>

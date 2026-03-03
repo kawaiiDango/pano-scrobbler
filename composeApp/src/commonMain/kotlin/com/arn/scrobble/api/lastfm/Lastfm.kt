@@ -464,7 +464,6 @@ open class LastFm(userAccount: UserAccountSerializable) : Scrobblable(userAccoun
             }
         }
 
-        parameter("autocorrect", 1)
         parameter("format", "json")
         parameter("api_key", apiKey)
         parameter("sk", userAccount.authKey)
@@ -498,7 +497,6 @@ open class LastFm(userAccount: UserAccountSerializable) : Scrobblable(userAccoun
         page: Int? = null,
         username: String = userAccount.user.name,
         limit: Int? = null,
-        autocorrect: Boolean = true,
     ) =
         client.getPageResult<TrackScrobblesResponse, Track>(transform = { it.trackscrobbles }) {
             parameter("method", "user.getTrackScrobbles")
@@ -506,7 +504,6 @@ open class LastFm(userAccount: UserAccountSerializable) : Scrobblable(userAccoun
             parameter("artist", track.artist.name)
             parameter("track", track.name)
             parameter("user", username)
-            parameter("autocorrect", if (autocorrect) 1 else 0)
             parameter("limit", limit)
             parameter("page", page)
             parameter("format", "json")

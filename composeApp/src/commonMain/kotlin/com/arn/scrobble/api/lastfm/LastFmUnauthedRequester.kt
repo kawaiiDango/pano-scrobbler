@@ -86,11 +86,9 @@ class LastFmUnauthedRequester {
     suspend fun <T : MusicEntry> getInfo(
         musicEntry: T,
         username: String? = null,
-        autocorrect: Boolean = true,
     ): Result<T> {
         val reqBuilder = HttpRequestBuilder().apply {
             url(Stuff.LASTFM_API_ROOT)
-            parameter("autocorrect", if (autocorrect) 1 else 0)
             parameter("username", username)
             parameter("format", "json")
             parameter("api_key", apiKey)
@@ -125,11 +123,9 @@ class LastFmUnauthedRequester {
 
     suspend fun <T : MusicEntry> getTopTags(
         musicEntry: T,
-        autocorrect: Boolean = true,
     ): Result<TagsResponse> {
         val reqBuilder = HttpRequestBuilder().apply {
             url(Stuff.LASTFM_API_ROOT)
-            parameter("autocorrect", if (autocorrect) 1 else 0)
             parameter("format", "json")
             parameter("api_key", apiKey)
         }
@@ -159,7 +155,6 @@ class LastFmUnauthedRequester {
 
     suspend fun artistGetTopTracks(
         artist: Artist,
-        autocorrect: Boolean = true,
         limit: Int? = null,
         page: Int? = null,
     ) = client.getPageResult<TopTracksResponse, Track>(
@@ -168,7 +163,6 @@ class LastFmUnauthedRequester {
     ) {
         parameter("method", "artist.getTopTracks")
         doubleEncodePlusParam("artist", artist.name)
-        parameter("autocorrect", if (autocorrect) 1 else 0)
         parameter("limit", limit)
         parameter("page", page)
         parameter("format", "json")
@@ -177,7 +171,6 @@ class LastFmUnauthedRequester {
 
     suspend fun artistGetTopAlbums(
         artist: Artist,
-        autocorrect: Boolean = true,
         limit: Int? = null,
         page: Int? = null,
     ) = client.getPageResult<TopAlbumsResponse, Album>(
@@ -186,7 +179,6 @@ class LastFmUnauthedRequester {
     ) {
         parameter("method", "artist.getTopAlbums")
         doubleEncodePlusParam("artist", artist.name)
-        parameter("autocorrect", if (autocorrect) 1 else 0)
         parameter("limit", limit)
         parameter("page", page)
         parameter("format", "json")
@@ -195,13 +187,11 @@ class LastFmUnauthedRequester {
 
     suspend fun artistGetSimilar(
         artist: Artist,
-        autocorrect: Boolean = true,
         limit: Int? = null,
     ) = client.getResult<SimilarArtistsResponse> {
         url(Stuff.LASTFM_API_ROOT)
         parameter("method", "artist.getSimilar")
         doubleEncodePlusParam("artist", artist.name)
-        parameter("autocorrect", if (autocorrect) 1 else 0)
         parameter("limit", limit)
         parameter("format", "json")
         parameter("api_key", apiKey)
@@ -210,14 +200,12 @@ class LastFmUnauthedRequester {
 
     suspend fun trackGetSimilar(
         track: Track,
-        autocorrect: Boolean = true,
         limit: Int? = null,
     ) = client.getResult<SimilarTracksResponse> {
         url(Stuff.LASTFM_API_ROOT)
         parameter("method", "track.getSimilar")
         doubleEncodePlusParam("artist", track.artist.name)
         doubleEncodePlusParam("track", track.name)
-        parameter("autocorrect", if (autocorrect) 1 else 0)
         parameter("limit", limit)
         parameter("format", "json")
         parameter("api_key", apiKey)

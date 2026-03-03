@@ -12,7 +12,6 @@ import java.net.HttpURLConnection
 import java.net.URI
 import java.nio.file.Files
 import java.security.MessageDigest
-import java.time.Year
 import javax.xml.parsers.DocumentBuilderFactory
 import kotlin.io.encoding.Base64
 import kotlin.io.path.name
@@ -415,13 +414,6 @@ tasks.register<DefaultTask>("generateSha256") {
     }
 }
 
-//tasks.register<Zip>("zipAppImage") {
-//    from("build/compose/binaries/main-release/app")
-//    archiveFileName = "$appNameWithoutSpaces-$resourcesDirName.zip"
-//    destinationDirectory = file("dist")
-//}
-
-
 tasks.register<Copy>("copyReleaseDmg") {
     val fileName = "$APP_NAME_NO_SPACES-$resourcesDirName.dmg"
     from("build/compose/binaries/main-release/dmg")
@@ -477,6 +469,27 @@ tasks.register<Exec>("packageWindowsNsis") {
     )
 }
 
+tasks.register<Exec>("packageInno") {
+    val executableDir = file("build/compose/native/$resourcesDirName")
+    val distDir = file("../dist")
+    val scriptFile = file("inno/installer.iss")
+    val iconFile = file("app-icons/pano-scrobbler.ico")
+    val isccPath = System.getenv("PROGRAMFILES(x86)") + "\\Inno Setup 6\\ISCC.exe"
+
+    doFirst {
+        distDir.mkdirs()
+    }
+
+    commandLine(
+        isccPath,
+        "/DOUT_DIR=" + distDir.absolutePath,
+        "/DAPP_DIR=" + executableDir.absolutePath,
+        "/DVERSION=$VER_NAME",
+        "/DICON_FILE=" + iconFile.absolutePath,
+        scriptFile.absolutePath
+    )
+}
+
 tasks.register<Exec>("packageLinuxAppImageAndTarball") {
     commandLine(
         "bash",
@@ -526,7 +539,6 @@ tasks.register<Exec>("generateRc") {
             .replace("\$fileName", outputFileName)
             .replace("\$fileType", fileType)
             .replace("\$iconInfo", iconInfo)
-            .replace("\$year", Year.now().toString())
 
         rcOutputDir.mkdirs()
         rcOut.writeText(rcContent)
@@ -1048,7 +1060,7 @@ tasks.configureEach {
             if (os.isLinux) {
                 finalizedBy("packageLinuxAppImageAndTarball")
             } else if (os.isWindows) {
-                finalizedBy("packageWindowsNsis")
+                finalizedBy("packageInno")
             }
         }
 
@@ -1062,7 +1074,7 @@ tasks.configureEach {
             dependsOn("buildNativeImage")
         }
 
-        "packageWindowsNsis" -> {
+        "packageInno" -> {
             dependsOn("buildNativeImage")
         }
 

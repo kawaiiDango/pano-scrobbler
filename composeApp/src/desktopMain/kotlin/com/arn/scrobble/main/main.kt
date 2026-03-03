@@ -171,6 +171,12 @@ fun main(args: Array<String>) {
             cmdlineArgs.automationCommand,
             cmdlineArgs.automationArg ?: "",
         )
+
+        if (cmdlineArgs.automationCommand == Automation.DESKTOP_QUIT) {
+            // give the command some time to be sent before quitting
+            Thread.sleep(1500)
+        }
+
         return
     } else if (!BuildKonfig.DEBUG)
         preventMultipleInstances()
@@ -224,9 +230,8 @@ fun main(args: Array<String>) {
         )
 
         fun onExit() {
-            DesktopStuff.prepareToExit()
             exitApplication()
-            exitProcess(0)
+            DesktopStuff.exit()
         }
 
         fun openIfNeeded() {

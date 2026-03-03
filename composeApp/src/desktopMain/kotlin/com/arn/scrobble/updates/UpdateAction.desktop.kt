@@ -3,7 +3,6 @@ package com.arn.scrobble.updates
 import co.touchlab.kermit.Logger
 import com.arn.scrobble.api.github.GithubReleases
 import com.arn.scrobble.utils.DesktopStuff
-import kotlin.system.exitProcess
 
 actual suspend fun doAfterUpdateCheck(releases: GithubReleases): UpdateAction? {
     val updateFile = AutoUpdater.update(releases) ?: return null
@@ -19,8 +18,6 @@ actual suspend fun doAfterUpdateCheck(releases: GithubReleases): UpdateAction? {
 }
 
 actual fun runUpdateAction(updateAction: UpdateAction) {
-    DesktopStuff.prepareToExit()
-
     try {
         if (DesktopStuff.os == DesktopStuff.Os.Windows) {
             // there doesn't seem to be a way to pass arguments to the installer when launching with explorer.exe
@@ -37,5 +34,5 @@ actual fun runUpdateAction(updateAction: UpdateAction) {
         Logger.e(e) { "Failed to relaunch after update" }
     }
 
-    exitProcess(0)
+    DesktopStuff.exit()
 }

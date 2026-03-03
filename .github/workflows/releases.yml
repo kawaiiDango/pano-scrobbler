@@ -42,12 +42,6 @@ jobs:
         run: |
           echo "${{ secrets.ANDROID_KEYSTORE_JKS }}" | base64 -d - > androidApp/android-keystore.jks
 
-      - if: matrix.resources-dir == 'windows-x64'
-        name: Set up NSIS
-        shell: bash
-        run: |
-          choco install -y --no-progress nsis
-
       - if: matrix.resources-dir == 'linux-x64'
         name: Build APK
         shell: bash

@@ -74,6 +74,7 @@ object Stuff {
     const val LIBREFM_KEY = "panoScrobbler"
     const val FRIENDS_RECENTS_DELAY = 800L
     const val MAX_PATTERNS = 50
+    const val MAX_PATTERNS_HIGH = 300
     const val MAX_PINNED_FRIENDS = 10
     const val MAX_INDEXED_ITEMS = 10000
     const val PINNED_FRIENDS_CACHE_TIME = 60L * 60 * 24 * 1 * 1000

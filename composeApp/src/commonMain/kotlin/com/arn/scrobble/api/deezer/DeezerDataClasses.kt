@@ -12,8 +12,6 @@ data class DeezerSearchResponse(
 data class DeezerTrack(
     val id: Long,
     val title: String,
-    val title_short: String,
-    val title_version: String,
     val duration: Int,
     val artist: DeezerArtist,
     val album: DeezerAlbum,

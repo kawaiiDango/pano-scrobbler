@@ -105,9 +105,10 @@ class LastFmUnauthedRequester {
 
             is Album -> client.getResult<AlbumInfoResponse> {
                 takeFrom(reqBuilder)
+                // this does not have double encoding bug
                 parameter("method", "album.getInfo")
-                doubleEncodePlusParam("artist", musicEntry.artist!!.name)
-                doubleEncodePlusParam("album", musicEntry.name)
+                parameter("artist", musicEntry.artist!!.name)
+                parameter("album", musicEntry.name)
             }.map { it.album as T }
 
             is Track -> client.getResult<TrackInfoResponse> {

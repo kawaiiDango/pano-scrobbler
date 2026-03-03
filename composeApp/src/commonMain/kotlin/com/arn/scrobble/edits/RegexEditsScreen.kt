@@ -38,6 +38,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.arn.scrobble.billing.LocalLicenseValidState
 import com.arn.scrobble.db.RegexEdit
 import com.arn.scrobble.icons.Apps
 import com.arn.scrobble.icons.Block
@@ -158,6 +159,8 @@ private fun RegexEditsList(
     onImport: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    val isLicenseValid = LocalLicenseValidState.current
+    val maxPatterns = if (isLicenseValid) Stuff.MAX_PATTERNS_HIGH else Stuff.MAX_PATTERNS
     val scope = rememberCoroutineScope()
     val nonRegexItemsCount = remember {
         RegexPresets.filteredPresets.size + listOfNotNull(
@@ -243,9 +246,9 @@ private fun RegexEditsList(
         }
 
         item(key = "custom_header") {
-            if (regexEdits.size >= Stuff.MAX_PATTERNS) {
+            if (regexEdits.size >= maxPatterns) {
                 Text(
-                    text = stringResource(Res.string.edit_max_patterns, Stuff.MAX_PATTERNS),
+                    text = stringResource(Res.string.edit_max_patterns, maxPatterns),
                     style = MaterialTheme.typography.titleLarge,
                     color = MaterialTheme.colorScheme.error,
                     modifier = Modifier

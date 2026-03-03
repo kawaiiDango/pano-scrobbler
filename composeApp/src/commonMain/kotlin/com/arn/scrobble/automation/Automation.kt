@@ -20,6 +20,7 @@ object Automation {
     const val BLOCKLIST = "blocklist"
 
     const val DESKTOP_FOCUS_EXISTING = "focus-existing"
+    const val DESKTOP_QUIT = "quit"
     const val ANDROID_NOW_PLAYING = "now-playing"
 
     const val PREFIX = "com.arn.scrobble.automation"

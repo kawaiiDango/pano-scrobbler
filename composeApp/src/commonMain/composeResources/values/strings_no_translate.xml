@@ -36,6 +36,7 @@
     <string name="affect_performance">Will affect performance</string>
 
     <!--  strings for unfinalized stuff  -->
+    <string name="upto_n_regexes" formatted="true">Up to %1$d regex rules</string>
     <string name="random_on_start">Random on process start</string>
     <string name="not_running_desktop">The scrobbler has stopped. Check logs.</string>
     <string name="notification_access_tv">This setting is usually at Apps > Special app access > Notification access</string>

@@ -24,10 +24,15 @@ interface RegexEditsDao {
     SELECT * FROM $tableName
     WHERE enabled = 1
     ORDER BY `order` ASC
-    LIMIT ${Stuff.MAX_PATTERNS}
+    LIMIT :limit
     """
     )
-    fun enabledFlow(): Flow<List<RegexEdit>>
+    fun enabledFlow(
+        limit: Int = if (VariantStuff.billingRepository.licenseState.value == LicenseState.VALID)
+            Stuff.MAX_PATTERNS_HIGH
+        else
+            Stuff.MAX_PATTERNS
+    ): Flow<List<RegexEdit>>
 
     @Query("SELECT count(1) FROM $tableName")
     fun count(): Flow<Int>
@@ -55,7 +60,7 @@ interface RegexEditsDao {
 
         suspend fun RegexEditsDao.import(e: List<RegexEdit>) {
             val existingWithoutOrder =
-                enabledFlow().first().map { it.copy(order = -1, _id = -1) }.toSet()
+                allFlow().first().map { it.copy(order = -1, _id = -1) }.toSet()
             val toInsert = e.filter {
                 it.copy(order = -1, _id = -1) !in existingWithoutOrder
             }

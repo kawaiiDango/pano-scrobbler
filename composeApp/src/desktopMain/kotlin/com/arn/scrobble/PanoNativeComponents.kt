@@ -143,6 +143,8 @@ object PanoNativeComponents {
     fun onReceiveIpcCommand(command: String, arg: String) {
         if (command == Automation.DESKTOP_FOCUS_EXISTING) {
             PanoTrayUtils.onTrayMenuItemClickedFn(PanoTrayUtils.ItemId.Open.name)
+        } else if (command == Automation.DESKTOP_QUIT) {
+            DesktopStuff.exit()
         } else {
             val wasSuccessful = Automation.executeAction(command, arg.ifEmpty { null }, null)
             if (!wasSuccessful) {

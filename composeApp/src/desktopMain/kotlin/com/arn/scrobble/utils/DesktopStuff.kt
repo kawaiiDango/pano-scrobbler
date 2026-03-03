@@ -9,6 +9,7 @@ import com.arn.scrobble.work.DesktopWorkManager
 import java.io.File
 import java.net.URI
 import java.net.URISyntaxException
+import kotlin.system.exitProcess
 
 
 object DesktopStuff {
@@ -69,6 +70,7 @@ object DesktopStuff {
                     noUpdate = true
                 }
 
+                "--${Automation.DESKTOP_QUIT}",
                 "--${Automation.ENABLE}",
                 "--${Automation.DISABLE}",
                 "--${Automation.LOVE}",
@@ -283,9 +285,10 @@ object DesktopStuff {
         }
     }
 
-    fun prepareToExit() {
+    fun exit() {
         PanoNativeComponents.stopListeningMedia()
         DesktopWorkManager.clearAll()
         PanoDb.db.close()
+        exitProcess(0)
     }
 }

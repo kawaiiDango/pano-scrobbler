@@ -65,6 +65,7 @@ play_circle
 public
 question_mark
 refresh
+regular_expression
 reset_settings
 save
 schedule

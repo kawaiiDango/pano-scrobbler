@@ -51,9 +51,8 @@ Currently, the FOSS builds skip this step.
 - If you intend to package a build for desktop,
   use [Bellsoft's GraalVM based on OpenJDK 25](https://bell-sw.com/pages/downloads/native-image-kit/)
   as your Gradle JDK and run Gradle packageUberJarForCurrentOS. Also
-  have [NSIS](https://nsis.sourceforge.io/Main_Page) installed in Program Files on Windows.
+  have [Inno Setup](https://jrsoftware.org/isdl.php) installed in Program Files on Windows.
 
-- Run `./gradlew composeApp:exportLibraryDefinitions -PaboutLibraries.exportVariant=desktop`
-- Run `./gradlew composeApp:packageUberJarForCurrentOS`
+- Run `./gradlew composeApp:exportLibraryDefinitions composeApp:packageUberJarForCurrentOS -PaboutLibraries.exportVariant=desktop`
 
 - Info: the desktop build includes no non-free dependencies.

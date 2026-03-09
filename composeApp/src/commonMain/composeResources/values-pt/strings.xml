@@ -282,6 +282,7 @@
     <string name="server_url" comment="For self hosted scrobbling services">URL do servidor</string>
     <string name="listenbrainz_info" formatted="true" comment="%1 = the link to page containing the token">Pode obter a sua chave de autenticação em: %1$s</string>
     <string name="pref_now_playing">Submeter em reprodução</string>
+    <string name="pref_fetch_missing_album" formatted="true" comment="%1= the name of a service like last.fm, Deezer etc">Obter álbum em falta a partir de %1$s</string>
     <string name="pref_locale">Idiomas</string>
     <string name="pref_crashlytics_enabled">Reportar erros automaticamente</string>
     <string name="pref_misc">Diversos.</string>

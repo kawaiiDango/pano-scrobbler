@@ -497,6 +497,8 @@ tasks.register<Exec>("packageLinuxAppImageAndTarball") {
 }
 
 tasks.register<Exec>("generateRc") {
+    if (!os.isWindows) return@register
+
     val rcTemplateFile = file("rc-template.txt")
     val rcOutputDir = project.layout.buildDirectory.dir("generated-rc").get().asFile
     val icoFilePath = file("app-icons/pano-scrobbler.ico").absolutePath

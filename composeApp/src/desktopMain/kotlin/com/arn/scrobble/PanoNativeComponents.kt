@@ -23,7 +23,7 @@ import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 object PanoNativeComponents {
     private var desktopMediaListener: DesktopMediaListener? = null
     val onFilePickedFlow = MutableSharedFlow<Pair<Int, String>>(extraBufferCapacity = 1)
-    val onDarkModeChangeFlow = MutableStateFlow(true)
+    val onDarkModeChangeFlow = MutableStateFlow<Boolean?>(null)
     var isMediaListenerRunning = false
         private set
 
@@ -42,6 +42,7 @@ object PanoNativeComponents {
             scrobbleQueue
         )
 
+        startListeningMediaInThread()
         desktopMediaListener!!.start()
 
         Stuff.appScope.launch {
@@ -196,8 +197,8 @@ object PanoNativeComponents {
     @JvmStatic
     external fun setTrayLinux(
         tooltip: String,
-        argb: IntArray,
-        iconSize: Int,
+        pngBytes: ByteArray,
+        invert: Boolean,
         menuItemIds: Array<String>,
         menuItemTexts: Array<String>
     )

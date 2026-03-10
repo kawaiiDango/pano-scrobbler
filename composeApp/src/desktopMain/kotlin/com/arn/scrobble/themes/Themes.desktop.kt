@@ -13,10 +13,12 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.remember
 import com.arn.scrobble.PanoNativeComponents
+import kotlinx.coroutines.flow.filterNotNull
 
 @Composable
 actual fun isSystemInDarkThemeNative(): State<Boolean> {
-    return PanoNativeComponents.onDarkModeChangeFlow.collectAsState(false)
+    return remember { PanoNativeComponents.onDarkModeChangeFlow.filterNotNull() }
+        .collectAsState(false)
 }
 
 @Composable

@@ -10,7 +10,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlin.math.min
 
 abstract class MediaListener(
-    val scope: CoroutineScope,
+    protected val scope: CoroutineScope,
     private val scrobbleQueue: ScrobbleQueue,
 ) {
     private data class ScrobbleTimingPrefs(

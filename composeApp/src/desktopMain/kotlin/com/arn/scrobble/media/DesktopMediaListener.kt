@@ -29,8 +29,6 @@ class DesktopMediaListener(
         PlatformStuff.mainPrefs.data.stateInWithCache(scope) { it.seenApps }
 
     fun start() {
-        PanoNativeComponents.startListeningMediaInThread()
-
         scope.launch {
             delay(1500)
 

@@ -21,7 +21,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.awt.SwingWindow
-import androidx.compose.ui.configureSwingGlobalsForCompose
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.painter.BitmapPainter
 import androidx.compose.ui.platform.LocalDensity
@@ -53,7 +52,6 @@ import com.arn.scrobble.review.ReviewPrompter
 import com.arn.scrobble.themes.AppTheme
 import com.arn.scrobble.themes.DayNightMode
 import com.arn.scrobble.ui.SerializableWindowState
-import com.arn.scrobble.ui.TrayIcons
 import com.arn.scrobble.updates.runUpdateAction
 import com.arn.scrobble.utils.DesktopStuff
 import com.arn.scrobble.utils.LocaleUtils
@@ -63,17 +61,23 @@ import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff
 import com.arn.scrobble.utils.VariantStuff
 import com.arn.scrobble.utils.setAppLocale
-import com.arn.scrobble.utils.vectorDrawableToImageBitmap
 import com.arn.scrobble.work.UpdaterWork
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
+import org.jetbrains.compose.resources.DensityQualifier
+import org.jetbrains.compose.resources.InternalResourceApi
+import org.jetbrains.compose.resources.LanguageQualifier
+import org.jetbrains.compose.resources.RegionQualifier
+import org.jetbrains.compose.resources.ResourceEnvironment
+import org.jetbrains.compose.resources.ThemeQualifier
 import org.jetbrains.compose.resources.getString
 import org.jetbrains.compose.resources.painterResource
 import pano_scrobbler.composeapp.generated.resources.Res
@@ -97,10 +101,49 @@ import java.awt.Toolkit
 import java.awt.Window
 import java.awt.event.MouseEvent
 import java.awt.event.MouseListener
+import java.lang.reflect.Constructor
+import java.util.Locale
 import kotlin.system.exitProcess
 import kotlin.time.Duration.Companion.minutes
 import kotlin.time.Duration.Companion.seconds
 
+@OptIn(InternalResourceApi::class)
+private fun initHeadlessResourceEnvironment() {
+
+    val constructor: Constructor<ResourceEnvironment> = ResourceEnvironment::class.java
+        .getDeclaredConstructor(
+            LanguageQualifier::class.java,
+            RegionQualifier::class.java,
+            ThemeQualifier::class.java,
+            DensityQualifier::class.java
+        )
+    constructor.isAccessible = true
+
+    var lastLocale: Locale? = null
+    var lastResourceEnvironment: ResourceEnvironment? = null
+
+    fun environmentFn(): ResourceEnvironment {
+        val locale = Locale.getDefault()
+        if (locale != lastLocale || lastResourceEnvironment == null) {
+            lastLocale = locale
+            lastResourceEnvironment = constructor.newInstance(
+                LanguageQualifier(locale.language),
+                RegionQualifier(locale.country),
+                ThemeQualifier.LIGHT, // safe default, no Skiko needed
+                DensityQualifier.MDPI  // safe default, no Swing needed
+            )
+        }
+
+        return lastResourceEnvironment
+    }
+
+    // The file-level var compiles to a static field on the facade class
+    // ResourceEnvironmentKt is the facade for ResourceEnvironment.kt
+    val facadeClass = Class.forName("org.jetbrains.compose.resources.ResourceEnvironmentKt")
+    val field = facadeClass.getDeclaredField("getResourceEnvironment")
+    field.isAccessible = true
+    field.set(null, ::environmentFn)
+}
 
 private fun init() {
     // init: run once
@@ -153,7 +196,6 @@ private fun preventMultipleInstances() {
     }
 }
 
-@OptIn(ExperimentalComposeUiApi::class)
 fun main(args: Array<String>) {
     val cmdlineArgs = DesktopStuff.parseCmdlineArgs(args)
     DesktopStuff.setSystemProperties()
@@ -179,13 +221,15 @@ fun main(args: Array<String>) {
     val initialPrefs = runBlocking { Stuff.initializeMainPrefsCache() }
 
     init()
+    initHeadlessResourceEnvironment()
 
     // ------------------------------- tray menu
 
     var trayData by mutableStateOf<PanoTrayUtils.TrayData?>(null)
     val trayIconIsDark = combine(
         PlatformStuff.mainPrefs.data.map { it.trayIconTheme },
-        PanoNativeComponents.onDarkModeChangeFlow
+        // waits will the tokio event loop is started
+        PanoNativeComponents.onDarkModeChangeFlow.filterNotNull()
     ) { trayIconThemePref, isDarkMode ->
         when (trayIconThemePref) {
             DayNightMode.SYSTEM -> !isDarkMode
@@ -193,20 +237,8 @@ fun main(args: Array<String>) {
         }
     }
 
-    var trayIconIsDarkLastVal = false
-
     val trayIconSize = 128
-    var trayIcons: TrayIcons? = null
-
-    fun loadTrayIcon(
-        fileName: String,
-        isDark: Boolean
-    ) = vectorDrawableToImageBitmap(
-        Unit::class.java.classLoader.getResourceAsStream("composeResources/pano_scrobbler.composeapp.generated.resources/drawable/$fileName")!!,
-        trayIconSize,
-        trayIconSize,
-        darkTint = isDark
-    )
+    var trayIcons: Triple<ByteArray, ByteArray, ByteArray>? = null
 
     combine(
         PanoNotifications.playingTrackTrayInfo,
@@ -215,20 +247,12 @@ fun main(args: Array<String>) {
         trayIconIsDark
     ) { playingTrackInfo, discordRpcSuccessful, updateAction, trayIconThemeIsDark ->
 
-        if (trayIcons == null || trayIconIsDarkLastVal != trayIconThemeIsDark) {
-            trayIconIsDarkLastVal = trayIconThemeIsDark
-
-            trayIcons = TrayIcons(
-                notPlaying = loadTrayIcon("vd_noti_persistent.xml", trayIconThemeIsDark),
-                playing = loadTrayIcon("vd_noti.xml", trayIconThemeIsDark),
-                error = loadTrayIcon("vd_noti_err.xml", trayIconThemeIsDark),
+        if (trayIcons == null) {
+            trayIcons = Triple(
+                Res.readBytes("drawable/vd_noti_persistent.png"),
+                Res.readBytes("drawable/vd_noti.png"),
+                Res.readBytes("drawable/vd_noti_err.png")
             )
-        }
-
-        val trayIconBmp = when {
-            playingTrackInfo.isEmpty() -> trayIcons.notPlaying
-            playingTrackInfo.values.any { it is PlayingTrackNotifyEvent.Error } -> trayIcons.error
-            else -> trayIcons.playing
         }
 
         var tooltipText = BuildKonfig.APP_NAME
@@ -341,7 +365,12 @@ fun main(args: Array<String>) {
 
         trayData = PanoTrayUtils.TrayData(
             tooltip = tooltipText,
-            bitmap = trayIconBmp,
+            iconType = when {
+                playingTrackInfo.isEmpty() -> PanoTrayUtils.TrayIconType.NOT_PLAYING
+                playingTrackInfo.values.any { it is PlayingTrackNotifyEvent.Error } -> PanoTrayUtils.TrayIconType.ERROR
+                else -> PanoTrayUtils.TrayIconType.PLAYING
+            },
+            iconIsDark = trayIconThemeIsDark,
             iconSize = trayIconSize,
             menuItemIds = trayItems.map { it.first },
             menuItemTexts = trayItems.map { it.second }
@@ -349,14 +378,16 @@ fun main(args: Array<String>) {
 
         if (DesktopStuff.os == DesktopStuff.Os.Linux) {
             trayData?.let { trayData ->
+                val pngBytes = when (trayData.iconType) {
+                    PanoTrayUtils.TrayIconType.PLAYING -> trayIcons.second
+                    PanoTrayUtils.TrayIconType.NOT_PLAYING -> trayIcons.first
+                    PanoTrayUtils.TrayIconType.ERROR -> trayIcons.third
+                }
+
                 PanoNativeComponents.setTrayLinux(
                     tooltip = trayData.tooltip,
-                    argb = trayData.bitmap.let { bmp ->
-                        val argb = IntArray(bmp.width * bmp.height)
-                        bmp.readPixels(argb)
-                        argb
-                    },
-                    iconSize = trayData.iconSize,
+                    pngBytes = pngBytes,
+                    invert = !trayData.iconIsDark,
                     menuItemIds = trayData.menuItemIds.toTypedArray(),
                     menuItemTexts = trayData.menuItemTexts.toTypedArray(),
                 )
@@ -390,14 +421,9 @@ fun main(args: Array<String>) {
         )
     }
 
-    configureSwingGlobalsForCompose(
-        overrideLookAndFeel = false,
-        useScreenMenuBarOnMacOs = false,
-        useAutoDpiOnLinux = true
-    )
-
     if (cmdlineArgs.minimized && DesktopStuff.os == DesktopStuff.Os.Linux) {
         runBlocking {
+//            delay(5000)
             windowOpenTrigger.first()
         }
     }
@@ -475,15 +501,22 @@ fun main(args: Array<String>) {
 //        }
 
         // the AWT tray doesn't work on KDE
-        if (DesktopStuff.os != DesktopStuff.Os.Linux) {
+        if (DesktopStuff.os != DesktopStuff.Os.Linux && trayIcons != null) {
             val trayState = rememberTrayState()
 
             var trayMouseListenerSet by remember { mutableStateOf(false) }
             var trayMenuPos by remember { mutableStateOf<Point?>(null) }
 
+            val (trayIconPlaying, trayIconNotPlaying, trayIconError) =
+                PanoTrayUtils.rememberTrayIcons(trayIcons, trayData?.iconIsDark == true)
+
             trayData?.let { trayData ->
                 Tray(
-                    icon = BitmapPainter(trayData.bitmap),
+                    icon = when (trayData.iconType) {
+                        PanoTrayUtils.TrayIconType.PLAYING -> trayIconPlaying
+                        PanoTrayUtils.TrayIconType.NOT_PLAYING -> trayIconNotPlaying
+                        PanoTrayUtils.TrayIconType.ERROR -> trayIconError
+                    }.let { BitmapPainter(it) },
                     tooltip = trayData.tooltip,
                     state = trayState,
                     onAction = ::openIfNeeded
@@ -679,6 +712,7 @@ private suspend fun trayMenuClickListener(
         }
     }
 }
+
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable

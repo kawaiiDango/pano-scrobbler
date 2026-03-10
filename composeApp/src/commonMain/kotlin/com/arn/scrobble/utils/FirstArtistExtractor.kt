@@ -2,6 +2,8 @@ package com.arn.scrobble.utils
 
 import com.appmattus.crypto.Algorithm
 import com.arn.scrobble.db.ArtistWithDelimiters
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import pano_scrobbler.composeapp.generated.resources.Res
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
@@ -155,7 +157,9 @@ object FirstArtistExtractor {
         updatedUserAllowlist: List<ArtistWithDelimiters>?,
     ): String {
         if (!initialized || updatedUserAllowlist != null) {
-            val bytes = Res.readBytes("files/musicbrainz_artist_hashes.bin")
+            val bytes = withContext(Dispatchers.IO) {
+                Res.readBytes("files/musicbrainz_artist_hashes.bin")
+            }
             initFromAssetAndUserList(bytes, updatedUserAllowlist ?: emptyList())
             initialized = true
         }

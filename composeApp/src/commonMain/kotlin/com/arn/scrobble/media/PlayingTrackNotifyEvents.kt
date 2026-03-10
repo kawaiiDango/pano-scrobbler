@@ -211,7 +211,7 @@ suspend fun listenForPlayingTrackEvents(
                 if (scrobbleData.artist.isEmpty() || scrobbleData.track.isEmpty())
                     return@collect
 
-                mediaListener.scope.launch(Dispatchers.IO) {
+                Stuff.appScope.launch(Dispatchers.IO) {
                     ScrobbleEverywhere.loveOrUnlove(
                         scrobbleData.toTrack().copy(msid = msid),
                         loved

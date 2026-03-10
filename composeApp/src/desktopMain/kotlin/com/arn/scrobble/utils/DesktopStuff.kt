@@ -156,6 +156,12 @@ object DesktopStuff {
         } catch (e: URISyntaxException) {
             Logger.e(e) { "Error while setting up socks proxy from environment" }
         }
+
+        // skiko
+        System.setProperty("skiko.rendering.laf.global", false.toString())
+        System.setProperty("skiko.rendering.useScreenMenuBar", false.toString())
+        System.setProperty("skiko.linux.autodpi", true.toString())
+        System.setProperty("compose.application.configure.swing.globals", true.toString())
     }
 
     fun getLibraryPath(name: String): String {

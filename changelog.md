@@ -3,6 +3,7 @@
 - Switched to Inno Setup for the Windows installer
 - Supporters can now add up to 300 regex rules
 - Implemented "If found, continue editing with other rules" for both simple edits and regex rules
-- Fixed some issues with Deezer API calls on Windows
+- Fixed issues with Deezer API calls on Windows
+- No longer requires an X11 server to be running until the UI is opened for the first time on Linux
 - Bug fixes
 - Translation updates by the translators on Crowdin

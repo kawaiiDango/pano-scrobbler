@@ -1,5 +1,6 @@
 package com.arn.scrobble.onboarding
 
+import android.app.ApplicationExitInfo
 import android.content.ComponentName
 import android.content.Intent
 import android.os.Build
@@ -23,6 +24,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import co.touchlab.kermit.Logger
 import com.arn.scrobble.BuildKonfig
 import com.arn.scrobble.media.PersistentNotificationService
 import com.arn.scrobble.utils.AndroidStuff
@@ -47,6 +49,9 @@ import pano_scrobbler.composeapp.generated.resources.not_found
 import pano_scrobbler.composeapp.generated.resources.show_persistent_noti
 import pano_scrobbler.composeapp.generated.resources.special_app_access
 
+private class AppExitException(pss: Long, rss: Long) :
+    RuntimeException("pss=${pss / 1024}M, rss=${rss / 1024}M")
+
 @Composable
 fun FixItDialog(
     modifier: Modifier,
@@ -58,7 +63,7 @@ fun FixItDialog(
         !it.notiPersistent && AndroidStuff.canShowPersistentNotiIfEnabled
     }
 
-    var exitReason by remember { mutableStateOf<String?>(null) }
+    var exitReasonText by remember { mutableStateOf<String?>(null) }
 
     val batteryIntent = remember {
         if (PlatformStuff.isTv) {
@@ -72,9 +77,21 @@ fun FixItDialog(
 
     LaunchedEffect(Unit) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            exitReason = AndroidStuff.getScrobblerExitReasons()
+            val exitReason = AndroidStuff.getScrobblerExitReasons()
                 .firstOrNull()
-                ?.description
+            exitReasonText = exitReason?.description
+
+            if (exitReason?.description != null && exitReason.reason in arrayOf(
+                    ApplicationExitInfo.REASON_OTHER,
+                    ApplicationExitInfo.REASON_LOW_MEMORY,
+                    ApplicationExitInfo.REASON_EXCESSIVE_RESOURCE_USAGE,
+                    ApplicationExitInfo.REASON_UNKNOWN,
+                    ApplicationExitInfo.REASON_INITIALIZATION_FAILURE,
+                )
+            ) {
+                val message = "reason=${exitReason.reason}, description=${exitReason.description}"
+                Logger.w(AppExitException(exitReason.pss, exitReason.rss)) { message }
+            }
         }
     }
 
@@ -180,9 +197,9 @@ fun FixItDialog(
             }
         }
 
-        if (exitReason != null) {
+        if (exitReasonText != null) {
             Text(
-                text = stringResource(Res.string.kill_reason, "\n" + exitReason),
+                text = stringResource(Res.string.kill_reason, "\n" + exitReasonText),
             )
         }
     }

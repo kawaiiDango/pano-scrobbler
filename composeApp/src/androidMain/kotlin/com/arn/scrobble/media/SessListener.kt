@@ -133,9 +133,9 @@ class SessListener(
             val appId = controller.packageName
             val sessionId = controller.tagCompat
 
-            val uniqueId = "$appId|$sessionId@" + controller.sessionToken.hashCode().toHexString()
+            val notiKey = "$appId|$sessionId"
 
-            val playingTrackInfo = createTrackInfo(controller.packageName, uniqueId)
+            val playingTrackInfo = createTrackInfo(controller.packageName, notiKey)
 
             val sessionTracker = AndroidSessionTracker(controller, playingTrackInfo)
 

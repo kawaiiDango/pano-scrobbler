@@ -27,6 +27,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.arn.scrobble.db.SimpleEdit
 import com.arn.scrobble.icons.Icons
+import com.arn.scrobble.icons.Stop
 import com.arn.scrobble.icons.automirrored.ArrowRight
 import com.arn.scrobble.navigation.PanoRoute
 import com.arn.scrobble.ui.EmptyTextWithImportButtonOnTv
@@ -39,6 +40,7 @@ import com.arn.scrobble.utils.Stuff
 import org.jetbrains.compose.resources.stringResource
 import pano_scrobbler.composeapp.generated.resources.Res
 import pano_scrobbler.composeapp.generated.resources.simple_edits
+import pano_scrobbler.composeapp.generated.resources.stop
 
 @Composable
 fun SimpleEditsScreen(
@@ -147,6 +149,12 @@ private fun SimpleEditItem(
                 .padding(8.dp)
                 .backgroundForShimmer(forShimmer)
         ) {
+            if (!edit.continueMatching)
+                Icon(
+                    imageVector = Icons.Stop,
+                    contentDescription = stringResource(Res.string.stop),
+                )
+
             Column(
                 verticalArrangement = Arrangement.spacedBy(2.dp),
                 modifier = Modifier.weight(1f)
@@ -176,6 +184,7 @@ private fun SimpleEditItem(
             Icon(
                 imageVector = Icons.AutoMirrored.ArrowRight,
                 contentDescription = null,
+                tint = MaterialTheme.colorScheme.secondary
             )
 
             Column(

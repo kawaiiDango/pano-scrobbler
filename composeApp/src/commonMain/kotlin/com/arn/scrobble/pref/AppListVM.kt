@@ -7,7 +7,8 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.mapLatest
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
@@ -19,7 +20,7 @@ class AppListVM(packagesOverride: Set<String>?) : ViewModel() {
     private val _appListFiltered = _searchTerm
         .combine(appList) { searchTerm, appList ->
             searchTerm to appList
-        }.mapLatest { (searchTerm, appList) ->
+        }.map { (searchTerm, appList) ->
             if (searchTerm.isBlank()) {
                 appList
             } else {
@@ -83,17 +84,22 @@ class AppListVM(packagesOverride: Set<String>?) : ViewModel() {
     fun forgetUncheckedApps() {
         viewModelScope.launch {
             val selectedPackages = selectedPackages.value
+            val newSeenApps = PlatformStuff.mainPrefs.data.map { it.seenApps }
+                .first()
+                .filterKeys { it in selectedPackages }
 
             PlatformStuff.mainPrefs.updateData { prefs ->
                 prefs.copy(
-                    seenApps = prefs.seenApps.filterKeys { it in selectedPackages },
-                    extractFirstArtistPackages = prefs.extractFirstArtistPackages intersect selectedPackages,
+                    seenApps = newSeenApps,
+                    allowedPackages = prefs.allowedPackages intersect newSeenApps.keys,
+                    extractFirstArtistPackages = prefs.extractFirstArtistPackages intersect newSeenApps.keys,
+                    blockedPackages = emptySet()
                 )
             }
 
             _appList.value = AppList(
-                musicPlayers = _appList.value.musicPlayers.filter { it.appId in selectedPackages },
-                otherApps = _appList.value.otherApps.filter { it.appId in selectedPackages }
+                musicPlayers = _appList.value.musicPlayers.filter { it.appId in newSeenApps },
+                otherApps = _appList.value.otherApps.filter { it.appId in newSeenApps }
             )
         }
     }

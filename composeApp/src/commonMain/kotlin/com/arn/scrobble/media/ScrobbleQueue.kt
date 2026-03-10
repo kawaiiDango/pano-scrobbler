@@ -154,7 +154,7 @@ class ScrobbleQueue(
 
                 if (npResults != null && npResults.values.any { !it.isSuccess }) {
                     notifyScrobbleError(
-                        notiKey = trackInfo.uniqueId,
+                        notiKey = trackInfo.notiKey,
                         scrobbleResults = npResults,
                         scrobbleData = sd,
                         hash = hash
@@ -282,7 +282,7 @@ class ScrobbleQueue(
                 preprocessResult.titleParseFailed -> {
                     notifyPlayingTrackEvent(
                         PlayingTrackNotifyEvent.Error(
-                            notiKey = trackInfo.uniqueId,
+                            notiKey = trackInfo.notiKey,
                             hash = hash,
                             scrobbleError = ScrobbleError(
                                 getString(Res.string.parse_error),

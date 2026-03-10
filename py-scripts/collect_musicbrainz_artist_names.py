@@ -102,6 +102,16 @@ def collect_artist_names(
             name = artist.get("name", "").lower()
             if any(sub in name for sub in substrings):
                 names_set.add(name)
+
+            # Check "source-credit" and "target-credit" in "relations"
+            for relation in artist.get("relations", []):
+                source_credit = relation.get("source-credit", "").lower()
+                target_credit = relation.get("target-credit", "").lower()
+                if any(sub in source_credit for sub in substrings):
+                    names_set.add(source_credit)
+                if any(sub in target_credit for sub in substrings):
+                    names_set.add(target_credit)
+
             # Check aliases
             for alias in artist.get("aliases", []):
                 alias_name = alias.get("name", "").lower()
@@ -158,6 +168,8 @@ def collect_artist_names(
 
     # test
     test_strings = [
+        ", ",
+        "",
         "The Beatles",
         "Simon & Garfunkel",
         "Siouxsie and the Banshees",
@@ -171,6 +183,7 @@ def collect_artist_names(
         "Crosby, Stills, Nash & Young",
         "Alice Schach and the Magic Orchestra",
         "Invent, Animate",
+        "Kitto, Zutto, Bocchi."
     ]
     
     for test_name in test_strings:

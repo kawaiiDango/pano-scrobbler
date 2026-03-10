@@ -154,15 +154,7 @@ actual object PlatformSpecificPrefs {
         }
     }
 
-    actual fun addToStartup(
-        listScope: LazyListScope,
-        isAdded: Boolean,
-        onAddedChanged: (Boolean) -> Unit,
-    ) {
-        // no-op
-    }
-
-    actual suspend fun isAddedToStartup() = false
+    actual fun prefAutostart(listScope: LazyListScope) {}
 
     actual fun discordRpc(listScope: LazyListScope, onNavigate: (PanoRoute) -> Unit) {
         // no-op

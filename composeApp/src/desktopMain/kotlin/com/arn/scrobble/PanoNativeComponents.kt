@@ -14,7 +14,6 @@ import com.arn.scrobble.utils.DesktopStuff
 import com.arn.scrobble.utils.PanoTrayUtils
 import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
@@ -37,15 +36,15 @@ object PanoNativeComponents {
     }
 
     fun init() {
-        val scrobbleQueue = ScrobbleQueue(GlobalScope)
+        val scrobbleQueue = ScrobbleQueue(Stuff.appScope)
         desktopMediaListener = DesktopMediaListener(
-            GlobalScope,
+            Stuff.appScope,
             scrobbleQueue
         )
 
         desktopMediaListener!!.start()
 
-        GlobalScope.launch {
+        Stuff.appScope.launch {
             listenForPlayingTrackEvents(scrobbleQueue, desktopMediaListener!!)
         }
     }
@@ -195,7 +194,7 @@ object PanoNativeComponents {
     external fun notify(title: String, body: String)
 
     @JvmStatic
-    external fun setTray(
+    external fun setTrayLinux(
         tooltip: String,
         argb: IntArray,
         iconSize: Int,
@@ -210,22 +209,25 @@ object PanoNativeComponents {
     external fun setEnvironmentVariable(key: String, value: String)
 
     @JvmStatic
-    external fun applyDarkModeToWindow(handle: Long)
+    external fun applyDarkModeWindows(hwnd: Long)
 
     @JvmStatic
     external fun sendIpcCommand(command: String, arg: String): Boolean
 
     @JvmStatic
-    external fun isFileLocked(path: String): Boolean
+    external fun isFileLockedWindows(path: String): Boolean
 
     @JvmStatic
-    external fun xdgFileChooser(
+    external fun fileChooserLinux(
         requestId: Int,
         save: Boolean,
         title: String,
         fileName: String,
         filters: Array<String>
     )
+
+    @JvmStatic
+    external fun autoStartLinux(add: Boolean)
 
     @JvmStatic
     external fun updateDiscordActivity(

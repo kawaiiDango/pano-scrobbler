@@ -15,6 +15,7 @@ import com.android.billingclient.api.Purchase
 import com.android.billingclient.api.PurchasesUpdatedListener
 import com.android.billingclient.api.QueryProductDetailsParams
 import com.android.billingclient.api.QueryPurchasesParams
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
@@ -28,6 +29,7 @@ private const val PUBLIC_KEY_BASE64 =
     "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAmdJDoSt28Ps1zqsHlMgIXqnLxDOKyT+qUl4dV8eto7RL0B58DrtiUYC0LlhaM+ilx+ClPbNYlYT9VI0u2Yk0/f0uIpy4W8Hxxv5P2/nlwyEzBPd8dvEtFi4c6YB+wA0dwokhVVSLb6S3XyCZ2ONmozwZZ8RT3B+/Zs3ZdnkZDqiYDyA9lQVReCcM/lHSXQpst8zcNo00DzXG+3ptVpa3fnNhWjm+kgqjntzAV+cT53D8Qc53sHpmqQG84pFzDhiQoNH2bCy+IDs0iP40Wdjj1mzm7N0RZ2gxFawZrUwWAhvHrgXWXOV+Vhd3upqZWAhBMeeV4K/4GAR7EOwTib1ngwIDAQAB"
 
 class BillingRepository(
+    scope: CoroutineScope,
     receipt: Flow<Pair<String?, String?>>,
     private val lastCheckTime: Flow<Long>,
     private val setLastcheckTime: suspend (Long) -> Unit,
@@ -37,7 +39,7 @@ class BillingRepository(
     deviceIdentifier: () -> String,
     openInBrowser: (url: String) -> Unit,
     private val context: Context,
-) : BaseBillingRepository(receipt), BillingClientStateListener {
+) : BaseBillingRepository(scope, receipt), BillingClientStateListener {
 
     private val proProductDetails = MutableStateFlow<ProductDetails?>(null)
     override val formattedPrice = proProductDetails
@@ -225,11 +227,16 @@ class BillingRepository(
     }
 
     override fun verifyPurchase(data: String, signature: String?): Boolean {
-        return Security.verifyPurchase(
-            data,
-            signature ?: return false,
-            PUBLIC_KEY_BASE64,
-        )
+        return try {
+            Security.verifyPurchase(
+                data,
+                signature ?: return false,
+                PUBLIC_KEY_BASE64,
+            )
+        } catch (e: Exception) {
+            Logger.e(TAG) { "Error verifying purchase: ${e.message}" }
+            false
+        }
     }
 
     private fun validateProductDetails(productDetails: ProductDetails): ProductDetails? {

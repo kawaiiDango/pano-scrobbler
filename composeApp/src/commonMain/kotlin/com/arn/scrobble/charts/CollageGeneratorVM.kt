@@ -223,11 +223,7 @@ class CollageGeneratorVM(private val isLicenseValid: Boolean) : ViewModel() {
 
     private suspend fun fetchProfilePic(user: UserCached, sizePx: Int): ImageBitmap? {
         // load profile pic
-        val profilePicUrl = if (user.isSelf)
-            PlatformStuff.mainPrefs.data.map { it.drawerData[it.currentAccountType]?.profilePicUrl?.ifEmpty { null } }
-                .first()
-        else
-            user.largeImage
+        val profilePicUrl = user.largeImage
 
         val profilePicRequest = ImageRequest.Builder(context).apply {
             data(profilePicUrl)

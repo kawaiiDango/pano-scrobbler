@@ -14,15 +14,11 @@ import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.annotation.RequiresApi
 import androidx.annotation.StringRes
-import androidx.datastore.core.MultiProcessDataStoreFactory
+import androidx.datastore.core.DataStoreFactory
 import co.touchlab.kermit.Logger
 import com.arn.scrobble.pref.WidgetPrefs
 import com.arn.scrobble.pref.WidgetPrefsSerializer
 import com.arn.scrobble.utils.Stuff.SCROBBLER_PROCESS_NAME
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
-import org.jetbrains.compose.resources.StringResource
 import java.io.File
 import kotlin.properties.Delegates
 
@@ -106,7 +102,7 @@ object AndroidStuff {
 
 
     val widgetPrefs by lazy {
-        MultiProcessDataStoreFactory.create(
+        DataStoreFactory.create(
             serializer = WidgetPrefsSerializer,
             corruptionHandler = null,
             produceFile = {
@@ -170,12 +166,6 @@ object AndroidStuff {
             "$it: $value"
         }
         Logger.d { "MediaMetadata\n$data" }
-    }
-
-    fun Context.toast(strRes: StringResource, len: Int = Toast.LENGTH_SHORT) {
-        GlobalScope.launch(Dispatchers.Main) {
-            toast(org.jetbrains.compose.resources.getString(strRes), len)
-        }
     }
 
     fun Context.toast(text: String, len: Int = Toast.LENGTH_SHORT) {

@@ -309,6 +309,7 @@ fun SearchField(
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
     label: String = stringResource(Res.string.search),
+    icon: ImageVector = Icons.Search
 ) {
     PanoOutlinedTextField(
         value = searchTerm,
@@ -319,7 +320,7 @@ fun SearchField(
         modifier = modifier
             .fillMaxWidth()
             .padding(8.dp),
-        leadingIcon = { Icon(Icons.Search, contentDescription = null) },
+        leadingIcon = { Icon(icon, contentDescription = null) },
         trailingIcon = if (!PlatformStuff.isTv) {
             {
                 if (searchTerm.isNotEmpty()) {

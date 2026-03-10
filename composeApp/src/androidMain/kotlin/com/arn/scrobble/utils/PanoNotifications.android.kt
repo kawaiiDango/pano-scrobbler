@@ -27,7 +27,6 @@ import com.arn.scrobble.navigation.DeepLinkUtils
 import com.arn.scrobble.navigation.PanoRoute
 import com.arn.scrobble.updates.UpdateAction
 import com.arn.scrobble.utils.Stuff.format
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
@@ -425,7 +424,7 @@ actual object PanoNotifications {
             .setTimeoutAfterCompat(delayTime)
         notificationManager.notify(notiKey, 0, nb.build())
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O)
-            GlobalScope.launch {
+            Stuff.appScope.launch {
                 delay(delayTime)
                 notificationManager.cancel(notiKey, 0)
             }

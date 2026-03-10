@@ -211,7 +211,7 @@ object AutoUpdater {
 
         // this is needed on Windows while Defender is scanning the file
         if (file != null) {
-            while (PanoNativeComponents.isFileLocked(file.absolutePath) && waitTime > 0.seconds) {
+            while (PanoNativeComponents.isFileLockedWindows(file.absolutePath) && waitTime > 0.seconds) {
                 Logger.i { "Update file is locked" }
                 delay(step)
                 waitTime -= step

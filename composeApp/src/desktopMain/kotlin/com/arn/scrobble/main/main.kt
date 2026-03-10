@@ -14,7 +14,6 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -22,8 +21,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.awt.SwingWindow
+import androidx.compose.ui.configureSwingGlobalsForCompose
 import androidx.compose.ui.draw.alpha
-import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.painter.BitmapPainter
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.DpSize
@@ -53,8 +52,8 @@ import com.arn.scrobble.pref.AppItem
 import com.arn.scrobble.review.ReviewPrompter
 import com.arn.scrobble.themes.AppTheme
 import com.arn.scrobble.themes.DayNightMode
-import com.arn.scrobble.themes.isSystemInDarkThemeNative
 import com.arn.scrobble.ui.SerializableWindowState
+import com.arn.scrobble.ui.TrayIcons
 import com.arn.scrobble.updates.runUpdateAction
 import com.arn.scrobble.utils.DesktopStuff
 import com.arn.scrobble.utils.LocaleUtils
@@ -62,18 +61,16 @@ import com.arn.scrobble.utils.PanoNotifications
 import com.arn.scrobble.utils.PanoTrayUtils
 import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff
-import com.arn.scrobble.utils.Stuff.toImageBitmap
 import com.arn.scrobble.utils.VariantStuff
 import com.arn.scrobble.utils.setAppLocale
+import com.arn.scrobble.utils.vectorDrawableToImageBitmap
 import com.arn.scrobble.work.UpdaterWork
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
@@ -92,9 +89,6 @@ import pano_scrobbler.composeapp.generated.resources.quit
 import pano_scrobbler.composeapp.generated.resources.settings
 import pano_scrobbler.composeapp.generated.resources.unlove
 import pano_scrobbler.composeapp.generated.resources.update_downloaded
-import pano_scrobbler.composeapp.generated.resources.vd_noti
-import pano_scrobbler.composeapp.generated.resources.vd_noti_err
-import pano_scrobbler.composeapp.generated.resources.vd_noti_persistent
 import java.awt.Dimension
 import java.awt.GraphicsEnvironment
 import java.awt.Point
@@ -128,6 +122,7 @@ private fun init() {
     PanoNativeComponents.init()
 
     VariantStuff.billingRepository = BillingRepository(
+        scope = Stuff.appScope,
         lastCheckTime = PlatformStuff.mainPrefs.data.map { it.lastLicenseCheckTime },
         setLastcheckTime = { time ->
             PlatformStuff.mainPrefs.updateData { it.copy(lastLicenseCheckTime = time) }
@@ -145,8 +140,6 @@ private fun init() {
     VariantStuff.extrasProps = ExtrasProps
 
     DiscordRpc.start()
-
-//    TestStuff.test()
 }
 
 private fun preventMultipleInstances() {
@@ -160,6 +153,7 @@ private fun preventMultipleInstances() {
     }
 }
 
+@OptIn(ExperimentalComposeUiApi::class)
 fun main(args: Array<String>) {
     val cmdlineArgs = DesktopStuff.parseCmdlineArgs(args)
     DesktopStuff.setSystemProperties()
@@ -178,44 +172,257 @@ fun main(args: Array<String>) {
         }
 
         return
-    } else if (!BuildKonfig.DEBUG)
+    } else if (!BuildKonfig.DEBUG) {
         preventMultipleInstances()
-
-    var wmClassNameSet = false
+    }
 
     val initialPrefs = runBlocking { Stuff.initializeMainPrefsCache() }
+
     init()
+
+    // ------------------------------- tray menu
+
+    var trayData by mutableStateOf<PanoTrayUtils.TrayData?>(null)
+    val trayIconIsDark = combine(
+        PlatformStuff.mainPrefs.data.map { it.trayIconTheme },
+        PanoNativeComponents.onDarkModeChangeFlow
+    ) { trayIconThemePref, isDarkMode ->
+        when (trayIconThemePref) {
+            DayNightMode.SYSTEM -> !isDarkMode
+            else -> trayIconThemePref == DayNightMode.DARK
+        }
+    }
+
+    var trayIconIsDarkLastVal = false
+
+    val trayIconSize = 128
+    var trayIcons: TrayIcons? = null
+
+    fun loadTrayIcon(
+        fileName: String,
+        isDark: Boolean
+    ) = vectorDrawableToImageBitmap(
+        Unit::class.java.classLoader.getResourceAsStream("composeResources/pano_scrobbler.composeapp.generated.resources/drawable/$fileName")!!,
+        trayIconSize,
+        trayIconSize,
+        darkTint = isDark
+    )
+
+    combine(
+        PanoNotifications.playingTrackTrayInfo,
+        DiscordRpc.wasSuccessFul,
+        Stuff.globalUpdateAction,
+        trayIconIsDark
+    ) { playingTrackInfo, discordRpcSuccessful, updateAction, trayIconThemeIsDark ->
+
+        if (trayIcons == null || trayIconIsDarkLastVal != trayIconThemeIsDark) {
+            trayIconIsDarkLastVal = trayIconThemeIsDark
+
+            trayIcons = TrayIcons(
+                notPlaying = loadTrayIcon("vd_noti_persistent.xml", trayIconThemeIsDark),
+                playing = loadTrayIcon("vd_noti.xml", trayIconThemeIsDark),
+                error = loadTrayIcon("vd_noti_err.xml", trayIconThemeIsDark),
+            )
+        }
+
+        val trayIconBmp = when {
+            playingTrackInfo.isEmpty() -> trayIcons.notPlaying
+            playingTrackInfo.values.any { it is PlayingTrackNotifyEvent.Error } -> trayIcons.error
+            else -> trayIcons.playing
+        }
+
+        var tooltipText = BuildKonfig.APP_NAME
+
+        playingTrackInfo.values.firstOrNull()
+            ?.let {
+                val appId = it.scrobbleData.appId
+
+                tooltipText =
+                    if ((it as? PlayingTrackNotifyEvent.TrackPlaying)?.nowPlaying == false)
+                        "✔️ "
+                    else
+                        ""
+
+                tooltipText += it.scrobbleData.track
+                tooltipText += "\n" + it.scrobbleData.artist
+
+                if (appId != null)
+                    tooltipText += "\n" + AppItem(
+                        appId,
+                        PlatformStuff.loadApplicationLabel(appId)
+                    ).friendlyLabel
+            }
+
+        val trayItems = mutableListOf<Pair<String, String>>()
+
+        // tracks
+
+        playingTrackInfo.forEach { (notiKey, playingTrackState) ->
+            when (playingTrackState) {
+                is PlayingTrackNotifyEvent.TrackPlaying -> {
+                    val scrobbleData = playingTrackState.scrobbleData
+                    val nowPlaying = playingTrackState.nowPlaying
+
+                    val playingState =
+                        if (nowPlaying)
+                            "🎵 "
+                        else
+                            "✔️ "
+
+                    val lovedString =
+                        if (playingTrackState.userLoved)
+                            "❤️ " + getString(Res.string.unlove)
+                        else
+                            "🤍 " + getString(Res.string.love)
+
+                    trayItems += PanoTrayUtils.ItemId.TrackName.withSuffix(notiKey) to
+                            playingState + scrobbleData.track
+
+                    trayItems += PanoTrayUtils.ItemId.ArtistName.withSuffix(notiKey) to
+                            "🎙️ " + scrobbleData.artist
+
+                    if (!scrobbleData.album.isNullOrEmpty()) {
+                        trayItems += PanoTrayUtils.ItemId.AlbumName.withSuffix(notiKey) to
+                                "💿 " + scrobbleData.album
+                    }
+
+                    trayItems += PanoTrayUtils.ItemId.Separator.name to ""
+
+                    trayItems += PanoTrayUtils.ItemId.Love.withSuffix(notiKey) to
+                            lovedString
+                    trayItems += PanoTrayUtils.ItemId.Edit.withSuffix(notiKey) to
+                            "✏️ " +
+                            getString(Res.string.edit)
+
+                    if (playingTrackState.nowPlaying) {
+                        trayItems += PanoTrayUtils.ItemId.Cancel.withSuffix(notiKey) to
+                                "❌ " +
+                                getString(Res.string.cancel)
+                    }
+
+                    trayItems += PanoTrayUtils.ItemId.Block.withSuffix(notiKey) to
+                            "⛔ " +
+                            getString(Res.string.block)
+                    trayItems += PanoTrayUtils.ItemId.Copy.withSuffix(notiKey) to
+                            "📋 " +
+                            getString(Res.string.copy)
+                }
+
+                is PlayingTrackNotifyEvent.Error -> {
+                    val scrobbleError = playingTrackState.scrobbleError
+
+                    trayItems += PanoTrayUtils.ItemId.Error.withSuffix(notiKey) to
+                            scrobbleError.title
+                }
+            }
+
+            trayItems += PanoTrayUtils.ItemId.Separator.name to ""
+        }
+
+        if (discordRpcSuccessful == true) {
+            trayItems += PanoTrayUtils.ItemId.DiscordRpcDisabled.name to "✔️ " + getString(
+                Res.string.discord_rich_presence
+            )
+        }
+
+        updateAction?.let {
+            trayItems += PanoTrayUtils.ItemId.Update.name to "🔄️ " + getString(
+                Res.string.update_downloaded
+            ) + ": " + it.version
+        }
+
+        // always show these
+//        if (!windowShown)
+        trayItems += PanoTrayUtils.ItemId.Open.name to getString(Res.string.fix_it_action)
+
+        trayItems += PanoTrayUtils.ItemId.Settings.name to getString(Res.string.settings)
+
+        trayItems += PanoTrayUtils.ItemId.Exit.name to getString(Res.string.quit)
+
+        trayData = PanoTrayUtils.TrayData(
+            tooltip = tooltipText,
+            bitmap = trayIconBmp,
+            iconSize = trayIconSize,
+            menuItemIds = trayItems.map { it.first },
+            menuItemTexts = trayItems.map { it.second }
+        )
+
+        if (DesktopStuff.os == DesktopStuff.Os.Linux) {
+            trayData?.let { trayData ->
+                PanoNativeComponents.setTrayLinux(
+                    tooltip = trayData.tooltip,
+                    argb = trayData.bitmap.let { bmp ->
+                        val argb = IntArray(bmp.width * bmp.height)
+                        bmp.readPixels(argb)
+                        argb
+                    },
+                    iconSize = trayData.iconSize,
+                    menuItemIds = trayData.menuItemIds.toTypedArray(),
+                    menuItemTexts = trayData.menuItemTexts.toTypedArray(),
+                )
+            }
+        }
+    }.launchIn(Stuff.appScope)
+
+    // ------------------------ UI
+
+    var windowShown by
+    mutableStateOf(DesktopStuff.os == DesktopStuff.Os.Linux || !cmdlineArgs.minimized)
+    var windowCreated by mutableStateOf(windowShown)
+    val windowOpenTrigger = MutableSharedFlow<Unit>(extraBufferCapacity = 1)
+    var exitApplicationVar: (() -> Unit)? = null
+
+    fun openIfNeeded() {
+        windowOpenTrigger.tryEmit(Unit)
+        windowCreated = true
+        windowShown = true
+    }
+
+    fun onExit() {
+        exitApplicationVar?.invoke()
+        DesktopStuff.exit()
+    }
+
+    Stuff.appScope.launch {
+        trayMenuClickListener(
+            onOpenIfNeeded = ::openIfNeeded,
+            onExit = ::onExit
+        )
+    }
+
+    configureSwingGlobalsForCompose(
+        overrideLookAndFeel = false,
+        useScreenMenuBarOnMacOs = false,
+        useAutoDpiOnLinux = true
+    )
+
+    if (cmdlineArgs.minimized && DesktopStuff.os == DesktopStuff.Os.Linux) {
+        runBlocking {
+            windowOpenTrigger.first()
+        }
+    }
+
+    var firstCompositionDone = false
 
     return application {
 
-        if (DesktopStuff.os == DesktopStuff.Os.Linux && !wmClassNameSet) {
+        if (!firstCompositionDone) {
             // set the WM class name to avoid issues with some Linux desktop environments
             // do it after compose inits the swing framework, but before any window gets shown, else high dpi scaling breaks
-            try {
-                val awtAppClassNameField =
-                    Class.forName("sun.awt.X11.XToolkit").getDeclaredField("awtAppClassName")
-                awtAppClassNameField.isAccessible = true
-                awtAppClassNameField.set(null, "pano-scrobbler")
-            } catch (e: Exception) {
-                Logger.e(e) { "Failed to set AWT app class name" }
+            if (DesktopStuff.os == DesktopStuff.Os.Linux) {
+                try {
+                    val awtAppClassNameField =
+                        Class.forName("sun.awt.X11.XToolkit").getDeclaredField("awtAppClassName")
+                    awtAppClassNameField.isAccessible = true
+                    awtAppClassNameField.set(null, "pano-scrobbler")
+                } catch (e: Exception) {
+                    Logger.e { "Failed to set AWT app class name: ${e.message}" }
+                }
             }
 
-            wmClassNameSet = true
+            exitApplicationVar = ::exitApplication
+            firstCompositionDone = true
         }
-
-        var windowShown by remember { mutableStateOf(!cmdlineArgs.minimized) }
-        var windowCreated by remember { mutableStateOf(windowShown) }
-        val isSystemInDarkTheme by isSystemInDarkThemeNative()
-        val trayIconTheme by remember {
-            PlatformStuff.mainPrefs.data.map { it.trayIconTheme }
-        }
-            .collectAsState(initialPrefs.trayIconTheme)
-        var trayData by remember { mutableStateOf<PanoTrayUtils.TrayData?>(null) }
-        val trayIconNotPlaying = painterResource(Res.drawable.vd_noti_persistent)
-        val trayIconPlaying = painterResource(Res.drawable.vd_noti)
-        val trayIconError = painterResource(Res.drawable.vd_noti_err)
-        val windowOpenTrigger = remember { MutableSharedFlow<Unit>(extraBufferCapacity = 1) }
-        val trayState = rememberTrayState()
 
         // restore window state
         val windowState = rememberWindowState(
@@ -228,169 +435,6 @@ fun main(args: Array<String>) {
             else
                 WindowPlacement.Floating
         )
-
-        fun onExit() {
-            exitApplication()
-            DesktopStuff.exit()
-        }
-
-        fun openIfNeeded() {
-            windowOpenTrigger.tryEmit(Unit)
-            windowCreated = true
-            windowShown = true
-        }
-
-        LaunchedEffect(trayIconTheme, isSystemInDarkTheme, windowShown) {
-            combine(
-                PanoNotifications.playingTrackTrayInfo,
-                DiscordRpc.wasSuccessFul,
-                Stuff.globalUpdateAction,
-            ) { playingTrackInfo, discordRpcSuccessful, updateAction ->
-                val trayIconPainter = when {
-                    playingTrackInfo.isEmpty() -> trayIconNotPlaying
-                    playingTrackInfo.values.any { it is PlayingTrackNotifyEvent.Error } -> trayIconError
-                    else -> trayIconPlaying
-                }
-
-                var tooltipText = BuildKonfig.APP_NAME
-
-                playingTrackInfo.values.firstOrNull()
-                    ?.let {
-                        val appId = it.scrobbleData.appId
-
-                        tooltipText =
-                            if ((it as? PlayingTrackNotifyEvent.TrackPlaying)?.nowPlaying == false)
-                                "✔️ "
-                            else
-                                ""
-
-                        tooltipText += it.scrobbleData.track
-                        tooltipText += "\n" + it.scrobbleData.artist
-
-                        if (appId != null)
-                            tooltipText += "\n" + AppItem(
-                                appId,
-                                PlatformStuff.loadApplicationLabel(appId)
-                            ).friendlyLabel
-                    }
-
-                val trayItems = mutableListOf<Pair<String, String>>()
-
-                // tracks
-
-                playingTrackInfo.forEach { (notiKey, playingTrackState) ->
-                    when (playingTrackState) {
-                        is PlayingTrackNotifyEvent.TrackPlaying -> {
-                            val scrobbleData = playingTrackState.scrobbleData
-                            val nowPlaying = playingTrackState.nowPlaying
-
-                            val playingState =
-                                if (nowPlaying)
-                                    "🎵 "
-                                else
-                                    "✔️ "
-
-                            val lovedString =
-                                if (playingTrackState.userLoved)
-                                    "❤️ " + getString(Res.string.unlove)
-                                else
-                                    "🤍 " + getString(Res.string.love)
-
-                            trayItems += PanoTrayUtils.ItemId.TrackName.withSuffix(notiKey) to
-                                    playingState + scrobbleData.track
-
-                            trayItems += PanoTrayUtils.ItemId.ArtistName.withSuffix(notiKey) to
-                                    "🎙️ " + scrobbleData.artist
-
-                            if (!scrobbleData.album.isNullOrEmpty()) {
-                                trayItems += PanoTrayUtils.ItemId.AlbumName.withSuffix(notiKey) to
-                                        "💿 " + scrobbleData.album
-                            }
-
-                            trayItems += PanoTrayUtils.ItemId.Separator.name to ""
-
-                            trayItems += PanoTrayUtils.ItemId.Love.withSuffix(notiKey) to
-                                    lovedString
-                            trayItems += PanoTrayUtils.ItemId.Edit.withSuffix(notiKey) to
-                                    "✏️ " +
-                                    getString(Res.string.edit)
-
-                            if (playingTrackState.nowPlaying) {
-                                trayItems += PanoTrayUtils.ItemId.Cancel.withSuffix(notiKey) to
-                                        "❌ " +
-                                        getString(Res.string.cancel)
-                            }
-
-                            trayItems += PanoTrayUtils.ItemId.Block.withSuffix(notiKey) to
-                                    "⛔ " +
-                                    getString(Res.string.block)
-                            trayItems += PanoTrayUtils.ItemId.Copy.withSuffix(notiKey) to
-                                    "📋 " +
-                                    getString(Res.string.copy)
-                        }
-
-                        is PlayingTrackNotifyEvent.Error -> {
-                            val scrobbleError = playingTrackState.scrobbleError
-
-                            trayItems += PanoTrayUtils.ItemId.Error.withSuffix(notiKey) to
-                                    scrobbleError.title
-                        }
-                    }
-
-                    trayItems += PanoTrayUtils.ItemId.Separator.name to ""
-                }
-
-                if (discordRpcSuccessful == true) {
-                    trayItems += PanoTrayUtils.ItemId.DiscordRpcDisabled.name to "✔️ " + getString(
-                        Res.string.discord_rich_presence
-                    )
-                }
-
-                updateAction?.let {
-                    trayItems += PanoTrayUtils.ItemId.Update.name to "🔄️ " + getString(
-                        Res.string.update_downloaded
-                    ) + ": " + it.version
-                }
-
-                // always show these
-                if (!windowShown)
-                    trayItems += PanoTrayUtils.ItemId.Open.name to getString(Res.string.fix_it_action)
-
-                trayItems += PanoTrayUtils.ItemId.Settings.name to getString(Res.string.settings)
-
-                trayItems += PanoTrayUtils.ItemId.Exit.name to getString(Res.string.quit)
-
-                Triple(tooltipText, trayIconPainter, trayItems)
-            }
-                .distinctUntilChanged()
-                .collectLatest { (tooltip, trayIconPainter, trayItems) ->
-                    val iconSize = 128f
-
-                    val bmp = trayIconPainter.toImageBitmap(
-                        darkTint = when (trayIconTheme) {
-                            DayNightMode.SYSTEM -> !isSystemInDarkTheme
-                            DayNightMode.LIGHT -> false
-                            DayNightMode.DARK -> true
-                        },
-                        size = Size(iconSize, iconSize)
-                    )
-
-                    trayData = PanoTrayUtils.TrayData(
-                        tooltip = tooltip,
-                        bitmap = bmp,
-                        iconSize = iconSize.toInt(),
-                        menuItemIds = trayItems.map { it.first },
-                        menuItemTexts = trayItems.map { it.second }
-                    )
-                }
-        }
-
-        LaunchedEffect(Unit) {
-            trayMenuClickListener(
-                onOpenIfNeeded = ::openIfNeeded,
-                onExit = ::onExit
-            )
-        }
 
         LaunchedEffect(windowState.size, windowState.placement) {
             delay(5.seconds)
@@ -432,6 +476,7 @@ fun main(args: Array<String>) {
 
         // the AWT tray doesn't work on KDE
         if (DesktopStuff.os != DesktopStuff.Os.Linux) {
+            val trayState = rememberTrayState()
 
             var trayMouseListenerSet by remember { mutableStateOf(false) }
             var trayMenuPos by remember { mutableStateOf<Point?>(null) }
@@ -444,7 +489,6 @@ fun main(args: Array<String>) {
                     onAction = ::openIfNeeded
                 )
             }
-
 
             LaunchedEffect(trayData) {
                 var trayMenuDelayJob: Job? = null
@@ -459,7 +503,7 @@ fun main(args: Array<String>) {
                                     // open main window on left double click
                                     when (e?.button) {
                                         MouseEvent.BUTTON1 if e.clickCount == 1 -> {
-                                            trayMenuDelayJob = GlobalScope.launch {
+                                            trayMenuDelayJob = Stuff.appScope.launch {
                                                 delay(100)
                                                 trayMenuPos = e.locationOnScreen
                                             }
@@ -504,22 +548,6 @@ fun main(args: Array<String>) {
                     trayMenuPos = null
                 }
             }
-        } else {
-            LaunchedEffect(trayData) {
-                trayData?.let { trayData ->
-                    PanoNativeComponents.setTray(
-                        tooltip = trayData.tooltip,
-                        argb = trayData.bitmap.let { bmp ->
-                            val argb = IntArray(bmp.width * bmp.height)
-                            bmp.readPixels(argb)
-                            argb
-                        },
-                        iconSize = trayData.iconSize,
-                        menuItemIds = trayData.menuItemIds.toTypedArray(),
-                        menuItemTexts = trayData.menuItemTexts.toTypedArray(),
-                    )
-                }
-            }
         }
 
         LaunchedEffect(Unit) {
@@ -543,9 +571,9 @@ fun main(args: Array<String>) {
             ) {
                 val density = LocalDensity.current
 
-                LaunchedEffect(isSystemInDarkTheme) {
-                    if (isSystemInDarkTheme && DesktopStuff.os == DesktopStuff.Os.Windows)
-                        PanoNativeComponents.applyDarkModeToWindow(window.windowHandle)
+                LaunchedEffect(Unit) {
+                    if (DesktopStuff.os == DesktopStuff.Os.Windows)
+                        PanoNativeComponents.applyDarkModeWindows(window.windowHandle)
                 }
 
                 LaunchedEffect(Unit) {

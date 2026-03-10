@@ -53,9 +53,9 @@ class IndexerWorker(
 
         withContext(Dispatchers.IO + exHandler) {
 
-            if (db.getPendingScrobblesDao().count() > 0) {
-                throw IllegalStateException("Cannot run when there are pending scrobbles")
-            }
+//            if (db.getPendingScrobblesDao().count() > 0) {
+//                throw IllegalStateException("Cannot run when there are pending scrobbles")
+//            }
 
             var doFullIndex = doFullIndex
             if (!doFullIndex && mainPrefs.data.map { it.lastMaxIndexedScrobbleTime }

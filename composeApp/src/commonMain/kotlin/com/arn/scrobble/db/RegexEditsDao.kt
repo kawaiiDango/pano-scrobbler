@@ -92,78 +92,83 @@ interface RegexEditsDao {
             var scrobbleData = scrobbleData
             val cumulativeMatches = mutableSetOf<RegexEdit>()
 
-            regexEdits
+            val regexEditsFiltered = regexEdits
                 .filter {
                     it.enabled &&
                             (it.appIds.isEmpty() || scrobbleData.appId in it.appIds)
-                }.forEach { regexEdit ->
-                    val scrobbleDataToMatches = listOf(
-                        scrobbleData.track to regexEdit.search.searchTrack,
-                        scrobbleData.album.orEmpty() to regexEdit.search.searchAlbum,
-                        scrobbleData.artist to regexEdit.search.searchArtist,
-                        scrobbleData.albumArtist.orEmpty() to regexEdit.search.searchAlbumArtist
-                    )
-                        .filterNot { (_, regexStr) ->
-                            regexStr.isEmpty()
-                        }
-                        .map { (fieldData, regexStr) ->
-                            val regexOptions = mutableSetOf<RegexOption>()
-                            if (!regexEdit.caseSensitive)
-                                regexOptions += RegexOption.IGNORE_CASE
+                }
 
-                            val regex = runCatching { regexStr.toRegex(regexOptions) }
-                                .onFailure {
-                                    Logger.e(it) { "Failed to compile regex for field ${regexEdit.search}" }
-                                }
-                                .getOrNull()
+            for (regexEdit in regexEditsFiltered) {
+                val scrobbleDataToMatches = listOf(
+                    scrobbleData.track to regexEdit.search.searchTrack,
+                    scrobbleData.album.orEmpty() to regexEdit.search.searchAlbum,
+                    scrobbleData.artist to regexEdit.search.searchArtist,
+                    scrobbleData.albumArtist.orEmpty() to regexEdit.search.searchAlbumArtist
+                )
+                    .filterNot { (_, regexStr) ->
+                        regexStr.isEmpty()
+                    }
+                    .map { (fieldData, regexStr) ->
+                        val regexOptions = mutableSetOf<RegexOption>()
+                        if (!regexEdit.caseSensitive)
+                            regexOptions += RegexOption.IGNORE_CASE
 
-                            fieldData to regex?.find(fieldData)
-                        }
+                        val regex = runCatching { regexStr.toRegex(regexOptions) }
+                            .onFailure {
+                                Logger.e(it) { "Failed to compile regex for field ${regexEdit.search}" }
+                            }
+                            .getOrNull()
 
-                    val allFieldDataMatched = scrobbleDataToMatches.all { (_, match) ->
-                        match != null
+                        fieldData to regex?.find(fieldData)
                     }
 
-                    if (allFieldDataMatched) {
-                        when (regexEdit.mode()) {
-                            RegexMode.Block -> {
-                                if (isLicenseValid)
-                                    return RegexResults(
-                                        matches = setOf(regexEdit),
-                                        scrobbleData = null,
-                                        blockPlayerAction = regexEdit.blockPlayerAction,
-                                    )
-                            }
+                val allFieldDataMatched = scrobbleDataToMatches.all { (_, match) ->
+                    match != null
+                }
 
-                            RegexMode.Extract -> {
-                                if (isLicenseValid && PlatformStuff.isJava8OrGreater) {
-                                    val newScrobbleData = extract(
-                                        scrobbleData,
-                                        scrobbleDataToMatches
-                                    )
-                                    if (newScrobbleData != null) {
-                                        cumulativeMatches += regexEdit
-                                        scrobbleData = newScrobbleData
-                                    }
-                                }
-                            }
+                if (allFieldDataMatched) {
+                    when (regexEdit.mode()) {
+                        RegexMode.Block -> {
+                            if (isLicenseValid)
+                                return RegexResults(
+                                    matches = setOf(regexEdit),
+                                    scrobbleData = null,
+                                    blockPlayerAction = regexEdit.blockPlayerAction,
+                                )
+                        }
 
-                            RegexMode.Replace -> {
-                                val newScrobbleData =
-                                    runCatching { replace(scrobbleData, regexEdit) }
-                                        .onFailure {
-                                            Logger.e(it) { "Failed to compile regex for field ${regexEdit.search}" }
-                                        }
-                                        .getOrNull()
-
+                        RegexMode.Extract -> {
+                            if (isLicenseValid && PlatformStuff.isJava8OrGreater) {
+                                val newScrobbleData = extract(
+                                    scrobbleData,
+                                    scrobbleDataToMatches
+                                )
                                 if (newScrobbleData != null) {
                                     cumulativeMatches += regexEdit
                                     scrobbleData = newScrobbleData
                                 }
                             }
                         }
+
+                        RegexMode.Replace -> {
+                            val newScrobbleData =
+                                runCatching { replace(scrobbleData, regexEdit) }
+                                    .onFailure {
+                                        Logger.e(it) { "Failed to compile regex for field ${regexEdit.search}" }
+                                    }
+                                    .getOrNull()
+
+                            if (newScrobbleData != null) {
+                                cumulativeMatches += regexEdit
+                                scrobbleData = newScrobbleData
+                            }
+                        }
                     }
+
+                    if (!regexEdit.continueMatching)
+                        break
                 }
+            }
 
             return RegexResults(
                 scrobbleData = scrobbleData.takeIf { cumulativeMatches.isNotEmpty() },

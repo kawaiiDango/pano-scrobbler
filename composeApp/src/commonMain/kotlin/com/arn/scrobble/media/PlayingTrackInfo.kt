@@ -7,7 +7,7 @@ import kotlin.math.abs
 
 class PlayingTrackInfo(
     val appId: String, // normalized app id
-    val uniqueId: String,
+    val notiKey: String,
     cachedTrackInfo: PlayingTrackInfo?,
 ) {
     enum class ScrobbledState {
@@ -101,7 +101,7 @@ class PlayingTrackInfo(
         this.albumArtist = albumArtist
 
         this.durationMillis = durationMillis
-        hash = Objects.hash(albumArtist, artist, album, title, appId, uniqueId)
+        hash = Objects.hash(albumArtist, artist, album, title, appId, notiKey)
         this.normalizedUrlHost = normalizedUrlHost
 
         this.artUrl = artUrl
@@ -192,7 +192,7 @@ class PlayingTrackInfo(
     )
 
     fun toTrackPlayingEvent() = PlayingTrackNotifyEvent.TrackPlaying(
-        notiKey = uniqueId,
+        notiKey = notiKey,
         scrobbleData = toScrobbleData(false),
         origScrobbleData = toScrobbleData(true),
         msid = msid,

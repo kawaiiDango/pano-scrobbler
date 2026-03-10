@@ -178,7 +178,7 @@ fun TextPref(
 @Composable
 fun <T> DropdownPref(
     text: String,
-    selectedValue: T,
+    selectedValue: T?,
     values: Iterable<T>,
     toLabel: @Composable (T) -> String,
     copyToSave: MainPrefs.(T) -> MainPrefs,
@@ -187,7 +187,6 @@ fun <T> DropdownPref(
 ) {
     var expanded by remember { mutableStateOf(false) }
     val scope = rememberCoroutineScope()
-    val selectedDisplayText = toLabel(selectedValue)
 
     Row(
         horizontalArrangement = Arrangement.spacedBy(8.dp),
@@ -212,11 +211,13 @@ fun <T> DropdownPref(
                 style = MaterialTheme.typography.titleMedium,
             )
 
-            Text(
-                text = selectedDisplayText,
-                style = MaterialTheme.typography.bodyMedium,
-                modifier = Modifier.padding(vertical = 8.dp)
-            )
+            if (selectedValue != null) {
+                Text(
+                    text = toLabel(selectedValue),
+                    style = MaterialTheme.typography.bodyMedium,
+                    modifier = Modifier.padding(vertical = 8.dp)
+                )
+            }
 
             DropdownMenu(
                 expanded = expanded,

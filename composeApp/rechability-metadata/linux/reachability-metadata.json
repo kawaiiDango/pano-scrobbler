@@ -206,18 +206,6 @@
       ]
     },
     {
-      "type": "com.sun.java.swing.plaf.gtk.GTKLookAndFeel",
-      "methods": [
-        {
-          "name": "<init>",
-          "parameterTypes": []
-        }
-      ]
-    },
-    {
-      "type": "com.sun.java.swing.plaf.gtk.resources.gtk"
-    },
-    {
       "type": "com.sun.org.apache.xerces.internal.jaxp.DocumentBuilderFactoryImpl",
       "methods": [
         {
@@ -231,9 +219,6 @@
     },
     {
       "type": "com.sun.swing.internal.plaf.metal.resources.metal"
-    },
-    {
-      "type": "com.sun.swing.internal.plaf.synth.resources.synth"
     },
     {
       "type": "io.ktor.client.HttpClient"
@@ -984,17 +969,6 @@
     },
     {
       "type": "javax.swing.plaf.metal.MetalRootPaneUI",
-      "methods": [
-        {
-          "name": "createUI",
-          "parameterTypes": [
-            "javax.swing.JComponent"
-          ]
-        }
-      ]
-    },
-    {
-      "type": "javax.swing.plaf.synth.SynthLookAndFeel",
       "methods": [
         {
           "name": "createUI",
@@ -3279,10 +3253,6 @@
     },
     {
       "module": "java.desktop",
-      "glob": "com/sun/java/swing/plaf/gtk/resources/gtk_en_US.properties"
-    },
-    {
-      "module": "java.desktop",
       "glob": "com/sun/swing/internal/plaf/basic/resources/basic_en.properties"
     },
     {
@@ -3296,14 +3266,6 @@
     {
       "module": "java.desktop",
       "glob": "com/sun/swing/internal/plaf/metal/resources/metal_en_US.properties"
-    },
-    {
-      "module": "java.desktop",
-      "glob": "com/sun/swing/internal/plaf/synth/resources/synth_en.properties"
-    },
-    {
-      "module": "java.desktop",
-      "glob": "com/sun/swing/internal/plaf/synth/resources/synth_en_US.properties"
     },
     {
       "module": "java.desktop",
@@ -3322,16 +3284,10 @@
       "glob": "sun/util/logging/resources/logging_en_US.properties"
     },
     {
-      "bundle": "com.sun.java.swing.plaf.gtk.resources.gtk"
-    },
-    {
       "bundle": "com.sun.swing.internal.plaf.basic.resources.basic"
     },
     {
       "bundle": "com.sun.swing.internal.plaf.metal.resources.metal"
-    },
-    {
-      "bundle": "com.sun.swing.internal.plaf.synth.resources.synth"
     },
     {
       "bundle": "sun.awt.resources.awt"

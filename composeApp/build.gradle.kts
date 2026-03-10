@@ -342,14 +342,14 @@ compose.desktop {
             }
         }
 
-        buildTypes.release {
-            proguard {
-                obfuscate = false
-                optimize = false
-                joinOutputJars = true
-                configurationFiles.from(project.file("proguard-rules-desktop.pro"))
-            }
-        }
+//        buildTypes.release {
+//            proguard {
+//                obfuscate = false
+//                optimize = false
+//                joinOutputJars = true
+//                configurationFiles.from(project.file("proguard-rules-desktop.pro"))
+//            }
+//        }
     }
 }
 
@@ -361,7 +361,6 @@ tasks.withType<ComposeHotRun>().configureEach {
     mainClass = "com.arn.scrobble.main.MainKt"
     jvmArgs = (jvmArgs.orEmpty()) + listOfNotNull(
         "-Dpano.native.components.path=$libraryPath",
-        "-Dcompose.application.configure.swing.globals=true",
         "--enable-native-access=ALL-UNNAMED",
         if (os.isLinux) "--add-opens=java.desktop/sun.awt.X11=ALL-UNNAMED" else null,
     )
@@ -606,7 +605,6 @@ tasks.register<Exec>("buildNativeImage") {
         if (os.isLinux && arch in archArm64) "-H:PageSize=16384" else null,
         if (os.isLinux) "--add-opens=java.desktop/sun.awt.X11=ALL-UNNAMED" else null,
         "-H:+UnlockExperimentalVMOptions",
-        "-J-Dcompose.application.configure.swing.globals=true",
         "-J-Djava.awt.headless=false",
         "-J-Dfile.encoding=UTF-8",
         "-J-Dsun.java2d.dpiaware=true",

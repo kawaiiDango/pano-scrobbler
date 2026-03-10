@@ -4,6 +4,7 @@ import co.touchlab.kermit.LogWriter
 import co.touchlab.kermit.Severity
 import com.google.firebase.Firebase
 import com.google.firebase.crashlytics.crashlytics
+import com.google.firebase.crashlytics.recordException
 
 
 object CrashlyticsLogWriter : LogWriter() {
@@ -16,12 +17,15 @@ object CrashlyticsLogWriter : LogWriter() {
         tag: String,
         throwable: Throwable?
     ) {
-        if (message.isNotBlank()) {
+        if (message.isNotBlank() && throwable == null) {
             Firebase.crashlytics.log(message)
-        }
-
-        throwable?.let {
-            Firebase.crashlytics.recordException(it)
+        } else if (throwable != null) {
+            if (message.isBlank())
+                Firebase.crashlytics.recordException(throwable)
+            else
+                Firebase.crashlytics.recordException(throwable) {
+                    key("message", message.replace("https?://\\S+".toRegex(), "<url>"))
+                }
         }
     }
 }

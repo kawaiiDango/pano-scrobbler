@@ -22,6 +22,7 @@ import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.SplitButtonDefaults
 import androidx.compose.material3.SplitButtonLayout
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -52,6 +53,7 @@ import com.arn.scrobble.icons.MatchCase
 import com.arn.scrobble.icons.MoreVert
 import com.arn.scrobble.icons.Public
 import com.arn.scrobble.icons.Settings
+import com.arn.scrobble.icons.Stop
 import com.arn.scrobble.icons.SwipeLeftAlt
 import com.arn.scrobble.icons.ToggleOff
 import com.arn.scrobble.icons.ToggleOn
@@ -82,6 +84,7 @@ import pano_scrobbler.composeapp.generated.resources.edit_presets
 import pano_scrobbler.composeapp.generated.resources.edit_regex_test
 import pano_scrobbler.composeapp.generated.resources.enable
 import pano_scrobbler.composeapp.generated.resources.item_options
+import pano_scrobbler.composeapp.generated.resources.max_n
 import pano_scrobbler.composeapp.generated.resources.move_down
 import pano_scrobbler.composeapp.generated.resources.move_up
 import pano_scrobbler.composeapp.generated.resources.regex_rules
@@ -145,6 +148,7 @@ fun RegexEditsScreen(
 }
 
 
+@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 private fun RegexEditsList(
     presetsWithState: List<Pair<RegexPreset, Boolean>>,
@@ -246,25 +250,42 @@ private fun RegexEditsList(
         }
 
         item(key = "custom_header") {
-            if (regexEdits.size >= maxPatterns) {
-                Text(
-                    text = stringResource(Res.string.edit_max_patterns, maxPatterns),
-                    style = MaterialTheme.typography.titleLarge,
-                    color = MaterialTheme.colorScheme.error,
-                    modifier = Modifier
-                        .animateItem()
-                        .fillMaxWidth()
-                        .padding(vertical = 4.dp)
-                )
-            } else {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                modifier = Modifier
+                    .animateItem()
+                    .fillMaxWidth()
+                    .padding(vertical = 4.dp)
+            ) {
                 Text(
                     text = stringResource(Res.string.charts_custom),
                     style = MaterialTheme.typography.titleLarge,
-                    modifier = Modifier
-                        .animateItem()
-                        .fillMaxWidth()
-                        .padding(vertical = 4.dp)
                 )
+
+                Text(
+                    text = "•",
+                    style = MaterialTheme.typography.titleLarge,
+                )
+
+                val maxPatternsText = if (regexEdits.size >= maxPatterns)
+                    stringResource(Res.string.edit_max_patterns, maxPatterns)
+                else
+                    stringResource(Res.string.max_n, maxPatterns)
+
+                if (isLicenseValid)
+                    Text(
+                        maxPatternsText,
+                        style = MaterialTheme.typography.titleLarge,
+                    )
+                else
+                    TextButton(
+                        onClick = {
+                            onNavigate(PanoRoute.Billing)
+                        },
+                    ) {
+                        Text(maxPatternsText)
+                    }
             }
         }
 
@@ -494,6 +515,9 @@ private fun RegexEditItem(
 @Composable
 private fun getModifierIcons(regexEdit: RegexEdit): List<ImageVector> {
     val m = mutableListOf<ImageVector>()
+
+    m += if (regexEdit.continueMatching) Icons.KeyboardArrowDown
+    else Icons.Stop
 
     if (!regexEdit.enabled) m += Icons.ToggleOff
 

@@ -4,7 +4,6 @@ import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.gestures.animateScrollBy
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -28,11 +27,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.input.key.Key
-import androidx.compose.ui.input.key.KeyEventType
-import androidx.compose.ui.input.key.key
-import androidx.compose.ui.input.key.onPreviewKeyEvent
-import androidx.compose.ui.input.key.type
 import androidx.compose.ui.layout.boundsInParent
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalDensity
@@ -56,7 +50,6 @@ import com.arn.scrobble.ui.shimmerWindowBounds
 import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff
 import com.arn.scrobble.utils.Stuff.format
-import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
 import pano_scrobbler.composeapp.generated.resources.Res
 import pano_scrobbler.composeapp.generated.resources.collapse
@@ -130,40 +123,42 @@ fun InfoWikiText(
                             Modifier.clip(MaterialTheme.shapes.medium)
                                 .clickable(onClick = onExpandToggle)
                                 .padding(end = 24.dp)
-                                .onPreviewKeyEvent { keyEvent ->
-                                    if (!expanded || keyEvent.type != KeyEventType.KeyDown)
-                                        return@onPreviewKeyEvent false
+                        /* is bugged on tv
+                        .onPreviewKeyEvent { keyEvent ->
+                            if (!expanded || keyEvent.type != KeyEventType.KeyDown)
+                                return@onPreviewKeyEvent false
 
-                                    val canScrollUp = scrollState.value > minYInColumn
-                                    val canScrollDown =
-                                        scrollState.value + scrollState.viewportSize < maxYInColumn
+                            val canScrollUp = scrollState.value > minYInColumn
+                            val canScrollDown =
+                                scrollState.value + scrollState.viewportSize < maxYInColumn
 
-                                    when (keyEvent.key) {
-                                        Key.DirectionDown -> {
-                                            if (canScrollDown) {
-                                                coroutineScope.launch {
-                                                    scrollState.animateScrollBy(scrollStepPx)
-                                                }
-                                                true
-                                            } else {
-                                                false
-                                            }
+                            when (keyEvent.key) {
+                                Key.DirectionDown -> {
+                                    if (canScrollDown) {
+                                        coroutineScope.launch {
+                                            scrollState.animateScrollBy(scrollStepPx)
                                         }
-
-                                        Key.DirectionUp -> {
-                                            if (canScrollUp) {
-                                                coroutineScope.launch {
-                                                    scrollState.animateScrollBy(-scrollStepPx)
-                                                }
-                                                true
-                                            } else {
-                                                false
-                                            }
-                                        }
-
-                                        else -> false
+                                        true
+                                    } else {
+                                        false
                                     }
                                 }
+
+                                Key.DirectionUp -> {
+                                    if (canScrollUp) {
+                                        coroutineScope.launch {
+                                            scrollState.animateScrollBy(-scrollStepPx)
+                                        }
+                                        true
+                                    } else {
+                                        false
+                                    }
+                                }
+
+                                else -> false
+                            }
+                        }
+                         */
                         else Modifier
                     )
                     .padding(8.dp)

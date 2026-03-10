@@ -2,6 +2,7 @@ package com.arn.scrobble.pref
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -41,7 +42,10 @@ import com.arn.scrobble.icons.Icons
 import com.arn.scrobble.icons.Info
 import com.arn.scrobble.icons.OpenInBrowser
 import com.arn.scrobble.icons.PlayCircle
+import com.arn.scrobble.icons.Settings
+import com.arn.scrobble.navigation.PanoRoute
 import com.arn.scrobble.ui.AppIcon
+import com.arn.scrobble.ui.ButtonWithIcon
 import com.arn.scrobble.ui.ExpandableHeaderItem
 import com.arn.scrobble.ui.LabeledCheckbox
 import com.arn.scrobble.ui.PanoLazyColumn
@@ -54,11 +58,11 @@ import com.arn.scrobble.ui.shimmerWindowBounds
 import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff
 import com.arn.scrobble.utils.Stuff.collectAsStateWithInitialValue
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.serialization.Serializable
 import org.jetbrains.compose.resources.stringResource
 import pano_scrobbler.composeapp.generated.resources.Res
+import pano_scrobbler.composeapp.generated.resources.artist_splitting_exceptions
 import pano_scrobbler.composeapp.generated.resources.first_artist
 import pano_scrobbler.composeapp.generated.resources.forget_unchecked_apps
 import pano_scrobbler.composeapp.generated.resources.music_players
@@ -73,6 +77,7 @@ fun AppListScreen(
     packagesOverride: Set<String>?,
     preSelectedPackages: Set<String>,
     onSetPackagesSelection: (List<AppItem>, List<AppItem>) -> Unit,
+    onNavigate: (PanoRoute) -> Unit,
     modifier: Modifier = Modifier,
     viewModel: AppListVM = viewModel { AppListVM(packagesOverride) },
 ) {
@@ -108,7 +113,7 @@ fun AppListScreen(
 
                 when (saveType) {
                     AppListSaveType.Scrobbling -> {
-                        GlobalScope.launch {
+                        Stuff.appScope.launch {
                             PlatformStuff.mainPrefs.updateData { pref ->
                                 pref.copy(
                                     allowedPackages = pref.allowedPackages +
@@ -126,7 +131,7 @@ fun AppListScreen(
                     }
 
                     AppListSaveType.ExtractFirstArtist -> {
-                        GlobalScope.launch {
+                        Stuff.appScope.launch {
                             PlatformStuff.mainPrefs.updateData { pref ->
                                 pref.copy(
                                     extractFirstArtistPackages = pref.extractFirstArtistPackages +
@@ -137,7 +142,7 @@ fun AppListScreen(
                     }
 
                     AppListSaveType.Automation -> {
-                        GlobalScope.launch {
+                        Stuff.appScope.launch {
                             PlatformStuff.mainPrefs.updateData { pref ->
                                 pref.copy(
                                     allowedAutomationPackages = pref.allowedAutomationPackages +
@@ -148,7 +153,7 @@ fun AppListScreen(
                     }
 
                     is AppListSaveType.RegexPresetApps -> {
-                        GlobalScope.launch {
+                        Stuff.appScope.launch {
                             PlatformStuff.mainPrefs.updateData { pref ->
                                 val thisAllowList =
                                     pref.getRegexPresetApps(saveType.preset) + checkedAppIdsSet - uncheckedAppIdsSet
@@ -251,26 +256,47 @@ fun AppListScreen(
             }
 
             if (appListFiltered.musicPlayers.isNotEmpty() || !hasLoaded) {
-                stickyHeader("header_primary") {
-                    if (saveType is AppListSaveType.Scrobbling && firstRun) {
-                        Surface(
-                            tonalElevation = 4.dp,
-                            shadowElevation = 4.dp,
-                            shape = MaterialTheme.shapes.large,
-                            modifier = modifier
+
+                if (saveType is AppListSaveType.ExtractFirstArtist) {
+                    item("header_action") {
+                        Box(
+                            contentAlignment = Alignment.Center,
+                            modifier = Modifier
                                 .fillMaxWidth()
                         ) {
-                            LabeledCheckbox(
-                                text = stringResource(Res.string.first_artist),
-                                checked = useFirstArtistChecked,
-                                onCheckedChange = { useFirstArtistChecked = it }
+                            ButtonWithIcon(
+                                onClick = { onNavigate(PanoRoute.ArtistsWithDelimiters) },
+                                text = stringResource(Res.string.artist_splitting_exceptions),
+                                icon = Icons.Settings,
                             )
                         }
-                    } else {
-                        SimpleHeaderItem(
-                            text = stringResource(Res.string.music_players),
-                            icon = Icons.PlayCircle
-                        )
+                    }
+                } else {
+                    stickyHeader("header_primary") {
+                        when (saveType) {
+                            is AppListSaveType.Scrobbling if firstRun -> {
+                                Surface(
+                                    tonalElevation = 4.dp,
+                                    shadowElevation = 4.dp,
+                                    shape = MaterialTheme.shapes.large,
+                                    modifier = modifier
+                                        .fillMaxWidth()
+                                ) {
+                                    LabeledCheckbox(
+                                        text = stringResource(Res.string.first_artist),
+                                        checked = useFirstArtistChecked,
+                                        onCheckedChange = { useFirstArtistChecked = it }
+                                    )
+                                }
+                            }
+
+                            else -> {
+                                SimpleHeaderItem(
+                                    text = stringResource(Res.string.music_players),
+                                    icon = Icons.PlayCircle
+                                )
+                            }
+                        }
                     }
                 }
             }
@@ -336,24 +362,26 @@ fun AppListScreen(
                         }
                     }
 
-                    item("forget_unchecked_apps") {
-                        OutlinedButton(
-                            onClick = {
-                                viewModel.forgetUncheckedApps()
-                            },
-                            modifier = Modifier
-                                .align(Alignment.CenterHorizontally)
-                        ) {
-                            Icon(
-                                imageVector = Icons.Delete,
-                                contentDescription = null,
-                            )
+                    if (appList.musicPlayers.isNotEmpty()) {
+                        item("forget_unchecked_apps") {
+                            OutlinedButton(
+                                onClick = {
+                                    viewModel.forgetUncheckedApps()
+                                },
+                                modifier = Modifier
+                                    .align(Alignment.CenterHorizontally)
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Delete,
+                                    contentDescription = null,
+                                )
 
-                            Spacer(Modifier.size(ButtonDefaults.IconSpacing))
+                                Spacer(Modifier.size(ButtonDefaults.IconSpacing))
 
-                            Text(
-                                stringResource(Res.string.forget_unchecked_apps)
-                            )
+                                Text(
+                                    stringResource(Res.string.forget_unchecked_apps)
+                                )
+                            }
                         }
                     }
                 }

@@ -19,14 +19,7 @@ expect object PlatformSpecificPrefs {
 
     fun prefChartsWidget(listScope: LazyListScope)
 
-    fun addToStartup(
-        listScope: LazyListScope,
-        isAdded: Boolean,
-        onAddedChanged: (Boolean) -> Unit,
-    )
-
-    suspend fun isAddedToStartup(): Boolean
-
+    fun prefAutostart(listScope: LazyListScope)
     fun discordRpc(listScope: LazyListScope, onNavigate: (PanoRoute) -> Unit)
     fun tidalSteelSeries(listScope: LazyListScope, enabled: Boolean)
 

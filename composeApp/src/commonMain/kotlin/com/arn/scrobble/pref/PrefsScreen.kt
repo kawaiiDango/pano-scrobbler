@@ -49,13 +49,11 @@ import com.arn.scrobble.work.CommonWorkState
 import com.arn.scrobble.work.DigestWork
 import com.arn.scrobble.work.DigestWorker
 import com.arn.scrobble.work.UpdaterWork
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import org.jetbrains.compose.resources.stringResource
 import pano_scrobbler.composeapp.generated.resources.Res
 import pano_scrobbler.composeapp.generated.resources.album_art
@@ -209,10 +207,6 @@ fun PrefsScreen(
     val scope = rememberCoroutineScope()
 
     LaunchedEffect(Unit) {
-        withContext(Dispatchers.IO) {
-            isAddedToStartup = PlatformSpecificPrefs.isAddedToStartup()
-        }
-
         if (!PlatformStuff.isDesktop && !PlatformStuff.isTv) {
             snapshotFlow { firstDayOfWeek }
                 .drop(1) // only for changes
@@ -232,9 +226,7 @@ fun PrefsScreen(
 
         PlatformSpecificPrefs.prefQuickSettings(this, scrobblerEnabled)
 
-        PlatformSpecificPrefs.addToStartup(this, isAddedToStartup) {
-            isAddedToStartup = it
-        }
+        PlatformSpecificPrefs.prefAutostart(this)
 
         stickyHeader("scrobbling_header") {
             SimpleHeaderItem(

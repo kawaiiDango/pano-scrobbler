@@ -10,7 +10,6 @@ import com.arn.scrobble.utils.PanoNotifications
 import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff
 import io.ktor.http.encodeURLPathPart
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -140,7 +139,7 @@ object DiscordRpc {
                         _wasSuccessful.value = null
                     }
                 }
-            }.launchIn(GlobalScope)
+            }.launchIn(Stuff.appScope)
 
         combine(
             PanoNotifications.playingTrackTrayInfo.mapLatest { it.values.firstOrNull() },
@@ -164,7 +163,7 @@ object DiscordRpc {
                             settings = settings
                         )
             }
-        }.launchIn(GlobalScope)
+        }.launchIn(Stuff.appScope)
     }
 
     private fun transform(

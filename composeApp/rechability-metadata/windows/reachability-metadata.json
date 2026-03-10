@@ -218,29 +218,6 @@
       ]
     },
     {
-      "type": "com.sun.java.swing.plaf.windows.WindowsLookAndFeel",
-      "methods": [
-        {
-          "name": "<init>",
-          "parameterTypes": []
-        }
-      ]
-    },
-    {
-      "type": "com.sun.java.swing.plaf.windows.WindowsRootPaneUI",
-      "methods": [
-        {
-          "name": "createUI",
-          "parameterTypes": [
-            "javax.swing.JComponent"
-          ]
-        }
-      ]
-    },
-    {
-      "type": "com.sun.java.swing.plaf.windows.resources.windows"
-    },
-    {
       "type": "com.sun.org.apache.xerces.internal.jaxp.DocumentBuilderFactoryImpl",
       "methods": [
         {
@@ -251,6 +228,9 @@
     },
     {
       "type": "com.sun.swing.internal.plaf.basic.resources.basic"
+    },
+    {
+      "type": "com.sun.swing.internal.plaf.metal.resources.metal"
     },
     {
       "type": "io.ktor.client.HttpClient"
@@ -1517,6 +1497,17 @@
     },
     {
       "type": "javax.swing.plaf.basic.BasicPanelUI",
+      "methods": [
+        {
+          "name": "createUI",
+          "parameterTypes": [
+            "javax.swing.JComponent"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "javax.swing.plaf.metal.MetalRootPaneUI",
       "methods": [
         {
           "name": "createUI",
@@ -4171,19 +4162,19 @@
     },
     {
       "module": "java.desktop",
-      "glob": "com/sun/java/swing/plaf/windows/resources/windows_en.properties"
-    },
-    {
-      "module": "java.desktop",
-      "glob": "com/sun/java/swing/plaf/windows/resources/windows_en_US.properties"
-    },
-    {
-      "module": "java.desktop",
       "glob": "com/sun/swing/internal/plaf/basic/resources/basic_en.properties"
     },
     {
       "module": "java.desktop",
       "glob": "com/sun/swing/internal/plaf/basic/resources/basic_en_US.properties"
+    },
+    {
+      "module": "java.desktop",
+      "glob": "com/sun/swing/internal/plaf/metal/resources/metal_en.properties"
+    },
+    {
+      "module": "java.desktop",
+      "glob": "com/sun/swing/internal/plaf/metal/resources/metal_en_US.properties"
     },
     {
       "module": "java.desktop",
@@ -4210,10 +4201,10 @@
       "glob": "sun/util/logging/resources/logging_en_US.properties"
     },
     {
-      "bundle": "com.sun.java.swing.plaf.windows.resources.windows"
+      "bundle": "com.sun.swing.internal.plaf.basic.resources.basic"
     },
     {
-      "bundle": "com.sun.swing.internal.plaf.basic.resources.basic"
+      "bundle": "com.sun.swing.internal.plaf.metal.resources.metal"
     },
     {
       "bundle": "sun.awt.resources.awt"

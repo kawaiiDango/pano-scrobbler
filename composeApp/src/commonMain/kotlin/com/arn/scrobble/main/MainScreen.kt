@@ -156,8 +156,6 @@ fun PanoAppContent(
     val currentAccountType by PlatformStuff.mainPrefs.data.collectAsStateWithInitialValue { it.currentAccountType }
     val userSelf by PlatformStuff.mainPrefs.data
         .collectAsStateWithInitialValue { it.currentAccount?.user }
-    val profilePicUrlOverride by PlatformStuff.mainPrefs.data
-        .collectAsStateWithInitialValue { it.drawerData[it.currentAccountType]?.profilePicUrl }
 
     val backStack = rememberPanoNavBackStack(
         SavedStateConfiguration {
@@ -333,7 +331,6 @@ fun PanoAppContent(
                                 )
                             },
                             user = currentUser,
-                            profilePicUrlOverride = profilePicUrlOverride.takeIf { currentUser == userSelf }
                         )
                     }
 
@@ -395,7 +392,6 @@ fun PanoAppContent(
                                                 )
                                             )
                                         },
-                                        profilePicUrlOverride = profilePicUrlOverride.takeIf { currentUser == userSelf }
                                     )
                                 }
                             },
@@ -683,7 +679,6 @@ private fun PanoNavigationRail(
     onTabClicked: (pos: Int) -> Unit,
     onProfileClicked: (UserCached) -> Unit,
     user: UserCached,
-    profilePicUrlOverride: String?,
     modifier: Modifier = Modifier,
 ) {
     val expandedByDefault = when (LocalNavigationType.current) {
@@ -761,7 +756,7 @@ private fun PanoNavigationRail(
                         if (tabMetadata is PanoTab.Profile) {
 
                             AvatarOrInitials(
-                                avatarUrl = profilePicUrlOverride ?: user.largeImage,
+                                avatarUrl = user.largeImage,
                                 avatarName = user.name,
                                 modifier = Modifier
                                     .size(24.dp)
@@ -799,7 +794,6 @@ private fun PanoBottomNavigationBar(
     onTabClicked: (pos: Int) -> Unit,
     onProfileClicked: () -> Unit,
     user: UserCached,
-    profilePicUrlOverride: String?,
 ) {
     NavigationBar(
         modifier = Modifier.fillMaxWidth(),
@@ -822,7 +816,7 @@ private fun PanoBottomNavigationBar(
                     if (tabMetadata is PanoTab.Profile) {
 
                         AvatarOrInitials(
-                            avatarUrl = profilePicUrlOverride ?: user.largeImage,
+                            avatarUrl = user.largeImage,
                             avatarName = user.name,
                             modifier = Modifier
                                 .size(24.dp)

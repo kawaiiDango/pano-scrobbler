@@ -24,8 +24,9 @@ import kotlinx.coroutines.Dispatchers
         CachedArtist::class,
         CustomSpotifyMapping::class,
         CachedTrackWithAlbum::class,
+        ArtistWithDelimiters::class,
     ],
-    version = 17,
+    version = 18,
     autoMigrations = [
         AutoMigration(from = 9, to = 10),
         AutoMigration(from = 10, to = 11, spec = Spec_10_11::class),
@@ -34,6 +35,7 @@ import kotlinx.coroutines.Dispatchers
         AutoMigration(from = 13, to = 14),
         AutoMigration(from = 15, to = 16),
         AutoMigration(from = 16, to = 17, spec = Spec_16_17::class),
+        AutoMigration(from = 17, to = 18),
     ],
 )
 @ConstructedBy(PanoDbConstructor::class)
@@ -48,6 +50,7 @@ abstract class PanoDb : RoomDatabase() {
     abstract fun getCachedArtistsDao(): CachedArtistsDao
     abstract fun getCustomSpotifyMappingsDao(): CustomSpotifyMappingsDao
     abstract fun getCachedTracksWithAlbumsDao(): CachedTracksWithAlbumsDao
+    abstract fun getArtistsWithDelimitersDao(): ArtistsWithDelimitersDao
 
     companion object {
         val db = PlatformStuff.getDatabaseBuilder()

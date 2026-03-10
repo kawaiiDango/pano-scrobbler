@@ -103,99 +103,6 @@ object DesktopStuff {
         }
     }
 
-    fun linuxAutostartFile(): File? {
-        return when (os) {
-            Os.Linux -> {
-                System.getenv("XDG_CONFIG_HOME")?.ifEmpty { null }?.let {
-                    File(it, "autostart/pano-scrobbler.desktop")
-                } ?: File(
-                    System.getProperty("user.home"),
-                    ".config/autostart/pano-scrobbler.desktop"
-                )
-            }
-
-            else -> null
-        }
-    }
-
-    fun linuxAutostartExec(): String? {
-        return when (os) {
-            Os.Linux -> {
-                val execPath = if (System.getenv("APPIMAGE") != null)
-                    System.getenv("APPIMAGE").let { "\"$it\"" }
-                else
-                    File(
-                        ProcessHandle.current().info().command().get()
-                    ).absolutePath.let { "\"$it\"" }
-
-                "$execPath --$MINIMIZED_ARG"
-            }
-
-            else -> null
-        }
-    }
-
-    fun addOrRemoveFromStartup(add: Boolean) {
-        when (os) {
-            Os.Windows -> {
-                // not implemented. will not implement for windows
-            }
-
-            Os.Linux -> {
-                // linux. create or delete .desktop file in ~/.config/autostart
-                val execPath = linuxAutostartExec() ?: return
-
-                val desktopFile = linuxAutostartFile() ?: return
-
-                desktopFile.parentFile.mkdirs()
-
-                if (add) {
-                    desktopFile.writeText(
-                        """
-                        [Desktop Entry]
-                        Type=Application
-                        Name=${BuildKonfig.APP_NAME}
-                        Comment=Feature packed music tracker
-                        Terminal=false
-                        Exec=$execPath
-                        Icon=pano-scrobbler
-                        X-GNOME-Autostart-enabled=true
-                        StartupWMClass=pano-scrobbler
-                        Categories=AudioVideo;Audio;
-                        NoDisplay=false
-                        """.trimIndent()
-                    )
-                } else {
-                    desktopFile.delete()
-                }
-            }
-
-            Os.Macos -> {
-                // will not implement for macos
-            }
-        }
-    }
-
-    fun isAddedToStartup(): Boolean {
-        return when (os) {
-            Os.Windows -> {
-                // not implemented. will not implement for windows
-                false
-            }
-
-            Os.Linux -> {
-                val execPath = linuxAutostartExec() ?: return false
-                val desktopFile = linuxAutostartFile() ?: return false
-
-                desktopFile.exists() && desktopFile.readText().contains(execPath)
-            }
-
-            Os.Macos -> {
-                false
-            }
-        }
-    }
-
     private fun getDataDir(): File {
         val defaultDir = when (os) {
             Os.Windows -> {
@@ -226,10 +133,6 @@ object DesktopStuff {
         var prop = "java.home"
         if (System.getProperty(prop) == null) {
             System.setProperty(prop, execDirPath)
-
-            prop = "compose.application.configure.swing.globals"
-            if (System.getProperty(prop) == null)
-                System.setProperty(prop, "true")
 
             prop = "sun.java2d.dpiaware"
             if (System.getProperty(prop) == null)

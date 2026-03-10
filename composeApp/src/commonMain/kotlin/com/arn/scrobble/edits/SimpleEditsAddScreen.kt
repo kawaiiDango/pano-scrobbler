@@ -54,6 +54,7 @@ import com.arn.scrobble.ui.ButtonWithIcon
 import com.arn.scrobble.ui.ErrorText
 import com.arn.scrobble.ui.IconButtonWithTooltip
 import com.arn.scrobble.ui.InlineCheckButton
+import com.arn.scrobble.ui.LabeledCheckbox
 import com.arn.scrobble.ui.PanoOutlinedTextField
 import com.arn.scrobble.utils.redactedMessage
 import com.valentinilk.shimmer.LocalShimmerTheme
@@ -73,6 +74,7 @@ import pano_scrobbler.composeapp.generated.resources.corrected
 import pano_scrobbler.composeapp.generated.resources.delete
 import pano_scrobbler.composeapp.generated.resources.disable
 import pano_scrobbler.composeapp.generated.resources.edit
+import pano_scrobbler.composeapp.generated.resources.edit_continue_other
 import pano_scrobbler.composeapp.generated.resources.edit_example
 import pano_scrobbler.composeapp.generated.resources.edit_no_save
 import pano_scrobbler.composeapp.generated.resources.existing_value
@@ -112,6 +114,10 @@ fun SimpleEditsAddScreen(
     var origArtist by rememberSaveable { mutableStateOf(simpleEdit?.origArtist ?: "") }
     var hasArtist by rememberSaveable { mutableStateOf(simpleEdit == null || simpleEdit.artist != null) }
     var artist by rememberSaveable { mutableStateOf(simpleEdit?.artist ?: "") }
+
+    var continueMatching by rememberSaveable {
+        mutableStateOf(simpleEdit?.continueMatching ?: true)
+    }
 
     var reauthenticateButtonShown by remember { mutableStateOf(false) }
     var save by rememberSaveable { mutableStateOf(true) }
@@ -186,6 +192,8 @@ fun SimpleEditsAddScreen(
                 hasOrigAlbumArtist = hasOrigAlbumArtist,
                 origAlbumArtist = origAlbumArtist,
                 albumArtist = albumArtist.takeIf { hasAlbumArtist },
+
+                continueMatching = continueMatching,
             )
 
             if (origScrobbleData != null)
@@ -451,6 +459,15 @@ fun SimpleEditsAddScreen(
             }
 
             ErrorText(errorText)
+        }
+
+        if (isExpanded) {
+            LabeledCheckbox(
+                checked = continueMatching,
+                onCheckedChange = { continueMatching = it },
+                text = stringResource(Res.string.edit_continue_other),
+                modifier = Modifier.fillMaxWidth()
+            )
         }
 
         Row(

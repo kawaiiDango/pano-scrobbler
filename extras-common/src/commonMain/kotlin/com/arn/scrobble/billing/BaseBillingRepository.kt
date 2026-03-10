@@ -1,16 +1,20 @@
 package com.arn.scrobble.billing
 
-import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.withContext
 
 
-abstract class BaseBillingRepository(protected val receipt: Flow<Pair<String?, String?>>) {
-    protected val scope = GlobalScope
+abstract class BaseBillingRepository(
+    protected val scope: CoroutineScope,
+    protected val receipt: Flow<Pair<String?, String?>>
+) {
     protected val checkEveryDays = 30
     protected val productId = "pscrobbler_pro"
     abstract val formattedPrice: Flow<String?>
@@ -20,12 +24,14 @@ abstract class BaseBillingRepository(protected val receipt: Flow<Pair<String?, S
     abstract val needsActivationCode: Boolean
     val licenseState = receipt
         .mapLatest { (receipt, signature) ->
-            if (receipt == null) {
-                LicenseState.NO_LICENSE
-            } else if (verifyPurchase(receipt, signature)) {
-                LicenseState.VALID
-            } else {
-                LicenseState.NO_LICENSE
+            withContext(Dispatchers.IO) {
+                if (receipt == null) {
+                    LicenseState.NO_LICENSE
+                } else if (verifyPurchase(receipt, signature)) {
+                    LicenseState.VALID
+                } else {
+                    LicenseState.NO_LICENSE
+                }
             }
         }
         .stateIn(scope, SharingStarted.Eagerly, LicenseState.UNKNOWN)

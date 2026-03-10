@@ -57,4 +57,7 @@ data class SimpleEdit(
     val album: String? = null,
     val artist: String? = null,
     val albumArtist: String? = null,
+
+    @ColumnInfo(defaultValue = "1")
+    val continueMatching: Boolean = true,
 )

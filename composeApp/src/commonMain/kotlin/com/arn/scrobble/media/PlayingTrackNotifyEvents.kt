@@ -164,12 +164,12 @@ suspend fun listenForPlayingTrackEvents(
 
                 if (event.showUnscrobbledNotification && event.hash != null) {
                     PanoNotifications.notifyUnscrobbled(
-                        trackInfo.uniqueId,
+                        trackInfo.notiKey,
                         trackInfo.toScrobbleData(true),
                         event.hash
                     )
                 } else {
-                    PanoNotifications.removeNotificationByKey(trackInfo.uniqueId)
+                    PanoNotifications.removeNotificationByKey(trackInfo.notiKey)
                 }
             }
 

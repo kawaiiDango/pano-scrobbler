@@ -20,6 +20,7 @@ import com.arn.scrobble.billing.BillingScreen
 import com.arn.scrobble.billing.BillingTroubleshootScreen
 import com.arn.scrobble.charts.ChartsPagerScreen
 import com.arn.scrobble.charts.RandomScreen
+import com.arn.scrobble.edits.ArtistsWithDelimitersScreen
 import com.arn.scrobble.edits.BlockedMetadatasScreen
 import com.arn.scrobble.edits.RegexEditsAddScreen
 import com.arn.scrobble.edits.RegexEditsScreen
@@ -63,6 +64,7 @@ import com.arn.scrobble.utils.Stuff.collectAsStateWithInitialValue
 import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringResource
 import pano_scrobbler.composeapp.generated.resources.Res
+import pano_scrobbler.composeapp.generated.resources.artist_splitting_exceptions
 import pano_scrobbler.composeapp.generated.resources.automation_cli
 import pano_scrobbler.composeapp.generated.resources.automation_cp
 import pano_scrobbler.composeapp.generated.resources.choose_an_app
@@ -71,6 +73,7 @@ import pano_scrobbler.composeapp.generated.resources.delete_account
 import pano_scrobbler.composeapp.generated.resources.edit
 import pano_scrobbler.composeapp.generated.resources.edit_regex
 import pano_scrobbler.composeapp.generated.resources.edit_regex_test
+import pano_scrobbler.composeapp.generated.resources.first_artist
 import pano_scrobbler.composeapp.generated.resources.help
 import pano_scrobbler.composeapp.generated.resources.lastfm
 import pano_scrobbler.composeapp.generated.resources.listenbrainz
@@ -206,7 +209,9 @@ object PanoNavGraph {
         entry<PanoRoute.AppList> { route ->
             onSetTitleRes(
                 route,
-                if (route.isSingleSelect)
+                if (route.saveType == AppListSaveType.ExtractFirstArtist)
+                    Res.string.first_artist
+                else if (route.isSingleSelect)
                     Res.string.choose_an_app
                 else
                     Res.string.choose_apps
@@ -219,6 +224,7 @@ object PanoNavGraph {
                 onSetPackagesSelection = { checked, unchecked ->
                     mainViewModel.onSetPackagesSelection(checked, unchecked)
                 },
+                onNavigate = navigate,
                 modifier = modifier()
             )
         }
@@ -613,6 +619,15 @@ object PanoNavGraph {
             AutomationInfoScreen(
                 onNavigate = navigate,
                 modifier = modifier().padding(panoContentPadding())
+            )
+        }
+
+        entry<PanoRoute.ArtistsWithDelimiters> { route ->
+            onSetTitleRes(route, Res.string.artist_splitting_exceptions)
+
+            ArtistsWithDelimitersScreen(
+                onNavigate = navigate,
+                modifier = modifier()
             )
         }
 

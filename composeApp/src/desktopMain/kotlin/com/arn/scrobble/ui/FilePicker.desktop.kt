@@ -53,7 +53,7 @@ actual fun FilePicker(
     LaunchedEffect(show) {
         if (show && DesktopStuff.os == DesktopStuff.Os.Linux) {
             val requestId = (0..100000).random()
-            PanoNativeComponents.xdgFileChooser(
+            PanoNativeComponents.fileChooserLinux(
                 requestId = requestId,
                 save = mode is FilePickerMode.Save,
                 title = title,

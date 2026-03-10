@@ -95,17 +95,7 @@ fun ProfileHeader(
         else -> accountTypeLabel(currentAccountType) + ": " + userName
     }
 
-
-    val profilePicUrl by remember(drawerData, user) {
-        mutableStateOf(
-            when {
-                user != null && !user.isSelf -> user.largeImage
-                drawerData != null -> drawerData.profilePicUrl
-                else -> null
-            }
-        )
-    }
-
+    val profilePicUrl by remember(user) { mutableStateOf(user?.largeImage) }
 
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,

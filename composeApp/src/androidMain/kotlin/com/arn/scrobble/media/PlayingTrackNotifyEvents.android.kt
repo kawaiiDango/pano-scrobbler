@@ -8,7 +8,6 @@ import com.arn.scrobble.api.lastfm.ScrobbleData
 import com.arn.scrobble.automation.Automation
 import com.arn.scrobble.utils.AndroidStuff
 import com.arn.scrobble.utils.Stuff
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
@@ -44,7 +43,7 @@ actual fun getNowPlayingFromMainProcess(): Pair<ScrobbleData, Int>? {
     val cancellationSignal = CancellationSignal()
 
     // wait for 500ms max to prevent ANR
-    val cancelJob = GlobalScope.launch {
+    val cancelJob = Stuff.appScope.launch {
         delay(500)
         cancellationSignal.cancel()
     }

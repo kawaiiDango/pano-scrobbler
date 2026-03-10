@@ -49,10 +49,10 @@ abstract class MediaListener(
     fun findPlayingTracker() =
         sessionTrackers.values.find { it.trackInfo.isPlaying }
 
-    fun createTrackInfo(appId: String, uniqueId: String): PlayingTrackInfo {
+    fun createTrackInfo(appId: String, notiKey: String): PlayingTrackInfo {
         val trackInfo = PlayingTrackInfo(
             appId,
-            uniqueId,
+            notiKey,
             cachedInfos[appId]
         )
 
@@ -166,7 +166,7 @@ abstract class MediaListener(
         private fun ignoreScrobble() {
             // scrobbling may have already started from onMetadataChanged
             scrobbleQueue.remove(trackInfo.lastScrobbleHash)
-            PanoNotifications.removeNotificationByKey(trackInfo.uniqueId)
+            PanoNotifications.removeNotificationByKey(trackInfo.notiKey)
             trackInfo.cancelled()
             // do not scrobble again
             lastPlaybackState = CommonPlaybackState.None
@@ -261,7 +261,7 @@ abstract class MediaListener(
             }
 
             scrobbleQueue.remove(trackInfo.lastScrobbleHash)
-            PanoNotifications.removeNotificationByKey(trackInfo.uniqueId)
+            PanoNotifications.removeNotificationByKey(trackInfo.notiKey)
             if (isMuted)
                 unmute(clearMutedHash = false)
         }

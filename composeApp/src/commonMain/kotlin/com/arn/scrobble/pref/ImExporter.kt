@@ -1,6 +1,7 @@
 package com.arn.scrobble.pref
 
 import com.arn.scrobble.BuildKonfig
+import com.arn.scrobble.db.ArtistWithDelimiters
 import com.arn.scrobble.db.BlockedMetadata
 import com.arn.scrobble.db.PanoDb
 import com.arn.scrobble.db.RegexEdit
@@ -20,7 +21,9 @@ import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonTransformingSerializer
 import kotlinx.serialization.json.buildJsonArray
 import kotlinx.serialization.json.buildJsonObject
+import kotlinx.serialization.json.decodeFromStream
 import kotlinx.serialization.json.encodeToStream
+import java.io.InputStream
 import java.io.OutputStream
 
 class ImExporter {
@@ -34,12 +37,16 @@ class ImExporter {
         }
     }
 
+    private var exportData: ExportData? = null
+
     suspend fun export(writer: OutputStream): Boolean {
         val exportData = ExportData(
             pano_version = BuildKonfig.VER_CODE,
             simple_edits = db.getSimpleEditsDao().allFlow().first().asReversed(),
             blocked_metadata = db.getBlockedMetadataDao().allFlow().first().asReversed(),
             regex_rules = db.getRegexEditsDao().allFlow().first(),
+            artists_with_delimiters = db.getArtistsWithDelimitersDao().allFlow().first()
+                .map { it.artist },
             scrobble_sources = null,
             settings = PlatformStuff.mainPrefs.data.first().toPublicPrefs()
         )
@@ -66,6 +73,7 @@ class ImExporter {
             settings = null,
             simple_edits = null,
             regex_rules = null,
+            artists_with_delimiters = null,
             blocked_metadata = null,
         )
 
@@ -83,36 +91,65 @@ class ImExporter {
         }
     }
 
-    suspend fun import(jsonText: String, editsMode: EditsMode, settings: Boolean): Boolean {
-        val exportData: ExportData = try {
-            json.decodeFromString(jsonText)
-        } catch (e: Exception) {
-            e.printStackTrace()
-            return false
-        }
+    fun createImportTypes(inputStream: InputStream): Set<ImportTypes> {
+        val exportData = json.decodeFromStream<ExportData>(inputStream)
 
-        if (settings && exportData.settings != null) {
+        val options = mutableSetOf<ImportTypes>()
+        if (!exportData.simple_edits.isNullOrEmpty()) options += ImportTypes.simple_edits
+        if (!exportData.regex_rules.isNullOrEmpty() || !exportData.regex_edits_legacy.isNullOrEmpty()) options += ImportTypes.regex_rules
+        if (!exportData.blocked_metadata.isNullOrEmpty()) options += ImportTypes.blocked_metadata
+        if (!exportData.artists_with_delimiters.isNullOrEmpty()) options += ImportTypes.artists_with_delimiters
+        if (!exportData.scrobble_sources.isNullOrEmpty()) options += ImportTypes.scrobble_sources
+        if (exportData.settings != null) options += ImportTypes.settings
+
+        this.exportData = exportData
+        return options
+    }
+
+    suspend fun import(
+        importTypes: Set<ImportTypes>,
+        writeMode: WriteMode
+    ): Boolean {
+        val exportData = this.exportData ?: return false
+
+        if (ImportTypes.settings in importTypes && exportData.settings != null) {
+            val allowedPackagesFiltered =
+                exportData.settings.allowedPackages.filter(PlatformStuff::doesAppExist).toSet()
+
+            val extractFirstArtistPackagesFiltered =
+                exportData.settings.extractFirstArtistPackages.filter(PlatformStuff::doesAppExist)
+                    .toSet()
+
             PlatformStuff.mainPrefs.updateData {
-                it.updateFromPublicPrefs(exportData.settings)
+                it.updateFromPublicPrefs(
+                    exportData.settings.copy(
+                        allowedPackages = if (allowedPackagesFiltered.isEmpty() && exportData.settings.allowedPackages.isNotEmpty())
+                            it.allowedPackages
+                        else
+                            allowedPackagesFiltered,
+                        extractFirstArtistPackages = if (extractFirstArtistPackagesFiltered.isEmpty() && exportData.settings.extractFirstArtistPackages.isNotEmpty())
+                            it.extractFirstArtistPackages
+                        else
+                            extractFirstArtistPackagesFiltered,
+                    )
+                )
             }
         }
 
-        if (editsMode == EditsMode.EDITS_NOPE) return true
-
-        if (editsMode == EditsMode.EDITS_REPLACE_ALL) {
-            if (exportData.simple_edits != null)
+        if (writeMode == WriteMode.replace_all) {
+            if (ImportTypes.simple_edits in importTypes)
                 db.getSimpleEditsDao().nuke()
-            if (exportData.regex_rules != null || exportData.regex_edits_legacy != null)
+            if (ImportTypes.regex_rules in importTypes)
                 db.getRegexEditsDao().nuke()
-            if (exportData.blocked_metadata != null)
+            if (ImportTypes.blocked_metadata in importTypes)
                 db.getBlockedMetadataDao().nuke()
-            if (exportData.scrobble_sources != null)
-                db.getScrobbleSourcesDao().nuke()
+            if (ImportTypes.artists_with_delimiters in importTypes)
+                db.getArtistsWithDelimitersDao().nuke()
         }
 
         var migratedRegexEdits: List<RegexEdit>?
 
-        if (exportData.regex_edits_legacy != null) {
+        if (ImportTypes.regex_rules in importTypes && exportData.regex_edits_legacy != null) {
             migratedRegexEdits = mutableListOf()
 
             exportData.regex_edits_legacy.forEach {
@@ -169,6 +206,7 @@ class ImExporter {
                         ),
                         appIds = it.packages ?: emptySet(),
                         caseSensitive = it.caseSensitive,
+                        continueMatching = it.continueMatching,
                     )
 
                 }
@@ -178,22 +216,49 @@ class ImExporter {
 
         val regexEdits = migratedRegexEdits ?: exportData.regex_rules
 
-        when (editsMode) {
-            EditsMode.EDITS_REPLACE_ALL, EditsMode.EDITS_REPLACE_EXISTING -> {
-                exportData.simple_edits?.let { db.getSimpleEditsDao().insert(it) }
-                regexEdits?.let { db.getRegexEditsDao().import(it) }
-                exportData.blocked_metadata?.let { db.getBlockedMetadataDao().insert(it) }
+        when (writeMode) {
+            WriteMode.replace_all, WriteMode.replace_existing -> {
+                if (ImportTypes.simple_edits in importTypes)
+                    exportData.simple_edits?.let { db.getSimpleEditsDao().insert(it) }
+                if (ImportTypes.blocked_metadata in importTypes)
+                    exportData.blocked_metadata?.let { db.getBlockedMetadataDao().insert(it) }
             }
 
-            EditsMode.EDITS_KEEP_EXISTING -> {
-                exportData.simple_edits?.let { db.getSimpleEditsDao().insertIgnore(it) }
-                regexEdits?.let { db.getRegexEditsDao().import(it) }
-                exportData.blocked_metadata?.let { db.getBlockedMetadataDao().insertIgnore(it) }
+            WriteMode.keep_existing -> {
+                if (ImportTypes.simple_edits in importTypes)
+                    exportData.simple_edits?.let { db.getSimpleEditsDao().insertIgnore(it) }
+                if (ImportTypes.blocked_metadata in importTypes)
+                    exportData.blocked_metadata?.let { db.getBlockedMetadataDao().insertIgnore(it) }
             }
         }
-        exportData.scrobble_sources?.let { db.getScrobbleSourcesDao().insert(it) }
+
+        if (ImportTypes.regex_rules in importTypes)
+            regexEdits?.let { db.getRegexEditsDao().import(it) }
+
+        if (ImportTypes.artists_with_delimiters in importTypes)
+            exportData.artists_with_delimiters
+                ?.map { ArtistWithDelimiters(artist = it) }
+                ?.let { db.getArtistsWithDelimitersDao().insert(it) }
+
+        if (ImportTypes.scrobble_sources in importTypes)
+            exportData.scrobble_sources?.let { db.getScrobbleSourcesDao().insert(it) }
 
         return true
+    }
+
+    enum class ImportTypes {
+        settings,
+        simple_edits,
+        regex_rules,
+        blocked_metadata,
+        artists_with_delimiters,
+        scrobble_sources,
+    }
+
+    enum class WriteMode {
+        replace_all,
+        replace_existing,
+        keep_existing,
     }
 }
 
@@ -207,16 +272,11 @@ private data class ExportData(
     val regex_edits_legacy: List<RegexEditLegacy>? = null,
     val regex_rules: List<RegexEdit>?,
     val blocked_metadata: List<BlockedMetadata>?,
+    val artists_with_delimiters: List<String>?,
     val scrobble_sources: List<ScrobbleSource>?,
     val settings: MainPrefs.Public?,
 )
 
-enum class EditsMode {
-    EDITS_NOPE,
-    EDITS_REPLACE_ALL,
-    EDITS_REPLACE_EXISTING,
-    EDITS_KEEP_EXISTING,
-}
 
 @Serializable
 private data class RegexEditLegacy(

@@ -239,8 +239,8 @@ class PendingScrobblesWorker(
         const val NAME = "pending_scrobbles"
         private val MOCK = BuildKonfig.DEBUG && false
         private const val HARD_LIMIT = 2500
-        private var BATCH_SIZE = 40 //max 50
-        private const val DELAY = 400L
-        private const val MAX_FAILURES_PER_SERVICE = 2
+        private var BATCH_SIZE = 50 //max 50
+        private const val DELAY = 1000L
+        private const val MAX_FAILURES_PER_SERVICE = 1
     }
 }

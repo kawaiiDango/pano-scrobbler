@@ -90,6 +90,7 @@ import pano_scrobbler.composeapp.generated.resources.copy_from
 import pano_scrobbler.composeapp.generated.resources.delete
 import pano_scrobbler.composeapp.generated.resources.edit_all
 import pano_scrobbler.composeapp.generated.resources.edit_case_sensitive
+import pano_scrobbler.composeapp.generated.resources.edit_continue_other
 import pano_scrobbler.composeapp.generated.resources.edit_extract
 import pano_scrobbler.composeapp.generated.resources.edit_extract_desc
 import pano_scrobbler.composeapp.generated.resources.edit_extract_extra_groups
@@ -134,6 +135,7 @@ fun RegexEditsAddScreen(
         mutableStateOf(regexEdit?.replacement?.replaceAll ?: false)
     }
     var caseSensitive by rememberSaveable { mutableStateOf(regexEdit?.caseSensitive ?: false) }
+    var continueMatching by rememberSaveable { mutableStateOf(regexEdit?.continueMatching ?: true) }
 
     var searchTrack by rememberSaveable { mutableStateOf(regexEdit?.search?.searchTrack ?: "") }
     var searchAlbum by rememberSaveable { mutableStateOf(regexEdit?.search?.searchAlbum ?: "") }
@@ -194,6 +196,7 @@ fun RegexEditsAddScreen(
                     search = search,
                     appIds = appItems.map { it.appId }.toSet(),
                     caseSensitive = caseSensitive,
+                    continueMatching = continueMatching
                 )
             }
 
@@ -212,6 +215,7 @@ fun RegexEditsAddScreen(
                     ),
                     appIds = appItems.map { it.appId }.toSet(),
                     caseSensitive = caseSensitive,
+                    continueMatching = continueMatching
                 )
             }
 
@@ -224,6 +228,7 @@ fun RegexEditsAddScreen(
                     appIds = appItems.map { it.appId }.toSet(),
                     blockPlayerAction = blockPlayerAction,
                     caseSensitive = caseSensitive,
+                    continueMatching = continueMatching
                 )
             }
 
@@ -359,7 +364,6 @@ fun RegexEditsAddScreen(
             if (!regexLearnt) {
                 DismissableNotice(
                     title = stringResource(Res.string.edit_regex_warning),
-                    icon = Icons.Info,
                     onClick = {
                         PlatformStuff.openInBrowser("https://www.google.com/search?q=regex+tutorial")
                     },
@@ -533,6 +537,13 @@ fun RegexEditsAddScreen(
                 onAppItemRemoved = {
                     appItems = appItems - it
                 }
+            )
+
+            LabeledCheckbox(
+                checked = continueMatching,
+                onCheckedChange = { continueMatching = it },
+                text = stringResource(Res.string.edit_continue_other),
+                modifier = Modifier.fillMaxWidth()
             )
 
             LabeledCheckbox(

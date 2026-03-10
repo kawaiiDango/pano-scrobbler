@@ -209,7 +209,7 @@ fun BillingScreen(
 
                             Text(
                                 text = stringResource(Res.string.at_least, formattedPrice ?: "") +
-                                        ", " + stringResource(Res.string.one_time_purchase),
+                                        " • " + stringResource(Res.string.one_time_purchase),
                                 style = MaterialTheme.typography.bodyMedium
                             )
                         }

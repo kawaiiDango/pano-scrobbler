@@ -62,7 +62,7 @@ actual fun transformPlaybackState(
     }
 
     // Chromecast remote sessions
-    if (trackInfo.uniqueId.contains("|CastMediaSession")) {
+    if (trackInfo.notiKey.contains("|CastMediaSession")) {
         Logger.i { "ignoring chromecast remote session" }
         ignoreScrobble = true
     }

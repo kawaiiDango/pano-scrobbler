@@ -43,6 +43,7 @@ import org.jetbrains.compose.resources.getString
 import pano_scrobbler.composeapp.generated.resources.Res
 import pano_scrobbler.composeapp.generated.resources.lastfm_reauth
 import java.util.Calendar
+import kotlin.time.Duration.Companion.minutes
 
 
 class ScrobblesVM(
@@ -174,11 +175,14 @@ class ScrobblesVM(
 
     init {
         viewModelScope.launch {
-            val hasPending = PanoDb.db.getPendingScrobblesDao().count() > 0
+            val lastFailed = PanoDb.db.getPendingScrobblesDao().lastFailedTimestamp()
             val isRunning = PendingScrobblesWork.state().first() == CommonWorkState.RUNNING
 
-            if (hasPending && !isRunning)
-                PendingScrobblesWork.schedule(force = true)
+            if (lastFailed != null && !isRunning) {
+                val force =
+                    System.currentTimeMillis() - lastFailed > 30.minutes.inWholeMilliseconds
+                PendingScrobblesWork.schedule(force)
+            }
         }
 
         viewModelScope.launch {

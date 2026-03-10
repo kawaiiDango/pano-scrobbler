@@ -23,7 +23,6 @@ import com.arn.scrobble.ui.PanoOutlinedTextField
 import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff
 import com.arn.scrobble.utils.Stuff.collectAsStateWithInitialValue
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
 import pano_scrobbler.composeapp.generated.resources.Res
@@ -69,7 +68,7 @@ fun MediaSearchPrefDialog(modifier: Modifier = Modifier) {
 
         DisposableEffect(Unit) {
             onDispose {
-                GlobalScope.launch {
+                Stuff.appScope.launch {
                     PlatformStuff.mainPrefs.updateData {
                         it.copy(
                             usePlayFromSearch = isError() || searchUrlTemplateText.isNullOrBlank(),

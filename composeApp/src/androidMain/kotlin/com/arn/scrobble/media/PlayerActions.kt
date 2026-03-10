@@ -150,6 +150,7 @@ object PlayerActions {
         val pixels = IntArray(bitmap.width * bitmap.height)
         // getPixels is an expensive jni call, do it only once
         bitmap.getPixels(pixels, 0, bitmap.width, 0, 0, bitmap.width, bitmap.height)
+        bitmap.recycle()
 
         val totalPixels = pixels.size
         val nonTransparentPixels = pixels.count { (it shr 24) != 0 }// alpha channel check

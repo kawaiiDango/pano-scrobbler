@@ -18,8 +18,8 @@ import com.arn.scrobble.api.pleroma.Pleroma
 import com.arn.scrobble.charts.ListeningActivity
 import com.arn.scrobble.charts.TimePeriod
 import com.arn.scrobble.utils.PlatformStuff
+import com.arn.scrobble.utils.Stuff
 import com.arn.scrobble.utils.Stuff.stateInWithCache
-import kotlinx.coroutines.GlobalScope
 import kotlinx.serialization.Serializable
 
 
@@ -165,13 +165,13 @@ enum class AccountType(val id: Int) {
 }
 
 object Scrobblables {
-    private val scrobblablesCache = mutableMapOf<UserAccountSerializable, Scrobblable>()
+    private val scrobblablesCache = hashMapOf<UserAccountSerializable, Scrobblable>()
 
     private val accounts = PlatformStuff.mainPrefs.data
-        .stateInWithCache(GlobalScope) { it.scrobbleAccounts.distinctBy { it.type }.toSet() }
+        .stateInWithCache(Stuff.appScope) { it.scrobbleAccounts.distinctBy { it.type }.toSet() }
 
     private val currentAccountType = PlatformStuff.mainPrefs.data
-        .stateInWithCache(GlobalScope) { it.currentAccountType }
+        .stateInWithCache(Stuff.appScope) { it.currentAccountType }
 
     val all: Collection<Scrobblable>
         @Synchronized

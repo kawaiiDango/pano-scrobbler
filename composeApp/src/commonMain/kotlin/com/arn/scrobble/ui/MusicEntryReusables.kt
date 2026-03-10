@@ -911,7 +911,6 @@ fun ExpandableHeaderMenu(
 @Composable
 fun DismissableNotice(
     title: String,
-    icon: ImageVector,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
     onDismiss: (() -> Unit)? = null,
@@ -945,15 +944,16 @@ fun DismissableNotice(
                 .clickable(onClick = onClick)
                 .padding(16.dp)
         ) {
-            Icon(
-                imageVector = icon,
-                contentDescription = null,
-                tint = MaterialTheme.colorScheme.primary
-            )
             Text(
                 text = title,
                 style = MaterialTheme.typography.titleMedium,
                 modifier = Modifier.weight(1f)
+            )
+
+            Icon(
+                imageVector = Icons.AutoMirrored.ArrowRightAlt,
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.primary
             )
         }
     }

@@ -34,6 +34,8 @@ data class RegexEdit(
     val blockPlayerAction: BlockPlayerAction? = null,
 
     @ColumnInfo(defaultValue = "1")
+    var continueMatching: Boolean = true,
+    @ColumnInfo(defaultValue = "1")
     val enabled: Boolean = true,
 ) {
     @Serializable

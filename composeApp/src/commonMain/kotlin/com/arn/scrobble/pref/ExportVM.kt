@@ -54,17 +54,17 @@ class ExportVM : ViewModel() {
         }
     }
 
-    fun exportToServer(base26Address: String) {
+    fun exportToServer(encodedAddress: String) {
         viewModelScope.launch(Dispatchers.IO) {
             val outputStream = ByteArrayOutputStream()
             val exported = imExporter.export(outputStream)
             if (exported) {
                 val jsonBody = outputStream.toString()
                 _result.value = runCatching {
-                    val (ip, port) = IpPortCode.decode(base26Address)
+                    val (ip, port) = IpPortCode.decode(encodedAddress)
 
                     val req = ktorClient.await()
-                        .post("https://$ip:$port/$base26Address") {
+                        .post("https://$ip:$port/import") {
                             setBody(jsonBody)
                         }
 

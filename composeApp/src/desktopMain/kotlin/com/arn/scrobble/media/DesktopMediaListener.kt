@@ -91,7 +91,7 @@ class DesktopMediaListener(
             val normalizedAppId = DesktopStuff.normalizeAppId(session.rawAppId)
             val playingTrackInfo = createTrackInfo(normalizedAppId, session.rawAppId)
 
-            sessionTrackers[playingTrackInfo.uniqueId] = DesktopSessionTracker(playingTrackInfo)
+            sessionTrackers[playingTrackInfo.notiKey] = DesktopSessionTracker(playingTrackInfo)
         }
 //            }
         // Now remove old sessions that are no longer active.
@@ -111,7 +111,7 @@ class DesktopMediaListener(
 
         val tracker = findTrackerByHash(hash)
         if (tracker != null) {
-            PanoNativeComponents.mute(tracker.trackInfo.uniqueId)
+            PanoNativeComponents.mute(tracker.trackInfo.notiKey)
             Logger.i { "mute: done" }
 
             mutedHash = hash
@@ -124,7 +124,7 @@ class DesktopMediaListener(
             Logger.i { "unmute: done" }
 
             val tracker = findTrackerByHash(mutedHash!!)
-            tracker?.trackInfo?.uniqueId?.let { PanoNativeComponents.unmute(it) }
+            tracker?.trackInfo?.notiKey?.let { PanoNativeComponents.unmute(it) }
 
             tracker?.isMuted = false
 
@@ -168,7 +168,7 @@ class DesktopMediaListener(
         }
 
         override fun skip() {
-            PanoNativeComponents.skip(trackInfo.uniqueId)
+            PanoNativeComponents.skip(trackInfo.notiKey)
         }
 
         override fun stop() {

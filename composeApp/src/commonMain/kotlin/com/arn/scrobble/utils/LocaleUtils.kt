@@ -1,6 +1,5 @@
 package com.arn.scrobble.utils
 
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -72,7 +71,7 @@ object LocaleUtils {
                 }
         }
         .stateIn(
-            GlobalScope,
+            Stuff.appScope,
             SharingStarted.Eagerly,
             if (!PlatformStuff.hasSystemLocaleStore && localeFile.exists())
                 localeFile.readText().ifEmpty { null }

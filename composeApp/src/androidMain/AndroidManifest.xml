@@ -48,8 +48,7 @@
         <receiver
             android:name="com.arn.scrobble.widget.ChartsWidgetProvider"
             android:exported="true"
-            android:label="@string/charts"
-            android:process=":bgScrobbler">
+            android:label="@string/charts">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
             </intent-filter>
@@ -83,8 +82,7 @@
         <service
             android:name="androidx.core.widget.RemoteViewsCompatService"
             android:exported="false"
-            android:permission="android.permission.BIND_REMOTEVIEWS"
-            android:process=":bgScrobbler" />
+            android:permission="android.permission.BIND_REMOTEVIEWS" />
 
         <activity
             android:name="com.arn.scrobble.main.MainActivity"
@@ -94,6 +92,7 @@
             android:windowSoftInputMode="adjustPan">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
                 <category android:name="android.intent.category.LEANBACK_LAUNCHER" />
             </intent-filter>
@@ -161,8 +160,7 @@
             android:name="com.arn.scrobble.MasterSwitchQS"
             android:exported="true"
             android:icon="@drawable/vd_noti"
-            android:permission="android.permission.BIND_QUICK_SETTINGS_TILE"
-            android:process=":bgScrobbler">
+            android:permission="android.permission.BIND_QUICK_SETTINGS_TILE">
             <intent-filter>
                 <action android:name="android.service.quicksettings.action.QS_TILE" />
             </intent-filter>

@@ -73,6 +73,7 @@ search
 settings
 share
 skip_next
+stop
 swap_vert
 swipe_left_alt
 tag

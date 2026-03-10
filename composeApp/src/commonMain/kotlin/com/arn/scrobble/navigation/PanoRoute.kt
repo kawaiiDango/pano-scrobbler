@@ -256,6 +256,9 @@ sealed interface PanoRoute : NavKey {
     data object DiscordRpcSettings : PanoRoute
 
     @Serializable
+    data object ArtistsWithDelimiters : PanoRoute
+
+    @Serializable
     data object Blank : PanoRoute
 
     @Serializable

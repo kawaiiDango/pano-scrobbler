@@ -27,13 +27,27 @@ class NavPopupVM(
 
             delay(2000)
 
-            Scrobblables.current
+            val scrobblable = Scrobblables.current
+            scrobblable
                 ?.loadDrawerData(user.name)
                 ?.also { ddr ->
                     ddr.onSuccess { dd ->
                         if (user.isSelf) {
-                            PlatformStuff.mainPrefs.updateData {
-                                it.copy(drawerData = it.drawerData + (it.currentAccountType to dd))
+                            PlatformStuff.mainPrefs.updateData { p ->
+                                p.copy(
+                                    drawerData = p.drawerData + (p.currentAccountType to dd),
+                                    scrobbleAccounts = p.scrobbleAccounts.map {
+                                        if (it.type == p.currentAccountType &&
+                                            dd.profilePicUrl != null &&
+                                            dd.profilePicUrl != it.user.largeImage
+                                        ) {
+                                            val u = it.user.copy(largeImage = dd.profilePicUrl)
+                                            it.copy(user = u)
+                                        } else {
+                                            it
+                                        }
+                                    }
+                                )
                             }
                         }
                         emit(dd)

@@ -25,9 +25,6 @@ interface PendingScrobblesDao {
     @Query("SELECT * FROM $tableName WHERE event != 'scrobble' ORDER BY timestamp DESC LIMIT :limit")
     suspend fun allLoves(limit: Int): List<PendingScrobble>
 
-    @Query("SELECT count(1) FROM $tableName")
-    suspend fun count(): Int
-
     @Query("SELECT * FROM $tableName WHERE artist =:artist AND track=:track AND event = :event")
     suspend fun find(artist: String, track: String, event: ScrobbleEvent): PendingScrobble?
 
@@ -45,6 +42,9 @@ interface PendingScrobblesDao {
 
     @Query("UPDATE $tableName SET lastFailedTimestamp = :lastFailedTimestamp, lastFailedReason = :lastFailedReason WHERE _id IN (:ids)")
     suspend fun logFailure(ids: List<Int>, lastFailedTimestamp: Long?, lastFailedReason: String?)
+
+    @Query("SELECT MAX(lastFailedTimestamp) FROM $tableName")
+    suspend fun lastFailedTimestamp(): Long?
 
     @Delete
     suspend fun delete(ps: PendingScrobble)

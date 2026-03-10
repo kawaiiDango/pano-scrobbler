@@ -40,7 +40,7 @@ import com.arn.scrobble.icons.Icons
 import com.arn.scrobble.themes.colors.ThemeVariants
 import com.arn.scrobble.ui.LabeledCheckbox
 import com.arn.scrobble.utils.PlatformStuff
-import kotlinx.coroutines.GlobalScope
+import com.arn.scrobble.utils.Stuff
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
@@ -72,7 +72,7 @@ fun ThemeChooserScreen(
         onDispose {
             if (themeName != null && dynamic != null && dayNightMode != null && contrastMode != null) {
                 if (isLicenseValid) {
-                    GlobalScope.launch {
+                    Stuff.appScope.launch {
                         PlatformStuff.mainPrefs.updateData {
                             it.copy(
                                 themeName = themeName!!,

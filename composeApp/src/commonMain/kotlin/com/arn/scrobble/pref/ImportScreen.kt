@@ -4,13 +4,12 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -33,7 +32,6 @@ import com.arn.scrobble.ui.FilePickerMode
 import com.arn.scrobble.ui.FileType
 import com.arn.scrobble.ui.LabeledCheckbox
 import com.arn.scrobble.ui.PanoSnackbarVisuals
-import com.arn.scrobble.ui.RadioButtonGroup
 import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff
 import com.arn.scrobble.utils.redactedMessage
@@ -42,19 +40,21 @@ import kotlinx.coroutines.flow.filterNotNull
 import org.jetbrains.compose.resources.getString
 import org.jetbrains.compose.resources.stringResource
 import pano_scrobbler.composeapp.generated.resources.Res
-import pano_scrobbler.composeapp.generated.resources.cancel
-import pano_scrobbler.composeapp.generated.resources.import_hey_wtf
+import pano_scrobbler.composeapp.generated.resources.artist_splitting_exceptions
 import pano_scrobbler.composeapp.generated.resources.import_lists_keep
-import pano_scrobbler.composeapp.generated.resources.import_lists_nope
 import pano_scrobbler.composeapp.generated.resources.import_lists_replace_all
 import pano_scrobbler.composeapp.generated.resources.import_lists_replace_existing
 import pano_scrobbler.composeapp.generated.resources.import_options
 import pano_scrobbler.composeapp.generated.resources.import_settings
 import pano_scrobbler.composeapp.generated.resources.imported
 import pano_scrobbler.composeapp.generated.resources.network_error
-import pano_scrobbler.composeapp.generated.resources.ok
+import pano_scrobbler.composeapp.generated.resources.pref_blocked_metadata
 import pano_scrobbler.composeapp.generated.resources.pref_imexport_code
 import pano_scrobbler.composeapp.generated.resources.pref_imexport_network_notice
+import pano_scrobbler.composeapp.generated.resources.pref_import
+import pano_scrobbler.composeapp.generated.resources.regex_rules
+import pano_scrobbler.composeapp.generated.resources.scrobble_sources
+import pano_scrobbler.composeapp.generated.resources.simple_edits
 
 @Composable
 fun ImportScreen(
@@ -67,14 +67,8 @@ fun ImportScreen(
     var toggleButtonSelectedIndex by rememberSaveable { mutableIntStateOf(-1) }
     val networkMode =
         rememberSaveable(toggleButtonSelectedIndex) { toggleButtonSelectedIndex == 1 }
-    var selectedEditsMode by rememberSaveable(saver = enumSaver()) {
-        mutableStateOf(
-            EditsMode.EDITS_NOPE
-        )
-    }
-    var settingsMode by rememberSaveable { mutableStateOf(false) }
-    var importDialogShown by rememberSaveable { mutableStateOf(false) }
-    val importErrorText = stringResource(Res.string.import_hey_wtf)
+
+    val availableImportTypes by viewModel.availableImportTypes.collectAsStateWithLifecycle(null)
     val importSuccessText = stringResource(Res.string.imported)
     var filePickerShown by remember { mutableStateOf(false) }
 
@@ -168,20 +162,93 @@ fun ImportScreen(
             }
         }
 
-    }
-
-    if (importDialogShown) {
-        ImportDialog(
-            editsMode = selectedEditsMode,
-            onEditsModeChange = { selectedEditsMode = it },
-            settingsMode = settingsMode,
-            onSettingsModeChange = { settingsMode = it },
-            onDismissRequest = { importDialogShown = false },
-            onImport = {
-                importDialogShown = false
-                viewModel.import(selectedEditsMode, settingsMode)
+        AnimatedVisibility(visible = availableImportTypes != null) {
+            var userImportTypes by remember(availableImportTypes) {
+                mutableStateOf(availableImportTypes ?: emptySet())
             }
-        )
+            var selectedWriteMode by rememberSaveable(saver = enumSaver()) {
+                mutableStateOf(
+                    ImExporter.WriteMode.keep_existing
+                )
+            }
+            val editsReplaceAllText = stringResource(Res.string.import_lists_replace_all)
+            val editsReplaceExistingText = stringResource(Res.string.import_lists_replace_existing)
+            val editsKeepText = stringResource(Res.string.import_lists_keep)
+
+            val writeModesMap = remember {
+                mapOf(
+                    ImExporter.WriteMode.replace_all to editsReplaceAllText,
+                    ImExporter.WriteMode.replace_existing to editsReplaceExistingText,
+                    ImExporter.WriteMode.keep_existing to editsKeepText
+                )
+            }
+
+            val settingsText = stringResource(Res.string.import_settings)
+            val simpleEditsText = stringResource(Res.string.simple_edits)
+            val regexRulesText = stringResource(Res.string.regex_rules)
+            val blockedMetadataText = stringResource(Res.string.pref_blocked_metadata)
+            val artistsWithDelimitersText = stringResource(Res.string.artist_splitting_exceptions)
+            val scrobbleSourcesText = stringResource(Res.string.scrobble_sources)
+
+            val importTypesMap = remember {
+                mapOf(
+                    ImExporter.ImportTypes.settings to settingsText,
+                    ImExporter.ImportTypes.simple_edits to simpleEditsText,
+                    ImExporter.ImportTypes.regex_rules to regexRulesText,
+                    ImExporter.ImportTypes.blocked_metadata to blockedMetadataText,
+                    ImExporter.ImportTypes.artists_with_delimiters to artistsWithDelimitersText,
+                    ImExporter.ImportTypes.scrobble_sources to scrobbleSourcesText,
+                )
+            }
+
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                modifier = Modifier.fillMaxWidth(),
+            ) {
+                Text(
+                    text = stringResource(Res.string.import_options),
+                    style = MaterialTheme.typography.headlineSmall,
+                )
+
+                availableImportTypes?.forEach {
+                    LabeledCheckbox(
+                        checked = it in userImportTypes,
+                        onCheckedChange = { checked ->
+                            if (checked)
+                                userImportTypes += it
+                            else
+                                userImportTypes -= it
+                        },
+                        text = importTypesMap[it] ?: it.name,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                }
+
+                if (
+                    ImExporter.ImportTypes.simple_edits in userImportTypes ||
+                    ImExporter.ImportTypes.regex_rules in userImportTypes ||
+                    ImExporter.ImportTypes.blocked_metadata in userImportTypes ||
+                    ImExporter.ImportTypes.artists_with_delimiters in userImportTypes
+                ) {
+                    ButtonWithSpinner(
+                        prefixText = null,
+                        itemToTexts = writeModesMap,
+                        selected = selectedWriteMode,
+                        onItemSelected = { selectedWriteMode = it },
+                    )
+                }
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                OutlinedButton(
+                    onClick = {
+                        viewModel.import(userImportTypes, selectedWriteMode)
+                    },
+                ) {
+                    Text(text = stringResource(Res.string.pref_import))
+                }
+            }
+        }
     }
 
     LaunchedEffect(Unit) {
@@ -192,12 +259,6 @@ fun ImportScreen(
             }.onFailure {
                 errorText = it.redactedMessage
             }
-        }
-    }
-
-    LaunchedEffect(Unit) {
-        viewModel.jsonText.collectLatest {
-            importDialogShown = true
         }
     }
 
@@ -223,67 +284,4 @@ fun ImportScreen(
     ) {
         viewModel.setPlatformFile(it)
     }
-}
-
-@Composable
-private fun ImportDialog(
-    editsMode: EditsMode,
-    onEditsModeChange: (EditsMode) -> Unit,
-    settingsMode: Boolean,
-    onSettingsModeChange: (Boolean) -> Unit,
-    onDismissRequest: () -> Unit,
-    onImport: () -> Unit,
-) {
-    val editsNopeText = stringResource(Res.string.import_lists_nope)
-    val editsReplaceAllText = stringResource(Res.string.import_lists_replace_all)
-    val editsReplaceExistingText = stringResource(Res.string.import_lists_replace_existing)
-    val editsKeepText = stringResource(Res.string.import_lists_keep)
-
-    val radioOptions = remember {
-        mapOf(
-            EditsMode.EDITS_NOPE to editsNopeText,
-            EditsMode.EDITS_REPLACE_ALL to editsReplaceAllText,
-            EditsMode.EDITS_REPLACE_EXISTING to editsReplaceExistingText,
-            EditsMode.EDITS_KEEP_EXISTING to editsKeepText
-        )
-    }
-
-    AlertDialog(
-        onDismissRequest = onDismissRequest,
-        title = {
-            Text(text = stringResource(Res.string.import_options))
-        },
-        text = {
-            Column {
-                RadioButtonGroup(
-                    selected = editsMode,
-                    onSelected = { onEditsModeChange(it) },
-                    enumToTexts = radioOptions,
-                    modifier = Modifier.padding(vertical = 16.dp)
-                )
-
-                LabeledCheckbox(
-                    checked = settingsMode,
-                    onCheckedChange = { onSettingsModeChange(it) },
-                    text = stringResource(Res.string.import_settings)
-                )
-            }
-        },
-        confirmButton = {
-            OutlinedButton(onClick = {
-                if (editsMode == EditsMode.EDITS_NOPE && !settingsMode) {
-                    onDismissRequest()
-                } else {
-                    onImport()
-                }
-            }) {
-                Text(text = stringResource(Res.string.ok))
-            }
-        },
-        dismissButton = {
-            TextButton(onClick = onDismissRequest) {
-                Text(text = stringResource(Res.string.cancel))
-            }
-        }
-    )
 }

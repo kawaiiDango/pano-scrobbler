@@ -2,17 +2,6 @@ package com.arn.scrobble.utils
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
-import androidx.compose.ui.geometry.Size
-import androidx.compose.ui.graphics.BlendMode
-import androidx.compose.ui.graphics.Canvas
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.ColorFilter
-import androidx.compose.ui.graphics.ImageBitmap
-import androidx.compose.ui.graphics.ImageBitmapConfig
-import androidx.compose.ui.graphics.drawscope.CanvasDrawScope
-import androidx.compose.ui.graphics.painter.Painter
-import androidx.compose.ui.unit.Density
-import androidx.compose.ui.unit.LayoutDirection
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.arn.scrobble.api.AccountType
 import com.arn.scrobble.api.Requesters
@@ -31,6 +20,8 @@ import io.ktor.http.URLBuilder
 import io.ktor.http.URLParserException
 import io.ktor.http.maxAge
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
@@ -55,7 +46,6 @@ import kotlin.io.encoding.Base64
 import kotlin.io.encoding.Base64.PaddingOption
 import kotlin.math.ln
 import kotlin.math.pow
-import kotlin.math.roundToInt
 
 
 /**
@@ -120,6 +110,7 @@ object Stuff {
         "com.google.intelligence.sense.ambientmusic.MusicNotificationChannel"
     const val PACKAGE_PIXEL_NP = "com.google.intelligence.sense"
     const val PACKAGE_PIXEL_NP_R = "com.google.android.as"
+    const val PACKAGE_PIXEL_NP_2026 = "com.google.android.apps.pixel.nowplaying"
     const val PACKAGE_PIXEL_NP_AMM = "com.kieronquinn.app.pixelambientmusic"
     const val PACKAGE_SHAZAM = "com.shazam.android"
     const val PACKAGE_AUDILE = "com.mrsep.musicrecognizer"
@@ -258,6 +249,14 @@ object Stuff {
     var isRunningInTest = false
 
     val isInDemoMode get() = mainPrefsCachedValue.demoModeP
+
+    val appScope = CoroutineScope(
+        SupervisorJob() +
+                if (PlatformStuff.isDesktop)
+                    Dispatchers.Default // should not touch Swing for non UI tasks
+                else
+                    Dispatchers.Main
+    )
 
     val countryCodesMap by lazy {
         val countries = hashMapOf<String, String>()
@@ -440,36 +439,6 @@ object Stuff {
                 }
             }
         }.awaitAll()
-    }
-
-    fun Painter.toImageBitmap(
-        darkTint: Boolean,
-        density: Density = Density(1f),
-        layoutDirection: LayoutDirection = LayoutDirection.Ltr,
-        size: Size = intrinsicSize,
-        config: ImageBitmapConfig = ImageBitmapConfig.Argb8888,
-    ): ImageBitmap {
-        val image = ImageBitmap(
-            width = size.width.roundToInt(),
-            height = size.height.roundToInt(),
-            config = config
-        )
-        val canvas = Canvas(image)
-        CanvasDrawScope().draw(
-            density = density,
-            layoutDirection = layoutDirection,
-            canvas = canvas,
-            size = size
-        ) {
-            draw(
-                size = this.size,
-                colorFilter = ColorFilter.tint(
-                    color = if (darkTint) Color.Black else Color.White,
-                    blendMode = BlendMode.SrcIn
-                )
-            )
-        }
-        return image
     }
 
     suspend fun addTestCreds(serviceStr: String, username: String, sk: String): Boolean {

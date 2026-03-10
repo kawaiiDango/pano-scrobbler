@@ -81,13 +81,18 @@ interface SimpleEditsDao {
 
         suspend fun SimpleEditsDao.findAndPerformEdit(
             scrobbleData: ScrobbleData,
-        ): ScrobbleData? {
-            return find(
+        ): Pair<ScrobbleData, Boolean>? {
+            val simpleEdit = find(
                 scrobbleData.track.lowercase(),
                 scrobbleData.artist.lowercase(),
                 scrobbleData.album?.lowercase() ?: "",
                 scrobbleData.albumArtist?.lowercase() ?: "",
-            )?.performEdit(scrobbleData)
+            )
+            
+            return if (simpleEdit != null)
+                simpleEdit.performEdit(scrobbleData) to simpleEdit.continueMatching
+            else
+                null
         }
 
         suspend fun SimpleEditsDao.insertReplaceLowerCase(e: SimpleEdit) {

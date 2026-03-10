@@ -249,7 +249,6 @@ fun ChartsOverviewScreen(
             if (!spotifyConsentLearnt) {
                 DismissableNotice(
                     title = stringResource(Res.string.spotify_consent),
-                    icon = Icons.QuestionMark,
                     onClick = {
                         spotifyConsentLearntDropdownShown = true
                     },

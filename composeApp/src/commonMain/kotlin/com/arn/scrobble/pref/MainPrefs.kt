@@ -91,7 +91,7 @@ data class MainPrefs(
     val lastDeltaIndexedScrobbleTime: Long? = null,
     val gridMode: GridMode = GridMode.GRID,
     val regexLearnt: Boolean = false,
-    val otherPlatformsLearnt: Boolean = false,
+    val desktopAppLearnt: Boolean = false,
     val squarePhotoLearnt: Boolean = false,
     val spotifyConsentLearnt: Boolean = false,
     val changelogSeenHashcode: Int? = null,

@@ -14,10 +14,10 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.launch
 import pano_scrobbler.composeapp.generated.resources.Res
 import java.io.IOException
+import java.io.InputStream
 import java.security.KeyStore
 import javax.net.ssl.KeyManagerFactory
 
@@ -28,8 +28,8 @@ class ImportVM : ViewModel() {
     val serverAddress = _serverAddress.asStateFlow()
     private val _serverResult = MutableStateFlow<Result<String>?>(null)
     val serverResult = _serverResult.asStateFlow()
-    private val _jsonText = MutableStateFlow<String?>(null)
-    val jsonText = _jsonText.filterNotNull()
+    private val _availableImportTypes = MutableStateFlow<Set<ImExporter.ImportTypes>?>(null)
+    val availableImportTypes = _availableImportTypes.asStateFlow()
     private val _importResult = MutableSharedFlow<Result<Unit>>()
     val importResult = _importResult.asSharedFlow()
     private val imExporter by lazy { ImExporter() }
@@ -52,18 +52,18 @@ class ImportVM : ViewModel() {
                     Logger.d { "Server running on: https://$localIp:$randomPort" }
 
                     try {
-                        val base26Address = IpPortCode.encode(localIp, randomPort)
+                        val encodedAddress = IpPortCode.encode(localIp, randomPort)
                         server = ImportServer(
                             localIp,
                             randomPort,
-                            base26Address,
+                            "import",
                             readKeystore()
-                        ) { postData ->
-                            _jsonText.tryEmit(postData)
+                        ) {
+                            _availableImportTypes.value = imExporter.createImportTypes(it)
                         }
                         server?.start()
 
-                        _serverResult.value = Result.success(base26Address)
+                        _serverResult.value = Result.success(encodedAddress)
                     } catch (e: Exception) {
                         Logger.e(e) { "Failed to start import server" }
                         _serverResult.value = Result.failure(e)
@@ -73,22 +73,24 @@ class ImportVM : ViewModel() {
     }
 
     fun setServerAddress(address: String?) {
+        _availableImportTypes.value = null
         _serverAddress.value = address
     }
 
     fun import(
-        editsMode: EditsMode,
-        settings: Boolean,
+        userImportTypes: Set<ImExporter.ImportTypes>,
+        writeMode: ImExporter.WriteMode,
     ) {
         viewModelScope.launch(Dispatchers.IO) {
-            _jsonText.value?.let {
-                val imported = imExporter.import(it, editsMode, settings)
+            if (_availableImportTypes.value != null) {
+                val imported = imExporter.import(userImportTypes, writeMode)
 
                 if (!imported)
                     _importResult.emit(Result.failure(IOException("Import failed")))
                 else
                     _importResult.emit(Result.success(Unit))
-                _jsonText.value = null
+
+                _availableImportTypes.value = null
             }
         }
     }
@@ -97,8 +99,7 @@ class ImportVM : ViewModel() {
         viewModelScope.launch(Dispatchers.IO) {
             if (platformFile.isWritable()) {
                 platformFile.read {
-                    val fileText = it.bufferedReader().readText()
-                    _jsonText.emit(fileText)
+                    _availableImportTypes.value = imExporter.createImportTypes(it)
                 }
             } else {
                 _importResult.emit(Result.failure(IOException("File is not readable")))
@@ -107,7 +108,6 @@ class ImportVM : ViewModel() {
     }
 
     override fun onCleared() {
-        _jsonText.value = null
         server?.stop()
         super.onCleared()
     }
@@ -117,7 +117,7 @@ class ImportVM : ViewModel() {
         port: Int,
         private val path: String,
         ks: KeyStore,
-        private val onImport: (String) -> Unit,
+        private val onImport: (InputStream) -> Unit,
     ) : NanoHTTPD(hostname, port) {
 
         init {
@@ -133,13 +133,15 @@ class ImportVM : ViewModel() {
                 ).toCharArray()
             )
             makeSecure(makeSSLSocketFactory(ks, kmf), null)
+
+            tempFileManagerFactory = MyTempFileManagerFactory()
         }
 
         override fun serve(session: IHTTPSession): Response {
             return if (session.method == Method.POST && session.uri == "/$path") {
-                val files = mutableMapOf<String, String>()
-                session.parseBody(files)
-                onImport(files["postData"]!!)
+                val contentLength = session.headers["content-length"]!!.toInt()
+                val lis = LimitedInputStream(session.inputStream, contentLength)
+                onImport(lis)
 
                 newFixedLengthResponse(
                     Status.OK,
@@ -153,6 +155,33 @@ class ImportVM : ViewModel() {
             }
 
         }
+
+        private class MyTempFileManagerFactory : TempFileManagerFactory {
+            override fun create() = MyTempFileManager()
+        }
+
+        class MyTempFileManager : TempFileManager {
+            private val tmpdir = PlatformStuff.cacheDir.resolve("nanohttpd").apply { mkdirs() }
+            private val tempFiles = mutableListOf<TempFile>()
+
+            override fun clear() {
+                tempFiles.forEach { file ->
+                    try {
+                        file.delete()
+                    } catch (e: Exception) {
+                        Logger.w("could not delete file", e)
+                    }
+                }
+                tempFiles.clear()
+            }
+
+            override fun createTempFile(filename_hint: String?): TempFile {
+                val tempFile = DefaultTempFile(tmpdir)
+                this.tempFiles.add(tempFile)
+                return tempFile
+            }
+        }
+
     }
 
     companion object {

@@ -4,7 +4,6 @@ import co.touchlab.kermit.Logger
 import com.arn.scrobble.api.Requesters
 import io.ktor.client.request.get
 import io.ktor.client.statement.bodyAsText
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import java.net.InetSocketAddress
 import java.net.ProxySelector
@@ -40,7 +39,7 @@ object TestStuff {
         }
 
         // print ip
-        GlobalScope.launch {
+        Stuff.appScope.launch {
             try {
                 Requesters.baseKtorClient.get("https://myip.wtf/json").bodyAsText().let {
                     Logger.i("IP info:\n$it")

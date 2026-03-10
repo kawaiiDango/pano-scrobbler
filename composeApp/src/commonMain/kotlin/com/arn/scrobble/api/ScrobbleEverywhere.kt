@@ -37,8 +37,7 @@ import kotlinx.coroutines.flow.map
 
 data class PreprocessResult(
     val scrobbleData: ScrobbleData,
-    val simpleEditsApplied: Boolean = false,
-    val regexEditsApplied: Boolean = false,
+    val userEditsApplied: Boolean = false,
     val presetsApplied: Boolean = false,
     val titleParseFailed: Boolean = false,
     val blockPlayerAction: BlockPlayerAction? = null,
@@ -64,6 +63,7 @@ object ScrobbleEverywhere {
     val deezerTracksCache = LruCache<String, DeezerTrack>(50)
     val lastfmTracksCache = LruCache<String, Track>(50)
     val lastfmAlbumsCache = LruCache<String, Album>(50)
+    private var artistWithDelimitersMaxId: Int? = null
 
     private suspend fun performEditsAndBlocks(
         scrobbleData: ScrobbleData,
@@ -82,48 +82,53 @@ object ScrobbleEverywhere {
             )
 
 
-        var simpleEditsApplied = false
-        var regexEditsApplied = false
+        var userEditsApplied = false
         var presetsApplied = false
         var titleParseFailed = false
+        var continueMatching = true
 
         PanoDb.db.getSimpleEditsDao().findAndPerformEdit(scrobbleData)
-            ?.also {
-                scrobbleData = it
-                simpleEditsApplied = true
+            ?.also { (newScrobbleData, _continueMatching) ->
+                scrobbleData = newScrobbleData
+                userEditsApplied = true
+                continueMatching = _continueMatching
             }
 
-        val regexes = PanoDb.db
-            .getRegexEditsDao()
-            .enabledFlow()
-            .first()
+        if (continueMatching) {
+            val regexes = PanoDb.db
+                .getRegexEditsDao()
+                .enabledFlow()
+                .first()
 
-        val regexResults = RegexEditsDao.performRegexReplace(scrobbleData, regexes)
+            val regexResults = RegexEditsDao.performRegexReplace(scrobbleData, regexes)
 
-        if (regexResults.blockPlayerAction != null) {
-            return PreprocessResult(
-                scrobbleData,
-                blockPlayerAction = regexResults.blockPlayerAction
-            )
-        } else if (!simpleEditsApplied && regexResults.scrobbleData != null) {
-            scrobbleData = regexResults.scrobbleData
-            regexEditsApplied = true
+            if (regexResults.blockPlayerAction != null) {
+                return PreprocessResult(
+                    scrobbleData,
+                    blockPlayerAction = regexResults.blockPlayerAction
+                )
+            } else if (!userEditsApplied && regexResults.scrobbleData != null) {
+                scrobbleData = regexResults.scrobbleData
+                userEditsApplied = true
+                continueMatching = regexResults.matches.last().continueMatching
+            }
         }
 
-        if (regexEditsApplied) {
+        if (continueMatching) {
             PanoDb.db.getSimpleEditsDao().findAndPerformEdit(scrobbleData)
-                ?.also {
-                    scrobbleData = it
-                    simpleEditsApplied = true
+                ?.also { (newScrobbleData, _continueMatching) ->
+                    scrobbleData = newScrobbleData
+                    userEditsApplied = true
+                    continueMatching = _continueMatching
                 }
         }
 
-        if (runPresets) {
+        if (runPresets && continueMatching) {
             try {
                 val presetsResult = RegexPresets.applyAllPresets(
                     scrobbleData,
                     trackUrlDomain,
-                    simpleEditsApplied || regexEditsApplied
+                    userEditsApplied
                 )
 
                 if (presetsResult != null) {
@@ -144,9 +149,19 @@ object ScrobbleEverywhere {
                         it.getRegexPresetApps(RegexPreset.parse_title_with_fallback)
                     }.first()
 
+                val artistWithDelimitersDao = PanoDb.db.getArtistsWithDelimitersDao()
+
+                val maxId = artistWithDelimitersDao.maxId()
+
+                val updatedUserAllowlist = if (artistWithDelimitersMaxId != maxId)
+                    artistWithDelimitersDao.allFlow().first()
+                else
+                    null
+
                 val firstArtist = FirstArtistExtractor.extract(
                     scrobbleData.artist,
-                    useAnd = scrobbleData.appId in parseTitleWithFallback
+                    useAnd = scrobbleData.appId in parseTitleWithFallback,
+                    updatedUserAllowlist = updatedUserAllowlist
                 )
 
                 if (firstArtist != scrobbleData.artist)
@@ -164,8 +179,7 @@ object ScrobbleEverywhere {
 
         return PreprocessResult(
             presetsApplied = presetsApplied,
-            simpleEditsApplied = simpleEditsApplied,
-            regexEditsApplied = regexEditsApplied,
+            userEditsApplied = userEditsApplied,
             titleParseFailed = titleParseFailed,
             scrobbleData = scrobbleData.trimmed()
         )
@@ -183,7 +197,7 @@ object ScrobbleEverywhere {
         if (preprocessResult.blockPlayerAction != null) return preprocessResult
 
         val preprocessResult2 =
-            if (!preprocessResult.simpleEditsApplied && !preprocessResult.regexEditsApplied && preprocessResult.presetsApplied) {
+            if (!preprocessResult.userEditsApplied && preprocessResult.presetsApplied) {
                 // don't try to parse title again here
                 performEditsAndBlocks(preprocessResult.scrobbleData, trackUrlDomain, false)
             } else {

@@ -1,12 +1,18 @@
 package com.arn.scrobble.pref
 
 import androidx.compose.foundation.lazy.LazyListScope
+import com.arn.scrobble.PanoNativeComponents
 import com.arn.scrobble.navigation.PanoRoute
+import com.arn.scrobble.ui.PanoSnackbarVisuals
 import com.arn.scrobble.utils.DesktopStuff
+import com.arn.scrobble.utils.Stuff
 import org.jetbrains.compose.resources.stringResource
 import pano_scrobbler.composeapp.generated.resources.Res
 import pano_scrobbler.composeapp.generated.resources.deezer
+import pano_scrobbler.composeapp.generated.resources.disable
 import pano_scrobbler.composeapp.generated.resources.discord_rich_presence
+import pano_scrobbler.composeapp.generated.resources.done
+import pano_scrobbler.composeapp.generated.resources.enable
 import pano_scrobbler.composeapp.generated.resources.not_running_desktop
 import pano_scrobbler.composeapp.generated.resources.pref_fetch_missing_album
 import pano_scrobbler.composeapp.generated.resources.pref_master
@@ -33,28 +39,33 @@ actual object PlatformSpecificPrefs {
         // no-op
     }
 
-    actual fun addToStartup(
-        listScope: LazyListScope,
-        isAdded: Boolean,
-        onAddedChanged: (Boolean) -> Unit,
-    ) {
+    actual fun prefAutostart(listScope: LazyListScope) {
         // only implemented for Linux
         if (DesktopStuff.os == DesktopStuff.Os.Linux) {
             listScope.item("startup") {
-                SwitchPref(
+                val doneString = stringResource(Res.string.done)
+
+                DropdownPref(
                     text = stringResource(Res.string.run_on_start),
-                    value = isAdded,
+                    selectedValue = null,
+                    values = listOf(true, false),
+                    toLabel = {
+                        if (it)
+                            stringResource(Res.string.enable)
+                        else
+                            stringResource(Res.string.disable)
+                    },
                     copyToSave = {
-                        DesktopStuff.addOrRemoveFromStartup(it)
-                        onAddedChanged(it)
+                        PanoNativeComponents.autoStartLinux(it)
+                        val snackbarData = PanoSnackbarVisuals(doneString)
+                        Stuff.globalSnackbarFlow.tryEmit(snackbarData)
+                        
                         this
                     }
                 )
             }
         }
     }
-
-    actual suspend fun isAddedToStartup() = DesktopStuff.isAddedToStartup()
 
     actual fun discordRpc(listScope: LazyListScope, onNavigate: (PanoRoute) -> Unit) {
         listScope.item(MainPrefs::discordRpc.name) {

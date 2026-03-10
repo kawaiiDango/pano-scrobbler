@@ -1,10 +1,14 @@
 package com.arn.scrobble.utils
 
 import com.appmattus.crypto.Algorithm
+import com.arn.scrobble.db.ArtistWithDelimiters
 import pano_scrobbler.composeapp.generated.resources.Res
+import java.nio.ByteBuffer
+import java.nio.ByteOrder
 
+@OptIn(ExperimentalUnsignedTypes::class)
 object FirstArtistExtractor {
-    private lateinit var knownArtists: Set<Long>
+    private var sortedHashes: ULongArray? = null
     private var initialized = false
     private val xxh3 by lazy { Algorithm.XXH3_64() }
 
@@ -79,28 +83,80 @@ object FirstArtistExtractor {
         " 및 ",
     )
 
-    private fun initFromBytes(byteArray: ByteArray) {
-        val knownArtists = HashSet<Long>()
+    fun initFromAssetAndUserList(
+        assetBytes: ByteArray,
+        userList: List<ArtistWithDelimiters>,
+    ) {
+        val buffer = ByteBuffer.wrap(assetBytes).order(ByteOrder.BIG_ENDIAN)
+        val assetHashes = ULongArray(assetBytes.size / Long.SIZE_BYTES) {
+            buffer.getLong().toULong()
+        }
 
-        // read the byte array as a sequence of 64-bits (longs)
-        for (i in byteArray.indices step 8) {
-            if (i + 8 <= byteArray.size) {
-                val longValue = byteArray
-                    .copyOfRange(i, i + 8)
-                    .fold(0L) { acc, byte ->
-                        (acc shl 8) or (byte.toLong() and 0xFF)
-                    }
-                knownArtists.add(longValue)
+        val userStrings = userList
+            .map { it.artist.trim().lowercase() }
+            .filter { it.isNotEmpty() }
+
+        if (userStrings.isEmpty()) {
+            sortedHashes = assetHashes
+            return
+        }
+
+        // Hash and sort the user strings
+        val digest = xxh3.createDigest()
+
+        val userHashes = ULongArray(userStrings.size) { i ->
+            val digestOutputBytes = ByteArray(digest.digestLength)
+
+            val byteArray = userStrings[i].encodeToByteArray(throwOnInvalidSequence = false)
+
+            digest.reset()
+            digest.update(byteArray)
+
+            digest.digest(digestOutputBytes, 0, digestOutputBytes.size)
+
+            // convert digestOutputBytes to long
+            digestOutputBytes.fold(0L) { acc, byte ->
+                (acc shl 8) or (byte.toLong() and 0xFF)
+            }.toULong()
+        }
+
+        userHashes.sort()
+
+        // Merge the two sorted arrays using the two-pointer technique
+        val merged = ULongArray(assetHashes.size + userHashes.size)
+        var i = 0 // pointer for asset hashes
+        var j = 0 // pointer for user hashes
+        var k = 0 // pointer for merged array
+
+        while (i < assetHashes.size && j < userHashes.size) {
+            if (assetHashes[i] < userHashes[j]) {
+                merged[k++] = assetHashes[i++]
+            } else {
+                merged[k++] = userHashes[j++]
             }
         }
 
-        this.knownArtists = knownArtists
+        while (i < assetHashes.size) {
+            merged[k++] = assetHashes[i++]
+        }
+
+        while (j < userHashes.size) {
+            merged[k++] = userHashes[j++]
+        }
+
+        sortedHashes = merged
     }
 
-    suspend fun extract(artistString: String, useAnd: Boolean): String {
-        if (!initialized) {
+    fun contains(hash: Long) = sortedHashes!!.binarySearch(hash.toULong()) >= 0
+
+    suspend fun extract(
+        artistString: String,
+        useAnd: Boolean,
+        updatedUserAllowlist: List<ArtistWithDelimiters>?,
+    ): String {
+        if (!initialized || updatedUserAllowlist != null) {
             val bytes = Res.readBytes("files/musicbrainz_artist_hashes.bin")
-            initFromBytes(bytes)
+            initFromAssetAndUserList(bytes, updatedUserAllowlist ?: emptyList())
             initialized = true
         }
 
@@ -125,7 +181,7 @@ object FirstArtistExtractor {
         }
 
         // Quick check: if entire string is known
-        if (knownArtists.contains(trimmed.x())) {
+        if (contains(trimmed.x())) {
             return trimmed
         }
 
@@ -161,7 +217,7 @@ object FirstArtistExtractor {
             sb.append(trimmed[i])
             val candidate = sb.toString()
 
-            if (knownArtists.contains(candidate.x())) {
+            if (contains(candidate.x())) {
                 // Verify this ends appropriately
                 val nextPos = i + 1
                 if (nextPos >= trimmed.length ||

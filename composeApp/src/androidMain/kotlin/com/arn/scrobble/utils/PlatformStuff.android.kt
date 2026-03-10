@@ -38,7 +38,6 @@ import com.arn.scrobble.utils.AndroidStuff.toast
 import com.arn.scrobble.utils.Stuff.globalSnackbarFlow
 import io.ktor.http.encodeURLPath
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
@@ -137,7 +136,7 @@ actual object PlatformStuff {
 
     actual fun openInBrowser(url: String) {
         if (isTv) {
-            GlobalScope.launch {
+            Stuff.appScope.launch {
                 globalSnackbarFlow.emit(
                     PanoSnackbarVisuals(
                         message = getString(Res.string.tv_url_notice) + "\n" + url,
@@ -155,7 +154,7 @@ actual object PlatformStuff {
 
             applicationContext.startActivity(browserIntent)
         } catch (e: ActivityNotFoundException) {
-            GlobalScope.launch {
+            Stuff.appScope.launch {
                 globalSnackbarFlow.emit(
                     PanoSnackbarVisuals(
                         message = getString(Res.string.no_browser),
@@ -240,10 +239,10 @@ actual object PlatformStuff {
                     intent.`package` = null
                     applicationContext.startActivity(intent)
                 } catch (e: ActivityNotFoundException) {
-                    applicationContext.toast(Res.string.no_player)
+                    applicationContext.toast(getString(Res.string.no_player))
                 }
             } else
-                applicationContext.toast(Res.string.no_player)
+                applicationContext.toast(getString(Res.string.no_player))
         }
     }
 
@@ -274,6 +273,15 @@ actual object PlatformStuff {
         }
     }
 
+    actual fun doesAppExist(appId: String): Boolean {
+        return try {
+            applicationContext.packageManager.getPackageInfo(appId, 0)
+            true
+        } catch (e: PackageManager.NameNotFoundException) {
+            false
+        }
+    }
+
     actual fun copyToClipboard(text: String) {
         val clipboard =
             applicationContext.getSystemService(ClipboardManager::class.java)!!
@@ -283,8 +291,8 @@ actual object PlatformStuff {
         // Starting in Android 13, the system displays a standard visual confirmation when content is added to the clipboard.
 
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
-            GlobalScope.launch {
-                globalSnackbarFlow.tryEmit(
+            Stuff.appScope.launch {
+                globalSnackbarFlow.emit(
                     PanoSnackbarVisuals(
                         getString(Res.string.copied),
                     )

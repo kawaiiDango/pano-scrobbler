@@ -42,6 +42,8 @@ class NLService : NotificationListenerService() {
     private val audioManager by lazy {
         getSystemService(AudioManager::class.java)!!
     }
+
+    @Volatile
     private var inited = false
 
     override fun attachBaseContext(newBase: Context?) {
@@ -285,7 +287,7 @@ class NLService : NotificationListenerService() {
     private fun stopScrobbleFromNoti(pkgName: String) {
         val trackInfo = sessListener?.createTrackInfo(
             appId = pkgName,
-            uniqueId = "$pkgName|$TAG_NOTI",
+            notiKey = "$pkgName|$TAG_NOTI",
         ) ?: return
 
         scrobbleQueue.remove(trackInfo.lastScrobbleHash)
@@ -301,7 +303,7 @@ class NLService : NotificationListenerService() {
         val needsDelayAndCooldown = pkgName in Stuff.PACKAGES_PIXEL_NP
         val trackInfo = sessListener?.createTrackInfo(
             appId = pkgName,
-            uniqueId = "$pkgName|$TAG_NOTI",
+            notiKey = "$pkgName|$TAG_NOTI",
         ) ?: return
 
         trackInfo.putOriginals(

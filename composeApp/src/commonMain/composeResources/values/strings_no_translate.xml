@@ -37,10 +37,16 @@
 
     <!--  strings for unfinalized stuff  -->
     <string name="upto_n_regexes" formatted="true">Up to %1$d regex rules</string>
+    <string name="max_n" formatted="true">Maximum: %1$d</string>
+    <string name="add_exception">Add an exception</string>
+    <string name="artist_splitting_exceptions">Artist Splitting Exceptions</string>
+    <string name="edit_continue_other">If found, continue editing with other rules</string>
+    <string name="scrobble_sources">Scrobble sources</string>
+    <string name="stop">Stop</string>
     <string name="random_on_start">Random on process start</string>
     <string name="not_running_desktop">The scrobbler has stopped. Check logs.</string>
     <string name="notification_access_tv">This setting is usually at Apps > Special app access > Notification access</string>
-    <string name="desktop">PC</string>
+    <string name="desktop">Windows and Linux</string>
     <string name="android">Android</string>
     <string name="automation_cp_info">For Tasker, use Action > SQL Query. Set the mode to "URI Formatted", put any name in "Variable Array" and URI to one of these.</string>
     <string name="automation_replace_app_id" formatted="true"

@@ -4,7 +4,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -29,7 +28,6 @@ import com.arn.scrobble.ui.horizontalOverscanPadding
 import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff
 import com.arn.scrobble.utils.Stuff.collectAsStateWithInitialValue
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
 import pano_scrobbler.composeapp.generated.resources.Res
@@ -71,7 +69,7 @@ fun DiscordRpcScreen(
 
     DisposableEffect(Unit) {
         onDispose {
-            GlobalScope.launch {
+            Stuff.appScope.launch {
                 PlatformStuff.mainPrefs.updateData {
                     it.copy(
                         discordRpc = it.discordRpc.copy(

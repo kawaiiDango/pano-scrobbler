@@ -39,7 +39,7 @@ class BillingRepository(
     deviceIdentifier: () -> String,
     openInBrowser: (url: String) -> Unit,
     private val context: Context,
-) : BaseBillingRepository(scope, receipt), BillingClientStateListener {
+) : BaseBillingRepository(scope, receipt) {
 
     private val proProductDetails = MutableStateFlow<ProductDetails?>(null)
     override val formattedPrice = proProductDetails
@@ -71,7 +71,7 @@ class BillingRepository(
             }
 
             else -> {
-                Logger.d(TAG) { billingResult.debugMessage }
+                Logger.d(tag = TAG) { billingResult.debugMessage }
             }
         }
     }
@@ -87,7 +87,7 @@ class BillingRepository(
     }
 
     override fun startDataSourceConnections() {
-        playStoreBillingClient.startConnection(this)
+        playStoreBillingClient.startConnection(clientStateListener)
     }
 
     override fun endDataSourceConnections() {
@@ -174,10 +174,10 @@ class BillingRepository(
                             now - lastVoidedTime > checkEveryDays.days.inWholeMilliseconds
 
                     if (withinRefundWindow || gracePeriodExpired) {
-                        Logger.d(TAG) { "withinRefundWindow || gracePeriodExpired" }
+                        Logger.d(tag = TAG) { "withinRefundWindow || gracePeriodExpired" }
                         clearReceipt = true
                     } else {
-                        Logger.d(TAG) { "!gracePeriodExpired" }
+                        Logger.d(tag = TAG) { "!gracePeriodExpired" }
 
                         clearReceipt = false
                         if (lastVoidedTime <= 0)
@@ -212,7 +212,7 @@ class BillingRepository(
 
                                 BillingClient.BillingResponseCode.ITEM_NOT_OWNED -> {
                                     if (productId in purchase.products) {
-                                        Logger.d(TAG) { "Purchase not owned: ${purchase.originalJson}" }
+                                        Logger.d(tag = TAG) { "Purchase not owned: ${purchase.originalJson}" }
 
                                         scope.launch {
                                             setReceipt(null, null)
@@ -234,7 +234,7 @@ class BillingRepository(
                 PUBLIC_KEY_BASE64,
             )
         } catch (e: Exception) {
-            Logger.e(TAG) { "Error verifying purchase: ${e.message}" }
+            Logger.e(tag = TAG) { "Error verifying purchase: ${e.message}" }
             false
         }
     }
@@ -279,7 +279,7 @@ class BillingRepository(
                 }
 
                 else -> {
-                    Logger.d(TAG) { billingResult.debugMessage }
+                    Logger.d(tag = TAG) { billingResult.debugMessage }
                 }
             }
         }
@@ -313,34 +313,36 @@ class BillingRepository(
     override suspend fun checkAndStoreLicense(receipt: String) {
     }
 
-    override fun onBillingSetupFinished(billingResult: BillingResult) {
-        when (billingResult.responseCode) {
-            BillingClient.BillingResponseCode.OK -> {
-                fetchProductDetails(productId)
-                scope.launch {
-                    queryPurchasesAsync()
+    // Cannot access 'BillingClientStateListener' which is a supertype of 'BillingRepository'. This may be forbidden soon. Check the module classpath for missing or conflicting dependencies.
+    private val clientStateListener = object : BillingClientStateListener {
+        override fun onBillingSetupFinished(billingResult: BillingResult) {
+            when (billingResult.responseCode) {
+                BillingClient.BillingResponseCode.OK -> {
+                    fetchProductDetails(productId)
+                    scope.launch {
+                        queryPurchasesAsync()
+                    }
+                }
+
+                BillingClient.BillingResponseCode.BILLING_UNAVAILABLE -> {
+                    Logger.w(tag = TAG) { "BILLING_UNAVAILABLE" }
+                    //Some apps may choose to make decisions based on this knowledge.
+                }
+
+                BillingClient.BillingResponseCode.ERROR -> {
+                    Logger.d(tag = TAG) { billingResult.debugMessage }
+                }
+
+                else -> {
+                    //do nothing. Someone else will connect it through retry policy.
+                    //May choose to send to server though
                 }
             }
+        }
 
-            BillingClient.BillingResponseCode.BILLING_UNAVAILABLE -> {
-                Logger.w(TAG) { "BILLING_UNAVAILABLE" }
-                //Some apps may choose to make decisions based on this knowledge.
-            }
-
-            BillingClient.BillingResponseCode.ERROR -> {
-                Logger.d(TAG) { billingResult.debugMessage }
-            }
-
-            else -> {
-                //do nothing. Someone else will connect it through retry policy.
-                //May choose to send to server though
-            }
+        override fun onBillingServiceDisconnected() {
+            // now handled by enableAutoServiceReconnection()
         }
     }
-
-    override fun onBillingServiceDisconnected() {
-        // now handled by enableAutoServiceReconnection()
-    }
-
 }
 

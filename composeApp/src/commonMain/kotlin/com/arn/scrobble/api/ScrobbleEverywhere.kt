@@ -107,7 +107,7 @@ object ScrobbleEverywhere {
                     scrobbleData,
                     blockPlayerAction = regexResults.blockPlayerAction
                 )
-            } else if (!userEditsApplied && regexResults.scrobbleData != null) {
+            } else if (regexResults.scrobbleData != null) {
                 scrobbleData = regexResults.scrobbleData
                 userEditsApplied = true
                 continueMatching = regexResults.matches.last().continueMatching

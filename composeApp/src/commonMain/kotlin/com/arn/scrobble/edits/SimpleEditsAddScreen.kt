@@ -268,129 +268,39 @@ fun SimpleEditsAddScreen(
     }
 
     Column(
+        verticalArrangement = Arrangement.spacedBy(8.dp),
         modifier = modifier,
     ) {
-        Column(
-            verticalArrangement = Arrangement.spacedBy(8.dp),
-//            modifier = if (networkEditMode)
-//                Modifier
-//            else
-//                Modifier
-//                    .weight(1f)
-//                    .verticalScroll(rememberScrollState())
-        ) {
+        if (networkEditMode) {
+            ButtonWithIcon(
+                onClick = { isExpanded = !isExpanded },
+                icon = if (!isExpanded) Icons.KeyboardArrowUp else Icons.KeyboardArrowDown,
+                text = if (!isExpanded) stringResource(Res.string.expand)
+                else stringResource(Res.string.collapse),
+                modifier = Modifier.align(Alignment.CenterHorizontally)
+            )
+        }
 
-            if (networkEditMode) {
-                ButtonWithIcon(
-                    onClick = { isExpanded = !isExpanded },
-                    icon = if (!isExpanded) Icons.KeyboardArrowUp else Icons.KeyboardArrowDown,
-                    text = if (!isExpanded) stringResource(Res.string.expand)
-                    else stringResource(Res.string.collapse),
-                    modifier = Modifier.align(Alignment.CenterHorizontally)
-                )
-            }
-
-            if (isExpanded) {
-                Text(
-                    text = stringResource(Res.string.original),
-                    style = MaterialTheme.typography.titleMedium,
-                    color = MaterialTheme.colorScheme.secondary,
-                    modifier = Modifier
-                        .align(Alignment.CenterHorizontally)
-                        .padding(top = 8.dp)
-                )
-
-                PanoOutlinedTextField(
-                    enabled = hasOrigTrack,
-                    value = if (hasOrigTrack) origTrack else anythingText,
-                    onValueChange = { origTrack = it },
-                    leadingIcon = {
-                        InlineCheckButton(
-                            checked = hasOrigTrack,
-                            onCheckedChange = { hasOrigTrack = it }
-                        )
-                    },
-                    label = { Text(stringResource(Res.string.track)) },
-                    enabledOnTv = false,
-                    keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Next),
-                    modifier = Modifier.fillMaxWidth()
-                )
-
-                PanoOutlinedTextField(
-                    enabled = hasOrigArtist,
-                    value = if (hasOrigArtist) origArtist else anythingText,
-                    onValueChange = { origArtist = it },
-                    leadingIcon = {
-                        InlineCheckButton(
-                            checked = hasOrigArtist,
-                            onCheckedChange = { hasOrigArtist = it }
-                        )
-                    },
-                    label = { Text(stringResource(Res.string.artist)) },
-                    enabledOnTv = false,
-                    keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Next),
-                    modifier = Modifier.fillMaxWidth()
-                )
-
-                PanoOutlinedTextField(
-                    enabled = hasOrigAlbum,
-                    value = if (hasOrigAlbum) origAlbum else anythingText,
-                    onValueChange = { origAlbum = it },
-                    leadingIcon = {
-                        InlineCheckButton(
-                            checked = hasOrigAlbum,
-                            onCheckedChange = { hasOrigAlbum = it }
-                        )
-                    },
-                    label = { Text(stringResource(Res.string.album)) },
-                    enabledOnTv = false,
-                    keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Next),
-                    modifier = Modifier.fillMaxWidth()
-                )
-
-                PanoOutlinedTextField(
-                    enabled = hasOrigAlbumArtist,
-                    value = if (hasOrigAlbumArtist) origAlbumArtist else anythingText,
-                    onValueChange = { origAlbumArtist = it },
-                    leadingIcon = {
-                        InlineCheckButton(
-                            checked = hasOrigAlbumArtist,
-                            onCheckedChange = { hasOrigAlbumArtist = it }
-                        )
-                    },
-                    label = { Text(stringResource(Res.string.album_artist)) },
-                    enabledOnTv = false,
-                    keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Next),
-                    modifier = Modifier.fillMaxWidth()
-                )
-
-                Text(
-                    stringResource(Res.string.edit_example),
-                    style = MaterialTheme.typography.bodyMedium,
-                )
-
-                Text(
-                    text = stringResource(Res.string.corrected),
-                    style = MaterialTheme.typography.titleMedium,
-                    color = MaterialTheme.colorScheme.secondary,
-                    modifier = Modifier
-                        .align(Alignment.CenterHorizontally)
-                        .padding(top = 8.dp)
-                )
-            }
+        if (isExpanded) {
+            Text(
+                text = stringResource(Res.string.original),
+                style = MaterialTheme.typography.titleMedium,
+                color = MaterialTheme.colorScheme.secondary,
+                modifier = Modifier
+                    .align(Alignment.CenterHorizontally)
+                    .padding(top = 8.dp)
+            )
 
             PanoOutlinedTextField(
-                enabled = hasTrack,
-                value = if (hasTrack) track else existingText,
-                onValueChange = { track = it },
-                leadingIcon = if (isExpanded) {
-                    {
-                        InlineCheckButton(
-                            checked = hasTrack,
-                            onCheckedChange = { hasTrack = it }
-                        )
-                    }
-                } else null,
+                enabled = hasOrigTrack,
+                value = if (hasOrigTrack) origTrack else anythingText,
+                onValueChange = { origTrack = it },
+                leadingIcon = {
+                    InlineCheckButton(
+                        checked = hasOrigTrack,
+                        onCheckedChange = { hasOrigTrack = it }
+                    )
+                },
                 label = { Text(stringResource(Res.string.track)) },
                 enabledOnTv = false,
                 keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Next),
@@ -398,18 +308,15 @@ fun SimpleEditsAddScreen(
             )
 
             PanoOutlinedTextField(
-                enabled = hasArtist,
-                value = if (hasArtist) artist else existingText,
-                onValueChange = { artist = it },
-                leadingIcon =
-                    if (isExpanded) {
-                        {
-                            InlineCheckButton(
-                                checked = hasArtist,
-                                onCheckedChange = { hasArtist = it }
-                            )
-                        }
-                    } else null,
+                enabled = hasOrigArtist,
+                value = if (hasOrigArtist) origArtist else anythingText,
+                onValueChange = { origArtist = it },
+                leadingIcon = {
+                    InlineCheckButton(
+                        checked = hasOrigArtist,
+                        onCheckedChange = { hasOrigArtist = it }
+                    )
+                },
                 label = { Text(stringResource(Res.string.artist)) },
                 enabledOnTv = false,
                 keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Next),
@@ -417,49 +324,132 @@ fun SimpleEditsAddScreen(
             )
 
             PanoOutlinedTextField(
-                enabled = hasAlbum,
-                value = if (hasAlbum) album else existingText,
-                onValueChange = { album = it },
-                leadingIcon =
-                    if (isExpanded) {
-                        {
-                            InlineCheckButton(
-                                checked = hasAlbum,
-                                onCheckedChange = { hasAlbum = it }
-                            )
-                        }
-                    } else null,
+                enabled = hasOrigAlbum,
+                value = if (hasOrigAlbum) origAlbum else anythingText,
+                onValueChange = { origAlbum = it },
+                leadingIcon = {
+                    InlineCheckButton(
+                        checked = hasOrigAlbum,
+                        onCheckedChange = { hasOrigAlbum = it }
+                    )
+                },
                 label = { Text(stringResource(Res.string.album)) },
                 enabledOnTv = false,
                 keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Next),
                 modifier = Modifier.fillMaxWidth()
             )
 
-            if (isExpanded || !origScrobbleData?.albumArtist.isNullOrEmpty()) {
-                PanoOutlinedTextField(
-                    enabled = hasAlbumArtist,
-                    value = if (hasAlbumArtist) albumArtist else existingText,
-                    onValueChange = { albumArtist = it },
-                    leadingIcon = if (isExpanded) {
-                        {
-                            InlineCheckButton(
-                                checked = hasAlbumArtist,
-                                onCheckedChange = { hasAlbumArtist = it }
-                            )
-                        }
-                    } else null,
-                    label = { Text(stringResource(Res.string.album_artist)) },
-                    enabledOnTv = false,
-                    keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Done),
-                    keyboardActions = KeyboardActions(
-                        onDone = { doEdit() }
-                    ),
-                    modifier = Modifier.fillMaxWidth()
-                )
-            }
+            PanoOutlinedTextField(
+                enabled = hasOrigAlbumArtist,
+                value = if (hasOrigAlbumArtist) origAlbumArtist else anythingText,
+                onValueChange = { origAlbumArtist = it },
+                leadingIcon = {
+                    InlineCheckButton(
+                        checked = hasOrigAlbumArtist,
+                        onCheckedChange = { hasOrigAlbumArtist = it }
+                    )
+                },
+                label = { Text(stringResource(Res.string.album_artist)) },
+                enabledOnTv = false,
+                keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Next),
+                modifier = Modifier.fillMaxWidth()
+            )
 
-            ErrorText(errorText)
+            Text(
+                stringResource(Res.string.edit_example),
+                style = MaterialTheme.typography.bodyMedium,
+            )
+
+            Text(
+                text = stringResource(Res.string.corrected),
+                style = MaterialTheme.typography.titleMedium,
+                color = MaterialTheme.colorScheme.secondary,
+                modifier = Modifier
+                    .align(Alignment.CenterHorizontally)
+                    .padding(top = 8.dp)
+            )
         }
+
+        PanoOutlinedTextField(
+            enabled = hasTrack,
+            value = if (hasTrack) track else existingText,
+            onValueChange = { track = it },
+            leadingIcon = if (isExpanded) {
+                {
+                    InlineCheckButton(
+                        checked = hasTrack,
+                        onCheckedChange = { hasTrack = it }
+                    )
+                }
+            } else null,
+            label = { Text(stringResource(Res.string.track)) },
+            enabledOnTv = false,
+            keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Next),
+            modifier = Modifier.fillMaxWidth()
+        )
+
+        PanoOutlinedTextField(
+            enabled = hasArtist,
+            value = if (hasArtist) artist else existingText,
+            onValueChange = { artist = it },
+            leadingIcon =
+                if (isExpanded) {
+                    {
+                        InlineCheckButton(
+                            checked = hasArtist,
+                            onCheckedChange = { hasArtist = it }
+                        )
+                    }
+                } else null,
+            label = { Text(stringResource(Res.string.artist)) },
+            enabledOnTv = false,
+            keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Next),
+            modifier = Modifier.fillMaxWidth()
+        )
+
+        PanoOutlinedTextField(
+            enabled = hasAlbum,
+            value = if (hasAlbum) album else existingText,
+            onValueChange = { album = it },
+            leadingIcon =
+                if (isExpanded) {
+                    {
+                        InlineCheckButton(
+                            checked = hasAlbum,
+                            onCheckedChange = { hasAlbum = it }
+                        )
+                    }
+                } else null,
+            label = { Text(stringResource(Res.string.album)) },
+            enabledOnTv = false,
+            keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Next),
+            modifier = Modifier.fillMaxWidth()
+        )
+
+        if (isExpanded || !origScrobbleData?.albumArtist.isNullOrEmpty()) {
+            PanoOutlinedTextField(
+                enabled = hasAlbumArtist,
+                value = if (hasAlbumArtist) albumArtist else existingText,
+                onValueChange = { albumArtist = it },
+                leadingIcon = if (isExpanded) {
+                    {
+                        InlineCheckButton(
+                            checked = hasAlbumArtist,
+                            onCheckedChange = { hasAlbumArtist = it }
+                        )
+                    }
+                } else null,
+                label = { Text(stringResource(Res.string.album_artist)) },
+                enabledOnTv = false,
+                keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Done),
+                keyboardActions = KeyboardActions(
+                    onDone = { doEdit() }
+                ),
+                modifier = Modifier.fillMaxWidth()
+            )
+        }
+
+        ErrorText(errorText)
 
         if (isExpanded) {
             LabeledCheckbox(

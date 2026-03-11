@@ -249,7 +249,7 @@ class ScrobbleQueue(
             delay(Stuff.META_WAIT)
 
             if (trackInfo.scrobbledState in
-                PlayingTrackInfo.ScrobbledState.PREPROCESSED..PlayingTrackInfo.ScrobbledState.ADDITIONAL_METADATA_FETCHED
+                PlayingTrackInfo.ScrobbledState.PREPROCESSED..PlayingTrackInfo.ScrobbledState.NOW_PLAYING_SUBMITTED
             ) {
                 nowPlayingAndSubmit(
                     trackInfo.toScrobbleData(false),

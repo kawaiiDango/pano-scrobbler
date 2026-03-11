@@ -238,7 +238,8 @@ fun main(args: Array<String>) {
     }
 
     val trayIconSize = 128
-    var trayIcons: Triple<ByteArray, ByteArray, ByteArray>? = null
+    var trayIcons by
+    mutableStateOf<Triple<ByteArray, ByteArray, ByteArray>?>(null)
 
     combine(
         PanoNotifications.playingTrackTrayInfo,
@@ -379,9 +380,9 @@ fun main(args: Array<String>) {
         if (DesktopStuff.os == DesktopStuff.Os.Linux) {
             trayData?.let { trayData ->
                 val pngBytes = when (trayData.iconType) {
-                    PanoTrayUtils.TrayIconType.PLAYING -> trayIcons.second
-                    PanoTrayUtils.TrayIconType.NOT_PLAYING -> trayIcons.first
-                    PanoTrayUtils.TrayIconType.ERROR -> trayIcons.third
+                    PanoTrayUtils.TrayIconType.NOT_PLAYING -> trayIcons!!.first
+                    PanoTrayUtils.TrayIconType.PLAYING -> trayIcons!!.second
+                    PanoTrayUtils.TrayIconType.ERROR -> trayIcons!!.third
                 }
 
                 PanoNativeComponents.setTrayLinux(
@@ -507,14 +508,14 @@ fun main(args: Array<String>) {
             var trayMouseListenerSet by remember { mutableStateOf(false) }
             var trayMenuPos by remember { mutableStateOf<Point?>(null) }
 
-            val (trayIconPlaying, trayIconNotPlaying, trayIconError) =
-                PanoTrayUtils.rememberTrayIcons(trayIcons, trayData?.iconIsDark == true)
+            val (trayIconNotPlaying, trayIconPlaying, trayIconError) =
+                PanoTrayUtils.rememberTrayIcons(trayIcons!!, trayData?.iconIsDark == true)
 
             trayData?.let { trayData ->
                 Tray(
                     icon = when (trayData.iconType) {
-                        PanoTrayUtils.TrayIconType.PLAYING -> trayIconPlaying
                         PanoTrayUtils.TrayIconType.NOT_PLAYING -> trayIconNotPlaying
+                        PanoTrayUtils.TrayIconType.PLAYING -> trayIconPlaying
                         PanoTrayUtils.TrayIconType.ERROR -> trayIconError
                     }.let { BitmapPainter(it) },
                     tooltip = trayData.tooltip,

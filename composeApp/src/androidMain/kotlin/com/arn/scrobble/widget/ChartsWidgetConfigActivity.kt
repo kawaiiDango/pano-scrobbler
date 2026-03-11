@@ -3,16 +3,19 @@ package com.arn.scrobble.widget
 import android.appwidget.AppWidgetManager
 import android.content.Context
 import android.content.Intent
+import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.core.view.WindowInsetsControllerCompat
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import com.arn.scrobble.pref.SpecificWidgetPrefs
 import com.arn.scrobble.themes.AppTheme
+import com.arn.scrobble.themes.LocalThemeAttributes
 import com.arn.scrobble.utils.AndroidStuff
 import com.arn.scrobble.utils.AndroidStuff.prolongSplashScreen
 import com.arn.scrobble.utils.Stuff
@@ -36,6 +39,9 @@ class ChartsWidgetConfigActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            window.isNavigationBarContrastEnforced = false
+        }
 
         var initDone = false
         prolongSplashScreen { initDone }
@@ -44,6 +50,15 @@ class ChartsWidgetConfigActivity : ComponentActivity() {
             AppTheme(
                 onInitDone = { }
             ) {
+                val isDarkTheme = LocalThemeAttributes.current.isDark
+
+                LaunchedEffect(isDarkTheme) {
+                    WindowInsetsControllerCompat(window, window.decorView).apply {
+                        isAppearanceLightStatusBars = !isDarkTheme
+                        isAppearanceLightNavigationBars = !isDarkTheme
+                    }
+                }
+
                 val widgetPrefs by
                 AndroidStuff.widgetPrefs.data.collectAsStateWithLifecycle(null)
 

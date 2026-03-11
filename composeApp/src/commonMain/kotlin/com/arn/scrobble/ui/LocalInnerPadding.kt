@@ -1,12 +1,9 @@
 package com.arn.scrobble.ui
 
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.calculateEndPadding
 import androidx.compose.foundation.layout.calculateStartPadding
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
@@ -30,7 +27,7 @@ fun panoContentPadding(
     bottom: Boolean = true,
     mayHaveBottomFab: Boolean = false,
 ): PaddingValues {
-    val safeDrawingPaddingValues = WindowInsets.safeDrawing.asPaddingValues()
+//    val safeDrawingPaddingValues = WindowInsets.safeDrawing.asPaddingValues()
     val innerPadding = LocalInnerPadding.current
 
     return PaddingValues(
@@ -39,8 +36,8 @@ fun panoContentPadding(
                 max(
                     innerPadding.calculateBottomPadding(),
                     // this is needed for some reason when the bottom navigation bar is visible
-                    safeDrawingPaddingValues.calculateBottomPadding() +
-                            if (mayHaveBottomFab && LocalNavigationType.current == PanoNavigationType.BOTTOM_NAVIGATION) 72.dp else 0.dp
+//                    safeDrawingPaddingValues.calculateBottomPadding() +
+                    if (mayHaveBottomFab && LocalNavigationType.current == PanoNavigationType.BOTTOM_NAVIGATION) 72.dp else 0.dp
                 ),
                 verticalOverscanPadding()
             )

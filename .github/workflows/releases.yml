@@ -152,11 +152,12 @@ jobs:
       - name: Submit to winget-pkgs
         env:
           WINGET_CREATE_GITHUB_TOKEN: ${{ secrets.WINGET_CREATE_GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.WINGET_CREATE_GITHUB_TOKEN }}
         shell: bash
         run: |
           gh repo sync kawaiiDango/winget-pkgs -b master
 
-          # wingetcreate update kawaiiDango.pano-scrobbler \
-          #   --version ${{ steps.release_metadata.outputs.verName }} \
-          #   --urls "https://github.com/kawaiiDango/pano-scrobbler/releases/download/${{ steps.release_metadata.outputs.verCode }}/pano-scrobbler-windows-x64.exe" \
-          #   --submit
+          wingetcreate update kawaiiDango.pano-scrobbler \
+            --version ${{ steps.release_metadata.outputs.verName }} \
+            --urls "https://github.com/kawaiiDango/pano-scrobbler/releases/download/${{ steps.release_metadata.outputs.verCode }}/pano-scrobbler-windows-x64.exe" \
+            --submit

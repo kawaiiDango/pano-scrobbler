@@ -81,7 +81,7 @@ fun PanoMainDialogContent(
             rememberSaveableStateHolderNavEntryDecorator(),
             rememberViewModelStoreNavEntryDecorator()
         ),
-        sceneStrategy = remember { BottomSheetSceneStrategy(::removeAllModals) },
+        sceneStrategies = remember { listOf(BottomSheetSceneStrategy(::removeAllModals)) },
         entryProvider = entryProvider {
             entry(PanoRoute.Blank) { }
 

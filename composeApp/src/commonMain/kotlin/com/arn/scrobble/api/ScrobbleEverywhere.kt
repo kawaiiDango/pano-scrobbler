@@ -229,7 +229,7 @@ object ScrobbleEverywhere {
         fetchArtUrlOnly: Boolean = false
     ): AdditionalMetadataResult {
         val fetchMissingMetadataDeezer = PlatformStuff.mainPrefs.data.map { it.deezerApi }.first()
-        val fetchMissingMetadataLastfm = PlatformStuff.mainPrefs.data.map { it.fetchAlbum }.first()
+//        val fetchMissingMetadataLastfm = PlatformStuff.mainPrefs.data.map { it.fetchAlbum }.first()
         val tidalSteelSeries = PlatformStuff.mainPrefs.data.map { it.tidalSteelSeriesApi }.first()
 
         try {
@@ -297,9 +297,9 @@ object ScrobbleEverywhere {
                     return SteelSeriesReceiverServer.getAdditionalData(scrobbleData)
                 }
 
-                fetchMissingMetadataLastfm && scrobbleData.album.isNullOrEmpty() -> {
-                    return fetchLastfmTrack(scrobbleData, onNetworkRequestMade)
-                }
+//                fetchMissingMetadataLastfm && scrobbleData.album.isNullOrEmpty() -> {
+//                    return fetchLastfmTrack(scrobbleData, onNetworkRequestMade)
+//                }
             }
         } catch (e: ScrobbleQueue.NetworkRequestNeededException) {
             Logger.d { "Network request needed to fetch additional metadata" }

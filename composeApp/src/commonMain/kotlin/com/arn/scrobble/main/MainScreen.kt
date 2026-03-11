@@ -231,6 +231,7 @@ fun PanoAppContent(
 
     val bottomSheetStrategy =
         remember { BottomSheetSceneStrategy<PanoRoute>(::removeAllModals) }
+    val singlePaneStrategy = remember { SinglePaneSceneStrategy<PanoRoute>() }
 
     // show onboarding again when logged out
     LaunchedEffect(currentUser == null) {
@@ -447,8 +448,10 @@ fun PanoAppContent(
                                         rememberSaveableStateHolderNavEntryDecorator(),
                                         rememberViewModelStoreNavEntryDecorator()
                                     ),
-                                    sceneStrategy = bottomSheetStrategy then
-                                            SinglePaneSceneStrategy(),
+                                    sceneStrategies = listOf(
+                                        bottomSheetStrategy,
+                                        singlePaneStrategy
+                                    ),
                                     transitionSpec = {
                                         ContentTransform(
                                             fadeIn() +

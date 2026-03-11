@@ -14,7 +14,6 @@ import com.arn.scrobble.charts.TimePeriodsGenerator.Companion.toTimePeriod
 import com.arn.scrobble.utils.AcceptableTags
 import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff
-import com.arn.scrobble.utils.Stuff.mapConcurrently
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asStateFlow
@@ -174,13 +173,13 @@ class ChartsVM(
                 return@launch
             }
 
-            artists.take(nArtists).mapConcurrently(nParallel) { musicEntry ->
+            for (artist in artists.take(nArtists)) {
                 Requesters.lastfmUnauthedRequester
-                    .getTopTags(musicEntry)
+                    .getTopTags(artist)
                     .map { it.toptags.tag }
                     .onSuccess {
                         it.forEach {
-                            val s = musicEntry.playcount!!.toDouble() * it.count!! / 100
+                            val s = artist.playcount!!.toDouble() * it.count!! / 100
                             val name = it.name.trim()
                             synchronized(tags) {
                                 if (!tags.containsKey(name))
@@ -190,6 +189,10 @@ class ChartsVM(
                                 tags[name]!!.percentSum += it.count
                             }
                         }
+                    }
+                    .onFailure {
+                        // cancel all other requests
+                        break
                     }
 
 //            _tagCloudProgress.value = (++currentIndex).toFloat() / min(nArtists, artists.size)

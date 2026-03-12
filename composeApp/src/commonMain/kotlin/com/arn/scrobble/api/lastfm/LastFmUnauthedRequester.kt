@@ -12,7 +12,6 @@ import io.ktor.client.request.forms.FormDataContent
 import io.ktor.client.request.parameter
 import io.ktor.client.request.setBody
 import io.ktor.client.request.url
-import kotlinx.coroutines.async
 import kotlinx.coroutines.supervisorScope
 
 class LastFmUnauthedRequester {
@@ -40,29 +39,23 @@ class LastFmUnauthedRequester {
         }
 
         // search API sometimes returns duplicates
-        val artists = async {
-            client.getResult<ArtistSearchResponse>(Stuff.LASTFM_API_ROOT) {
-                takeFrom(request)
-                parameter("method", "artist.search")
-                parameter("artist", term)
-            }.map { it.results.artistmatches.entries }
-        }.await()
+        val artists = client.getResult<ArtistSearchResponse>(Stuff.LASTFM_API_ROOT) {
+            takeFrom(request)
+            parameter("method", "artist.search")
+            parameter("artist", term)
+        }.map { it.results.artistmatches.entries }
 
-        val albums = async {
-            client.getResult<AlbumSearchResponse>(Stuff.LASTFM_API_ROOT) {
-                takeFrom(request)
-                parameter("method", "album.search")
-                parameter("album", term)
-            }.map { it.results.albummatches.entries }
-        }.await()
+        val albums = client.getResult<AlbumSearchResponse>(Stuff.LASTFM_API_ROOT) {
+            takeFrom(request)
+            parameter("method", "album.search")
+            parameter("album", term)
+        }.map { it.results.albummatches.entries }
 
-        val tracks = async {
-            client.getResult<TrackSearchResponse>(Stuff.LASTFM_API_ROOT) {
-                takeFrom(request)
-                parameter("method", "track.search")
-                parameter("track", term)
-            }.map { it.results.trackmatches.entries }
-        }.await()
+        val tracks = client.getResult<TrackSearchResponse>(Stuff.LASTFM_API_ROOT) {
+            takeFrom(request)
+            parameter("method", "track.search")
+            parameter("track", term)
+        }.map { it.results.trackmatches.entries }
 
         if (artists.isFailure || albums.isFailure || tracks.isFailure)
             return@supervisorScope Result.failure(

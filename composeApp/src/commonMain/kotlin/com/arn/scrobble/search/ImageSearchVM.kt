@@ -25,7 +25,6 @@ import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
@@ -33,8 +32,8 @@ class ImageSearchVM : ViewModel() {
     private val _searchTerm =
         MutableSharedFlow<Pair<String, Int>>(replay = 1, extraBufferCapacity = 1)
     private val _searchResults = MutableStateFlow<SpotifySearchResponse?>(null)
-    val searchResultsWithImages = _searchResults.mapLatest {
-        it ?: return@mapLatest null
+    val searchResultsWithImages = _searchResults.map {
+        it ?: return@map null
 
         (it.artists?.items ?: it.albums?.items ?: emptyList())
             .filter { item ->

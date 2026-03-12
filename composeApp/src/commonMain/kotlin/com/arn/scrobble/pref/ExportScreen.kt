@@ -39,7 +39,6 @@ import com.arn.scrobble.ui.PanoOutlinedTextField
 import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff
 import com.arn.scrobble.utils.redactedMessage
-import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.filterNotNull
 import org.jetbrains.compose.resources.stringResource
 import pano_scrobbler.composeapp.generated.resources.Res
@@ -146,7 +145,7 @@ fun ExportScreen(
     }
 
     LaunchedEffect(Unit) {
-        viewModel.result.filterNotNull().collectLatest {
+        viewModel.result.filterNotNull().collect {
             it.onSuccess {
                 errorText = null
                 onBack()

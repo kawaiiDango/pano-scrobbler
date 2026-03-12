@@ -6,7 +6,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asSharedFlow
-import kotlinx.coroutines.flow.mapLatest
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.withContext
 
@@ -23,7 +23,7 @@ abstract class BaseBillingRepository(
     abstract val purchaseMethods: List<PurchaseMethod>
     abstract val needsActivationCode: Boolean
     val licenseState = receipt
-        .mapLatest { (receipt, signature) ->
+        .map { (receipt, signature) ->
             withContext(Dispatchers.IO) {
                 if (receipt == null) {
                     LicenseState.NO_LICENSE
@@ -34,7 +34,7 @@ abstract class BaseBillingRepository(
                 }
             }
         }
-        .stateIn(scope, SharingStarted.Eagerly, LicenseState.UNKNOWN)
+        .stateIn(scope, SharingStarted.Lazily, LicenseState.UNKNOWN)
 
     abstract fun initBillingClient()
 

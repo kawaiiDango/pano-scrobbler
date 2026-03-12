@@ -14,6 +14,7 @@ import com.arn.scrobble.charts.TimePeriodsGenerator.Companion.toTimePeriod
 import com.arn.scrobble.utils.AcceptableTags
 import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asStateFlow
@@ -163,7 +164,6 @@ class ChartsVM(
             val minArtists = 10
             val nTags = 65
             val minTags = 20
-            val nParallel = 2
             val tags = mutableMapOf<String, TagStats>()
             val tagScales = mutableMapOf<String, Float>()
 
@@ -174,6 +174,7 @@ class ChartsVM(
             }
 
             for (artist in artists.take(nArtists)) {
+                val t1 = System.currentTimeMillis()
                 Requesters.lastfmUnauthedRequester
                     .getTopTags(artist)
                     .map { it.toptags.tag }
@@ -194,7 +195,11 @@ class ChartsVM(
                         // cancel all other requests
                         break
                     }
+                val t2 = System.currentTimeMillis()
 
+                if (t2 - t1 > 50) { // probably not from cache
+                    delay(400)
+                }
 //            _tagCloudProgress.value = (++currentIndex).toFloat() / min(nArtists, artists.size)
             }
 

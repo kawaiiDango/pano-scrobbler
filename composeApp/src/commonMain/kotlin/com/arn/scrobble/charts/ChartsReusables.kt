@@ -80,7 +80,7 @@ import com.arn.scrobble.utils.Stuff.setMidnight
 import com.arn.scrobble.utils.Stuff.timeToLocal
 import com.arn.scrobble.utils.Stuff.timeToUTC
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.mapLatest
+import kotlinx.coroutines.flow.map
 import org.jetbrains.compose.resources.PluralStringResource
 import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.pluralStringResource
@@ -211,7 +211,7 @@ fun TimePeriodSelector(
             AccountType.LISTENBRAINZ -> {
                 viewModel.setPeriodType(TimePeriodType.LISTENBRAINZ)
                 if (digestTimePeriod == null) {
-                    val selected = PlatformStuff.mainPrefs.data.mapLatest {
+                    val selected = PlatformStuff.mainPrefs.data.map {
                         it.lastChartsListenBrainzPeriod
                     }.first()
                     viewModel.setSelectedPeriod(selected)
@@ -219,7 +219,7 @@ fun TimePeriodSelector(
             }
 
             AccountType.LASTFM if digestTimePeriod == null -> {
-                val (type, selected, custom) = PlatformStuff.mainPrefs.data.mapLatest {
+                val (type, selected, custom) = PlatformStuff.mainPrefs.data.map {
                     Triple(
                         it.lastChartsPeriodType,
                         it.lastChartsLastfmPeriod,

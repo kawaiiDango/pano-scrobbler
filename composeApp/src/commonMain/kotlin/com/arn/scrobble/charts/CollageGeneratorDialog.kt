@@ -54,7 +54,6 @@ import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff
 import com.arn.scrobble.utils.Stuff.collectAsStateWithInitialValue
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
@@ -171,7 +170,7 @@ fun CollageGeneratorDialog(
     }
 
     LaunchedEffect(Unit) {
-        viewModel.sharableCollage.collectLatest { (image, text) ->
+        viewModel.sharableCollage.collect { (image, text) ->
             shareTextToCopy = text.ifBlank { null }
 
             if (shareCollageClicked) {

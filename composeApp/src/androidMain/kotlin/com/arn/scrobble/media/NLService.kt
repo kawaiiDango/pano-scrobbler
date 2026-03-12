@@ -26,7 +26,6 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
-import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
@@ -85,7 +84,7 @@ class NLService : NotificationListenerService() {
 
     private fun init() {
         coroutineScope.launch {
-            PlatformStuff.mainPrefs.data.map { it.logToFileOnAndroid }.collectLatest {
+            PlatformStuff.mainPrefs.data.map { it.logToFileOnAndroid }.collect {
                 Logger.config.logWriterList
                     .filterIsInstance<JavaUtilFileLogger>()
                     .firstOrNull()

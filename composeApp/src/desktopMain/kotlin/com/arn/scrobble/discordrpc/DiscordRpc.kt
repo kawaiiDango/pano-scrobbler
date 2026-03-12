@@ -15,6 +15,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapLatest
 import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.Duration.Companion.seconds
@@ -142,8 +143,8 @@ object DiscordRpc {
             }.launchIn(Stuff.appScope)
 
         combine(
-            PanoNotifications.playingTrackTrayInfo.mapLatest { it.values.firstOrNull() },
-            PlatformStuff.mainPrefs.data.mapLatest { it.discordRpc }
+            PanoNotifications.playingTrackTrayInfo.map { it.values.firstOrNull() },
+            PlatformStuff.mainPrefs.data.map { it.discordRpc }
         ) { event, settings ->
 
             if (!settings.enabled) {

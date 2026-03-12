@@ -25,7 +25,6 @@ import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.launch
 import kotlinx.serialization.SerializationException
 import java.util.Calendar
@@ -55,7 +54,7 @@ class MainViewModel : ViewModel() {
     val editScrobbleUtils = EditScrobbleUtils(viewModelScope)
 
     init {
-        Stuff.globalExceptionFlow.mapLatest { e ->
+        Stuff.globalExceptionFlow.map { e ->
             if (BuildKonfig.DEBUG)
                 e.printStackTrace()
 

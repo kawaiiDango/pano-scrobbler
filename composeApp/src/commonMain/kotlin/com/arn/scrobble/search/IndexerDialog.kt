@@ -29,7 +29,6 @@ import com.arn.scrobble.icons.Icons
 import com.arn.scrobble.icons.MoreVert
 import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff
-import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.map
 import org.jetbrains.compose.resources.stringResource
 import pano_scrobbler.composeapp.generated.resources.Res
@@ -114,7 +113,7 @@ fun IndexerDialog(
     }
 
     LaunchedEffect(Unit) {
-        viewModel.indexingProgress.collectLatest { indexingProgress ->
+        viewModel.indexingProgress.collect { indexingProgress ->
 
             indexingMessage =
                 if (indexingProgress.progress == 1f || indexingProgress.state.isFinished) {
@@ -129,7 +128,7 @@ fun IndexerDialog(
     }
 
     LaunchedEffect(Unit) {
-        PlatformStuff.mainPrefs.data.map { it.lastFullIndexTime }.collectLatest {
+        PlatformStuff.mainPrefs.data.map { it.lastFullIndexTime }.collect {
             if (it != null && System.currentTimeMillis() - it < Stuff.FULL_INDEX_ALLOWED_INTERVAL) {
                 showOptions = false
             }

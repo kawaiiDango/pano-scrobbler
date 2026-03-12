@@ -24,7 +24,7 @@ abstract class BaseCrashReporter(
             }
         }
 
-    open fun config(
+    open fun init(
         keysMap: Map<String, String> = emptyMap(),
     ) {
     }

@@ -41,7 +41,6 @@ import com.arn.scrobble.themes.colors.ThemeVariants
 import com.arn.scrobble.ui.LabeledCheckbox
 import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff
-import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
 import pano_scrobbler.composeapp.generated.resources.Res
@@ -91,7 +90,7 @@ fun ThemeChooserScreen(
 
     LaunchedEffect(Unit) {
         PlatformStuff.mainPrefs.data
-            .collectLatest {
+            .collect {
                 themeName = it.themeName
                 dynamic = it.themeDynamic
                 dayNightMode = it.themeDayNight

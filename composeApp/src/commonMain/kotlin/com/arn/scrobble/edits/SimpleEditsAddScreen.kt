@@ -62,7 +62,6 @@ import com.valentinilk.shimmer.ShimmerBounds
 import com.valentinilk.shimmer.rememberShimmer
 import com.valentinilk.shimmer.shimmer
 import com.valentinilk.shimmer.shimmerSpec
-import kotlinx.coroutines.flow.collectLatest
 import org.jetbrains.compose.resources.stringResource
 import pano_scrobbler.composeapp.generated.resources.Res
 import pano_scrobbler.composeapp.generated.resources.album
@@ -234,7 +233,7 @@ fun SimpleEditsAddScreen(
     }
 
     LaunchedEffect(Unit) {
-        viewModel.editScrobbleUtils.result.collectLatest { (origSd, result) ->
+        viewModel.editScrobbleUtils.result.collect { (origSd, result) ->
             if (origSd == origScrobbleData) {
                 result.onSuccess {
                     verifying = false
@@ -254,14 +253,14 @@ fun SimpleEditsAddScreen(
     }
 
     LaunchedEffect(Unit) {
-        viewModel.editScrobbleUtils.updatedAlbum.collectLatest { (origSd, it) ->
+        viewModel.editScrobbleUtils.updatedAlbum.collect { (origSd, it) ->
             if (origSd == origScrobbleData)
                 album = it
         }
     }
 
     LaunchedEffect(Unit) {
-        viewModel.editScrobbleUtils.updatedAlbumArtist.collectLatest { (origSd, it) ->
+        viewModel.editScrobbleUtils.updatedAlbumArtist.collect { (origSd, it) ->
             if (origSd == origScrobbleData)
                 albumArtist = it
         }

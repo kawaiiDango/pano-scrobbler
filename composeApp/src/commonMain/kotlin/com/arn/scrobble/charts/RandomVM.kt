@@ -15,7 +15,6 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
-import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.filterNotNull
@@ -60,7 +59,7 @@ class RandomVM(private val username: String) : ViewModel() {
                 .catch { exception ->
                     emit(null to -1)
                 }
-                .collectLatest { (entry, total) ->
+                .collect { (entry, total) ->
                     _hasLoaded.emit(true)
                     if (entry != null) {
                         _musicEntry.emit(entry)

@@ -9,7 +9,6 @@ import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff.stateInWithCache
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.drop
@@ -40,7 +39,7 @@ class DesktopMediaListener(
             }
                 .distinctUntilChanged()
                 .drop(1) // drop initial value
-                .collectLatest {
+                .collect {
                     PanoNativeComponents.refreshSessions()
 
                     // refresh with the same data to check for shouldScrobble again

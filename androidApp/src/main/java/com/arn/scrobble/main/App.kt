@@ -76,12 +76,14 @@ class App : Application(), Configuration.Provider {
         // the built-in content provider initializer only runs in the main process
         val crashlyticsEnabled = AndroidStuff.isMainProcess && crashReporter.isEnabled
 
-        if (crashlyticsEnabled && BuildConfig.DEBUG) {
-            val crashlyticsKeys = mapOf(
-                "isDebug" to true.toString(),
-            )
+        if (crashlyticsEnabled) {
+            val crashlyticsKeys =
+                if (BuildConfig.DEBUG)
+                    mapOf("isDebug" to true.toString())
+                else
+                    emptyMap()
 
-            crashReporter.config(crashlyticsKeys)
+            crashReporter.init(crashlyticsKeys)
         }
     }
 

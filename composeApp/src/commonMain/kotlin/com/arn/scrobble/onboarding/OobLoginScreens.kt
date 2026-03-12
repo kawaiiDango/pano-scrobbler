@@ -34,7 +34,6 @@ import com.arn.scrobble.ui.VerifyButton
 import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff
 import com.arn.scrobble.utils.redactedMessage
-import kotlinx.coroutines.flow.collectLatest
 import org.jetbrains.compose.resources.stringResource
 import pano_scrobbler.composeapp.generated.resources.Res
 import pano_scrobbler.composeapp.generated.resources.pref_imexport_code
@@ -83,7 +82,7 @@ fun OobLastfmLibrefmLoginScreen(
     }
 
     LaunchedEffect(Unit) {
-        viewModel.result.collectLatest {
+        viewModel.result.collect {
             exception = it.exceptionOrNull()
 
             if (it.isSuccess) {

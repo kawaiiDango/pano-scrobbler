@@ -41,7 +41,6 @@ import com.arn.scrobble.panoicons.PanoIcons
 import com.arn.scrobble.pref.AppItem
 import com.arn.scrobble.ui.InfoText
 import com.arn.scrobble.ui.PanoOutlinedTextField
-import kotlinx.coroutines.flow.collectLatest
 import org.jetbrains.compose.resources.pluralStringResource
 import org.jetbrains.compose.resources.stringResource
 import pano_scrobbler.composeapp.generated.resources.Res
@@ -73,7 +72,7 @@ fun RegexEditsTestScreen(
     val gotMatches = regexMatches?.scrobbleData != null || regexMatches?.blockPlayerAction != null
 
     LaunchedEffect(Unit) {
-        mainViewModel.selectedPackages.collectLatest { (checked, _) ->
+        mainViewModel.selectedPackages.collect { (checked, _) ->
             appItem = checked.firstOrNull()
         }
     }

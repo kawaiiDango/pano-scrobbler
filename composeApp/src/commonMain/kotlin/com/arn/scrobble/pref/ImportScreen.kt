@@ -35,7 +35,6 @@ import com.arn.scrobble.ui.PanoSnackbarVisuals
 import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff
 import com.arn.scrobble.utils.redactedMessage
-import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.filterNotNull
 import org.jetbrains.compose.resources.getString
 import org.jetbrains.compose.resources.stringResource
@@ -252,7 +251,7 @@ fun ImportScreen(
     }
 
     LaunchedEffect(Unit) {
-        viewModel.serverResult.filterNotNull().collectLatest { result ->
+        viewModel.serverResult.filterNotNull().collect { result ->
             result.onSuccess {
                 codeText = it.chunkedSequence(4).joinToString(" ")
                 errorText = null
@@ -263,7 +262,7 @@ fun ImportScreen(
     }
 
     LaunchedEffect(Unit) {
-        viewModel.importResult.collectLatest {
+        viewModel.importResult.collect {
             it.onSuccess {
                 errorText = null
                 Stuff.globalSnackbarFlow.emit(

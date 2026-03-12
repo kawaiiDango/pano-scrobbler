@@ -29,13 +29,11 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -59,7 +57,7 @@ class ScrobblesVM(
 
     private val editsAndDeletes = MutableStateFlow<Map<String, Track?>>(emptyMap())
     val deletedTracksCount = editsAndDeletes
-        .mapLatest { it.count { (k, v) -> v == null } }
+        .map { it.count { (k, v) -> v == null } }
         .stateIn(viewModelScope, SharingStarted.Lazily, 0)
     private val _pkgMap = MutableStateFlow<Map<Long, String>>(emptyMap())
     val pkgMap = _pkgMap.asStateFlow()
@@ -187,7 +185,7 @@ class ScrobblesVM(
 
         viewModelScope.launch {
             PendingScrobblesWork.getProgress()
-                .collectLatest {
+                .collect {
                     if (it.state == CommonWorkState.RUNNING || it.state == CommonWorkState.FAILED) {
                         val snackbarData = PanoSnackbarVisuals(
                             message = it.message,

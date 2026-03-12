@@ -6,7 +6,7 @@ import com.google.firebase.crashlytics.crashlytics
 import java.io.File
 
 class CrashReporter(fileToCheck: File) : BaseCrashReporter(fileToCheck) {
-    override fun config(
+    override fun init(
         keysMap: Map<String, String>,
     ) {
         keysMap.forEach { (key, value) ->

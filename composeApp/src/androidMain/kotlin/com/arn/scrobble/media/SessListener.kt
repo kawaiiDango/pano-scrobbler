@@ -1,7 +1,6 @@
 package com.arn.scrobble.media
 
 import android.annotation.SuppressLint
-import android.content.ComponentName
 import android.media.AudioManager
 import android.media.MediaMetadata
 import android.media.session.MediaController
@@ -9,10 +8,8 @@ import android.media.session.MediaSessionManager.OnActiveSessionsChangedListener
 import android.media.session.PlaybackState
 import android.os.Build
 import android.os.Bundle
-import android.service.quicksettings.TileService
 import co.touchlab.kermit.Logger
 import com.arn.scrobble.BuildKonfig
-import com.arn.scrobble.MasterSwitchQS
 import com.arn.scrobble.media.PlayerActions.love
 import com.arn.scrobble.media.PlayerActions.unlove
 import com.arn.scrobble.utils.AndroidStuff
@@ -23,10 +20,8 @@ import com.arn.scrobble.utils.Stuff.stateInWithCache
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import org.jetbrains.compose.resources.getString
 import pano_scrobbler.composeapp.generated.resources.Res
 import pano_scrobbler.composeapp.generated.resources.mute
@@ -67,24 +62,6 @@ class SessListener(
                     .keys
                 removeSessions(tokensToKeep)
             }.collect()
-        }
-
-        scope.launch {
-            scrobblerEnabled.collectLatest {
-                try {
-                    withContext(Dispatchers.IO) {
-                        TileService.requestListeningState(
-                            AndroidStuff.applicationContext,
-                            ComponentName(
-                                AndroidStuff.applicationContext,
-                                MasterSwitchQS::class.java
-                            )
-                        )
-                    }
-                } catch (e: Exception) {
-                    Logger.e(e) { "Failed to update QS tile state" }
-                }
-            }
         }
     }
 

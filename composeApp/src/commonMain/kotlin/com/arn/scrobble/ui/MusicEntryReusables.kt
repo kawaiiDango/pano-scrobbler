@@ -510,14 +510,14 @@ private fun NowPlayingSurface(
         }
     }
 
-    val progress by customFpsInfiniteAnimation(
+    val progress = customFpsInfiniteAnimation(
         initialValue = 0f,
         targetValue = 1f,
         durationMillis = 25_000,
         enabled = isResumed && nowPlaying,
     )
     val fgColor = MaterialTheme.colorScheme.onTertiaryContainer.copy(alpha = 0.3f)
-    var brushRadius by remember { mutableFloatStateOf(Float.POSITIVE_INFINITY) }
+    val brushRadius = remember { mutableFloatStateOf(Float.POSITIVE_INFINITY) }
 
     Surface(
         color = if (nowPlaying)
@@ -533,20 +533,20 @@ private fun NowPlayingSurface(
                 Brush.radialGradient(
                     0f to fgColor,
                     0.75f to Color.Transparent,
-                    radius = brushRadius
+                    radius = brushRadius.floatValue
                 )
             }
 
             Modifier.drawBehind {
-                brushRadius = if (size.minDimension < 2 * size.maxDimension)
+                brushRadius.floatValue = if (size.minDimension < 2 * size.maxDimension)
                     size.maxDimension / 2
                 else
                     size.minDimension
 
-                translate((progress - 0.5f) * 2 * (size.width), size.height * 0.55f) {
+                translate((progress.value - 0.5f) * 2 * (size.width), size.height * 0.55f) {
                     drawCircle(
                         brush = brushRadial,
-                        radius = brushRadius,
+                        radius = brushRadius.floatValue,
                     )
                 }
             }

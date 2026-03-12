@@ -69,7 +69,6 @@ import com.arn.scrobble.icons.BarChart4Bars
 import com.arn.scrobble.icons.Icons
 import com.arn.scrobble.icons.Mic
 import com.arn.scrobble.icons.MusicNote
-import com.arn.scrobble.icons.QuestionMark
 import com.arn.scrobble.icons.Tag
 import com.arn.scrobble.navigation.PanoRoute
 import com.arn.scrobble.ui.ButtonWithIcon
@@ -508,17 +507,20 @@ private fun TagCloudContent(
                     .align(Alignment.CenterHorizontally)
                     .widthIn(max = 370.dp)
                     .aspectRatio(1f)
-                    .clip(CircleShape)
+                    .then(
+                        if (isLoading)
+                            Modifier
+                                .shimmerWindowBounds()
+                                .backgroundForShimmer(true, shape = CircleShape)
+                        else
+                            Modifier
+                                .clip(CircleShape)
+                    )
                     .indication(interactionSource, LocalIndication.current)
                     .focusable(interactionSource = interactionSource)
                     .onGloballyPositioned { coordinates ->
                         tagCloudSizePx = coordinates.size.width
                     }
-                    .then(
-                        if (isLoading) Modifier
-                            .backgroundForShimmer(true, shape = CircleShape)
-                            .shimmerWindowBounds() else Modifier
-                    )
             ) {
                 EmptyText(
                     visible = tagCloud?.isEmpty() == true,

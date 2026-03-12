@@ -15,6 +15,7 @@ import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff
 import com.arn.scrobble.utils.VariantStuff
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.withContext
 import java.io.File
@@ -59,7 +60,7 @@ class App : Application(), Configuration.Provider {
                         .writeText(time.toString())
                 }
             },
-            receipt = Stuff.receiptFlow,
+            receipt = flow { emitAll(Stuff.receiptFlow) },
             setReceipt = Stuff::setReceipt,
             httpPost = Stuff::httpPost,
             deviceIdentifier = PlatformStuff::getDeviceIdentifier,

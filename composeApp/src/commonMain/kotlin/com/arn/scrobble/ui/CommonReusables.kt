@@ -5,7 +5,6 @@ import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -36,7 +35,6 @@ import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedToggleButton
 import androidx.compose.material3.PlainTooltip
-import androidx.compose.material3.RadioButton
 import androidx.compose.material3.SegmentedButton
 import androidx.compose.material3.SegmentedButtonDefaults
 import androidx.compose.material3.SingleChoiceSegmentedButtonRow
@@ -104,9 +102,6 @@ import com.arn.scrobble.themes.LocalThemeAttributes
 import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff.collectAsStateWithInitialValue
 import com.arn.scrobble.utils.redactedMessage
-import com.valentinilk.shimmer.ShimmerBounds
-import com.valentinilk.shimmer.rememberShimmer
-import com.valentinilk.shimmer.shimmer
 import kotlinx.coroutines.delay
 import org.jetbrains.compose.resources.stringResource
 import pano_scrobbler.composeapp.generated.resources.Res
@@ -190,38 +185,6 @@ fun OutlinedToggleButtons(
                 },
             ) {
                 Text(text = item)
-            }
-        }
-    }
-}
-
-
-@Composable
-fun <E : Enum<*>> RadioButtonGroup(
-    enumToTexts: Map<E, String>,
-    selected: E?,
-    onSelected: (E) -> Unit,
-    modifier: Modifier = Modifier,
-) {
-    Column(modifier = modifier) {
-        enumToTexts.forEach { (enu, text) ->
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clip(MaterialTheme.shapes.medium)
-                    .clickable {
-                        if (enu != selected)
-                            onSelected(enu)
-                    }
-                    .padding(horizontal = 8.dp, vertical = 16.dp)
-            ) {
-                RadioButton(
-                    selected = selected == enu,
-                    onClick = null,
-                    modifier = Modifier.padding(end = 16.dp)
-                )
-                Text(text)
             }
         }
     }
@@ -977,9 +940,6 @@ fun accountTypeLabel(accountType: AccountType) = when (accountType) {
     AccountType.PLEROMA -> stringResource(Res.string.pleroma)
     AccountType.FILE -> stringResource(Res.string.scrobble_to_file)
 }
-
-@Composable
-fun Modifier.shimmerWindowBounds() = this.shimmer(rememberShimmer(ShimmerBounds.Window))
 
 @Composable
 expect fun isImeVisible(): Boolean

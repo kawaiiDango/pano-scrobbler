@@ -115,7 +115,6 @@ kotlin {
                 implementation(libs.aboutlibraries.core)
                 implementation(libs.kotlin.csv.jvm)
                 implementation(libs.kermit)
-                implementation(libs.compose.shimmer)
                 implementation(libs.datastore.core)
                 implementation(libs.paging.common)
                 implementation(libs.paging.compose)

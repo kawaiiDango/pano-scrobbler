@@ -9,10 +9,12 @@ import android.content.Intent
 import android.graphics.drawable.Icon
 import android.os.Build
 import android.provider.Settings
+import android.service.quicksettings.TileService
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.platform.LocalContext
+import co.touchlab.kermit.Logger
 import com.arn.scrobble.MasterSwitchQS
 import com.arn.scrobble.R
 import com.arn.scrobble.media.PersistentNotificationService
@@ -23,7 +25,9 @@ import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff
 import com.arn.scrobble.widget.ChartsWidgetConfigActivity
 import com.arn.scrobble.widget.ChartsWidgetProvider
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.jetbrains.compose.resources.getString
 import org.jetbrains.compose.resources.stringResource
 import pano_scrobbler.composeapp.generated.resources.Res
@@ -173,6 +177,8 @@ actual object PlatformSpecificPrefs {
         onNavigate: (PanoRoute) -> Unit,
     ) {
         listScope.item(MainPrefs::scrobblerEnabled.name) {
+            val scope = rememberCoroutineScope()
+
             SwitchPref(
                 text = stringResource(Res.string.pref_master),
                 summary = if (!nlsEnabled)
@@ -184,8 +190,25 @@ actual object PlatformSpecificPrefs {
                     if (!nlsEnabled) {
                         onNavigate(PanoRoute.Onboarding)
                         this
-                    } else
+                    } else {
+                        scope.launch {
+                            try {
+                                withContext(Dispatchers.IO) {
+                                    TileService.requestListeningState(
+                                        AndroidStuff.applicationContext,
+                                        ComponentName(
+                                            AndroidStuff.applicationContext,
+                                            MasterSwitchQS::class.java
+                                        )
+                                    )
+                                }
+                            } catch (e: Exception) {
+                                Logger.e(e) { "Failed to update QS tile state" }
+                            }
+                        }
+                        
                         copy(scrobblerEnabled = it)
+                    }
                 }
             )
         }

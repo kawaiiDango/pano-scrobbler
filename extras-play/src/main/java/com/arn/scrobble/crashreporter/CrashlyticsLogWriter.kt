@@ -17,9 +17,10 @@ object CrashlyticsLogWriter : LogWriter() {
         tag: String,
         throwable: Throwable?
     ) {
-        if (message.isNotBlank() && throwable == null) {
+        if (message.isNotBlank())
             Firebase.crashlytics.log(message)
-        } else if (throwable != null) {
+        
+        if (throwable != null) {
             if (message.isBlank())
                 Firebase.crashlytics.recordException(throwable)
             else

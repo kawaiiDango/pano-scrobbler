@@ -11,7 +11,6 @@ import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.Shadow
-import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.drawscope.CanvasDrawScope
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.Fill
@@ -32,12 +31,12 @@ import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import coil3.Image
 import coil3.PlatformContext
 import coil3.SingletonImageLoader
 import coil3.request.ImageRequest
 import coil3.request.crossfade
 import coil3.size.Scale
-import coil3.toBitmap
 import com.arn.scrobble.BuildKonfig
 import com.arn.scrobble.api.Scrobblables
 import com.arn.scrobble.api.UserCached
@@ -221,23 +220,24 @@ class CollageGeneratorVM(private val isLicenseValid: Boolean) : ViewModel() {
         _sharableCollage.emit(image to (shareTitle + shareBody + shareSig))
     }
 
-    private suspend fun fetchProfilePic(user: UserCached, sizePx: Int): ImageBitmap? {
-        // load profile pic
-        val profilePicUrl = user.largeImage
-
-        val profilePicRequest = ImageRequest.Builder(context).apply {
-            data(profilePicUrl)
-            crossfade(false)
-            placeholder(null)
-        }.build()
-
-        return withContext(Dispatchers.IO) {
-            SingletonImageLoader.get(context).execute(profilePicRequest).image
-                ?.toBitmap(width = sizePx, height = sizePx)
-                ?.asImageBitmap()
-//                ?: Icons.Default.Person.asComposeImageBitmap()
-        }
-    }
+//    private suspend fun fetchProfilePic(user: UserCached, sizePx: Int): ImageBitmap? {
+//        // load profile pic
+//        val profilePicUrl = user.largeImage
+//
+//        val profilePicRequest = ImageRequest.Builder(context).apply {
+//            data(profilePicUrl)
+//            crossfade(false)
+//            placeholder(null)
+//        }.build()
+//
+//        return withContext(Dispatchers.IO) {
+//            SingletonImageLoader.get(context).execute(profilePicRequest).image
+//                ?.toBitmap(width = sizePx, height = sizePx)
+////                ?.asImageBitmap()
+////                ?.asComposeImageBitmap()
+////                ?: Icons.Default.Person.asComposeImageBitmap()
+//        }
+//    }
 
     private fun DrawScope.drawTextFillAndStroke(
         textLayoutResult: TextLayoutResult,
@@ -344,7 +344,7 @@ class CollageGeneratorVM(private val isLicenseValid: Boolean) : ViewModel() {
                     imgOffsetX = (cellSize - scaledWidth) / 2
                     imgOffsetY = (cellSize - scaledHeight) / 2
 
-                    img.toBitmap().asImageBitmap()
+                    img
                 }
 
                 val x =
@@ -379,7 +379,8 @@ class CollageGeneratorVM(private val isLicenseValid: Boolean) : ViewModel() {
                     )
                 }) {
                     if (artwork != null) {
-                        drawImage(
+                        drawCoilImage(
+                            this,
                             image = artwork,
                             dstOffset = IntOffset(x.toInt() + imgOffsetX, y.toInt() + imgOffsetY),
                             dstSize = IntSize(scaledWidth, scaledHeight)
@@ -756,4 +757,11 @@ class CollageGeneratorVM(private val isLicenseValid: Boolean) : ViewModel() {
 expect fun CollageGeneratorVM.shareCollage(
     image: ImageBitmap,
     text: String?,
+)
+
+expect fun CollageGeneratorVM.drawCoilImage(
+    drawScope: DrawScope,
+    image: Image,
+    dstOffset: IntOffset,
+    dstSize: IntSize
 )

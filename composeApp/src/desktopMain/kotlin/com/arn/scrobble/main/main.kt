@@ -66,8 +66,10 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
@@ -166,11 +168,11 @@ private fun init() {
 
     VariantStuff.billingRepository = BillingRepository(
         scope = Stuff.appScope,
-        lastCheckTime = PlatformStuff.mainPrefs.data.map { it.lastLicenseCheckTime },
+        lastCheckTime = flow { emitAll(Stuff.receiptFlow) },
         setLastcheckTime = { time ->
             PlatformStuff.mainPrefs.updateData { it.copy(lastLicenseCheckTime = time) }
         },
-        receipt = Stuff.receiptFlow,
+        receipt = flow { emitAll(PlatformStuff.mainPrefs.data.map { it.receipt to it.receiptSignature }) },
         setReceipt = Stuff::setReceipt,
         httpPost = Stuff::httpPost,
         deviceIdentifier = PlatformStuff::getDeviceIdentifier,

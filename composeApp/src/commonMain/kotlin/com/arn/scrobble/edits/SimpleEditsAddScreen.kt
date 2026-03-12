@@ -1,8 +1,5 @@
 package com.arn.scrobble.edits
 
-import androidx.compose.animation.core.LinearEasing
-import androidx.compose.animation.core.RepeatMode
-import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -56,12 +53,8 @@ import com.arn.scrobble.ui.IconButtonWithTooltip
 import com.arn.scrobble.ui.InlineCheckButton
 import com.arn.scrobble.ui.LabeledCheckbox
 import com.arn.scrobble.ui.PanoOutlinedTextField
+import com.arn.scrobble.ui.shimmerWindowBounds
 import com.arn.scrobble.utils.redactedMessage
-import com.valentinilk.shimmer.LocalShimmerTheme
-import com.valentinilk.shimmer.ShimmerBounds
-import com.valentinilk.shimmer.rememberShimmer
-import com.valentinilk.shimmer.shimmer
-import com.valentinilk.shimmer.shimmerSpec
 import org.jetbrains.compose.resources.stringResource
 import pano_scrobbler.composeapp.generated.resources.Res
 import pano_scrobbler.composeapp.generated.resources.album
@@ -137,19 +130,6 @@ fun SimpleEditsAddScreen(
     val noChangeText = stringResource(Res.string.rank_change_no_change)
     var errorText by rememberSaveable { mutableStateOf<String?>(null) }
     var verifying by rememberSaveable { mutableStateOf(false) }
-    val shimmer = rememberShimmer(
-        shimmerBounds = ShimmerBounds.View,
-        theme = LocalShimmerTheme.current.copy(
-            animationSpec = infiniteRepeatable(
-                animation = shimmerSpec(
-                    durationMillis = 800,
-                    easing = LinearEasing,
-                    delayMillis = 200,
-                ),
-                repeatMode = RepeatMode.Restart,
-            ),
-        )
-    )
 
     fun doEdit() {
         if (
@@ -546,7 +526,7 @@ fun SimpleEditsAddScreen(
                         Res.string.save
                 ),
                 modifier = if (verifying)
-                    Modifier.shimmer(customShimmer = shimmer)
+                    Modifier.shimmerWindowBounds()
                 else
                     Modifier
             )

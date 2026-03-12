@@ -2,6 +2,7 @@ package com.arn.scrobble
 
 import android.service.quicksettings.Tile
 import android.service.quicksettings.TileService
+import com.arn.scrobble.utils.AndroidStuff
 import com.arn.scrobble.utils.PlatformStuff
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -27,6 +28,8 @@ class MasterSwitchQS : TileService() {
     }
 
     override fun onStartListening() {
+        AndroidStuff.applicationContext = applicationContext
+
         scope.launch {
             val isActive = PlatformStuff.mainPrefs.data.map { it.scrobblerEnabled }.first()
             setActive(isActive)

@@ -27,6 +27,6 @@ Features:
 - Add or remove personal tags from the info screen
 - Edit or delete existing scrobbles. Remembers edits
 - Control Pano Scrobbler from automation apps on Android or command-line on desktop
-- Scrobble from music recognition apps and Pixel Now Playing
+- Scrobble from music recognition apps
 - Charts as a customizable home-screen widget
 - Get your top scrobbles digests as a notification at the end of every week, month and year

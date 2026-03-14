@@ -44,6 +44,10 @@
         <item quantity="one">%1$d correspondência</item>
         <item quantity="other">%1$d correspondências</item>
     </plurals>
+    <plurals name="num_hours">
+        <item quantity="one">%1$d hora</item>
+        <item quantity="other">%1$d horas</item>
+    </plurals>
     <string name="yes">Sim</string>
     <string name="no">Não</string>
     <string name="reset">Redefinir</string>
@@ -278,6 +282,7 @@
     <string name="server_url" comment="For self hosted scrobbling services">URL do Servidor</string>
     <string name="listenbrainz_info" formatted="true" comment="%1 = the link to page containing the token">Você pode encontrar seu token de autenticação em: %1$s</string>
     <string name="pref_now_playing">Enviar em reprodução</string>
+    <string name="pref_fetch_missing_album" formatted="true" comment="%1= the name of a service like last.fm, Deezer etc">Buscar álbum de %1$s</string>
     <string name="pref_locale">Idiomas</string>
     <string name="pref_crashlytics_enabled">Reportar erros automaticamente</string>
     <string name="pref_misc">Diversos</string>
@@ -393,6 +398,12 @@
     <string name="edit_extract_track_example" formatted="true" comment="%1$s is the regex pattern">ex: Para extrair metadados do campo da faixa, se a faixa contiver "Artista - Faixa", defina a regex da faixa para %1$s</string>
     <string name="search_in_media_player" comment="This launches and searches in the media player app directly instead of opening a browser">Pesquisar diretamente no reprodutor de mídia</string>
     <string name="forget_unchecked_apps" comment="Shown in the 'Scrobble From' apps list on desktop">Esquecer aplicativos desmarcados</string>
+    <string name="discord_app_name" comment="usually the media player app name, shown in discord rich presence">Nome do aplicativo</string>
+    <string name="convert_file" formatted="true" comment="%1$s is the file extension, used in the context of converting from one file format to another">Converter de %1$s</string>
+    <string name="move_up" comment="Screen reader text for drag and drop reordering">Mover pra cima</string>
+    <string name="move_down" comment="Screen reader text for drag and drop reordering">Mover pra baixo</string>
+    <string name="at_least" formatted="true" comment="%1$s=some number">Pelo menos %1$s</string>
+    <string name="code_will_be_sent" formatted="true" comment="%1$s is either Ko-Fi or BuyMeACoffee, %2$s is the donation amount">O código será enviado para o endereço de email associado com a sua %1$s conta, se você doou %2$s</string>
     <!--  pro  -->
     <string name="get_pro">Apoiar</string>
     <string name="one_time_purchase">Uma vez</string>

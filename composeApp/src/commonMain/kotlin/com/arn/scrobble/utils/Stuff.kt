@@ -255,7 +255,7 @@ object Stuff {
                 if (PlatformStuff.isDesktop)
                     Dispatchers.Default // should not touch Swing for non UI tasks
                 else
-                    Dispatchers.Main
+                    Dispatchers.Main.immediate
     )
 
     val countryCodesMap by lazy {

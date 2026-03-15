@@ -102,7 +102,7 @@ object Requesters {
                         val errorResponse = response.parseJsonBody<ApiErrorResponse>()
                         throw ApiException(errorResponse.code, errorResponse.message)
                     } catch (e: SerializationException) {
-                        throw ApiException(response.status.value, response.status.description, e)
+                        throw ApiException(response.status.value, response.status.description)
                     }
                 }
             }
@@ -127,11 +127,15 @@ object Requesters {
                 Result.success(body)
             } catch (e: SerializationException) {
                 val errorResponse = resp.parseJsonBody<ApiErrorResponse>()
-                Result.failure(ApiException(errorResponse.code, errorResponse.message, e))
+                throw ApiException(errorResponse.code, errorResponse.message)
             }
         }
     } catch (e: CancellationException) {
         throw e
+    } catch (e: ApiException) {
+        e.fillInStackTrace()
+        reportRateLimitErrors(e)
+        Result.failure(e)
     } catch (e: Exception) {
         Result.failure(e)
     }
@@ -150,11 +154,15 @@ object Requesters {
                 Result.success(body)
             } catch (e: SerializationException) {
                 val errorResponse = resp.parseJsonBody<ApiErrorResponse>()
-                Result.failure(ApiException(errorResponse.code, errorResponse.message, e))
+                throw ApiException(errorResponse.code, errorResponse.message)
             }
         }
     } catch (e: CancellationException) {
         throw e
+    } catch (e: ApiException) {
+        e.fillInStackTrace()
+        reportRateLimitErrors(e)
+        Result.failure(e)
     } catch (e: Exception) {
         Result.failure(e)
     }
@@ -194,11 +202,15 @@ object Requesters {
                 Result.success(pr)
             } catch (e: SerializationException) {
                 val errorResponse = resp.parseJsonBody<ApiErrorResponse>()
-                Result.failure(ApiException(errorResponse.code, errorResponse.message, e))
+                throw ApiException(errorResponse.code, errorResponse.message)
             }
         }
     } catch (e: CancellationException) {
         throw e
+    } catch (e: ApiException) {
+        e.fillInStackTrace()
+        reportRateLimitErrors(e)
+        Result.failure(e)
     } catch (e: Exception) {
         Result.failure(e)
     }
@@ -227,5 +239,13 @@ object Requesters {
         contentType(ContentType.Application.Json)
         val jsonBody = Stuff.myJson.encodeToString(body)
         setBody(jsonBody)
+    }
+
+
+    fun reportRateLimitErrors(e: ApiException) {
+        // report rate limit errors to crashlytics
+        if (e.code in arrayOf(29, 9, 429)) {
+            Logger.w(e) { e.description }
+        }
     }
 }

@@ -23,7 +23,6 @@ import com.arn.scrobble.themes.ThemeUtils
 import com.arn.scrobble.ui.GridMode
 import com.arn.scrobble.ui.SerializableWindowState
 import com.arn.scrobble.utils.LocaleUtils
-import com.arn.scrobble.utils.PanoNotifications
 import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff
 import com.arn.scrobble.utils.getSystemCountryCode
@@ -49,7 +48,7 @@ data class MainPrefs(
         RegexPreset.parse_title.name to Stuff.DEFAULT_IGNORE_ARTIST_META_WITHOUT_FALLBACK,
         RegexPreset.parse_title_with_fallback.name to Stuff.DEFAULT_IGNORE_ARTIST_META_WITH_FALLBACK
     ),
-    private val autoDetectApps: Boolean = true,
+    val autoDetectApps: Boolean = true,
     private val delaySecs: Int = PREF_DELAY_SECS_DEFAULT,
     private val delayPercent: Int = PREF_DELAY_PER_DEFAULT,
     private val minDurationSecs: Int = PREF_MIN_DURATON_SECS_DEFAULT,
@@ -193,12 +192,6 @@ data class MainPrefs(
         val discordRpc: DiscordRpcSettings = defaultMainPrefs.discordRpc,
     )
 
-    val autoDetectAppsP
-        get() = if (!PanoNotifications.isNotiChannelEnabled(Stuff.CHANNEL_NOTI_NEW_APP))
-            false
-        else
-            autoDetectApps
-
     val delaySecsP
         get() = delaySecs.coerceIn(PREF_DELAY_SECS_MIN, PREF_DELAY_SECS_MAX)
 
@@ -293,7 +286,7 @@ data class MainPrefs(
         minDurationSecs = minDurationSecsP,
         submitNowPlaying = submitNowPlaying,
         fetchAlbum = fetchAlbum,
-        autoDetectApps = autoDetectAppsP,
+        autoDetectApps = autoDetectApps,
         showScrobbleSources = showScrobbleSources,
         linkHeartButtonToRating = linkHeartButtonToRating,
         themeName = themeName,

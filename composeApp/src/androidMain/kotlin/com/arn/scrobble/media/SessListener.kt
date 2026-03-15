@@ -15,7 +15,9 @@ import com.arn.scrobble.media.PlayerActions.unlove
 import com.arn.scrobble.utils.AndroidStuff
 import com.arn.scrobble.utils.AndroidStuff.dump
 import com.arn.scrobble.utils.AndroidStuff.toast
+import com.arn.scrobble.utils.PanoNotifications
 import com.arn.scrobble.utils.PlatformStuff
+import com.arn.scrobble.utils.Stuff
 import com.arn.scrobble.utils.Stuff.stateInWithCache
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -41,7 +43,11 @@ class SessListener(
         mainPrefs.data.stateInWithCache(scope) { it.scrobbleSpotifyRemoteP }
 
     private val autoDetectApps =
-        mainPrefs.data.stateInWithCache(scope) { it.autoDetectAppsP }
+        mainPrefs.data.stateInWithCache(scope) { it.autoDetectApps }
+
+    private val autoDetectAppsNotiEnbled by lazy {
+        PanoNotifications.isNotiChannelEnabled(Stuff.CHANNEL_NOTI_NEW_APP)
+    }
 
     private val blockedPackages =
         mainPrefs.data.stateInWithCache(scope) { it.blockedPackages }
@@ -68,7 +74,7 @@ class SessListener(
     override fun shouldScrobble(rawAppId: String): Boolean {
         val should = scrobblerEnabled.value &&
                 (rawAppId in allowedPackages.value ||
-                        (autoDetectApps.value && rawAppId !in blockedPackages.value))
+                        (autoDetectApps.value && rawAppId !in blockedPackages.value && autoDetectAppsNotiEnbled))
         return should
     }
 

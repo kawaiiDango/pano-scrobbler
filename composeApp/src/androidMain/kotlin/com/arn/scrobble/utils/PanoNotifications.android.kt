@@ -500,7 +500,7 @@ actual object PanoNotifications {
     }
 
     actual suspend fun notifyUpdater(updateAction: UpdateAction) {
-        if (PlatformStuff.noUpdateCheck) return
+        if (VariantStuff.githubApiUrl == null) return
 
         // create channel if not exists
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {

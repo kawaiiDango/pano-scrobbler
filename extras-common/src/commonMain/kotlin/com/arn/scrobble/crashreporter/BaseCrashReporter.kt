@@ -3,15 +3,14 @@ package com.arn.scrobble.crashreporter
 import java.io.File
 
 
-abstract class BaseCrashReporter(
-    private val disabledFile: File?,
-) {
-    val isAvailable = disabledFile != null
+open class BaseCrashReporter {
+    protected var disabledFile: File? = null
+    val isAvailable get() = disabledFile != null
 
     var isEnabled: Boolean
         get() = disabledFile?.exists() != true
         set(value) {
-            if (disabledFile != null) {
+            disabledFile?.let { disabledFile ->
                 if (value) {
                     if (disabledFile.exists()) {
                         disabledFile.delete()
@@ -25,6 +24,7 @@ abstract class BaseCrashReporter(
         }
 
     open fun init(
+        disabledFile: File? = null,
         keysMap: Map<String, String> = emptyMap(),
     ) {
     }

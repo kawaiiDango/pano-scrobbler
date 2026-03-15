@@ -11,10 +11,9 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.withContext
 
 
-abstract class BaseBillingRepository(
-    protected val scope: CoroutineScope,
-    protected val receipt: Flow<Pair<String?, String?>>
-) {
+abstract class BaseBillingRepository {
+    protected abstract val scope: CoroutineScope
+    protected abstract val receipt: Flow<Pair<String?, String?>>
     protected val checkEveryDays = 30
     protected val productId = "pscrobbler_pro"
     abstract val formattedPrice: Flow<String?>
@@ -22,8 +21,8 @@ abstract class BaseBillingRepository(
     val licenseError = _licenseError.asSharedFlow()
     abstract val purchaseMethods: List<PurchaseMethod>
     abstract val needsActivationCode: Boolean
-    val licenseState = receipt
-        .map { (receipt, signature) ->
+    val licenseState by lazy {
+        receipt.map { (receipt, signature) ->
             withContext(Dispatchers.IO) {
                 if (receipt == null) {
                     LicenseState.NO_LICENSE
@@ -34,7 +33,8 @@ abstract class BaseBillingRepository(
                 }
             }
         }
-        .stateIn(scope, SharingStarted.Lazily, LicenseState.UNKNOWN)
+            .stateIn(scope, SharingStarted.Lazily, LicenseState.UNKNOWN)
+    }
 
     abstract fun initBillingClient()
 

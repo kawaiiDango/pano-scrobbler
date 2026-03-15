@@ -2,7 +2,7 @@
 
 #### Last updated
 
-2026, Feb 23 UTC
+2026, March 15 UTC
 
 ### Introduction
 
@@ -74,10 +74,10 @@ The permission is used to read music metadata and playing state from other apps 
 MediaSessionManager API. The app does not access or parse actual notification texts except from
 these apps, if they have been enabled for scrobbling by the user:
 
-- Pixel's Now Playing
-- Ambient Music Mod
 - Shazam
+- Ambient Music Mod
 - Audile
+- Pixel's Now Playing (before the March 2026 Pixel Feature Drop)
 
 ### Links to Other Sites
 

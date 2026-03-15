@@ -49,10 +49,6 @@ actual object PlatformStuff {
 
     actual const val isDesktop = true
 
-    actual val noUpdateCheck
-        get() =
-            DesktopStuff.noUpdateCheck
-
     actual const val hasSystemLocaleStore = false
 
     actual val appIdPlaceholder

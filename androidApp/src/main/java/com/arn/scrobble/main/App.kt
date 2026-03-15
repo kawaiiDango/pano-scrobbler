@@ -5,11 +5,9 @@ import android.os.Build
 import android.os.StrictMode
 import android.util.Log
 import androidx.work.Configuration
-import com.arn.scrobble.ExtrasProps
+import com.arn.scrobble.ExtrasVariantStuff
 import com.arn.scrobble.androidApp.BuildConfig
 import com.arn.scrobble.billing.BillingRepository
-import com.arn.scrobble.crashreporter.CrashReporter
-import com.arn.scrobble.review.ReviewPrompter
 import com.arn.scrobble.utils.AndroidStuff
 import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff
@@ -42,7 +40,7 @@ class App : Application(), Configuration.Provider {
         val lastLicenseCheckTimeFile = applicationContext.noBackupFilesDir
             .resolve("last_license_check_time.txt")
 
-        VariantStuff.billingRepository = BillingRepository(
+        val billingRepository = BillingRepository(
             scope = Stuff.appScope,
             lastCheckTime = flow {
                 val t = withContext(Dispatchers.IO) {
@@ -68,23 +66,18 @@ class App : Application(), Configuration.Provider {
             context = applicationContext
         )
 
-        val crashReportEnabledFile = File(filesDir, "crash_reporter_disabled.txt")
-        val crashReporter = CrashReporter(crashReportEnabledFile)
-        VariantStuff.crashReporter = crashReporter
-        VariantStuff.reviewPrompter = ReviewPrompter
-        VariantStuff.extrasProps = ExtrasProps
+        VariantStuff = ExtrasVariantStuff(billingRepository)
 
         // the built-in content provider initializer only runs in the main process
-        val crashlyticsEnabled = AndroidStuff.isMainProcess && crashReporter.isEnabled
-
-        if (crashlyticsEnabled) {
+        if (AndroidStuff.isMainProcess) {
             val crashlyticsKeys =
                 if (BuildConfig.DEBUG)
                     mapOf("isDebug" to true.toString())
                 else
                     emptyMap()
 
-            crashReporter.init(crashlyticsKeys)
+            val crashReportDisabledFile = File(filesDir, "crash_reporter_disabled.txt")
+            VariantStuff.crashReporter.init(crashReportDisabledFile, crashlyticsKeys)
         }
     }
 

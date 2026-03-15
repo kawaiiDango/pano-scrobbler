@@ -276,7 +276,7 @@ private fun RegexEditsList(
                 if (isLicenseValid)
                     Text(
                         maxPatternsText,
-                        style = MaterialTheme.typography.titleLarge,
+                        style = MaterialTheme.typography.titleMedium,
                     )
                 else
                     TextButton(
@@ -294,7 +294,9 @@ private fun RegexEditsList(
                 EmptyTextWithImportButtonOnTv(
                     visible = true,
                     text = stringResource(Res.string.regex_rules) + ": " + 0,
-                    onButtonClick = onImport
+                    onButtonClick = onImport,
+                    modifier = Modifier
+                        .padding(24.dp)
                 )
             }
         }

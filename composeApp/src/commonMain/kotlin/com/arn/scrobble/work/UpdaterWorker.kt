@@ -22,9 +22,9 @@ class UpdaterWorker(
     override val setProgress: suspend (CommonWorkProgress) -> Unit
 ) : CommonWorker {
     override suspend fun doWork(): CommonWorkerResult {
-        val url = VariantStuff.extrasProps.githubApiUrl
+        val url = VariantStuff.githubApiUrl
         val mainPrefs = PlatformStuff.mainPrefs
-        if (PlatformStuff.noUpdateCheck || url == null) {
+        if (url == null) {
             return CommonWorkerResult.Failure("Update check disabled")
         }
 

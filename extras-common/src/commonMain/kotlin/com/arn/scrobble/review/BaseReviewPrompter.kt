@@ -1,6 +1,6 @@
 package com.arn.scrobble.review
 
-abstract class BaseReviewPrompter {
+open class BaseReviewPrompter {
     open suspend fun showIfNeeded(
         activity: Any?,
         lastReviewPromptTime: suspend () -> Long?,
@@ -18,6 +18,6 @@ abstract class BaseReviewPrompter {
     }
 
     companion object {
-        private const val INTERVAL = 10 * 24 * 60 * 60 * 1000 // n days
+        private const val INTERVAL = 30 * 24 * 60 * 60 * 1000 // n days
     }
 }

@@ -1,7 +1,6 @@
 package com.arn.scrobble.api.lastfm
 
 import androidx.annotation.Keep
-import co.touchlab.kermit.Logger
 
 @Keep
 open class ApiException(
@@ -11,19 +10,7 @@ open class ApiException(
 ) : Exception(
     description + (if (code != -1) " ($code)" else ""),
     cause
-) {
-
-    init {
-        reportRateLimitErrors()
-    }
-
-    private fun reportRateLimitErrors() {
-        // report rate limit errors to crashlytics
-        if (code in arrayOf(29, 9, 429)) {
-            Logger.w(cause ?: this) { description }
-        }
-    }
-}
+)
 
 class ScrobbleIgnoredException(
     val scrobbleTime: Long,

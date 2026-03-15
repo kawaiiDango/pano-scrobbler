@@ -12,8 +12,8 @@ private const val PUBLIC_KEY_BASE64 =
     "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAnElQD+PNdex6IZ1nq58KDJPz40GBgOIbUs3GrbaPsONcEy8+AEhZmpPDcVB/e931pExsGPdRrjd2cplJ8pUXvxBG5knyJv7EPO3VUnppbipqYhaSe9bH4nK5kuNROB/J3mggVMxZmgoDe2QHacrNbnfjS96pFc58MAjQPPCn6TAXA1H3WajvNcRnplBYK7N0ap/YT1dbMato4fl/0iT1J57bDz+J+w/DcewOOg7YPWxVN+p9WZyLKwgQ8y/1QybEi9IYfIw3INqVS11vx5f+79ZkY+xGAM9JHm7T71dDZc4rJPibUnnQ+R5J2jFz564wdio6i1zpKwUpNQgYbfpkPQIDAQAB"
 
 class BillingRepository(
-    scope: CoroutineScope,
-    receipt: Flow<Pair<String?, String?>>,
+    override val scope: CoroutineScope,
+    override val receipt: Flow<Pair<String?, String?>>,
     private val lastCheckTime: Flow<Long>,
     private val setLastcheckTime: suspend (Long) -> Unit,
     private val setReceipt: suspend (String?, String?) -> Unit,
@@ -22,7 +22,7 @@ class BillingRepository(
     private val deviceIdentifier: () -> String,
     private val openInBrowser: (url: String) -> Unit,
     context: Any?,
-) : BaseBillingRepository(scope, receipt) {
+) : BaseBillingRepository() {
 
     override val formattedPrice = flowOf("$5")
     override val purchaseMethods = listOf(

@@ -137,7 +137,7 @@ fun PrefsScreen(
     val scrobblerEnabled by mainPrefs.data.collectAsStateWithInitialValue { it.scrobblerEnabled }
     val allowedPackages by mainPrefs.data.collectAsStateWithInitialValue { it.allowedPackages }
     val scrobbleSpotifyRemoteP by mainPrefs.data.collectAsStateWithInitialValue { it.scrobbleSpotifyRemoteP }
-    val autoDetectApps by mainPrefs.data.collectAsStateWithInitialValue { it.autoDetectAppsP }
+    val autoDetectApps by mainPrefs.data.collectAsStateWithInitialValue { it.autoDetectApps }
     val delayPercent by mainPrefs.data.collectAsStateWithInitialValue { it.delayPercentP }
     val delaySecs by mainPrefs.data.collectAsStateWithInitialValue { it.delaySecsP }
     val minDurationSecs by mainPrefs.data.collectAsStateWithInitialValue { it.minDurationSecsP }
@@ -263,14 +263,14 @@ fun PrefsScreen(
         }
 
         if (!PlatformStuff.isTv && !PlatformStuff.isDesktop) {
-            item(MainPrefs::autoDetectAppsP.name) {
+            item(MainPrefs::autoDetectApps.name) {
                 val notiEnabled =
                     remember { PanoNotifications.isNotiChannelEnabled(Stuff.CHANNEL_NOTI_NEW_APP) }
 
                 SwitchPref(
                     text = stringResource(Res.string.pref_auto_detect),
                     summary = if (!notiEnabled) stringResource(Res.string.notification_channel_blocked) else null,
-                    value = autoDetectApps,
+                    value = notiEnabled && autoDetectApps,
                     enabled = notiEnabled,
                     copyToSave = { copy(autoDetectApps = it) },
                 )
@@ -658,7 +658,7 @@ fun PrefsScreen(
             }
         }
 
-        if (!PlatformStuff.noUpdateCheck) {
+        if (VariantStuff.githubApiUrl != null) {
             item(MainPrefs::autoUpdates.name) {
                 SwitchPref(
                     text = stringResource(Res.string.pref_notify_updates),

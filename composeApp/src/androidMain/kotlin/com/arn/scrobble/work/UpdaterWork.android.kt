@@ -7,10 +7,13 @@ import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkManager
 import androidx.work.workDataOf
 import com.arn.scrobble.utils.AndroidStuff
+import com.arn.scrobble.utils.VariantStuff
 import java.util.concurrent.TimeUnit
 
 actual object UpdaterWork : CommonWorkImpl(UpdaterWorker.NAME) {
     actual fun schedule(force: Boolean) {
+        if (VariantStuff.githubApiUrl == null) return
+
         val workManager = WorkManager.getInstance(AndroidStuff.applicationContext)
 
         val constraints = Constraints.Builder()

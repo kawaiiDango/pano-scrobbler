@@ -1633,6 +1633,28 @@
       "type": "okhttp3.internal.connection.RealConnectionPool"
     },
     {
+      "type": "org.jetbrains.compose.resources.ResourceEnvironment",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": [
+            "org.jetbrains.compose.resources.LanguageQualifier",
+            "org.jetbrains.compose.resources.RegionQualifier",
+            "org.jetbrains.compose.resources.ThemeQualifier",
+            "org.jetbrains.compose.resources.DensityQualifier"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "org.jetbrains.compose.resources.ResourceEnvironmentKt",
+      "fields": [
+        {
+          "name": "getResourceEnvironment"
+        }
+      ]
+    },
+    {
       "type": "org.jetbrains.skia.AnimationFrameInfo",
       "jniAccessible": true,
       "methods": [
@@ -2806,6 +2828,11 @@
           ]
         }
       ]
+    },
+    {
+      "type": "sun.awt.windows.WInputMethod",
+      "jniAccessible": true,
+      "allDeclaredMethods": true
     },
     {
       "type": "sun.awt.windows.WMenuItemPeer",

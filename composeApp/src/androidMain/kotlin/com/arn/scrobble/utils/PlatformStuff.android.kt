@@ -110,9 +110,6 @@ actual object PlatformStuff {
 
     actual const val isDesktop = false
 
-    actual const val noUpdateCheck = true
-
-
     actual fun isScrobblerRunning(): Boolean {
         val serviceComponent = ComponentName(applicationContext, NLService::class.java)
         val manager =

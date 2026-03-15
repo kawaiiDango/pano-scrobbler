@@ -38,22 +38,20 @@ import androidx.lifecycle.compose.LifecycleResumeEffect
 import co.touchlab.kermit.Logger
 import co.touchlab.kermit.Severity
 import com.arn.scrobble.BuildKonfig
-import com.arn.scrobble.ExtrasProps
 import com.arn.scrobble.PanoNativeComponents
 import com.arn.scrobble.automation.Automation
 import com.arn.scrobble.billing.BillingRepository
-import com.arn.scrobble.crashreporter.CrashReporter
 import com.arn.scrobble.discordrpc.DiscordRpc
 import com.arn.scrobble.logger.JavaUtilFileLogger
 import com.arn.scrobble.media.PlayingTrackNotifyEvent
 import com.arn.scrobble.media.notifyPlayingTrackEvent
 import com.arn.scrobble.pref.AppItem
-import com.arn.scrobble.review.ReviewPrompter
 import com.arn.scrobble.themes.AppTheme
 import com.arn.scrobble.themes.DayNightMode
 import com.arn.scrobble.ui.SerializableWindowState
 import com.arn.scrobble.updates.runUpdateAction
 import com.arn.scrobble.utils.DesktopStuff
+import com.arn.scrobble.utils.ExtrasVariantStuff
 import com.arn.scrobble.utils.LocaleUtils
 import com.arn.scrobble.utils.PanoNotifications
 import com.arn.scrobble.utils.PanoTrayUtils
@@ -166,13 +164,13 @@ private fun init() {
 
     PanoNativeComponents.init()
 
-    VariantStuff.billingRepository = BillingRepository(
+    val billingRepository = BillingRepository(
         scope = Stuff.appScope,
-        lastCheckTime = flow { emitAll(Stuff.receiptFlow) },
+        lastCheckTime = flow { emitAll(PlatformStuff.mainPrefs.data.map { it.lastLicenseCheckTime }) },
         setLastcheckTime = { time ->
             PlatformStuff.mainPrefs.updateData { it.copy(lastLicenseCheckTime = time) }
         },
-        receipt = flow { emitAll(PlatformStuff.mainPrefs.data.map { it.receipt to it.receiptSignature }) },
+        receipt = flow { emitAll(Stuff.receiptFlow) },
         setReceipt = Stuff::setReceipt,
         httpPost = Stuff::httpPost,
         deviceIdentifier = PlatformStuff::getDeviceIdentifier,
@@ -180,9 +178,7 @@ private fun init() {
         context = null
     )
 
-    VariantStuff.crashReporter = CrashReporter(null)
-    VariantStuff.reviewPrompter = ReviewPrompter
-    VariantStuff.extrasProps = ExtrasProps
+    VariantStuff = ExtrasVariantStuff(billingRepository)
 
     DiscordRpc.start()
 }

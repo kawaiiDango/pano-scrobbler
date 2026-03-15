@@ -54,6 +54,7 @@ import com.arn.scrobble.utils.Stuff
 import com.arn.scrobble.utils.Stuff.mapConcurrently
 import com.arn.scrobble.utils.redactedMessage
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow
@@ -84,6 +85,7 @@ class CollageGeneratorVM(private val isLicenseValid: Boolean) : ViewModel() {
     private lateinit var context: PlatformContext
 
     private val paddingPx = 16
+    private var collageJob: Job? = null
 
     fun generateCollage(
         context: PlatformContext,
@@ -99,7 +101,9 @@ class CollageGeneratorVM(private val isLicenseValid: Boolean) : ViewModel() {
         iconPainters: IconPaintersForCollage,
     ) {
         this.context = context
-        viewModelScope.launch {
+
+        collageJob?.cancel()
+        collageJob = viewModelScope.launch {
             _generateCollage(
                 type = type,
                 size = size,

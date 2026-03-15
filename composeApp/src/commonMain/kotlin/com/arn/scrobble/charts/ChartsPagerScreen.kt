@@ -40,7 +40,7 @@ fun ChartsPagerScreen(
     onNavigate: (PanoRoute) -> Unit,
     onSetTitle: (String) -> Unit,
     modifier: Modifier = Modifier,
-    viewModel: ChartsVM = viewModel { ChartsVM(user.name, false) },
+    viewModel: ChartsVM = viewModel { ChartsVM(user, false) },
     chartsPeriodViewModel: ChartsPeriodVM = viewModel { ChartsPeriodVM(user) },
 ) {
     val artists = viewModel.artists.collectAsLazyPagingItems()

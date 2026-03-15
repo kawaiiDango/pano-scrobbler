@@ -38,7 +38,7 @@ object AndroidStuff {
     val canShowPersistentNotiIfEnabled
         get() = !PlatformStuff.isTv &&
                 (Build.VERSION.SDK_INT in Build.VERSION_CODES.O..Build.VERSION_CODES.TIRAMISU ||
-                        VariantStuff.extrasProps.hasForegroundServiceSpecialUse)
+                        VariantStuff.hasForegroundServiceSpecialUse)
 
 //    @RequiresApi(Build.VERSION_CODES.Q)
 //    @Throws(IOException::class)

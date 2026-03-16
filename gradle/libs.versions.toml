@@ -5,7 +5,7 @@ minSdkBaselineProfile = "28"
 android-application = "9.2.0-alpha04"
 compose-multiplatform = "1.11.0-alpha04"
 
-kotlin = "2.3.10"
+kotlin = "2.3.20"
 
 aboutlibraries = "14.0.0-b02"
 activity = "1.13.0"
@@ -33,15 +33,15 @@ lifecycle = "2.11.0-alpha01"
 nanohttpd = "2.3.1"
 nav3 = "1.1.0-alpha05"
 okhttp = "5.3.2"
-paging = "3.4.2"
+paging = "3.5.0-alpha01"
 play-publisher = "4.0.0"
 profileinstaller = "1.4.1"
 qrcode = "4.5.0"
 review = "2.0.2"
-room = "2.8.4"
+room3 = "3.0.0-alpha01"
 runner = "1.7.0"
 serialization-json = "1.10.0"
-sqlite = "2.6.2"
+sqlite = "2.7.0-alpha01"
 uiautomator = "2.4.0-beta02"
 work-runtime = "2.11.1"
 
@@ -74,8 +74,8 @@ aboutlibraries-core = { module = "com.mikepenz:aboutlibraries-core", version.ref
 test-espresso-core = { module = "androidx.test.espresso:espresso-core", version.ref = "espresso-core" }
 test-runner = { module = "androidx.test:runner", version.ref = "runner" }
 core-remoteviews = { module = "androidx.core:core-remoteviews", version.ref = "core-remoteviews" }
-room-compiler = { module = "androidx.room:room-compiler", version.ref = "room" }
-room-runtime = { module = "androidx.room:room-runtime", version.ref = "room" }
+room-compiler = { module = "androidx.room3:room3-compiler", version.ref = "room3" }
+room-runtime = { module = "androidx.room3:room3-runtime", version.ref = "room3" }
 sqlite-bundled = { module = "androidx.sqlite:sqlite-bundled", version.ref = "sqlite" }
 test-uiautomator = { module = "androidx.test.uiautomator:uiautomator", version.ref = "uiautomator" }
 billing = { module = "com.android.billingclient:billing", version.ref = "billing" }
@@ -118,7 +118,7 @@ android-library = { id = "com.android.library", version.ref = "android-applicati
 compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 compose-multiplatform = { id = "org.jetbrains.compose", version.ref = "compose-multiplatform" }
-room = { id = "androidx.room", version.ref = "room" }
+room = { id = "androidx.room3", version.ref = "room3" }
 buildkonfig = { id = "com.codingfeline.buildkonfig", version.ref = "buildkonfig" }
 kotlin-multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
 android-kotlin-multiplatform-library = { id = "com.android.kotlin.multiplatform.library", version.ref = "android-application" }

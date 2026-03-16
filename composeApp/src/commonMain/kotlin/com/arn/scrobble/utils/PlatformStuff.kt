@@ -2,7 +2,7 @@ package com.arn.scrobble.utils
 
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.datastore.core.DataStore
-import androidx.room.RoomDatabase
+import androidx.room3.RoomDatabase
 import com.arn.scrobble.api.lastfm.MusicEntry
 import com.arn.scrobble.db.PanoDb
 import com.arn.scrobble.pref.MainPrefs

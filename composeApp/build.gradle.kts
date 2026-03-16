@@ -155,9 +155,8 @@ dependencies {
     "androidRuntimeClasspath"(libs.tooling)
 }
 
-room {
+room3 {
     schemaDirectory("$projectDir/schemas")
-    generateKotlin = true
 }
 
 buildkonfig {

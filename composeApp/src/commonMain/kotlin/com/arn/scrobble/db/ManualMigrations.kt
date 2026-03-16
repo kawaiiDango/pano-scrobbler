@@ -1,12 +1,12 @@
 package com.arn.scrobble.db
 
-import androidx.room.migration.Migration
+import androidx.room3.migration.Migration
 import androidx.sqlite.SQLiteConnection
 import androidx.sqlite.execSQL
 
 object ManualMigrations {
     private val MIGRATION_7_8 = object : Migration(7, 8) {
-        override fun migrate(connection: SQLiteConnection) {
+        override suspend fun migrate(connection: SQLiteConnection) {
             val tableName = "edits"
             connection.execSQL("ALTER TABLE $tableName RENAME TO edits2")
             connection.execSQL("CREATE TABLE $tableName (`legacyHash` TEXT, `origTrack` TEXT NOT NULL, `origAlbum` TEXT NOT NULL, `origArtist` TEXT NOT NULL, `track` TEXT NOT NULL, `album` TEXT NOT NULL, `albumArtist` TEXT NOT NULL, `artist` TEXT NOT NULL, PRIMARY KEY (origArtist, origAlbum, origTrack))")
@@ -17,7 +17,7 @@ object ManualMigrations {
     }
 
     private val MIGRATION_8_9 = object : Migration(8, 9) {
-        override fun migrate(connection: SQLiteConnection) {
+        override suspend fun migrate(connection: SQLiteConnection) {
             var tableName = RegexEditsDao.tableName
             connection.execSQL("CREATE TABLE IF NOT EXISTS $tableName (`_id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `order` INTEGER NOT NULL, `preset` TEXT, `name` TEXT, `pattern` TEXT, `replacement` TEXT NOT NULL, `field` TEXT, `replaceAll` INTEGER NOT NULL, `caseSensitive` INTEGER NOT NULL, `continueMatching` INTEGER NOT NULL)")
             connection.execSQL("CREATE UNIQUE INDEX IF NOT EXISTS `index_regexEdits_preset` ON $tableName (`preset`)")
@@ -37,7 +37,7 @@ object ManualMigrations {
     }
 
     private val MIGRATION_14_15 = object : Migration(14, 15) {
-        override fun migrate(connection: SQLiteConnection) {
+        override suspend fun migrate(connection: SQLiteConnection) {
             // destructive migration for pendingLoves
             connection.execSQL("DROP TABLE IF EXISTS PendingLoves")
 

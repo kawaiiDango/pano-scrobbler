@@ -1,8 +1,8 @@
 package com.arn.scrobble.db
 
-import androidx.room.DeleteColumn
-import androidx.room.RenameColumn
-import androidx.room.migration.AutoMigrationSpec
+import androidx.room3.DeleteColumn
+import androidx.room3.RenameColumn
+import androidx.room3.migration.AutoMigrationSpec
 
 
 @RenameColumn(

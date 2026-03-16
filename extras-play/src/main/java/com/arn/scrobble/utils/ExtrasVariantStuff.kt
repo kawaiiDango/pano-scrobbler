@@ -1,5 +1,6 @@
-package com.arn.scrobble
+package com.arn.scrobble.utils
 
+import com.arn.scrobble.VariantStuffInterface
 import com.arn.scrobble.billing.BaseBillingRepository
 import com.arn.scrobble.crashreporter.BaseCrashReporter
 import com.arn.scrobble.crashreporter.CrashReporter

@@ -1,6 +1,6 @@
 package com.arn.scrobble.db
 
-import androidx.room.TypeConverter
+import androidx.room3.TypeConverter
 import com.arn.scrobble.api.AccountType
 
 object AccountBitmaskConverter {

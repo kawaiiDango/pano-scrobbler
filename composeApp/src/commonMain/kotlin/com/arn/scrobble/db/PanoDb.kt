@@ -1,9 +1,9 @@
 package com.arn.scrobble.db
 
-import androidx.room.AutoMigration
-import androidx.room.ConstructedBy
-import androidx.room.Database
-import androidx.room.RoomDatabase
+import androidx.room3.AutoMigration
+import androidx.room3.ConstructedBy
+import androidx.room3.Database
+import androidx.room3.RoomDatabase
 import com.arn.scrobble.utils.PlatformStuff
 import kotlinx.coroutines.Dispatchers
 

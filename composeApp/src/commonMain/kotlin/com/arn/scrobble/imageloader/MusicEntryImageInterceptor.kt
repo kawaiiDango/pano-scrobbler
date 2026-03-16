@@ -25,7 +25,7 @@ class MusicEntryImageInterceptor : Interceptor {
 
     private val delayMs = 400L
     private val musicEntryCache by lazy { LruCache<String, FetchedImageUrls>(500) }
-    private val semaphore = Semaphore(2)
+    private val semaphore = Semaphore(1)
     private val customSpotifyMappingsDao by lazy { PanoDb.db.getCustomSpotifyMappingsDao() }
     private val spotifyArtistSearchApproximate by lazy { PlatformStuff.mainPrefs.data.map { it.spotifyArtistSearchApproximate } }
     private val useSpotify by lazy { PlatformStuff.mainPrefs.data.map { it.spotifyApi } }

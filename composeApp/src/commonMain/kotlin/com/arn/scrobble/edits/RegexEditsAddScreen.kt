@@ -88,7 +88,7 @@ import pano_scrobbler.composeapp.generated.resources.copy_from
 import pano_scrobbler.composeapp.generated.resources.delete
 import pano_scrobbler.composeapp.generated.resources.edit_all
 import pano_scrobbler.composeapp.generated.resources.edit_case_sensitive
-import pano_scrobbler.composeapp.generated.resources.edit_continue_other
+import pano_scrobbler.composeapp.generated.resources.edit_continue_regex
 import pano_scrobbler.composeapp.generated.resources.edit_extract
 import pano_scrobbler.composeapp.generated.resources.edit_extract_desc
 import pano_scrobbler.composeapp.generated.resources.edit_extract_extra_groups
@@ -540,7 +540,7 @@ fun RegexEditsAddScreen(
             LabeledCheckbox(
                 checked = continueMatching,
                 onCheckedChange = { continueMatching = it },
-                text = stringResource(Res.string.edit_continue_other),
+                text = stringResource(Res.string.edit_continue_regex),
                 modifier = Modifier.fillMaxWidth()
             )
 

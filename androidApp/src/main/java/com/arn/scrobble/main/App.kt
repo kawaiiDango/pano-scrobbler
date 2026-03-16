@@ -5,10 +5,10 @@ import android.os.Build
 import android.os.StrictMode
 import android.util.Log
 import androidx.work.Configuration
-import com.arn.scrobble.ExtrasVariantStuff
 import com.arn.scrobble.androidApp.BuildConfig
 import com.arn.scrobble.billing.BillingRepository
 import com.arn.scrobble.utils.AndroidStuff
+import com.arn.scrobble.utils.ExtrasVariantStuff
 import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff
 import com.arn.scrobble.utils.VariantStuff

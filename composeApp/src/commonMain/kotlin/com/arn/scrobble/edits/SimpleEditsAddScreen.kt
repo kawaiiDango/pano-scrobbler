@@ -66,7 +66,7 @@ import pano_scrobbler.composeapp.generated.resources.corrected
 import pano_scrobbler.composeapp.generated.resources.delete
 import pano_scrobbler.composeapp.generated.resources.disable
 import pano_scrobbler.composeapp.generated.resources.edit
-import pano_scrobbler.composeapp.generated.resources.edit_continue_other
+import pano_scrobbler.composeapp.generated.resources.edit_continue_simple
 import pano_scrobbler.composeapp.generated.resources.edit_example
 import pano_scrobbler.composeapp.generated.resources.edit_no_save
 import pano_scrobbler.composeapp.generated.resources.existing_value
@@ -434,7 +434,7 @@ fun SimpleEditsAddScreen(
             LabeledCheckbox(
                 checked = continueMatching,
                 onCheckedChange = { continueMatching = it },
-                text = stringResource(Res.string.edit_continue_other),
+                text = stringResource(Res.string.edit_continue_simple),
                 modifier = Modifier.fillMaxWidth()
             )
         }

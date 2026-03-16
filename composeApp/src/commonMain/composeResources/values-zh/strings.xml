@@ -33,6 +33,9 @@
     <plurals name="num_matches" comment="regex pattern matches">
         <item quantity="other">%1$d 项匹配</item>
     </plurals>
+    <plurals name="num_hours">
+        <item quantity="other">%1$d 小时</item>
+    </plurals>
     <string name="yes">确定</string>
     <string name="no">取消</string>
     <string name="reset">重置</string>
@@ -267,6 +270,7 @@
     <string name="server_url" comment="For self hosted scrobbling services">服务器 URL</string>
     <string name="listenbrainz_info" formatted="true" comment="%1 = the link to page containing the token">您可以在 %1$s 找到您的验证 token。</string>
     <string name="pref_now_playing">提交当前播放的音乐</string>
+    <string name="pref_fetch_missing_album" formatted="true" comment="%1= the name of a service like last.fm, Deezer etc">从 %1$s 获取缺失专辑</string>
     <string name="pref_locale">语言</string>
     <string name="pref_crashlytics_enabled">自动上报错误</string>
     <string name="pref_misc">杂项</string>
@@ -374,6 +378,20 @@
     <string name="when_using" formatted="true" comment="%1$s is the web service or media player name">当使用 %1$s 时</string>
     <string name="when_not_using" formatted="true" comment="%1$s is the web service or media player name">当没有使用 %1$s 时</string>
     <string name="as_text" comment="Like copy as text, but in short">作为文本</string>
+    <string name="automation_cli">命令行参数</string>
+    <string name="automation_cli_info">当一个实例正在运行时，用这些命令行参数运行 pano-scrobbler 可执行档。</string>
+    <string name="album_art_now_playing_desc">需要 last.fm 登录</string>
+    <string name="spotify_consent">从 Spotify 获取艺术家图像吗？</string>
+    <string name="show_track_url">曲目网址</string>
+    <string name="edit_extract_track_example" formatted="true" comment="%1$s is the regex pattern">例如：要从曲目字段中提取元数据，如果曲目包含"艺人 - 曲目"，请将曲目正则表达式设置为 %1$s</string>
+    <string name="search_in_media_player" comment="This launches and searches in the media player app directly instead of opening a browser">直接在该媒体播放器中搜索</string>
+    <string name="forget_unchecked_apps" comment="Shown in the 'Scrobble From' apps list on desktop">忘记检查过的应用</string>
+    <string name="discord_app_name" comment="usually the media player app name, shown in discord rich presence">应用名称</string>
+    <string name="convert_file" formatted="true" comment="%1$s is the file extension, used in the context of converting from one file format to another">从 %1$s 转档</string>
+    <string name="move_up" comment="Screen reader text for drag and drop reordering">上移</string>
+    <string name="move_down" comment="Screen reader text for drag and drop reordering">下移</string>
+    <string name="at_least" formatted="true" comment="%1$s=some number">至少 %1$s</string>
+    <string name="code_will_be_sent" formatted="true" comment="%1$s is either Ko-Fi or BuyMeACoffee, %2$s is the donation amount">如果您捐赠了 %2$s，代码将会被发送到与您 %1$s 帐户关联的电子邮件地址</string>
     <!--  pro  -->
     <string name="get_pro">支持本应用</string>
     <string name="one_time_purchase">1次</string>

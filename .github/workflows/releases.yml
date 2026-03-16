@@ -23,7 +23,7 @@ jobs:
             resources-dir: linux-arm64
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
 
       - name: Fix permissions
         if: matrix.resources-dir != 'windows-x64'
@@ -85,14 +85,14 @@ jobs:
           ./gradlew composeApp:exportLibraryDefinitions composeApp:packageUberJarForCurrentOS -PaboutLibraries.exportVariant=desktop --no-daemon
 
       - name: Upload desktop binary
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: pano-scrobbler-${{ matrix.resources-dir }}
           path: dist/pano-scrobbler-${{ matrix.resources-dir }}*
 
       - if: matrix.resources-dir == 'linux-x64'
         name: Upload Android binary
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: pano-scrobbler-android-universal
           path: dist/pano-scrobbler-android-universal*
@@ -122,7 +122,7 @@ jobs:
           } >> "$GITHUB_OUTPUT"
 
       - name: Download all build artifacts
-        uses: actions/download-artifact@v5
+        uses: actions/download-artifact@v8
         with:
           merge-multiple: true
           path: dist

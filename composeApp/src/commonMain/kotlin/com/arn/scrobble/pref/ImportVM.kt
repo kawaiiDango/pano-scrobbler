@@ -59,7 +59,12 @@ class ImportVM : ViewModel() {
                             "import",
                             readKeystore()
                         ) {
-                            _availableImportTypes.value = imExporter.createImportTypes(it)
+                            try {
+                                _availableImportTypes.value = imExporter.createImportTypes(it)
+                            } catch (e: Exception) {
+                                Logger.i(e) { "Failed to read import data" }
+                                _importResult.tryEmit(Result.failure(e))
+                            }
                         }
                         server?.start()
 
@@ -83,12 +88,13 @@ class ImportVM : ViewModel() {
     ) {
         viewModelScope.launch(Dispatchers.IO) {
             if (_availableImportTypes.value != null) {
-                val imported = imExporter.import(userImportTypes, writeMode)
-
-                if (!imported)
-                    _importResult.emit(Result.failure(IOException("Import failed")))
-                else
+                try {
+                    imExporter.import(userImportTypes, writeMode)
                     _importResult.emit(Result.success(Unit))
+                } catch (e: Exception) {
+                    Logger.i(e) { "Import failed" }
+                    _importResult.emit(Result.failure(e))
+                }
 
                 _availableImportTypes.value = null
             }
@@ -99,7 +105,11 @@ class ImportVM : ViewModel() {
         viewModelScope.launch(Dispatchers.IO) {
             if (platformFile.isWritable()) {
                 platformFile.read {
-                    _availableImportTypes.value = imExporter.createImportTypes(it)
+                    try {
+                        _availableImportTypes.value = imExporter.createImportTypes(it)
+                    } catch (e: Exception) {
+                        _importResult.emit(Result.failure(e))
+                    }
                 }
             } else {
                 _importResult.emit(Result.failure(IOException("File is not readable")))

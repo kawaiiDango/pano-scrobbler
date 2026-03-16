@@ -109,8 +109,8 @@ class ImExporter {
     suspend fun import(
         importTypes: Set<ImportTypes>,
         writeMode: WriteMode
-    ): Boolean {
-        val exportData = this.exportData ?: return false
+    ) {
+        val exportData = this.exportData ?: return
 
         if (ImportTypes.settings in importTypes && exportData.settings != null) {
             val allowedPackagesFiltered =
@@ -242,8 +242,6 @@ class ImExporter {
 
         if (ImportTypes.scrobble_sources in importTypes)
             exportData.scrobble_sources?.let { db.getScrobbleSourcesDao().insert(it) }
-
-        return true
     }
 
     enum class ImportTypes {

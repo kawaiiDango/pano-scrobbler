@@ -3,10 +3,24 @@
 ### [android] The app skips scrobbles when it is in the background / The app says that it has been killed
 
 Some manufacturers such as Xiaomi, Huawei, OnePlus and others do not allow 3rd party apps to run in
-the background by default. Check [dontkillmyapp.com](https://dontkillmyapp.com) and follow all the
-steps in there, for your device. The non-Play version of this app can optionally display a
-persistent notification at all times, which may help. It may be impossible to use this app on a
-stock ROM from certain manufacturers, due to the said restrictions.
+the background by default.
+
+**Workaround for Xiaomi devices:**
+
+- Settings > Apps > Background Autostart
+- Long-press the app in recents > Lock the app
+- App Info > Battery Saver > No restrictions
+- App Info > Force stop
+- Start the app again
+
+The location of these settings will depend on your MIUI / HyperOS version
+
+For other devices, check [dontkillmyapp.com](https://dontkillmyapp.com) and follow all the
+steps in there, for your manufacturer.
+
+The non-Play version of this app can optionally display a persistent notification at all times,
+which may help. It may be impossible to use this app on a stock ROM from certain manufacturers, due
+to the said restrictions.
 
 ### [android] The app says that scrobbling is disabled
 
@@ -114,13 +128,17 @@ old versions of Android Go.
 - Authorize the ADB connection on your device, if prompted
 - Run the following command in your terminal:
 - On Android 8.1 or higher:
+
 ```
 adb shell cmd notification allow_listener com.arn.scrobble/com.arn.scrobble.media.NLService
 ```
+
 - On Android 8.0 and lower:
+
 ```
 adb shell 'settings put secure enabled_notification_listeners $(settings get secure enabled_notification_listeners):com.arn.scrobble/com.arn.scrobble.media.NLService'
 ```
+
 - Do not add any additional spaces
 - Disable USB debugging on your device when done
 
@@ -150,17 +168,23 @@ are using it portable mode or have removed the start menu shortcut.
 Check if you have the required dependencies installed
 
 - Arch:
+
 ```
 sudo pacman -S webkit2gtk-4.1
 ```
+
 - Debian:
+
 ```
 sudo apt install libwebkit2gtk-4.1-0
 ```
+
 - Fedora:
+
 ```
 sudo dnf install webkit2gtk4.1
 ```
+
 - Windows: WebView2 provided by Microsoft Edge Chromium
 
 - Android: Android System WebView

@@ -55,6 +55,11 @@
         <item quantity="few">%1$d podudaranja</item>
         <item quantity="other">%1$d podudaranja</item>
     </plurals>
+    <plurals name="num_hours">
+        <item quantity="one">%1$d sat</item>
+        <item quantity="few">%1$d sata</item>
+        <item quantity="other">%1$d sati</item>
+    </plurals>
     <string name="yes">Da</string>
     <string name="no">Ne</string>
     <string name="reset">Ponovno postavi</string>
@@ -289,6 +294,7 @@
     <string name="server_url" comment="For self hosted scrobbling services">URL poslužitelja</string>
     <string name="listenbrainz_info" formatted="true" comment="%1 = the link to page containing the token">Svoj autentikacijski token možete pronaći na adresi: %1$s</string>
     <string name="pref_now_playing">Dijeli što sada svira</string>
+    <string name="pref_fetch_missing_album" formatted="true" comment="%1= the name of a service like last.fm, Deezer etc">Dohvati album koji nedostaje sa servisa %1$s</string>
     <string name="pref_locale">Jezici</string>
     <string name="pref_crashlytics_enabled">Automatski prijavi greške</string>
     <string name="pref_misc">Razno</string>
@@ -398,6 +404,7 @@
     <string name="as_text" comment="Like copy as text, but in short">Kao tekst</string>
     <string name="album_art_now_playing_desc">Zahtijeva prijavu na last.fm</string>
     <string name="spotify_consent">Dohvatiti slike izvođača sa Spotifya?</string>
+    <string name="discord_app_name" comment="usually the media player app name, shown in discord rich presence">Naziv aplikacije</string>
     <!--  pro  -->
     <string name="get_pro">Podrži ovu aplikaciju</string>
     <string name="one_time_purchase">Jednom</string>

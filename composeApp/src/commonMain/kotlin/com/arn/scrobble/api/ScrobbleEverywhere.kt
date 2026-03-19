@@ -58,11 +58,14 @@ data class AdditionalMetadataResult(
     }
 }
 
-object ScrobbleEverywhere {
+private data class LastFmTrackOrNull(
+    val track: Track?,
+)
 
-    val deezerTracksCache = LruCache<String, DeezerTrack>(50)
-    val lastfmTracksCache = LruCache<String, Track>(50)
-    val lastfmAlbumsCache = LruCache<String, Album>(50)
+object ScrobbleEverywhere {
+    private val deezerTracksCache = LruCache<String, DeezerTrack>(50)
+    private val lastfmTracksCache = LruCache<String, LastFmTrackOrNull>(50)
+    private val lastfmAlbumsCache = LruCache<String, Album>(50)
     private var artistWithDelimitersMaxId: Int? = null
 
     private suspend fun performEditsAndBlocks(
@@ -229,7 +232,7 @@ object ScrobbleEverywhere {
         fetchArtUrlOnly: Boolean = false
     ): AdditionalMetadataResult {
         val fetchMissingMetadataDeezer = PlatformStuff.mainPrefs.data.map { it.deezerApi }.first()
-//        val fetchMissingMetadataLastfm = PlatformStuff.mainPrefs.data.map { it.fetchAlbum }.first()
+        val fetchMissingMetadataLastfm = PlatformStuff.mainPrefs.data.map { it.fetchAlbum }.first()
         val tidalSteelSeries = PlatformStuff.mainPrefs.data.map { it.tidalSteelSeriesApi }.first()
 
         try {
@@ -297,9 +300,9 @@ object ScrobbleEverywhere {
                     return SteelSeriesReceiverServer.getAdditionalData(scrobbleData)
                 }
 
-//                fetchMissingMetadataLastfm && scrobbleData.album.isNullOrEmpty() -> {
-//                    return fetchLastfmTrack(scrobbleData, onNetworkRequestMade)
-//                }
+                fetchMissingMetadataLastfm && scrobbleData.album.isNullOrEmpty() -> {
+                    return fetchLastfmTrack(scrobbleData, onNetworkRequestMade)
+                }
             }
         } catch (e: ScrobbleQueue.NetworkRequestNeededException) {
             Logger.d { "Network request needed to fetch additional metadata" }
@@ -450,20 +453,24 @@ object ScrobbleEverywhere {
         val title = scrobbleData.track
 
         val cacheKey = createCacheKey(artist, title)
-        var track = lastfmTracksCache[cacheKey]
+        var trackWrapper = lastfmTracksCache[cacheKey]
 
-        if (track == null) {
+        if (trackWrapper == null) {
             val trackObj = Track(title, null, Artist(artist))
             onNetworkRequestMade()
-            track = Requesters.lastfmUnauthedRequester.getInfo(trackObj)
-                .getOrNull()
-            if (track != null)
-                lastfmTracksCache.put(cacheKey, track)
+            Requesters.lastfmUnauthedRequester.getTrackInfo2(trackObj)
+                .onSuccess {
+                    trackWrapper = LastFmTrackOrNull(it)
+                }
+                .onFailure {
+                    trackWrapper = LastFmTrackOrNull(null)
+                }
+            if (trackWrapper != null)
+                lastfmTracksCache.put(cacheKey, trackWrapper)
         }
 
-
-        if (track != null)
-            return extractAlbum(track, scrobbleData)
+        if (trackWrapper?.track != null)
+            return extractAlbum(trackWrapper.track, scrobbleData)
 
         return AdditionalMetadataResult.Empty
     }
@@ -565,16 +572,18 @@ object ScrobbleEverywhere {
 
         if (track == null) {
             onNetworkRequestMade()
-            track = Requesters.deezerRequester.searchTrack(
+            Requesters.deezerRequester.searchTrack(
                 scrobbleData.artist,
                 scrobbleData.track,
                 limit = 5
             ).onFailure {
                 Logger.w(it) { "Failed to search Deezer for track" }
-            }.getOrNull()?.data?.firstOrNull {
-                it.title.equals(scrobbleData.track, ignoreCase = true)
-                // the album may be absent in scrobbleData, and the artist may contain multiple artists,
-                // so we don't check them here
+            }.onSuccess {
+                track = it.data.firstOrNull {
+                    it.title.equals(scrobbleData.track, ignoreCase = true)
+                    // the album may be absent in scrobbleData, and the artist may contain multiple artists,
+                    // so we don't check them here
+                }
             }
         }
 

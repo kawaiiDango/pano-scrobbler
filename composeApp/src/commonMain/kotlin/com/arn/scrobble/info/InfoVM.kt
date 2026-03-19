@@ -173,7 +173,7 @@ class InfoVM(
         var albumArtistFetched: Artist? = null
 
         if (track != null) {
-            Requesters.lastfmUnauthedRequester.getInfo(track, username)
+            Requesters.lastfmUnauthedRequester.getTrackInfo(track, username)
                 .onSuccess {
                     infoMap[Stuff.TYPE_TRACKS] = it
                     trackFetched = it
@@ -183,14 +183,14 @@ class InfoVM(
         }
 
         if (artist != null) {
-            Requesters.lastfmUnauthedRequester.getInfo(artist, username).onSuccess {
+            Requesters.lastfmUnauthedRequester.getArtistInfo(artist, username).onSuccess {
                 infoMap[Stuff.TYPE_ARTISTS] = it
                 artistFetched = it
             }
         }
 
         if (trackFetched?.album?.artist != null && trackFetched.album.artist.name.lowercase() != artist?.name?.lowercase()) {
-            Requesters.lastfmUnauthedRequester.getInfo(trackFetched.album.artist, username)
+            Requesters.lastfmUnauthedRequester.getArtistInfo(trackFetched.album.artist, username)
                 .onSuccess {
                     infoMap[Stuff.TYPE_ALBUM_ARTISTS] = it
                     albumArtistFetched = it
@@ -198,7 +198,7 @@ class InfoVM(
         }
 
         if (album != null) {
-            Requesters.lastfmUnauthedRequester.getInfo(album, username)
+            Requesters.lastfmUnauthedRequester.getAlbumInfo(album, username)
                 .onSuccess {
                     infoMap[Stuff.TYPE_ALBUMS] = it
                     albumFetched = it

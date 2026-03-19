@@ -169,7 +169,7 @@ class EditScrobbleUtils(private val viewModelScope: CoroutineScope) {
             val newTrack = Track(track, null, Artist(artist))
 
             val fetchedTrack = Requesters.lastfmUnauthedRequester
-                .getInfo(newTrack)
+                .getTrackInfo(newTrack)
                 .getOrNull()
 
             if (album.isNullOrEmpty() && fetchedTrack?.album != null) {

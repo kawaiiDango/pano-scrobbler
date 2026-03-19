@@ -202,7 +202,7 @@ class RandomVM(private val username: String) : ViewModel() {
                 val track = result.first as Track
 
                 Requesters.lastfmUnauthedRequester
-                    .getInfo(track, username = username)
+                    .getTrackInfo(track, username = username)
                     .onSuccess {
                         val t = track.copy(
                             userplaycount = it.userplaycount,

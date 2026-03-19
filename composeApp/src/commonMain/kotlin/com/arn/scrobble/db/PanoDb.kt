@@ -5,7 +5,6 @@ import androidx.room3.ConstructedBy
 import androidx.room3.Database
 import androidx.room3.RoomDatabase
 import com.arn.scrobble.utils.PlatformStuff
-import kotlinx.coroutines.Dispatchers
 
 
 /**
@@ -55,7 +54,6 @@ abstract class PanoDb : RoomDatabase() {
     companion object {
         val db = PlatformStuff.getDatabaseBuilder()
             .addMigrations(*ManualMigrations.all)
-            .setQueryCoroutineContext(Dispatchers.IO)
             .fallbackToDestructiveMigrationOnDowngrade(true)
             .build()
     }

@@ -27,7 +27,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
 
 #      - name: Create basic directory structure
 #        run: mkdir -p fdroid/repo

@@ -10,6 +10,7 @@ actual fun EntryProviderScope<PanoRoute>.panoPlatformSpecificNavGraph(
 ) {
     modalEntry<PanoRoute.Modal.FixIt> {
         FixItDialog(
+            onNavigate = navigate,
             modifier = modalModifier(),
         )
     }

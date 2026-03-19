@@ -53,15 +53,16 @@ import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.draw.drawWithCache
 import androidx.compose.ui.draw.rotate
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.drawscope.translate
 import androidx.compose.ui.graphics.vector.Group
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.graphics.vector.RenderVectorGroup
@@ -70,6 +71,7 @@ import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.util.lerp
 import androidx.compose.ui.zIndex
 import androidx.lifecycle.compose.LifecycleResumeEffect
 import androidx.paging.LoadState
@@ -140,6 +142,7 @@ import pano_scrobbler.composeapp.generated.resources.num_scrobbles_noti
 import pano_scrobbler.composeapp.generated.resources.show_all
 import pano_scrobbler.composeapp.generated.resources.time_just_now
 import kotlin.math.abs
+import kotlin.random.Random
 
 enum class GridMode {
     HERO, LIST, GRID
@@ -363,7 +366,10 @@ fun MusicEntryListItem(
                             if (isColumn)
                                 Modifier.border(
                                     1.dp,
-                                    MaterialTheme.colorScheme.outline,
+                                    if (isNowPlaying)
+                                        MaterialTheme.colorScheme.onPrimaryContainer
+                                    else
+                                        MaterialTheme.colorScheme.outline,
                                     MaterialTheme.shapes.medium
                                 )
                             else
@@ -510,14 +516,37 @@ private fun NowPlayingSurface(
         }
     }
 
-    val progress = customFpsInfiniteAnimation(
-        initialValue = 0f,
-        targetValue = 1f,
-        durationMillis = 25_000,
+    // Random initial phases, bounded to [0, 1), remembered across recompositions and
+    // navigation/process-death via rememberSaveable.
+    val initialPhase1 by rememberSaveable { mutableFloatStateOf(Random.nextFloat()) }
+    val initialPhase2 by rememberSaveable { mutableFloatStateOf(Random.nextFloat()) }
+    val reverseColors by rememberSaveable { mutableStateOf(Random.nextBoolean()) }
+
+    // Gradient 1: top-left corner, ~20s cycle
+    val anim1 = customFpsInfiniteAnimation(
+        initialValue = initialPhase1,
+        targetValue = initialPhase1 + 1f,   // one full cycle from wherever we started
+        durationMillis = 20_000,
         enabled = isResumed && nowPlaying,
     )
-    val fgColor = MaterialTheme.colorScheme.onTertiaryContainer.copy(alpha = 0.3f)
-    val brushRadius = remember { mutableFloatStateOf(Float.POSITIVE_INFINITY) }
+
+    // Gradient 2: bottom-right corner, ~27s cycle (different prime-ish period for organic feel)
+    val anim2 = customFpsInfiniteAnimation(
+        initialValue = initialPhase2,
+        targetValue = initialPhase2 + 1f,
+        durationMillis = 27_000,
+        enabled = isResumed && nowPlaying,
+    )
+
+    // Map the raw [0,∞) playhead to a [0,1] ping-pong value so each gradient breathes
+    // independently. fract() gives the fractional part; mirroring gives the smooth bounce.
+    fun pingPong(raw: Float): Float {
+        val t = raw % 1f          // wrap into [0, 1)
+        return if (t < 0.5f) t * 2f else (1f - t) * 2f   // triangle wave → smooth breath
+    }
+
+    val fgColor1 = MaterialTheme.colorScheme.onSecondaryContainer.copy(alpha = 0.45f)
+    val fgColor2 = MaterialTheme.colorScheme.tertiaryContainer.copy(alpha = 0.4f)
 
     Surface(
         color = if (nowPlaying)
@@ -529,25 +558,46 @@ private fun NowPlayingSurface(
             .clip(MaterialTheme.shapes.large)
     ) {
         val childModifier = if (nowPlaying) {
-            val brushRadial = remember(fgColor, brushRadius) {
-                Brush.radialGradient(
-                    0f to fgColor,
-                    0.75f to Color.Transparent,
-                    radius = brushRadius.floatValue
-                )
-            }
+            Modifier.drawWithCache {
+                // Radius: large enough to bleed well past the opposite corner
+                val radius = size.maxDimension * 0.9f
 
-            Modifier.drawBehind {
-                brushRadius.floatValue = if (size.minDimension < 2 * size.maxDimension)
-                    size.maxDimension / 2
+                val (finalFgColor1, finalFgColor2) = if (reverseColors)
+                    fgColor2 to fgColor1
                 else
-                    size.minDimension
+                    fgColor1 to fgColor2
 
-                translate((progress.value - 0.5f) * 2 * (size.width), size.height * 0.55f) {
-                    drawCircle(
-                        brush = brushRadial,
-                        radius = brushRadius.floatValue,
-                    )
+                // Gradient 1 — anchored top-left, breathes in-and-out
+                val breath1 = pingPong(anim1.value)
+                val center1 = Offset(
+                    x = size.width * lerp(-0.1f, 0.4f, breath1),
+                    y = size.height * lerp(-0.1f, 0.4f, breath1),
+                )
+                val brush1 = Brush.radialGradient(
+                    0f to finalFgColor1,
+                    0.6f to finalFgColor1.copy(alpha = finalFgColor1.alpha * 0.4f),
+                    1f to Color.Transparent,
+                    center = center1,
+                    radius = radius,
+                )
+
+                // Gradient 2 — anchored bottom-right, breathes at a different rate/phase
+                val breath2 = pingPong(anim2.value)
+                val center2 = Offset(
+                    x = size.width * lerp(0.6f, 1.1f, breath2),
+                    y = size.height * lerp(0.6f, 1.1f, breath2),
+                )
+                val brush2 = Brush.radialGradient(
+                    0f to finalFgColor2,
+                    0.6f to finalFgColor2.copy(alpha = finalFgColor2.alpha * 0.4f),
+                    1f to Color.Transparent,
+                    center = center2,
+                    radius = radius,
+                )
+
+                onDrawBehind {
+                    drawRect(brush = brush1)
+                    drawRect(brush = brush2)
                 }
             }
         } else

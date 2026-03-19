@@ -150,6 +150,7 @@ actual object PlatformStuff {
             name = dbFile.absolutePath
         )
             .setDriver(BundledSQLiteDriver())
+            .setQueryCoroutineContext(Dispatchers.IO)
 
     }
 

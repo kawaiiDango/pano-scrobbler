@@ -76,43 +76,51 @@ class LastFmUnauthedRequester {
     }
 
 
-    suspend fun <T : MusicEntry> getInfo(
-        musicEntry: T,
+    suspend fun getTrackInfo2(
+        musicEntry: Track,
+    ) = getTrackInfo(musicEntry, null)
+
+    suspend fun getTrackInfo(
+        musicEntry: Track,
         username: String? = null,
-    ): Result<T> {
-        val reqBuilder = HttpRequestBuilder().apply {
-            url(Stuff.LASTFM_API_ROOT)
-            parameter("username", username)
-            parameter("format", "json")
-            parameter("api_key", apiKey)
-        }
-
-        return when (musicEntry) {
-            is Artist -> client.getResult<ArtistInfoResponse> {
-                takeFrom(reqBuilder)
-                parameter("method", "artist.getInfo")
-                doubleEncodePlusParam("artist", musicEntry.name)
-            }.map { it.artist as T }
-
-            is Album -> client.getResult<AlbumInfoResponse> {
-                takeFrom(reqBuilder)
-                // this does not have double encoding bug
-                parameter("method", "album.getInfo")
-                parameter("artist", musicEntry.artist!!.name)
-                parameter("album", musicEntry.name)
-            }.map { it.album as T }
-
-            is Track -> client.getResult<TrackInfoResponse> {
-                takeFrom(reqBuilder)
-                parameter("method", "track.getInfo")
-                doubleEncodePlusParam("artist", musicEntry.artist.name)
-                doubleEncodePlusParam("track", musicEntry.name)
-            }.map {
-                // fix duration returned in millis
-                (it.track.copy(duration = it.track.duration?.div(1000)) as T)
-            }
-        }
+    ) = client.getResult<TrackInfoResponse> {
+        url(Stuff.LASTFM_API_ROOT)
+        parameter("username", username)
+        parameter("format", "json")
+        parameter("api_key", apiKey)
+        parameter("method", "track.getInfo")
+        doubleEncodePlusParam("artist", musicEntry.artist.name)
+        doubleEncodePlusParam("track", musicEntry.name)
+    }.map {
+        // fix duration returned in millis
+        (it.track.copy(duration = it.track.duration?.div(1000)))
     }
+
+    suspend fun getAlbumInfo(
+        musicEntry: Album,
+        username: String? = null,
+    ) = client.getResult<AlbumInfoResponse> {
+        url(Stuff.LASTFM_API_ROOT)
+        parameter("username", username)
+        parameter("format", "json")
+        parameter("api_key", apiKey)
+        // this does not have double encoding bug
+        parameter("method", "album.getInfo")
+        parameter("artist", musicEntry.artist!!.name)
+        parameter("album", musicEntry.name)
+    }.map { it.album }
+
+    suspend fun getArtistInfo(
+        musicEntry: Artist,
+        username: String? = null,
+    ) = client.getResult<ArtistInfoResponse> {
+        url(Stuff.LASTFM_API_ROOT)
+        parameter("username", username)
+        parameter("format", "json")
+        parameter("api_key", apiKey)
+        parameter("method", "artist.getInfo")
+        doubleEncodePlusParam("artist", musicEntry.name)
+    }.map { it.artist }
 
     suspend fun <T : MusicEntry> getTopTags(
         musicEntry: T,

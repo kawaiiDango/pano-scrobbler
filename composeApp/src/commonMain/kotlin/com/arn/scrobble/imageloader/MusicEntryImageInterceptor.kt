@@ -139,14 +139,19 @@ class MusicEntryImageInterceptor : Interceptor {
                             ) {
                                 semaphore.withPermit {
                                     delay(delayMs)
-                                    val albumOrTrack =
-                                        Requesters.lastfmUnauthedRequester.getInfo(entry)
-                                            .getOrNull()
 
-                                    webp300 = when (albumOrTrack) {
-                                        is Album -> albumOrTrack.webp300
-                                        is Track -> albumOrTrack.album?.webp300
-                                        else -> null
+                                    webp300 = when (entry) {
+                                        is Album -> {
+                                            Requesters.lastfmUnauthedRequester.getAlbumInfo(entry)
+                                                .getOrNull()
+                                                ?.webp300
+                                        }
+
+                                        is Track -> {
+                                            Requesters.lastfmUnauthedRequester.getTrackInfo(entry)
+                                                .getOrNull()
+                                                ?.album?.webp300
+                                        }
                                     }
                                 }
                             }

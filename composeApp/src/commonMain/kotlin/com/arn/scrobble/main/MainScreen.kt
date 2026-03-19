@@ -48,6 +48,7 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.material3.WideNavigationRail
 import androidx.compose.material3.WideNavigationRailItem
+import androidx.compose.material3.WideNavigationRailItemDefaults
 import androidx.compose.material3.WideNavigationRailValue
 import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
 import androidx.compose.material3.pulltorefresh.pullToRefresh
@@ -783,6 +784,7 @@ private fun PanoNavigationRail(
                             overflow = TextOverflow.Ellipsis
                         )
                     },
+                    colors = WideNavigationRailItemDefaults.colors(selectedTextColor = MaterialTheme.colorScheme.onSecondaryContainer),
                     modifier = Modifier.fillMaxWidth()
                 )
             }

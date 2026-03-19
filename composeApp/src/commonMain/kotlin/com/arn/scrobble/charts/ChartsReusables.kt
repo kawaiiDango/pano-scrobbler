@@ -333,7 +333,7 @@ fun TimePeriodSelector(
                             Icon(
                                 imageVector = Icons.ArrowDropDownCircle,
                                 contentDescription = null,
-                                tint = MaterialTheme.colorScheme.primary
+                                tint = MaterialTheme.colorScheme.onSecondaryContainer
                             )
                         } else if (timePeriodsList.getOrNull(idx + 1) == selectedPeriod) {
                             Icon(

@@ -27,6 +27,7 @@ import androidx.compose.ui.unit.dp
 import co.touchlab.kermit.Logger
 import com.arn.scrobble.BuildKonfig
 import com.arn.scrobble.media.PersistentNotificationService
+import com.arn.scrobble.navigation.PanoRoute
 import com.arn.scrobble.utils.AndroidStuff
 import com.arn.scrobble.utils.AndroidStuff.toast
 import com.arn.scrobble.utils.PlatformStuff
@@ -54,6 +55,7 @@ private class AppExitException(pss: Long, rss: Long) :
 
 @Composable
 fun FixItDialog(
+    onNavigate: (PanoRoute) -> Unit,
     modifier: Modifier,
 ) {
     val context = LocalContext.current
@@ -128,7 +130,7 @@ fun FixItDialog(
                 )
                 OutlinedButton(
                     onClick = {
-                        PlatformStuff.openInBrowser("https://dontkillmyapp.com")
+                        onNavigate(PanoRoute.Help())
                     },
                     modifier = Modifier.padding(start = 8.dp)
                 ) {

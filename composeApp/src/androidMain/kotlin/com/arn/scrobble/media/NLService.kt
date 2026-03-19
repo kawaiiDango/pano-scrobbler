@@ -60,7 +60,7 @@ class NLService : NotificationListenerService() {
             inited = true
 
             job = SupervisorJob()
-            coroutineScope = CoroutineScope(Dispatchers.Main + job!!)
+            coroutineScope = CoroutineScope(Dispatchers.Main.immediate + job!!)
 
             if (BuildKonfig.DEBUG)
                 toast(R.string.scrobbler_on)

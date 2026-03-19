@@ -252,6 +252,10 @@ actual object PlatformStuff {
             name = dbFile.absolutePath
         )
             .setDriver(AndroidSQLiteDriver())
+            // may fix Exception java.lang.IllegalStateException: Cannot perform this operation because there is no current transaction.
+            // Exception android.database.sqlite.SQLiteDatabaseLockedException: database is locked (code 5 SQLITE_BUSY)
+//            .setQueryCoroutineContext(Dispatchers.IO.limitedParallelism(1))
+            .setQueryCoroutineContext(Dispatchers.IO)
             .enableMultiInstanceInvalidation()
             .setAutoCloseTimeout(7, TimeUnit.MINUTES)
     }

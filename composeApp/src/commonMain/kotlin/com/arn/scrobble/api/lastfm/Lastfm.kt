@@ -18,6 +18,8 @@ import com.arn.scrobble.api.cache.CacheStrategy
 import com.arn.scrobble.charts.ListeningActivity
 import com.arn.scrobble.charts.TimePeriod
 import com.arn.scrobble.charts.TimePeriodsGenerator
+import com.arn.scrobble.db.PanoDb
+import com.arn.scrobble.db.SeenTrackAlbumAssociation
 import com.arn.scrobble.utils.Stuff
 import com.arn.scrobble.utils.Stuff.cacheStrategy
 import com.arn.scrobble.utils.Stuff.setMidnight
@@ -39,6 +41,7 @@ import io.ktor.http.Parameters
 import io.ktor.http.Url
 import io.ktor.http.parametersOf
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import java.math.BigInteger
@@ -66,6 +69,8 @@ open class LastFm(userAccount: UserAccountSerializable) : Scrobblable(userAccoun
             }
         }
     }
+
+    val outerScope = Stuff.appScope
 
     override suspend fun updateNowPlaying(scrobbleData: ScrobbleData): Result<ScrobbleResult> {
         val params = mutableMapOf(
@@ -186,7 +191,31 @@ open class LastFm(userAccount: UserAccountSerializable) : Scrobblable(userAccoun
             parameter("sk", userAccount.authKey)
             cacheStrategy(cacheStrategy)
         }.map {
-            it.fixTracksPage(includeNowPlaying)
+            val pageResult = it.fixTracksPage(includeNowPlaying)
+            // run cache hook
+            outerScope.launch {
+                it.entries.forEach { track ->
+
+                    if (track.album != null)
+                        PanoDb.db.getSeenEntitiesDao().saveTrackAlbumAssociation(
+                            artist = track.artist.name,
+                            track = track.name,
+                            albumArtist = track.artist.name,
+                            album = track.album.name,
+                            artUrl = track.album.webp300,
+                            priority = SeenTrackAlbumAssociation.Priority.RECENT_TRACKS,
+                        )
+
+                    if (track.userloved != null)
+                        PanoDb.db.getSeenEntitiesDao().saveLovedState(
+                            artist = track.artist.name,
+                            track = track.name,
+                            isLoved = track.userloved,
+                        )
+                }
+            }
+
+            pageResult
         }
     }
 
@@ -208,7 +237,20 @@ open class LastFm(userAccount: UserAccountSerializable) : Scrobblable(userAccoun
             parameter("sk", userAccount.authKey)
             cacheStrategy(cacheStrategy)
         }.map {
-            it.copy(entries = it.entries.map { it.copy(userloved = true) })
+            val pageResult = it.copy(entries = it.entries.map { it.copy(userloved = true) })
+
+            // cache hook
+            outerScope.launch {
+                it.entries.forEach { track ->
+                    PanoDb.db.getSeenEntitiesDao().saveLovedState(
+                        artist = track.artist.name,
+                        track = track.name,
+                        isLoved = true,
+                    )
+                }
+            }
+
+            pageResult
         }
     }
 
@@ -304,7 +346,21 @@ open class LastFm(userAccount: UserAccountSerializable) : Scrobblable(userAccoun
                 }
 
                 Stuff.TYPE_ALBUMS -> client.getPageResult<TopAlbumsResponse, Album>(
-                    transform = { it.topalbums },
+                    transform = {
+                        // cache hook
+                        outerScope.launch {
+                            it.topalbums.entries.forEach { album ->
+                                if (album.webp300 != null)
+                                    PanoDb.db.getSeenEntitiesDao().saveAlbumArtIfMissing(
+                                        artist = album.artist!!.name,
+                                        album = album.name,
+                                        artUrl = album.webp300!!,
+                                    )
+                            }
+                        }
+
+                        it.topalbums
+                    },
                 ) {
                     takeFrom(request)
                     parameter("method", "user.getTopAlbums")

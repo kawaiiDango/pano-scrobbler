@@ -84,7 +84,7 @@ fun SimpleEditsScreen(
             if (simpleEdits == null) {
                 val shimmerEdits = List(10) {
                     SimpleEdit(
-                        _id = it,
+                        _id = it.toLong(),
                         hasOrigAlbumArtist = true,
                         track = "",
                         artist = "",

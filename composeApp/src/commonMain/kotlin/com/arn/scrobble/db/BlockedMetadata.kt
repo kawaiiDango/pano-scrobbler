@@ -12,7 +12,7 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class BlockedMetadata(
     @PrimaryKey(autoGenerate = true)
-    val _id: Int = 0,
+    val _id: Long = 0,
 
     // SQLite (unlike SQL Server) chose that multiple NULL values do not count towards uniqueness in an index.
     // Use "" for null instead

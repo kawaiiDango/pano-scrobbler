@@ -26,7 +26,6 @@ import com.arn.scrobble.main.MainViewModel
 import com.arn.scrobble.onboarding.LoginDestinations
 import com.arn.scrobble.onboarding.ShowLinkDialog
 import com.arn.scrobble.pref.MediaSearchPrefDialog
-import com.arn.scrobble.search.IndexerDialog
 import com.arn.scrobble.ui.getActivityOrNull
 import com.arn.scrobble.ui.verticalOverscanPadding
 import com.arn.scrobble.updates.ChangelogDialog
@@ -123,12 +122,6 @@ fun EntryProviderScope<PanoRoute>.panoModalNavGraph(
             tag = route.tag,
             scrollState = scrollState,
             modifier = modalModifier()
-        )
-    }
-
-    modalEntry<PanoRoute.Modal.Index> {
-        IndexerDialog(
-            modifier = modalModifier(),
         )
     }
 

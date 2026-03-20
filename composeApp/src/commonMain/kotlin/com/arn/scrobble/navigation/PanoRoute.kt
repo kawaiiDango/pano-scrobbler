@@ -304,8 +304,6 @@ sealed interface PanoRoute : NavKey {
             val appId: String? = null,
         ) : Modal, DeepLinkable
 
-        @Serializable
-        data object Index : Modal
 
         @Serializable
         data object FixIt : Modal

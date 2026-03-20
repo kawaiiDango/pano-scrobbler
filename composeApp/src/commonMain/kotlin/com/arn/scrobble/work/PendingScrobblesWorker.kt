@@ -13,6 +13,7 @@ import com.arn.scrobble.api.lastfm.Track
 import com.arn.scrobble.db.AccountBitmaskConverter
 import com.arn.scrobble.db.PanoDb
 import com.arn.scrobble.db.PendingScrobble
+import com.arn.scrobble.utils.isNetworkRetryable
 import com.arn.scrobble.utils.redactedMessage
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.Dispatchers
@@ -96,7 +97,7 @@ class PendingScrobblesWorker(
             }
 
             val idsAll = entries.map { it._id }.toSet()
-            val idsToDelete = mutableSetOf<Int>()
+            val idsToDelete = mutableSetOf<Long>()
 
             entries.forEach { pendingScrobble ->
                 val services = pendingScrobble.services -
@@ -127,13 +128,15 @@ class PendingScrobblesWorker(
                 .takeIf { it.isNotEmpty() }
                 ?.let {
                     val lastFailedTimestamp = System.currentTimeMillis()
-                    val lastFailedReason = scrobbleResults.values.firstOrNull { it.isFailure }
-                        ?.exceptionOrNull()?.redactedMessage?.take(100)
+                    val exceptions = scrobbleResults.values.mapNotNull { it.exceptionOrNull() }
+                    val lastFailedReason = exceptions.firstOrNull()?.redactedMessage?.take(100)
+                    val canForceRetry = exceptions.any { it.isNetworkRetryable }
 
                     dao.logFailure(
                         it.toList(),
                         lastFailedTimestamp,
-                        lastFailedReason
+                        lastFailedReason,
+                        canForceRetry
                     )
                 }
         }
@@ -185,14 +188,14 @@ class PendingScrobblesWorker(
             if (services.isEmpty() && !MOCK)
                 dao.delete(entry)
             else {
-                val lastFailedTimestamp = System.currentTimeMillis()
-                val lastFailedReason = loveResults.values.firstOrNull { it.isFailure }
-                    ?.exceptionOrNull()?.redactedMessage?.take(100)
+                val exceptions = loveResults.values.mapNotNull { it.exceptionOrNull() }
+                val lastFailedReason = exceptions.firstOrNull()?.redactedMessage?.take(100)
+                val canForceRetry = exceptions.any { it.isNetworkRetryable }
 
                 val newPendingLove = entry.copy(
                     services = services,
-                    lastFailedTimestamp = lastFailedTimestamp,
-                    lastFailedReason = lastFailedReason
+                    lastFailedReason = lastFailedReason,
+                    canForceRetry = canForceRetry
                 )
 
                 dao.update(newPendingLove)

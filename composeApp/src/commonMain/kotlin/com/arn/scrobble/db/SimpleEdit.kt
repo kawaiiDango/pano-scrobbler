@@ -34,7 +34,7 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class SimpleEdit(
     @PrimaryKey(autoGenerate = true)
-    val _id: Int = 0,
+    val _id: Long = 0,
 
     @ColumnInfo(defaultValue = "1")
     val hasOrigTrack: Boolean = true,

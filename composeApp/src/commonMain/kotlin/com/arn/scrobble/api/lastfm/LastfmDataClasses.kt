@@ -6,11 +6,6 @@ import kotlinx.serialization.Transient
 import kotlinx.serialization.json.JsonNames
 
 
-enum class SearchType {
-    GLOBAL,
-    LOCAL
-}
-
 enum class ImageSize {
     small, medium, large, extralarge
 }
@@ -498,7 +493,6 @@ data class TokenResponse(
 
 data class SearchResults(
     val term: String,
-    val searchType: SearchType,
     val lovedTracks: List<Track>,
     val tracks: List<Track>,
     val artists: List<Artist>,

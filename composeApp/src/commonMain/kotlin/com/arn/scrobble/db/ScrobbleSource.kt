@@ -15,7 +15,7 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class ScrobbleSource(
     @PrimaryKey(autoGenerate = true)
-    val _id: Int = 0,
+    val _id: Long = 0,
     val timeMillis: Long,
     val pkg: String,
 )

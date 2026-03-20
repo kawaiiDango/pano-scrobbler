@@ -2,12 +2,9 @@ package com.arn.scrobble.search
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.FilterChip
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -15,29 +12,24 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.arn.scrobble.BuildKonfig
 import com.arn.scrobble.api.AccountType
 import com.arn.scrobble.api.lastfm.Album
 import com.arn.scrobble.api.lastfm.Artist
 import com.arn.scrobble.api.lastfm.MusicEntry
-import com.arn.scrobble.api.lastfm.SearchType
 import com.arn.scrobble.api.lastfm.Track
 import com.arn.scrobble.icons.Album
 import com.arn.scrobble.icons.Favorite
 import com.arn.scrobble.icons.Icons
-import com.arn.scrobble.icons.Info
 import com.arn.scrobble.icons.Mic
 import com.arn.scrobble.icons.MusicNote
 import com.arn.scrobble.navigation.PanoRoute
 import com.arn.scrobble.ui.EmptyText
-import com.arn.scrobble.ui.ExpandableHeaderMenu
 import com.arn.scrobble.ui.MusicEntryListItem
 import com.arn.scrobble.ui.PanoLazyColumn
 import com.arn.scrobble.ui.SearchField
@@ -47,21 +39,16 @@ import com.arn.scrobble.ui.panoContentPadding
 import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff
 import com.arn.scrobble.utils.Stuff.collectAsStateWithInitialValue
-import com.arn.scrobble.utils.Stuff.format
 import org.jetbrains.compose.resources.stringResource
 import pano_scrobbler.composeapp.generated.resources.Res
 import pano_scrobbler.composeapp.generated.resources.albums
 import pano_scrobbler.composeapp.generated.resources.artists
 import pano_scrobbler.composeapp.generated.resources.external_metadata
-import pano_scrobbler.composeapp.generated.resources.global
 import pano_scrobbler.composeapp.generated.resources.is_turned_off
 import pano_scrobbler.composeapp.generated.resources.lastfm
-import pano_scrobbler.composeapp.generated.resources.library
 import pano_scrobbler.composeapp.generated.resources.loved
 import pano_scrobbler.composeapp.generated.resources.not_found
-import pano_scrobbler.composeapp.generated.resources.reindex
 import pano_scrobbler.composeapp.generated.resources.search
-import pano_scrobbler.composeapp.generated.resources.searched_n_items
 import pano_scrobbler.composeapp.generated.resources.tracks
 
 @Composable
@@ -74,7 +61,6 @@ fun SearchScreen(
     val hasLoaded by viewModel.hasLoaded.collectAsStateWithLifecycle()
 
     var searchTerm by rememberSaveable { mutableStateOf("") }
-    var searchType by rememberSaveable { mutableStateOf(SearchType.GLOBAL) }
 
     var artistsExpanded by rememberSaveable { mutableStateOf(false) }
     var albumsExpanded by rememberSaveable { mutableStateOf(false) }
@@ -107,8 +93,8 @@ fun SearchScreen(
         }
     }
 
-    LaunchedEffect(searchTerm, searchType) {
-        viewModel.search(searchTerm, searchType)
+    LaunchedEffect(searchTerm) {
+        viewModel.search(searchTerm)
     }
 
     LaunchedEffect(Unit) {
@@ -136,25 +122,6 @@ fun SearchScreen(
                 .focusRequester(focusRequester)
 
         )
-
-        if (BuildKonfig.DEBUG) {
-
-            Row(
-                horizontalArrangement = Arrangement.spacedBy(16.dp, Alignment.CenterHorizontally),
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                FilterChip(
-                    selected = searchType == SearchType.GLOBAL,
-                    onClick = { searchType = SearchType.GLOBAL },
-                    label = { Text(text = stringResource(Res.string.global)) }
-                )
-                FilterChip(
-                    selected = searchType == SearchType.LOCAL,
-                    onClick = { searchType = SearchType.LOCAL },
-                    label = { Text(text = stringResource(Res.string.library)) }
-                )
-            }
-        }
 
         EmptyText(
             text = stringResource(Res.string.not_found),
@@ -203,21 +170,6 @@ fun SearchScreen(
                     fetchAlbumImageIfMissing = true,
                 )
 
-                if (searchType == SearchType.LOCAL) {
-                    item(Res.string.reindex) {
-                        ExpandableHeaderMenu(
-                            title = stringResource(
-                                Res.string.searched_n_items,
-                                Stuff.MAX_INDEXED_ITEMS.format()
-                            ),
-                            icon = Icons.Info,
-                            menuItemText = stringResource(Res.string.reindex),
-                            onMenuItemClick = {
-                                onNavigate(PanoRoute.Modal.Index)
-                            }
-                        )
-                    }
-                }
             } else if (searchResults != null) {
                 items(10) {
                     MusicEntryListItem(

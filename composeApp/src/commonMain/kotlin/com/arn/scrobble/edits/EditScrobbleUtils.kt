@@ -10,8 +10,6 @@ import com.arn.scrobble.api.lastfm.LastFm
 import com.arn.scrobble.api.lastfm.ScrobbleData
 import com.arn.scrobble.api.lastfm.ScrobbleIgnoredException
 import com.arn.scrobble.api.lastfm.Track
-import com.arn.scrobble.db.CachedTracksDao
-import com.arn.scrobble.db.DirtyUpdate
 import com.arn.scrobble.db.PanoDb
 import com.arn.scrobble.db.ScrobbleSource
 import com.arn.scrobble.db.SimpleEdit
@@ -72,15 +70,8 @@ class EditScrobbleUtils(private val viewModelScope: CoroutineScope) {
                             notifyPlayingTrackEvent(
                                 PlayingTrackNotifyEvent.TrackScrobbleLocked(
                                     hash = hash,
-                                    locked = false
+                                    state = PlayingTrackNotifyEvent.TrackScrobbleLocked.LockState.SCROBBLED
                                 ),
-                            )
-
-                            notifyPlayingTrackEvent(
-                                PlayingTrackNotifyEvent.TrackCancelled(
-                                    hash = hash,
-                                    showUnscrobbledNotification = false,
-                                )
                             )
                         }
 
@@ -192,9 +183,7 @@ class EditScrobbleUtils(private val viewModelScope: CoroutineScope) {
                 if (!isNowPlaying) {
                     // The user might submit the edit after it has been scrobbled, so delete anyways
                     val deleteResult = scrobblable.delete(origTrackObj)
-                    if (deleteResult.isSuccess)
-                        CachedTracksDao.deltaUpdateAll(origTrackObj, -1, DirtyUpdate.BOTH)
-                    else if (deleteResult.exceptionOrNull() is LastFm.CookiesInvalidatedException) {
+                    if (deleteResult.exceptionOrNull() is LastFm.CookiesInvalidatedException) {
                         return Result.failure(deleteResult.exceptionOrNull()!!)
                     }
                 } else {
@@ -213,8 +202,6 @@ class EditScrobbleUtils(private val viewModelScope: CoroutineScope) {
                 _artist,
                 date = timeMillis
             )
-
-            CachedTracksDao.deltaUpdateAll(trackObj, 1, DirtyUpdate.BOTH)
         }
 
         // track player

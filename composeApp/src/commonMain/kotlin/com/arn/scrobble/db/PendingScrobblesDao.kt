@@ -40,17 +40,22 @@ interface PendingScrobblesDao {
     @Query("UPDATE $tableName SET services = services & ~:loggedOutAccountsBitset WHERE services & :loggedOutAccountsBitset != 0")
     suspend fun removeLoggedOutAccounts(loggedOutAccountsBitset: Int)
 
-    @Query("UPDATE $tableName SET lastFailedTimestamp = :lastFailedTimestamp, lastFailedReason = :lastFailedReason WHERE _id IN (:ids)")
-    suspend fun logFailure(ids: List<Int>, lastFailedTimestamp: Long?, lastFailedReason: String?)
+    @Query("UPDATE $tableName SET lastFailedTimestamp = :lastFailedTimestamp, lastFailedReason = :lastFailedReason, canForceRetry = :canForceRetry WHERE _id IN (:ids)")
+    suspend fun logFailure(
+        ids: List<Long>,
+        lastFailedTimestamp: Long,
+        lastFailedReason: String?,
+        canForceRetry: Boolean
+    )
 
-    @Query("SELECT MAX(lastFailedTimestamp) FROM $tableName")
+    @Query("SELECT MAX(lastFailedTimestamp) FROM $tableName WHERE canForceRetry = 0")
     suspend fun lastFailedTimestamp(): Long?
 
     @Delete
     suspend fun delete(ps: PendingScrobble)
 
     @Query("DELETE FROM $tableName WHERE _id IN (:ids)")
-    suspend fun delete(ids: List<Int>)
+    suspend fun delete(ids: List<Long>)
 
     @Query("DELETE FROM $tableName WHERE services = 0")
     suspend fun deleteEmptyAccounts()

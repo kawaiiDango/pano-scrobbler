@@ -15,8 +15,6 @@ import com.arn.scrobble.api.UserCached
 import com.arn.scrobble.api.lastfm.LastFm
 import com.arn.scrobble.api.lastfm.Track
 import com.arn.scrobble.api.listenbrainz.ListenBrainz
-import com.arn.scrobble.db.CachedTracksDao
-import com.arn.scrobble.db.DirtyUpdate
 import com.arn.scrobble.db.PanoDb
 import com.arn.scrobble.ui.PanoSnackbarVisuals
 import com.arn.scrobble.ui.generateKey
@@ -172,32 +170,38 @@ class ScrobblesVM(
         }.cachedIn(viewModelScope)
 
     init {
-        viewModelScope.launch {
-            val lastFailed = PanoDb.db.getPendingScrobblesDao().lastFailedTimestamp()
-            val isRunning = PendingScrobblesWork.state().first() == CommonWorkState.RUNNING
+        if (user.isSelf) {
+            viewModelScope.launch {
+                val lastFailed = PanoDb.db.getPendingScrobblesDao().lastFailedTimestamp()
+                val hasPending = if (lastFailed == null)
+                    PanoDb.db.getPendingScrobblesDao().allFlow(1).first().isNotEmpty()
+                else
+                    true
 
-            if (lastFailed != null && !isRunning) {
-                val force =
-                    System.currentTimeMillis() - lastFailed > 30.minutes.inWholeMilliseconds
-                PendingScrobblesWork.schedule(force)
-            }
-        }
+                val isRunning = PendingScrobblesWork.state().first() == CommonWorkState.RUNNING
 
-        viewModelScope.launch {
-            PendingScrobblesWork.getProgress()
-                .collect {
-                    if (it.state == CommonWorkState.RUNNING || it.state == CommonWorkState.FAILED) {
-                        val snackbarData = PanoSnackbarVisuals(
-                            message = it.message,
-                            isError = it.isError
-                        )
-                        Stuff.globalSnackbarFlow.emit(snackbarData)
-                    }
+                if (hasPending && !isRunning) {
+                    val force = System.currentTimeMillis() - (lastFailed ?: 0L) >
+                            30.minutes.inWholeMilliseconds
+                    PendingScrobblesWork.schedule(force)
                 }
-        }
+            }
 
-        if (user.isSelf)
+            viewModelScope.launch {
+                PendingScrobblesWork.getProgress()
+                    .collect {
+                        if (it.state == CommonWorkState.RUNNING || it.state == CommonWorkState.FAILED) {
+                            val snackbarData = PanoSnackbarVisuals(
+                                message = it.message,
+                                isError = it.isError
+                            )
+                            Stuff.globalSnackbarFlow.emit(snackbarData)
+                        }
+                    }
+            }
+
             updateScrobblerServiceStatus()
+        }
     }
 
     fun updateScrobblerServiceStatus() {
@@ -317,13 +321,6 @@ class ScrobblesVM(
                             )
                         } else
                             Stuff.globalExceptionFlow.emit(it)
-                    }
-                    ?.onSuccess {
-                        CachedTracksDao.deltaUpdateAll(
-                            item.track,
-                            -1,
-                            DirtyUpdate.BOTH
-                        )
                     }
             }
         }

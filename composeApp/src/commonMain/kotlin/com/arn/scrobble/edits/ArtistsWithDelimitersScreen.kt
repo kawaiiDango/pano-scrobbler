@@ -78,7 +78,7 @@ fun ArtistsWithDelimitersScreen(
                 ) { idx ->
                     ArtistItem(
                         artist = ArtistWithDelimiters(
-                            _id = idx,
+                            _id = idx.toLong(),
                             artist = "",
                         ),
                         forShimmer = true,

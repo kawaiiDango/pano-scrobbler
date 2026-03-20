@@ -131,26 +131,54 @@ class MusicEntryImageInterceptor : Interceptor {
                             }
                         } else {
                             var webp300 = album?.webp300
-                            val needImage = webp300 == null ||
+                            val needFetch = webp300 == null ||
                                     StarMapper.STAR_PATTERN in webp300
 
-                            if (needImage && musicEntryImageReq.fetchAlbumInfoIfMissing &&
+                            val dao = PanoDb.db.getSeenEntitiesDao()
+                            if (needFetch && musicEntryImageReq.fetchAlbumInfoIfMissing &&
                                 musicEntryImageReq.accountType == AccountType.LASTFM
                             ) {
-                                semaphore.withPermit {
-                                    delay(delayMs)
+                                val seenAlbum = when (entry) {
+                                    is Album -> dao.getAlbumWithFetchedArt(
+                                        entry.artist!!.name,
+                                        entry.name
+                                    )
 
-                                    webp300 = when (entry) {
-                                        is Album -> {
-                                            Requesters.lastfmUnauthedRequester.getAlbumInfo(entry)
-                                                .getOrNull()
-                                                ?.webp300
-                                        }
+                                    is Track -> dao.getBestAlbumForTrackWithFetchedArt(
+                                        entry.artist.name,
+                                        entry.name
+                                    )
+                                }
 
-                                        is Track -> {
-                                            Requesters.lastfmUnauthedRequester.getTrackInfo(entry)
-                                                .getOrNull()
-                                                ?.album?.webp300
+                                webp300 = seenAlbum?.artUrl
+
+                                // if the image from cache was still a placeholder, don't do a lookup
+                                if (seenAlbum == null) {
+                                    semaphore.withPermit {
+                                        delay(delayMs)
+
+                                        when (entry) {
+                                            is Album -> {
+                                                Requesters.lastfmUnauthedRequester.getAlbumInfo(
+                                                    entry
+                                                ).onSuccess {
+                                                    webp300 = it.webp300
+                                                }
+                                            }
+
+                                            is Track -> {
+                                                val t = dao.getTrack(
+                                                    entry.artist.name,
+                                                    entry.name
+                                                )
+                                                if (t?.trackInfoFetchedAt == null) {
+                                                    Requesters.lastfmUnauthedRequester.getTrackInfo(
+                                                        entry
+                                                    ).onSuccess {
+                                                        webp300 = it.album?.webp300
+                                                    }
+                                                }
+                                            }
                                         }
                                     }
                                 }

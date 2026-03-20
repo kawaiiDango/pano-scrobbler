@@ -195,7 +195,7 @@ fun SimpleEditsAddScreen(
             notifyPlayingTrackEvent(
                 PlayingTrackNotifyEvent.TrackScrobbleLocked(
                     hash = hash,
-                    locked = true
+                    state = PlayingTrackNotifyEvent.TrackScrobbleLocked.LockState.LOCKED
                 ),
             )
         }
@@ -205,7 +205,7 @@ fun SimpleEditsAddScreen(
                 notifyPlayingTrackEvent(
                     PlayingTrackNotifyEvent.TrackScrobbleLocked(
                         hash = hash,
-                        locked = false
+                        state = PlayingTrackNotifyEvent.TrackScrobbleLocked.LockState.UNLOCKED
                     ),
                 )
             }

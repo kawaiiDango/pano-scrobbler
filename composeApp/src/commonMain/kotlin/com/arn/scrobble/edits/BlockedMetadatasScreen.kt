@@ -91,7 +91,7 @@ fun BlockedMetadatasScreen(
             if (blockedMetadatas == null) {
                 val shimmerEdits = List(10) {
                     BlockedMetadata(
-                        _id = it,
+                        _id = it.toLong(),
                         track = " ",
                         artist = "",
                         album = "",

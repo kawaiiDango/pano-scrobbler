@@ -46,8 +46,6 @@ fun getWorker(
 ): CommonWorker {
     return when (name) {
         PendingScrobblesWorker.NAME -> PendingScrobblesWorker(setCommonProgress)
-        IndexerWorker.NAME_FULL_INDEX -> IndexerWorker(true, setCommonProgress)
-        IndexerWorker.NAME_DELTA_INDEX -> IndexerWorker(false, setCommonProgress)
         DigestType.DIGEST_DAILY.name -> DigestWorker(DigestType.DIGEST_DAILY, setCommonProgress)
         DigestType.DIGEST_WEEKLY.name -> DigestWorker(DigestType.DIGEST_WEEKLY, setCommonProgress)
         DigestType.DIGEST_MONTHLY.name -> DigestWorker(DigestType.DIGEST_MONTHLY, setCommonProgress)

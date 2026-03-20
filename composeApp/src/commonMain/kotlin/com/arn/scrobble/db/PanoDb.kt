@@ -7,10 +7,6 @@ import androidx.room3.RoomDatabase
 import com.arn.scrobble.utils.PlatformStuff
 
 
-/**
- * Created by arn on 11/09/2017.
- */
-
 @Database(
     entities = [
         PendingScrobble::class,
@@ -18,14 +14,13 @@ import com.arn.scrobble.utils.PlatformStuff
         RegexEdit::class,
         BlockedMetadata::class,
         ScrobbleSource::class,
-        CachedTrack::class,
-        CachedAlbum::class,
-        CachedArtist::class,
         CustomSpotifyMapping::class,
-        CachedTrackWithAlbum::class,
         ArtistWithDelimiters::class,
+        SeenTrack::class,
+        SeenAlbum::class,
+        SeenTrackAlbumAssociation::class
     ],
-    version = 18,
+    version = 19,
     autoMigrations = [
         AutoMigration(from = 9, to = 10),
         AutoMigration(from = 10, to = 11, spec = Spec_10_11::class),
@@ -35,6 +30,7 @@ import com.arn.scrobble.utils.PlatformStuff
         AutoMigration(from = 15, to = 16),
         AutoMigration(from = 16, to = 17, spec = Spec_16_17::class),
         AutoMigration(from = 17, to = 18),
+        AutoMigration(from = 18, to = 19, spec = Spec_18_19::class),
     ],
 )
 @ConstructedBy(PanoDbConstructor::class)
@@ -44,12 +40,9 @@ abstract class PanoDb : RoomDatabase() {
     abstract fun getRegexEditsDao(): RegexEditsDao
     abstract fun getBlockedMetadataDao(): BlockedMetadataDao
     abstract fun getScrobbleSourcesDao(): ScrobbleSourcesDao
-    abstract fun getCachedTracksDao(): CachedTracksDao
-    abstract fun getCachedAlbumsDao(): CachedAlbumsDao
-    abstract fun getCachedArtistsDao(): CachedArtistsDao
     abstract fun getCustomSpotifyMappingsDao(): CustomSpotifyMappingsDao
-    abstract fun getCachedTracksWithAlbumsDao(): CachedTracksWithAlbumsDao
     abstract fun getArtistsWithDelimitersDao(): ArtistsWithDelimitersDao
+    abstract fun getSeenEntitiesDao(): SeenEntitiesDao
 
     companion object {
         val db = PlatformStuff.getDatabaseBuilder()

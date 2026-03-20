@@ -6,13 +6,15 @@ import com.arn.scrobble.api.Requesters.getPageResult
 import com.arn.scrobble.api.Requesters.getResult
 import com.arn.scrobble.api.Requesters.postResult
 import com.arn.scrobble.api.lastfm.LastFm.Companion.toFormParametersWithSig
+import com.arn.scrobble.db.PanoDb
+import com.arn.scrobble.db.SeenTrackAlbumAssociation
 import com.arn.scrobble.utils.Stuff
 import io.ktor.client.request.HttpRequestBuilder
 import io.ktor.client.request.forms.FormDataContent
 import io.ktor.client.request.parameter
 import io.ktor.client.request.setBody
 import io.ktor.client.request.url
-import kotlinx.coroutines.supervisorScope
+import kotlinx.coroutines.launch
 
 class LastFmUnauthedRequester {
 
@@ -26,11 +28,13 @@ class LastFmUnauthedRequester {
     )
     private val client get() = Requesters.genericKtorClient
 
+    private val outerScope = Stuff.appScope
+
     // search
     suspend fun search(
         term: String,
         limitEach: Int? = null,
-    ): Result<SearchResults> = supervisorScope {
+    ): Result<SearchResults> {
         val request = HttpRequestBuilder().apply {
             this.url(Stuff.LASTFM_API_ROOT)
             parameter("limit", limitEach)
@@ -58,7 +62,7 @@ class LastFmUnauthedRequester {
         }.map { it.results.trackmatches.entries }
 
         if (artists.isFailure || albums.isFailure || tracks.isFailure)
-            return@supervisorScope Result.failure(
+            return Result.failure(
                 artists.exceptionOrNull()
                     ?: albums.exceptionOrNull()
                     ?: tracks.exceptionOrNull()!!
@@ -66,13 +70,13 @@ class LastFmUnauthedRequester {
 
         val sr = SearchResults(
             term,
-            searchType = SearchType.GLOBAL,
             lovedTracks = listOf(),
             tracks = tracks.getOrDefault(listOf()),
             artists = artists.getOrDefault(listOf()),
             albums = albums.getOrDefault(listOf()),
         )
-        Result.success(sr)
+        
+        return Result.success(sr)
     }
 
 
@@ -92,6 +96,26 @@ class LastFmUnauthedRequester {
         doubleEncodePlusParam("artist", musicEntry.artist.name)
         doubleEncodePlusParam("track", musicEntry.name)
     }.map {
+        // run cache hook
+        outerScope.launch {
+            if (it.track.album != null) {
+                PanoDb.db.getSeenEntitiesDao().saveRecentTrack(
+                    artist = it.track.artist.name,
+                    track = it.track.name,
+                    albumArtist = it.track.album.artist?.name ?: it.track.artist.name,
+                    album = it.track.album.name,
+                    artUrl = it.track.album.webp300,
+                    isLoved = it.track.userloved,
+                    priority = SeenTrackAlbumAssociation.Priority.TRACK_INFO,
+                )
+            } else {
+                PanoDb.db.getSeenEntitiesDao().markTrackInfoFetched(
+                    artist = it.track.artist.name,
+                    track = it.track.name,
+                )
+            }
+        }
+
         // fix duration returned in millis
         (it.track.copy(duration = it.track.duration?.div(1000)))
     }
@@ -108,7 +132,32 @@ class LastFmUnauthedRequester {
         parameter("method", "album.getInfo")
         parameter("artist", musicEntry.artist!!.name)
         parameter("album", musicEntry.name)
-    }.map { it.album }
+    }.map {
+        // run cache hook
+        outerScope.launch {
+            val trackList = it.album.tracks?.track ?: emptyList()
+            if (trackList.isNotEmpty()) {
+                trackList.forEach { track ->
+                    PanoDb.db.getSeenEntitiesDao().saveTrackAlbumAssociation(
+                        artist = track.artist.name,
+                        track = track.name,
+                        albumArtist = it.album.artist?.name ?: track.artist.name,
+                        album = it.album.name,
+                        artUrl = it.album.webp300,
+                        priority = SeenTrackAlbumAssociation.Priority.ALBUM_INFO,
+                    )
+                }
+            } else if (it.album.webp300 != null) {
+                PanoDb.db.getSeenEntitiesDao().saveAlbumArtIfMissing(
+                    artist = it.album.artist?.name!!,
+                    album = it.album.name,
+                    artUrl = it.album.webp300!!,
+                )
+            }
+        }
+
+        it.album
+    }
 
     suspend fun getArtistInfo(
         musicEntry: Artist,

@@ -13,7 +13,7 @@ import androidx.room3.PrimaryKey
 )
 data class ArtistWithDelimiters(
     @PrimaryKey(autoGenerate = true)
-    val _id: Int = 0,
+    val _id: Long = 0,
 
     @ColumnInfo(collate = ColumnInfo.NOCASE)
     val artist: String = "",

@@ -69,8 +69,12 @@ sealed interface PlayingTrackNotifyEvent {
     @Serializable
     data class TrackScrobbleLocked(
         val hash: Int,
-        val locked: Boolean,
-    ) : PlayingTrackNotifyEvent
+        val state: LockState,
+    ) : PlayingTrackNotifyEvent {
+        enum class LockState {
+            LOCKED, UNLOCKED, SCROBBLED
+        }
+    }
 
     @Serializable
     data class CurrentTrackLovedUnloved(
@@ -175,10 +179,26 @@ suspend fun listenForPlayingTrackEvents(
 
             is PlayingTrackNotifyEvent.TrackScrobbleLocked -> {
                 if (event.hash != -1) {
-                    if (event.locked) {
-                        scrobbleQueue.setLockedHash(event.hash)
-                    } else {
-                        scrobbleQueue.setLockedHash(null)
+                    when (event.state) {
+                        PlayingTrackNotifyEvent.TrackScrobbleLocked.LockState.LOCKED -> {
+                            scrobbleQueue.setLockedHash(event.hash)
+                        }
+
+                        PlayingTrackNotifyEvent.TrackScrobbleLocked.LockState.UNLOCKED -> {
+                            scrobbleQueue.setLockedHash(null)
+                        }
+
+                        PlayingTrackNotifyEvent.TrackScrobbleLocked.LockState.SCROBBLED -> {
+                            scrobbleQueue.setLockedHash(null)
+                            scrobbleQueue.remove(event.hash)
+                            val trackInfo = mediaListener.findTrackerByHash(event.hash)?.trackInfo
+
+                            if (trackInfo != null) {
+                                trackInfo.scrobbled()
+                                PanoNotifications.removeNotificationByKey(trackInfo.notiKey)
+                            }
+
+                        }
                     }
                 }
             }

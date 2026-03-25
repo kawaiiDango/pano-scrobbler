@@ -100,15 +100,7 @@
     <string name="rank_change_new">Non scrobblé dans la période précédente</string>
     <string name="search">Rechercher</string>
     <string name="clear_all_history" comment="(talking about search history, tag history)">Effacer l&apos;historique</string>
-    <string name="library" comment="search within the library">Bibliothèque</string>
     <string name="global" comment="search globally across lastfm">Global</string>
-    <string name="reindex">Indexage rapide</string>
-    <string name="do_index" comment="downloads the top scrobbles and indexes them into a database">Indexer vos scrobbles</string>
-    <string name="full_index">Indexage complet</string>
-    <string name="take_long_time">Cela peut prendre du temps</string>
-    <string name="full_index_desc">Utilisez ceci uniquement si vous avez modifié ou supprimé des scrobbles du site Web.</string>
-    <string name="searched_n_items" formatted="true" comment="%1= number of tracks/albums/artists, always greater than 1000">Recherche du top %1$s de chaque catégorie.</string>
-    <string name="last_indexed" formatted="true" comment="%1= date">Dernier indexage effectué le %1$s.</string>
     <string name="profile">Profil</string>
     <string name="profile_pic">Image de profil</string>
     <string name="item_options" comment="Screen reader text for 3 dots menu button">Options pour cet élément</string>
@@ -278,7 +270,6 @@
     <string name="server_url" comment="For self hosted scrobbling services">URL du serveur</string>
     <string name="listenbrainz_info" formatted="true" comment="%1 = the link to page containing the token">Vous pouvez trouver votre jeton d&apos;authentification ici : %1$s</string>
     <string name="pref_now_playing">Soumettre la lecture en cours</string>
-    <string name="pref_fetch_album">Récupérer les données d&apos;album manquantes depuis lastFM</string>
     <string name="pref_locale">Langues</string>
     <string name="pref_crashlytics_enabled">Signaler les erreurs automatiquement</string>
     <string name="pref_misc">Divers</string>

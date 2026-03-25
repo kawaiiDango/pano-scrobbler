@@ -116,15 +116,7 @@
     <string name="rank_change_new">Nije scrobbleano unutar prethodnog razdoblja</string>
     <string name="search">Traži</string>
     <string name="clear_all_history" comment="(talking about search history, tag history)">Očisti svu povijest</string>
-    <string name="library" comment="search within the library">Zbirka</string>
     <string name="global" comment="search globally across lastfm">Globalno</string>
-    <string name="reindex">Brzo indeksiranje</string>
-    <string name="do_index" comment="downloads the top scrobbles and indexes them into a database">Indeksiraj svoje scrobblove</string>
-    <string name="full_index">Potpuno indeksiranje</string>
-    <string name="take_long_time">Ovo može dugo potrajati</string>
-    <string name="full_index_desc">Koristite ovo samo ako su scrobblovi izbrisani ili uređeni na stranici.</string>
-    <string name="searched_n_items" formatted="true" comment="%1= number of tracks/albums/artists, always greater than 1000">Pretraženo je top %1$s stavki u svakoj kategoriji.</string>
-    <string name="last_indexed" formatted="true" comment="%1= date">Posljednje indeksiranje %1$s.</string>
     <string name="profile">Profil</string>
     <string name="profile_pic">Slika profila</string>
     <string name="item_options" comment="Screen reader text for 3 dots menu button">Opcije za ovu stavku</string>

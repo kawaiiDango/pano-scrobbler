@@ -15,6 +15,7 @@ import com.arn.scrobble.api.UserAccountTemp
 import com.arn.scrobble.api.UserCached
 import com.arn.scrobble.api.UserCached.Companion.toUserCached
 import com.arn.scrobble.api.cache.CacheStrategy
+import com.arn.scrobble.api.invalidatableLazy
 import com.arn.scrobble.charts.ListeningActivity
 import com.arn.scrobble.charts.TimePeriod
 import com.arn.scrobble.charts.TimePeriodsGenerator
@@ -23,10 +24,8 @@ import com.arn.scrobble.db.SeenTrackAlbumAssociation
 import com.arn.scrobble.utils.Stuff
 import com.arn.scrobble.utils.Stuff.cacheStrategy
 import com.arn.scrobble.utils.Stuff.setMidnight
-import io.ktor.client.HttpClient
 import io.ktor.client.plugins.ResponseException
 import io.ktor.client.plugins.cookies.HttpCookies
-import io.ktor.client.plugins.defaultRequest
 import io.ktor.client.request.HttpRequestBuilder
 import io.ktor.client.request.forms.FormDataContent
 import io.ktor.client.request.forms.submitForm
@@ -62,15 +61,16 @@ open class LastFm(userAccount: UserAccountSerializable) : Scrobblable(userAccoun
         else -> userAccount.apiRoot!!
     }
 
-    val client: HttpClient by lazy {
-        Requesters.genericKtorClient.config {
-            defaultRequest {
-                url(apiRoot)
-            }
-        }
-    }
+    protected val client get() = Requesters.genericKtorClient
 
-    val outerScope = Stuff.appScope
+    private val outerScope = Stuff.appScope
+
+    private fun HttpRequestBuilder.commonReq() {
+        url(apiRoot)
+        parameter("format", "json")
+        parameter("api_key", apiKey)
+        parameter("sk", userAccount.authKey)
+    }
 
     override suspend fun updateNowPlaying(scrobbleData: ScrobbleData): Result<ScrobbleResult> {
         val params = mutableMapOf(
@@ -87,6 +87,7 @@ open class LastFm(userAccount: UserAccountSerializable) : Scrobblable(userAccoun
         )
 
         return client.postResult<NowPlayingResponse> {
+            url(apiRoot)
             setBody(FormDataContent(toFormParametersWithSig(params, apiSecret)))
         }.map { ScrobbleResult(it.nowplaying.ignoredMessage.code != 0) }
     }
@@ -108,6 +109,7 @@ open class LastFm(userAccount: UserAccountSerializable) : Scrobblable(userAccoun
         )
 
         return client.postResult<ScrobbleResponse> {
+            url(apiRoot)
             setBody(FormDataContent(toFormParametersWithSig(params, apiSecret)))
         }.map { ScrobbleResult(it.scrobbles.attr.ignored > 0) }
     }
@@ -132,6 +134,7 @@ open class LastFm(userAccount: UserAccountSerializable) : Scrobblable(userAccoun
         }
 
         return client.postResult<ScrobbleResponse> {
+            url(apiRoot)
             setBody(FormDataContent(toFormParametersWithSig(params, apiSecret)))
         }.map { ScrobbleResult(it.scrobbles.attr.ignored > 0) }
     }
@@ -147,6 +150,7 @@ open class LastFm(userAccount: UserAccountSerializable) : Scrobblable(userAccoun
         )
 
         return client.postResult<String> {
+            url(apiRoot)
             setBody(FormDataContent(toFormParametersWithSig(params, apiSecret)))
         }.map { ScrobbleResult(false) }
     }
@@ -186,35 +190,21 @@ open class LastFm(userAccount: UserAccountSerializable) : Scrobblable(userAccoun
             }
 
             parameter("extended", 1)
-            parameter("format", "json")
-            parameter("api_key", apiKey)
-            parameter("sk", userAccount.authKey)
             cacheStrategy(cacheStrategy)
+            commonReq()
         }.map {
             val pageResult = it.fixTracksPage(includeNowPlaying)
             // run cache hook
-            outerScope.launch {
-                it.entries.forEach { track ->
-
-                    if (track.album != null)
-                        PanoDb.db.getSeenEntitiesDao().saveTrackAlbumAssociation(
-                            artist = track.artist.name,
-                            track = track.name,
-                            albumArtist = track.artist.name,
-                            album = track.album.name,
-                            artUrl = track.album.webp300,
-                            priority = SeenTrackAlbumAssociation.Priority.RECENT_TRACKS,
-                        )
-
-                    if (track.userloved != null)
-                        PanoDb.db.getSeenEntitiesDao().saveLovedState(
-                            artist = track.artist.name,
-                            track = track.name,
-                            isLoved = track.userloved,
-                        )
+            if (userAccount.user.isSelf) {
+                outerScope.launch {
+                    PanoDb.db.getSeenEntitiesDao().saveRecentTracks(
+                        pageResult.entries,
+                        mayHaveAlbumArt = true,
+                        savedLoved = true,
+                        priority = SeenTrackAlbumAssociation.Priority.RECENT_TRACKS,
+                    )
                 }
             }
-
             pageResult
         }
     }
@@ -232,23 +222,16 @@ open class LastFm(userAccount: UserAccountSerializable) : Scrobblable(userAccoun
             parameter("limit", limit)
             parameter("page", page)
             parameter("extended", 1)
-            parameter("format", "json")
-            parameter("api_key", apiKey)
-            parameter("sk", userAccount.authKey)
             cacheStrategy(cacheStrategy)
+            commonReq()
         }.map {
             val pageResult = it.copy(entries = it.entries.map { it.copy(userloved = true) })
 
             // cache hook
-            outerScope.launch {
-                it.entries.forEach { track ->
-                    PanoDb.db.getSeenEntitiesDao().saveLovedState(
-                        artist = track.artist.name,
-                        track = track.name,
-                        isLoved = true,
-                    )
+            if (userAccount.user.isSelf)
+                outerScope.launch {
+                    PanoDb.db.getSeenEntitiesDao().saveLovedTracks(pageResult.entries)
                 }
-            }
 
             pageResult
         }
@@ -266,12 +249,10 @@ open class LastFm(userAccount: UserAccountSerializable) : Scrobblable(userAccoun
         return client.getPageResult<FriendsResponse, User>(transform = { it.friends }) {
             parameter("method", "user.getFriends")
             parameter("user", username)
-            parameter("format", "json")
-            parameter("api_key", apiKey)
-            parameter("sk", userAccount.authKey)
             parameter("page", page)
             parameter("limit", limit)
             cacheStrategy(cacheStrategy)
+            commonReq()
         }.recoverCatching {
             // {"message":"no such page","error":6}
             if (it is ApiException && it.code == 6) {
@@ -323,80 +304,71 @@ open class LastFm(userAccount: UserAccountSerializable) : Scrobblable(userAccoun
         limit: Int,
     ): Result<PageResult<out MusicEntry>> {
 
-        val request = HttpRequestBuilder().apply {
+        fun HttpRequestBuilder.baseReq() {
             parameter("user", username)
             if (limit > 0)
                 parameter("limit", limit)
-            parameter("format", "json")
-            parameter("api_key", apiKey)
-            parameter("sk", userAccount.authKey)
+            if (timePeriod.lastfmPeriod != null) {
+                parameter("period", timePeriod.lastfmPeriod.value)
+                parameter("page", page)
+            } else {
+                val fromStr = (timePeriod.start / 1000).toString()
+                val toStr = (timePeriod.end / 1000).toString()
+
+                parameter("from", fromStr)
+                parameter("to", toStr)
+            }
             cacheStrategy(cacheStrategy)
+            commonReq()
         }
 
         val pr = if (timePeriod.lastfmPeriod != null) {
-            request.parameter("period", timePeriod.lastfmPeriod.value)
-            request.parameter("page", page)
-
             when (type) {
                 Stuff.TYPE_ARTISTS -> return client.getPageResult<TopArtistsResponse, Artist>(
                     transform = { it.topartists },
                 ) {
-                    takeFrom(request)
                     parameter("method", "user.getTopArtists")
+                    baseReq()
                 }
 
                 Stuff.TYPE_ALBUMS -> client.getPageResult<TopAlbumsResponse, Album>(
                     transform = {
                         // cache hook
                         outerScope.launch {
-                            it.topalbums.entries.forEach { album ->
-                                if (album.webp300 != null)
-                                    PanoDb.db.getSeenEntitiesDao().saveAlbumArtIfMissing(
-                                        artist = album.artist!!.name,
-                                        album = album.name,
-                                        artUrl = album.webp300!!,
-                                    )
-                            }
+                            PanoDb.db.getSeenEntitiesDao().saveTopAlbumArts(it.topalbums.entries)
                         }
 
                         it.topalbums
                     },
                 ) {
-                    takeFrom(request)
                     parameter("method", "user.getTopAlbums")
+                    baseReq()
                 }
 
                 else -> client.getPageResult<TopTracksResponse, Track>(
                     transform = { it.toptracks },
                 ) {
-                    takeFrom(request)
                     parameter("method", "user.getTopTracks")
+                    baseReq()
                 }
             }
         } else {
-            val fromStr = (timePeriod.start / 1000).toString()
-            val toStr = (timePeriod.end / 1000).toString()
-
-            request.parameter("from", fromStr)
-            request.parameter("to", toStr)
-
             when (type) {
                 Stuff.TYPE_ARTISTS -> client.getResult<WeeklyArtistChartResponse> {
-                    takeFrom(request)
                     parameter("method", "user.getWeeklyArtistChart")
+                    baseReq()
                 }.map { it.weeklyartistchart.artist }
 
                 Stuff.TYPE_ALBUMS -> client.getResult<WeeklyAlbumChartResponse> {
-                    takeFrom(request)
                     parameter("method", "user.getWeeklyAlbumChart")
+                    baseReq()
                 }.map { it.weeklyalbumchart.album }
 
                 else -> client.getResult<WeeklyTrackChartResponse> {
-                    takeFrom(request)
                     parameter("method", "user.getWeeklyTrackChart")
+                    baseReq()
                 }.map { it.weeklytrackchart.track }
             }.map {
-
                 PageResult(
                     PageAttr(
                         page = 1,
@@ -465,6 +437,7 @@ open class LastFm(userAccount: UserAccountSerializable) : Scrobblable(userAccoun
         }
 
         return client.postResult<String> {
+            url(apiRoot)
             setBody(FormDataContent(toFormParametersWithSig(params, apiSecret)))
         }
     }
@@ -496,6 +469,7 @@ open class LastFm(userAccount: UserAccountSerializable) : Scrobblable(userAccoun
         }
 
         return client.postResult<String> {
+            url(apiRoot)
             setBody(FormDataContent(toFormParametersWithSig(params, apiSecret)))
         }
     }
@@ -520,9 +494,7 @@ open class LastFm(userAccount: UserAccountSerializable) : Scrobblable(userAccoun
             }
         }
 
-        parameter("format", "json")
-        parameter("api_key", apiKey)
-        parameter("sk", userAccount.authKey)
+        commonReq()
     }
 
     suspend fun userGetInfo(
@@ -530,9 +502,7 @@ open class LastFm(userAccount: UserAccountSerializable) : Scrobblable(userAccoun
     ) = client.getResult<UserGetInfoResponse> {
         parameter("method", "user.getInfo")
         parameter("user", username)
-        parameter("format", "json")
-        parameter("api_key", apiKey)
-        parameter("sk", userAccount.authKey)
+        commonReq()
     }.map { it.user }
 
 
@@ -543,9 +513,7 @@ open class LastFm(userAccount: UserAccountSerializable) : Scrobblable(userAccoun
         parameter("method", "user.getTopTags")
         parameter("user", username)
         parameter("limit", limit)
-        parameter("format", "json")
-        parameter("api_key", apiKey)
-        parameter("sk", userAccount.authKey)
+        commonReq()
     }
 
     suspend fun userGetTrackScrobbles(
@@ -562,9 +530,7 @@ open class LastFm(userAccount: UserAccountSerializable) : Scrobblable(userAccoun
             parameter("user", username)
             parameter("limit", limit)
             parameter("page", page)
-            parameter("format", "json")
-            parameter("api_key", apiKey)
-            parameter("sk", userAccount.authKey)
+            commonReq()
         }.map { it.fixTracksPage() }
 
     private fun PageResult<Track>.fixTracksPage(includeNowPlaying: Boolean = false): PageResult<Track> {
@@ -589,7 +555,7 @@ open class LastFm(userAccount: UserAccountSerializable) : Scrobblable(userAccoun
         parameter(key, value?.replace("+", "%2B"))
     }
 
-    private object LastfmUnscrobbler {
+    object LastfmUnscrobbler {
         suspend fun unscrobble(track: Track, username: String): Unit =
             lock.withLock { // does this fix the csrf invalidation problem?
                 val csrfToken =
@@ -649,13 +615,17 @@ open class LastFm(userAccount: UserAccountSerializable) : Scrobblable(userAccoun
         private val lock by lazy { Mutex() }
 
         val cookieStorage by lazy { CookiesDatastore() }
-        private val unscrobbleClient by lazy {
+        private val _unscrobbleClient = invalidatableLazy {
             Requesters.genericKtorClient.config {
                 install(HttpCookies) {
                     storage = cookieStorage
                 }
             }
         }
+
+        private val unscrobbleClient by _unscrobbleClient
+
+        fun invalidateClient() = _unscrobbleClient.invalidate()
     }
 
     companion object {

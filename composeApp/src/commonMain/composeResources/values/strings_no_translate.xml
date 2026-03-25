@@ -34,8 +34,26 @@
     <string name="discord_rich_presence">Discord Rich Presence</string>
     <string name="log_to_file">Persist scrobble logs</string>
     <string name="affect_performance">Will affect performance</string>
+    <string name="proxy_socks5">SOCKS5</string>
 
     <!--  strings for unfinalized stuff  -->
+
+    <string name="proxy"
+        comment="network proxy"
+        >Proxy</string>
+    <string name="system"
+        comment="system default settings"
+        >System</string>
+    <string name="host"
+        comment="proxy host"
+        >Host</string>
+    <string name="port"
+        comment="proxy port"
+        >Port</string>
+    <string name="cache"
+        comment="as a noun"
+        >Cache</string>
+
     <string name="upto_n_regexes" formatted="true">Up to %1$d regex rules</string>
     <string name="max_n" formatted="true">Maximum: %1$d</string>
     <string name="add_exception">Add an exception</string>
@@ -56,7 +74,7 @@
 
     <string name="billing_troubleshoot_github" translatable="false" formatted="true">Already donated?
 
-If you had donated $%1$d or more before %2$s, or did not get the automated email for some reason (check your spam folder too), send me a message on Ko-Fi or BuyMeACoffee with your email address and I will manually email the code to you.
+If you had donated $%1$d or more before %2$s, or did not get the automated email for some reason (check your spam folder too), send me a message on Ko-Fi or BuyMeACoffee and I will manually DM the code to you.
 
 Already purchased through Google Play?
 

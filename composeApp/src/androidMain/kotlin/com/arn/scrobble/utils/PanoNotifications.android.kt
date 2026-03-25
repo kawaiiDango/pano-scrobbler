@@ -73,7 +73,6 @@ actual object PanoNotifications {
     private fun Notification.Builder.setChannelIdCompat(channelId: String): Notification.Builder {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             if (!channelsCreated) {
-                channelsCreated = true
                 createChannels()
             }
 
@@ -630,7 +629,9 @@ actual object PanoNotifications {
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
-    private fun createChannels() {
+    fun createChannels() {
+        channelsCreated = true
+
         // Create channel groups first
         val groups = mutableListOf<NotificationChannelGroup>()
 

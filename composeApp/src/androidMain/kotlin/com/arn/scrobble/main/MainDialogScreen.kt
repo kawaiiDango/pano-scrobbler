@@ -11,7 +11,7 @@ import androidx.navigation3.ui.NavDisplay
 import androidx.savedstate.serialization.SavedStateConfiguration
 import co.touchlab.kermit.Logger
 import coil3.compose.setSingletonImageLoaderFactory
-import com.arn.scrobble.imageloader.newImageLoader
+import com.arn.scrobble.imageloader.PanoImageLoader
 import com.arn.scrobble.navigation.BottomSheetSceneStrategy
 import com.arn.scrobble.navigation.DeepLinkUtils
 import com.arn.scrobble.navigation.NavFromOutsideEffect
@@ -28,7 +28,7 @@ fun PanoMainDialogContent(
     viewModel: MainViewModel = viewModel { MainViewModel() },
 ) {
     setSingletonImageLoaderFactory { context ->
-        newImageLoader(context)
+        PanoImageLoader.newImageLoader(context)
     }
 
     val backStack = rememberPanoNavBackStack(

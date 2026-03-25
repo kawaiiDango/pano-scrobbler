@@ -47,8 +47,9 @@ data class SeenTrackAlbumAssociation(
      * renumbering everything.
      */
     enum class Priority(val n: Int) {
-        ALBUM_INFO(40),  // Inferred from album.getInfo tracklist
-        TRACK_INFO(30), // From track.getInfo response
+        ALBUM_INFO(50),  // Inferred from album.getInfo tracklist
+        TRACK_INFO(40), // From track.getInfo response
+        CHARTS(30),  // From top tracks in charts for ListenBrainz
         RECENT_TRACKS(20),  // From user.getRecentTracks
         MEDIA_PLAYER(10)  // Direct from OS media metadata — most trusted
     }

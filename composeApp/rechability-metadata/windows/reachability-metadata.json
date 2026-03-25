@@ -1311,6 +1311,29 @@
       "type": "java.lang.ClassValue"
     },
     {
+      "type": "java.lang.CharSequence",
+      "jniAccessible": true,
+      "methods": [
+        {
+          "name": "charAt",
+          "parameterTypes": [
+            "int"
+          ]
+        },
+        {
+          "name": "length",
+          "parameterTypes": []
+        },
+        {
+          "name": "subSequence",
+          "parameterTypes": [
+            "int",
+            "int"
+          ]
+        }
+      ]
+    },
+    {
       "type": "java.lang.Enum",
       "jniAccessible": true,
       "methods": [

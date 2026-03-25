@@ -1,17 +1,32 @@
 package com.arn.scrobble.api.lastfm
 
 import com.arn.scrobble.api.cache.ExpirationPolicy
+import com.arn.scrobble.utils.Stuff
 import io.ktor.http.Url
+import okhttp3.HttpUrl.Companion.toHttpUrl
 import java.util.concurrent.TimeUnit
 
-class LastfmExpirationPolicy : ExpirationPolicy {
+class DefaultExpirationPolicy : ExpirationPolicy {
 
     private val ONE_WEEK = TimeUnit.DAYS.toMillis(7)
     private val THREE_MINUTES = TimeUnit.MINUTES.toMillis(3)
     private val ONE_MONTH = TimeUnit.DAYS.toMillis(30)
 
-    override fun getExpirationTime(url: Url): Long {
+    private val lastFmHost = Stuff.LASTFM_API_ROOT.toHttpUrl().host
+    private val libreFmHost = Stuff.LIBREFM_API_ROOT.toHttpUrl().host
+    private val listenBrainzHost = Stuff.LISTENBRAINZ_API_ROOT.toHttpUrl().host
 
+    override fun getExpirationTime(url: Url): Long {
+        return when (url.host) {
+            lastFmHost, libreFmHost ->
+                getLastFmExpiration(url)
+
+            listenBrainzHost -> getListenBrainzExpiration(url)
+            else -> -1
+        }
+    }
+
+    private fun getLastFmExpiration(url: Url): Long {
         val method = url.parameters["method"]?.lowercase()
         val username = url.parameters["username"]
         val page = url.parameters["page"]
@@ -57,6 +72,23 @@ class LastfmExpirationPolicy : ExpirationPolicy {
             "user.getweeklyartistchart",
             "user.getweeklytrackchart",
             "user.getweeklychartlist" -> THREE_MINUTES
+
+            else -> -1
+        }
+    }
+
+    private fun getListenBrainzExpiration(url: Url): Long {
+        return when (url.segments.lastOrNull()) {
+            "playing-now",
+            "listens",
+            "following",
+            "get-feedback",
+                -> ONE_WEEK
+
+            "artists",
+            "releases",
+            "recordings",
+                -> THREE_MINUTES
 
             else -> -1
         }

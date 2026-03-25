@@ -39,6 +39,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.LifecycleResumeEffect
+import androidx.lifecycle.compose.LifecycleStartEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.paging.LoadState
@@ -52,6 +53,7 @@ import com.arn.scrobble.charts.TimePeriodType
 import com.arn.scrobble.charts.TimePeriodsGenerator
 import com.arn.scrobble.charts.getPeriodTypeIcon
 import com.arn.scrobble.charts.getPeriodTypePluralRes
+import com.arn.scrobble.db.PendingScrobble
 import com.arn.scrobble.icons.ArrowDropDown
 import com.arn.scrobble.icons.Casino
 import com.arn.scrobble.icons.Favorite
@@ -117,11 +119,12 @@ fun ScrobblesScreen(
     var timeJumpMillis by rememberSaveable { mutableStateOf<Long?>(null) }
     val tracks = viewModel.tracks.collectAsLazyPagingItems()
     val firstPageLoadedTime by viewModel.firstPageLoadedTime.collectAsStateWithLifecycle()
-    val pendingScrobbles by
+    val pendingScrobblesWithCount by
     if (user.isSelf)
-        viewModel.pendingScrobbles.collectAsStateWithLifecycle()
+        viewModel.pendingScrobblesWithCount.collectAsStateWithLifecycle()
     else
-        remember { mutableStateOf(emptyList()) }
+        remember { mutableStateOf(emptyList<PendingScrobble>() to 0) }
+    val (pendingScrobbles, pendingScrobblesCount) = pendingScrobblesWithCount
     val total by viewModel.total.collectAsStateWithLifecycle()
     val pkgMap by viewModel.pkgMap.collectAsStateWithLifecycle()
     val nlsEnabled by viewModel.nlsEnabled.collectAsStateWithLifecycle()
@@ -136,8 +139,8 @@ fun ScrobblesScreen(
     var pendingScrobblesExpanded by rememberSaveable { mutableStateOf(false) }
     var expandedKey by rememberSaveable { mutableStateOf<String?>(null) }
     var canExpandNowPlaying by rememberSaveable { mutableStateOf(true) }
-    val pendingScrobblesHeader = stringResource(Res.string.pending_scrobbles) + ": " +
-            pendingScrobbles.size
+    val pendingScrobblesHeader =
+        stringResource(Res.string.pending_scrobbles) + ": " + pendingScrobblesCount
     val canLove = accountType != AccountType.PLEROMA
     val density = LocalDensity.current
     val listViewportHeight = remember {
@@ -224,6 +227,19 @@ fun ScrobblesScreen(
             }
 
             listState.animateScrollToItem(expandedItem?.index ?: 0)
+        }
+    }
+
+    if (user.isSelf) {
+        LifecycleStartEffect(Unit) {
+            viewModel.setForeground(true)
+            onStopOrDispose {
+                viewModel.setForeground(false)
+            }
+        }
+
+        LaunchedEffect(pendingScrobblesExpanded) {
+            viewModel.setPendingScrobblesExpanded(pendingScrobblesExpanded)
         }
     }
 
@@ -399,7 +415,10 @@ fun ScrobblesScreen(
                         headerText = pendingScrobblesHeader,
                         headerIcon = Icons.HourglassEmpty,
                         items = pendingScrobbles,
-                        expanded = pendingScrobblesExpanded,
+                        expanded = if (pendingScrobblesCount <= viewModel.pendingScrobblesPreviewCount)
+                            null
+                        else
+                            pendingScrobblesExpanded,
                         onToggle = {
                             pendingScrobblesExpanded = it
                         },

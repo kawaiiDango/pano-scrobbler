@@ -2,7 +2,6 @@ package com.arn.scrobble.api.pleroma
 
 import com.arn.scrobble.BuildKonfig
 import com.arn.scrobble.api.AccountType
-import com.arn.scrobble.api.CustomCachePlugin
 import com.arn.scrobble.api.Requesters
 import com.arn.scrobble.api.Requesters.getResult
 import com.arn.scrobble.api.Requesters.postResult
@@ -27,32 +26,28 @@ import com.arn.scrobble.charts.ListeningActivity
 import com.arn.scrobble.charts.TimePeriod
 import com.arn.scrobble.ui.MinimalHtmlParser.decodeHtmlEntities
 import com.arn.scrobble.utils.Stuff.cacheStrategy
-import io.ktor.client.HttpClient
-import io.ktor.client.plugins.defaultRequest
+import io.ktor.client.request.HttpRequestBuilder
 import io.ktor.client.request.bearerAuth
 import io.ktor.client.request.forms.FormDataContent
 import io.ktor.client.request.parameter
 import io.ktor.client.request.setBody
+import io.ktor.client.request.url
 import io.ktor.http.Url
+import io.ktor.http.encodedPath
 import io.ktor.http.parameters
 import kotlinx.coroutines.delay
 import kotlinx.serialization.Serializable
 import java.util.concurrent.TimeUnit
-import kotlin.time.ExperimentalTime
 import kotlin.time.Instant
 
 class Pleroma(userAccount: UserAccountSerializable) : Scrobblable(userAccount) {
-    private val client: HttpClient by lazy {
-        Requesters.genericKtorClient.config {
-            install(CustomCachePlugin) {
-                policy = PleromaExpirationPolicy()
-            }
+    private val client get() = Requesters.genericKtorClient
 
-            defaultRequest {
-                url(userAccount.apiRoot!!)
-                bearerAuth(userAccount.authKey)
-            }
-        }
+    private fun HttpRequestBuilder.commonReq() {
+        val existingPath = url.encodedPath
+
+        url(userAccount.apiRoot!! + existingPath)
+        bearerAuth(userAccount.authKey)
     }
 
     override suspend fun updateNowPlaying(scrobbleData: ScrobbleData): Result<ScrobbleResult> {
@@ -71,6 +66,7 @@ class Pleroma(userAccount: UserAccountSerializable) : Scrobblable(userAccount) {
 
         return client.postResult<String>("api/v1/pleroma/scrobble") {
             setJsonBody(pleromaTrack)
+            commonReq()
         }.map { ScrobbleResult(false) }
     }
 
@@ -96,7 +92,6 @@ class Pleroma(userAccount: UserAccountSerializable) : Scrobblable(userAccount) {
         return Result.success(Unit)
     }
 
-    @OptIn(ExperimentalTime::class)
     override suspend fun getRecents(
         page: Int,
         username: String,
@@ -113,6 +108,7 @@ class Pleroma(userAccount: UserAccountSerializable) : Scrobblable(userAccount) {
 
         return client.getResult<List<PleromaTrack>>("api/v1/pleroma/accounts/${userAccount.user.name}/scrobbles") {
             cacheStrategy(cacheStrategy)
+            commonReq()
         }
             .map {
                 val tracks = it.map { track ->

@@ -13,6 +13,15 @@
             android:name="firebase_analytics_collection_enabled"
             android:value="false" />
 
+<!--        <meta-data-->
+<!--            android:name="firebase_sessions_enabled"-->
+<!--            android:value="false" />-->
+
+        <meta-data
+            android:name="firebase_analytics_collection_deactivated"
+            android:value="true" />
+
+
         <!--  do not use FOREGROUND_SERVICE_SPECIAL_USE on play store builds due to play store restrictions  -->
         <service
             android:name="com.arn.scrobble.media.PersistentNotificationService"

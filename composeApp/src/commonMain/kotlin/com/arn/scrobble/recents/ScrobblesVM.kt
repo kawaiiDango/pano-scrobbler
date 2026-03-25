@@ -9,6 +9,7 @@ import androidx.paging.cachedIn
 import androidx.paging.filter
 import androidx.paging.insertSeparators
 import androidx.paging.map
+import com.arn.scrobble.api.AccountType
 import com.arn.scrobble.api.Scrobblables
 import com.arn.scrobble.api.ScrobbleEverywhere
 import com.arn.scrobble.api.UserCached
@@ -16,6 +17,7 @@ import com.arn.scrobble.api.lastfm.LastFm
 import com.arn.scrobble.api.lastfm.Track
 import com.arn.scrobble.api.listenbrainz.ListenBrainz
 import com.arn.scrobble.db.PanoDb
+import com.arn.scrobble.db.PendingScrobble
 import com.arn.scrobble.ui.PanoSnackbarVisuals
 import com.arn.scrobble.ui.generateKey
 import com.arn.scrobble.utils.PlatformStuff
@@ -28,9 +30,11 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
@@ -39,15 +43,52 @@ import org.jetbrains.compose.resources.getString
 import pano_scrobbler.composeapp.generated.resources.Res
 import pano_scrobbler.composeapp.generated.resources.lastfm_reauth
 import java.util.Calendar
-import kotlin.time.Duration.Companion.minutes
+import kotlin.time.Duration.Companion.seconds
 
 
 class ScrobblesVM(
     val user: UserCached,
     track: Track?, // for track-specific scrobbles view
 ) : ViewModel() {
-    val pendingScrobbles = PanoDb.db.getPendingScrobblesDao().allFlow(10000)
-        .stateIn(viewModelScope, SharingStarted.Lazily, emptyList())
+    private val androidDbPollRunning = MutableStateFlow(true)
+    private val pendingScrobblesExpanded = MutableStateFlow(false)
+    val pendingScrobblesPreviewCount = 3
+    private val _pendingScrobblesFlow = pendingScrobblesExpanded
+        .flatMapLatest { expanded ->
+            val dao = PanoDb.db.getPendingScrobblesDao()
+            dao.allFlow(
+                if (expanded) 10000 else pendingScrobblesPreviewCount
+            ).map { ps ->
+                val count = if (expanded) ps.size else dao.count()
+                ps to count
+            }
+        }
+
+    private val _pendingScrobbles = if (PlatformStuff.isDesktop)
+        _pendingScrobblesFlow
+    else
+        androidDbPollRunning
+            .flatMapLatest { inForeground ->
+                if (!inForeground) {
+                    emptyFlow() // stop polling, let stateIn hold the last value
+                } else {
+                    flow {
+                        while (true) {
+                            emit(Unit)
+                            delay(5.seconds)
+                        }
+                    }
+                        .flatMapLatest { _pendingScrobblesFlow }
+                }
+            }
+
+    val pendingScrobblesWithCount = _pendingScrobbles
+        .stateIn(
+            viewModelScope,
+            SharingStarted.Lazily,
+            emptyList<PendingScrobble>() to 0
+        )
+
     private val _nlsEnabled = MutableStateFlow(PlatformStuff.isNotificationListenerEnabled())
     val nlsEnabled = _nlsEnabled.asStateFlow()
     private val _scrobblerServiceRunning = MutableStateFlow<Boolean?>(null)
@@ -172,22 +213,6 @@ class ScrobblesVM(
     init {
         if (user.isSelf) {
             viewModelScope.launch {
-                val lastFailed = PanoDb.db.getPendingScrobblesDao().lastFailedTimestamp()
-                val hasPending = if (lastFailed == null)
-                    PanoDb.db.getPendingScrobblesDao().allFlow(1).first().isNotEmpty()
-                else
-                    true
-
-                val isRunning = PendingScrobblesWork.state().first() == CommonWorkState.RUNNING
-
-                if (hasPending && !isRunning) {
-                    val force = System.currentTimeMillis() - (lastFailed ?: 0L) >
-                            30.minutes.inWholeMilliseconds
-                    PendingScrobblesWork.schedule(force)
-                }
-            }
-
-            viewModelScope.launch {
                 PendingScrobblesWork.getProgress()
                     .collect {
                         if (it.state == CommonWorkState.RUNNING || it.state == CommonWorkState.FAILED) {
@@ -198,6 +223,10 @@ class ScrobblesVM(
                             Stuff.globalSnackbarFlow.emit(snackbarData)
                         }
                     }
+            }
+
+            viewModelScope.launch {
+                fetchLovesForCacheIfNeeded()
             }
 
             updateScrobblerServiceStatus()
@@ -220,6 +249,13 @@ class ScrobblesVM(
         _input.value = input
     }
 
+    fun setForeground(fg: Boolean) {
+        androidDbPollRunning.value = fg
+    }
+
+    fun setPendingScrobblesExpanded(expanded: Boolean) {
+        pendingScrobblesExpanded.value = expanded
+    }
 
     /*
     private suspend fun loadRecents(
@@ -358,6 +394,18 @@ class ScrobblesVM(
         editsAndDeletes.value += key to editedTrack
     }
 
+    private suspend fun fetchLovesForCacheIfNeeded() {
+        val currentScrobblable = Scrobblables.current
+
+        if (user.isSelf && currentScrobblable?.userAccount?.type == AccountType.LASTFM &&
+            !PlatformStuff.mainPrefs.data.map { it.lovesFetchedForCache }.first()
+        ) {
+            currentScrobblable.getLoves(1, limit = 1000)
+                .onSuccess {
+                    PlatformStuff.mainPrefs.updateData { it.copy(lovesFetchedForCache = true) }
+                }
+        }
+    }
 }
 
 expect fun ScrobblesVM.shareTrack(track: Track, shareSig: String?)

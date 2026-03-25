@@ -1,9 +1,6 @@
-- You can now add artist names that should not be split by the first artist extractor
-- Added more granular options to choose what to import
-- Switched to Inno Setup for the Windows installer
-- Supporters can now add up to 300 regex rules
-- Implemented "If found, continue editing with other rules" for both simple edits and regex rules
-- Fixed issues with Deezer API calls on Windows
-- No longer requires an X11 server to be running until the UI is opened for the first time on Linux
+- Added SOCKS5 proxy settings
+- Caches albums and track loved state
+- The cached loved state is shown in the tray menu on Windows and Linux and in the notification on Android
+- Optimizations for Android and Windows
 - Bug fixes
 - Translation updates by the translators on Crowdin

@@ -17,6 +17,7 @@ Features:
 - Search Lastfm for a songs, artists, or albums
 - Themes
 - Remember and see apps you scrobbled from and play directly in them
+- Proxy support
 
 #### Android only (except TV):
 

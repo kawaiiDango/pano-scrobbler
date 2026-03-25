@@ -6,8 +6,8 @@ import com.arn.scrobble.api.Requesters
 import com.arn.scrobble.api.Requesters.getResult
 import com.arn.scrobble.api.Requesters.parseJsonBody
 import com.arn.scrobble.api.cache.ExpirationPolicy
+import com.arn.scrobble.api.invalidatableLazy
 import com.arn.scrobble.utils.Stuff
-import io.ktor.client.HttpClient
 import io.ktor.client.plugins.auth.Auth
 import io.ktor.client.plugins.auth.providers.BearerTokens
 import io.ktor.client.plugins.auth.providers.bearer
@@ -20,18 +20,18 @@ import io.ktor.http.parameters
 import java.util.concurrent.TimeUnit
 
 class SpotifyRequester {
-    private val client: HttpClient by lazy {
-        val refreshToken = Stuff.xorWithKey(
-            BuildKonfig.SPOTIFY_REFRESH_TOKEN,
-            BuildKonfig.APP_ID
-        )
-
+    private val _client = invalidatableLazy {
         Requesters.genericKtorClient.config {
             install(CustomCachePlugin) {
                 policy = SpotifyCacheExpirationPolicy()
             }
 
             install(Auth) {
+                val refreshToken = Stuff.xorWithKey(
+                    BuildKonfig.SPOTIFY_REFRESH_TOKEN,
+                    BuildKonfig.APP_ID
+                )
+
                 bearer {
                     loadTokens {
                         BearerTokens(
@@ -71,6 +71,10 @@ class SpotifyRequester {
             }
         }
     }
+
+    private val client by _client
+
+    fun invalidateClient() = _client.invalidate()
 
     suspend fun search(
         query: String,

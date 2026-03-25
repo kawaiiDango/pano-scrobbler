@@ -122,6 +122,10 @@ data class MainPrefs(
     private val logToFileOnAndroidSince: Long = -1,
     val extractFirstArtistPackages: Set<String> = emptySet(),
     val discordRpc: DiscordRpcSettings = DiscordRpcSettings(),
+    val customProxyEnabled: Boolean = false,
+    val proxyHost: String = "127.0.0.1",
+    val proxyPort: Int = 1080,
+    val lovesFetchedForCache: Boolean = false,
 ) {
 
     @Serializable

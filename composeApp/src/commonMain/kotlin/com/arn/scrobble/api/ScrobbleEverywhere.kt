@@ -11,7 +11,6 @@ import com.arn.scrobble.api.steelseries.SteelSeriesReceiverServer
 import com.arn.scrobble.db.BlockPlayerAction
 import com.arn.scrobble.db.BlockedMetadataDao.Companion.getBlockedEntry
 import com.arn.scrobble.db.PanoDb
-import com.arn.scrobble.db.PendingScrobble
 import com.arn.scrobble.db.RegexEditsDao
 import com.arn.scrobble.db.ScrobbleSource
 import com.arn.scrobble.db.SeenTrackAlbumAssociation
@@ -25,8 +24,6 @@ import com.arn.scrobble.utils.FirstArtistExtractor
 import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff
 import com.arn.scrobble.utils.Stuff.mapConcurrently
-import com.arn.scrobble.utils.isNetworkRetryable
-import com.arn.scrobble.utils.redactedMessage
 import com.arn.scrobble.work.PendingScrobblesWork
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.first
@@ -40,7 +37,6 @@ data class PreprocessResult(
     val titleParseFailed: Boolean = false,
     val blockPlayerAction: BlockPlayerAction? = null,
     val userLoved: Boolean = false,
-    val userPlayCount: Int = 0,
 )
 
 data class AdditionalMetadataResult(
@@ -340,6 +336,8 @@ object ScrobbleEverywhere {
             it to it.scrobble(scrobbleData)
         }.toMap()
 
+        val pendingScrobblesDao = PanoDb.db.getPendingScrobblesDao()
+
         if (scrobbleResults.isEmpty() ||
             scrobbleResults.values.any { !it.isSuccess }
         ) {
@@ -353,32 +351,24 @@ object ScrobbleEverywhere {
                         if (!result.isSuccess) scrobblable.userAccount.type else null
                     }
 
-            val dao = PanoDb.db.getPendingScrobblesDao()
 
             val exceptions = scrobbleResults.values.mapNotNull { it.exceptionOrNull() }
 
-            val entry = PendingScrobble(
-                scrobbleData = scrobbleData,
-                event = ScrobbleEvent.scrobble,
-                services = services.toSet(),
-                lastFailedReason = exceptions
-                    .firstOrNull()
-                    ?.redactedMessage?.take(100),
-                canForceRetry = exceptions.any { it.isNetworkRetryable }
-            )
-
-            dao.insert(entry)
+            pendingScrobblesDao.insert(scrobbleData, ScrobbleEvent.scrobble, services, exceptions)
             PendingScrobblesWork.schedule(false)
+        } else {
+            // all success
+            if (pendingScrobblesDao.canForceRetry())
+                PendingScrobblesWork.schedule(true)
         }
 
         // if it has album, update cache
 
         if (!scrobbleData.album.isNullOrEmpty()) {
-            PanoDb.db.getSeenEntitiesDao().saveTrackAlbumAssociation(
-                artist = scrobbleData.artist,
-                track = scrobbleData.track,
-                albumArtist = scrobbleData.albumArtist ?: scrobbleData.artist,
-                album = scrobbleData.album,
+            PanoDb.db.getSeenEntitiesDao().saveRecentTracks(
+                listOf(scrobbleData.toTrack()),
+                mayHaveAlbumArt = false,
+                savedLoved = false,
                 priority = SeenTrackAlbumAssociation.Priority.MEDIA_PLAYER
             )
         }
@@ -391,7 +381,11 @@ object ScrobbleEverywhere {
 
         // update the cache
         PanoDb.db.getSeenEntitiesDao()
-            .saveLovedState(track.artist.name, track.name, love)
+            .saveLovedTracks(
+                listOf(
+                    track.copy(userloved = love)
+                )
+            )
 
         val dao = PanoDb.db.getPendingScrobblesDao()
         val pl = dao.findLoved(track.artist.name, track.name)
@@ -427,18 +421,8 @@ object ScrobbleEverywhere {
 
                 val exceptions = loveResults.values.mapNotNull { it.exceptionOrNull() }
 
-                val entry = PendingScrobble(
-                    scrobbleData = scrobbleData,
-                    event = ScrobbleEvent.love,
-                    services = services.toSet(),
-                    lastFailedReason = exceptions
-                        .firstOrNull()
-                        ?.redactedMessage?.take(100),
-                    canForceRetry = exceptions.any { it.isNetworkRetryable }
-                )
-
-                if (entry.services.isNotEmpty()) {
-                    dao.insert(entry)
+                if (services.isNotEmpty()) {
+                    dao.insert(scrobbleData, ScrobbleEvent.love, services, exceptions)
                     PendingScrobblesWork.schedule(false)
                 }
             }

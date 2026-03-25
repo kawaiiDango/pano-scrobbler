@@ -3,7 +3,6 @@ package com.arn.scrobble.api.listenbrainz
 import androidx.annotation.IntRange
 import co.touchlab.kermit.Logger
 import com.arn.scrobble.BuildKonfig
-import com.arn.scrobble.api.CustomCachePlugin
 import com.arn.scrobble.api.DrawerData
 import com.arn.scrobble.api.Requesters
 import com.arn.scrobble.api.Requesters.getPageResult
@@ -33,16 +32,20 @@ import com.arn.scrobble.api.lastfm.User
 import com.arn.scrobble.charts.ListeningActivity
 import com.arn.scrobble.charts.TimePeriod
 import com.arn.scrobble.charts.TimePeriodType
+import com.arn.scrobble.db.PanoDb
+import com.arn.scrobble.db.SeenTrackAlbumAssociation
 import com.arn.scrobble.utils.Stuff
 import com.arn.scrobble.utils.Stuff.cacheStrategy
-import io.ktor.client.HttpClient
-import io.ktor.client.plugins.defaultRequest
+import io.ktor.client.request.HttpRequestBuilder
 import io.ktor.client.request.header
 import io.ktor.client.request.parameter
+import io.ktor.client.request.url
 import io.ktor.http.ContentType
 import io.ktor.http.HttpHeaders
 import io.ktor.http.contentType
+import io.ktor.http.encodedPath
 import io.ktor.util.appendIfNameAbsent
+import kotlinx.coroutines.launch
 import okhttp3.HttpUrl.Companion.toHttpUrl
 import java.text.SimpleDateFormat
 import java.util.Locale
@@ -52,23 +55,17 @@ import kotlin.math.min
 
 class ListenBrainz(userAccount: UserAccountSerializable) : Scrobblable(userAccount) {
 
-    private val client: HttpClient by lazy {
-        Requesters.genericKtorClient.config {
+    private val client get() = Requesters.genericKtorClient
+    private val outerScope = Stuff.appScope
 
-            install(CustomCachePlugin) {
-                policy = ListenbrainzExpirationPolicy()
-            }
+    private fun HttpRequestBuilder.commonReq() {
+        val existingPath = url.encodedPath
 
-            defaultRequest {
-                url(userAccount.apiRoot + "1/")
-                headers.appendIfNameAbsent(
-                    HttpHeaders.Authorization,
-                    "token ${userAccount.authKey}"
-                )
-            }
-
-            // https://youtrack.jetbrains.com/issue/KTOR-4225
-        }
+        url(userAccount.apiRoot + "1/" + existingPath)
+        headers.appendIfNameAbsent(
+            HttpHeaders.Authorization,
+            "token ${userAccount.authKey}"
+        )
     }
 
     private suspend fun submitListens(
@@ -105,6 +102,7 @@ class ListenBrainz(userAccount: UserAccountSerializable) : Scrobblable(userAccou
                 parameter("return_msid", true)
 
             setJsonBody(listen)
+            commonReq()
         }.map {
             if (it.isOk)
                 ScrobbleResult(false, msid = it.recording_msid)
@@ -127,6 +125,7 @@ class ListenBrainz(userAccount: UserAccountSerializable) : Scrobblable(userAccou
             parameter("artist_name", track.artist.name)
             parameter("recording_name", track.name)
             parameter("release_name", track.album?.name)
+            commonReq()
         }
 //        200 OK – lookup succeeded, does not indicate whether a match was found or not
     }
@@ -190,6 +189,7 @@ class ListenBrainz(userAccount: UserAccountSerializable) : Scrobblable(userAccou
 
         return client.postResult<ListenBrainzSubmitResponse>("feedback/recording-feedback") {
             setJsonBody(ListenBrainzFeedback(mbid, msid, score))
+            commonReq()
         }.map {
             if (it.isOk)
                 ScrobbleResult(false)
@@ -275,12 +275,14 @@ class ListenBrainz(userAccount: UserAccountSerializable) : Scrobblable(userAccou
                     parameter("min_ts", from / 1000)
                 parameter("count", actualLimit)
                 cacheStrategy(cacheStrategy)
+                commonReq()
             }
 
 
         if (includeNowPlaying) {
             client.getResult<ListenBrainzListensData>("user/$username/playing-now") {
                 cacheStrategy(cacheStrategy)
+                commonReq()
             }.map { it.payload.listens.firstOrNull()?.let { trackMap(it) } }
                 .getOrNull()
                 ?.let { npTrack ->
@@ -288,6 +290,18 @@ class ListenBrainz(userAccount: UserAccountSerializable) : Scrobblable(userAccou
                         it.copy(entries = listOf(npTrack) + it.entries)
                     }
                 }
+        }
+
+        // run cache hook
+        listens.onSuccess { pageResult ->
+            outerScope.launch {
+                PanoDb.db.getSeenEntitiesDao().saveRecentTracks(
+                    pageResult.entries,
+                    mayHaveAlbumArt = false, // track charts have a release_mbid for album art unlike lastfm
+                    savedLoved = false, // recents does not contain feedback info
+                    priority = SeenTrackAlbumAssociation.Priority.RECENT_TRACKS,
+                )
+            }
         }
 
         return listens
@@ -299,6 +313,7 @@ class ListenBrainz(userAccount: UserAccountSerializable) : Scrobblable(userAccou
 
         return client.postResult<ListenBrainzSubmitResponse>("delete-listen") {
             setJsonBody(ListenBrainzDeleteRequest(track.date, msid))
+            commonReq()
         }.map { }
     }
 
@@ -359,6 +374,14 @@ class ListenBrainz(userAccount: UserAccountSerializable) : Scrobblable(userAccou
             parameter("metadata", true)
             parameter("count", actualLimit)
             cacheStrategy(cacheStrategy)
+            commonReq()
+        }.onSuccess { feedbacks ->
+            // run cache hook
+            if (userAccount.user.isSelf) {
+                outerScope.launch {
+                    PanoDb.db.getSeenEntitiesDao().saveLovedTracks(feedbacks.entries)
+                }
+            }
         }
     }
 
@@ -381,11 +404,14 @@ class ListenBrainz(userAccount: UserAccountSerializable) : Scrobblable(userAccou
             }
         ) {
             cacheStrategy(cacheStrategy)
+            commonReq()
         }
     }
 
     override suspend fun loadDrawerData(username: String): Result<DrawerData> {
-        return client.getResult<ListenBrainzCountData>("user/$username/listen-count")
+        return client.getResult<ListenBrainzCountData>("user/$username/listen-count") {
+            commonReq()
+        }
             .map { DrawerData(it.payload.count) }
     }
 
@@ -488,6 +514,19 @@ class ListenBrainz(userAccount: UserAccountSerializable) : Scrobblable(userAccou
             parameter("range", range)
             parameter("count", actualLimit)
             cacheStrategy(cacheStrategy)
+            commonReq()
+        }.onSuccess {
+            // run cache hook
+            if (type == Stuff.TYPE_TRACKS && userAccount.user.isSelf) { // they have albums sometimes, unlike lastfm
+                outerScope.launch {
+                    PanoDb.db.getSeenEntitiesDao().saveRecentTracks(
+                        it.entries.filterIsInstance<Track>(),
+                        mayHaveAlbumArt = false,
+                        savedLoved = false,
+                        priority = SeenTrackAlbumAssociation.Priority.CHARTS,
+                    )
+                }
+            }
         }
     }
 
@@ -504,6 +543,7 @@ class ListenBrainz(userAccount: UserAccountSerializable) : Scrobblable(userAccou
             client.getResult<ListenBrainzActivityData>("stats/user/$username/listening-activity") {
                 parameter("range", timePeriod.listenBrainzRange)
                 cacheStrategy(cacheStrategy)
+                commonReq()
             }
 
         val type = when (timePeriod.listenBrainzRange) {

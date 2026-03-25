@@ -25,7 +25,7 @@ class NavPopupVM(
                 }.first()?.let { emit(it) }
             }
 
-            delay(2000)
+            delay(1000)
 
             val scrobblable = Scrobblables.current
             scrobblable

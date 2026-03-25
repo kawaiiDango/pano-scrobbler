@@ -12,6 +12,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import com.arn.scrobble.DesktopWebView
+import com.arn.scrobble.api.Requesters
 import com.arn.scrobble.api.UserAccountTemp
 import com.arn.scrobble.api.pleroma.PleromaOauthClientCreds
 import com.arn.scrobble.icons.Icons
@@ -42,13 +43,18 @@ actual fun WebViewScreen(
     LaunchedEffect(Unit) {
         onSetTitle(title)
 
-        if (DesktopWebView.inited)
+        if (DesktopWebView.inited) {
+            val (proxyHost, proxyPort) = Requesters.proxyHostPort.value ?: "" to 0
+
             DesktopWebView.launchWebView(
                 initialUrl,
                 Stuff.DEEPLINK_SCHEME,
                 "https://www.last.fm/",
-                DesktopStuff.webViewDir.absolutePath
+                DesktopStuff.webViewDir.absolutePath,
+                proxyHost,
+                proxyPort
             )
+        }
 
         viewModel.loginState.collect { loginState ->
             handleWebViewStatus(

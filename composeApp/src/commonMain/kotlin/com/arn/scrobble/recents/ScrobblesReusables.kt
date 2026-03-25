@@ -803,12 +803,11 @@ fun LazyListScope.pendingScrobblesListItems(
     headerIcon: ImageVector,
     items: List<PendingScrobble>,
     showScrobbleSources: Boolean,
-    expanded: Boolean,
+    expanded: Boolean?, // null == not enough items to expand
     onToggle: (Boolean) -> Unit,
     onItemClick: (MusicEntry) -> Unit,
     viewModel: ScrobblesVM,
     fetchAlbumImageIfMissing: Boolean = false,
-    minItems: Int = 3,
 ) {
     if (items.isEmpty()) return
 
@@ -816,16 +815,16 @@ fun LazyListScope.pendingScrobblesListItems(
         ExpandableHeaderItem(
             title = headerText,
             icon = headerIcon,
-            expanded = expanded || items.size <= minItems,
-            enabled = items.size > minItems,
+            expanded = expanded == true || expanded == null,
+            enabled = expanded != null,
             onToggle = onToggle,
             modifier = Modifier.animateItem(),
         )
     }
 
     items(
-        items.take(if (expanded) items.size else minItems),
-        key = { it.hashCode() }
+        items,
+        key = { it._id }
     ) { item ->
         val musicEntry = remember {
             Track(

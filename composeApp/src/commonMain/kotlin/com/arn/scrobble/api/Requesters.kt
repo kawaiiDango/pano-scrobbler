@@ -7,14 +7,17 @@ import com.arn.scrobble.api.cache.HybridCacheStorage
 import com.arn.scrobble.api.deezer.DeezerRequester
 import com.arn.scrobble.api.itunes.ItunesRequester
 import com.arn.scrobble.api.lastfm.ApiException
+import com.arn.scrobble.api.lastfm.DefaultExpirationPolicy
+import com.arn.scrobble.api.lastfm.LastFm
 import com.arn.scrobble.api.lastfm.LastFmUnauthedRequester
-import com.arn.scrobble.api.lastfm.LastfmExpirationPolicy
 import com.arn.scrobble.api.lastfm.PageAttr
 import com.arn.scrobble.api.lastfm.PageEntries
 import com.arn.scrobble.api.lastfm.PageResult
 import com.arn.scrobble.api.spotify.SpotifyRequester
+import com.arn.scrobble.imageloader.PanoImageLoader
 import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff
+import com.arn.scrobble.utils.Stuff.stateInWithCache
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.ProxyBuilder
 import io.ktor.client.engine.okhttp.OkHttp
@@ -36,6 +39,8 @@ import io.ktor.http.isSuccess
 import io.ktor.serialization.kotlinx.json.json
 import io.ktor.utils.io.jvm.javaio.toInputStream
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.drop
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.SerializationException
 import kotlinx.serialization.json.decodeFromStream
@@ -44,20 +49,37 @@ import kotlin.coroutines.cancellation.CancellationException
 
 
 object Requesters {
+    val proxyHostPort = PlatformStuff.mainPrefs.data.stateInWithCache(Stuff.appScope) {
+        if (it.customProxyEnabled && it.proxyHost.isNotBlank() && it.proxyPort in 1..65535)
+            it.proxyHost to it.proxyPort
+        else
+            null
+    }
+
+    init {
+        // invalidate clients when proxy settings change
+        Stuff.appScope.launch {
+            proxyHostPort.drop(1).collect {
+                invalidateAll()
+            }
+        }
+    }
+
     val spotifyRequester by lazy { SpotifyRequester() }
     val itunesRequester by lazy { ItunesRequester() }
     val deezerRequester by lazy { DeezerRequester() }
 
     val lastfmUnauthedRequester by lazy { LastFmUnauthedRequester() }
 
-    val baseKtorClient by lazy {
+    private val _baseKtorClient = invalidatableLazy {
         HttpClient(OkHttp) {
 
             engine {
                 dispatcher = Dispatchers.IO
 
+                val prox = proxyHostPort.value ?: PlatformStuff.getSystemSocksProxy()
                 // fix to tunnel dns through socks5 proxy if set at system level
-                PlatformStuff.getSystemSocksProxy()?.let { (host, port) ->
+                prox?.let { (host, port) ->
                     Logger.i { "SOCKS proxy detected at $host:$port, applying fix" }
                     proxy = ProxyBuilder.socks(host, port)
                 }
@@ -72,8 +94,9 @@ object Requesters {
             }
         }
     }
+    val baseKtorClient by _baseKtorClient
 
-    val genericKtorClient by lazy {
+    private val _genericKtorClient = invalidatableLazy {
         baseKtorClient.config {
             install(ContentNegotiation) {
                 json(Stuff.myJson)
@@ -92,7 +115,7 @@ object Requesters {
             }
 
             install(CustomCachePlugin) {
-                policy = LastfmExpirationPolicy()
+                policy = DefaultExpirationPolicy()
             }
 
             install(HttpCallValidator) {
@@ -112,6 +135,15 @@ object Requesters {
         }
     }
 
+    val genericKtorClient by _genericKtorClient
+
+    private fun invalidateAll() {
+        _baseKtorClient.invalidate()
+        _genericKtorClient.invalidate()
+        spotifyRequester.invalidateClient()
+        LastFm.LastfmUnscrobbler.invalidateClient()
+        PanoImageLoader.invalidate()
+    }
 
     suspend inline fun <reified T> HttpClient.getResult(
         urlString: String = "",

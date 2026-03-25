@@ -42,6 +42,8 @@ import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringResource
 import pano_scrobbler.composeapp.generated.resources.Res
 import pano_scrobbler.composeapp.generated.resources.fix_it_action
+import pano_scrobbler.composeapp.generated.resources.pref_privacy_policy
+import pano_scrobbler.composeapp.generated.resources.proxy
 import pano_scrobbler.composeapp.generated.resources.scrobble_services
 import pano_scrobbler.composeapp.generated.resources.skip
 
@@ -187,6 +189,37 @@ fun VerticalStepperItem(
                     buttonsContent()
                 }
             }
+        }
+    }
+}
+
+@Composable
+fun OnboardingTopRow(
+    onNavigate: (PanoRoute) -> Unit,
+    showProxySettings: Boolean,
+    modifier: Modifier = Modifier,
+) {
+    Row(
+        modifier = modifier,
+        horizontalArrangement = Arrangement.spacedBy(16.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        if (showProxySettings) {
+            TextButton(
+                onClick = {
+                    onNavigate(PanoRoute.Modal.ProxyPref)
+                },
+            ) {
+                Text(text = stringResource(Res.string.proxy))
+            }
+        }
+
+        TextButton(
+            onClick = {
+                onNavigate(PanoRoute.PrivacyPolicy)
+            },
+        ) {
+            Text(text = stringResource(Res.string.pref_privacy_policy))
         }
     }
 }

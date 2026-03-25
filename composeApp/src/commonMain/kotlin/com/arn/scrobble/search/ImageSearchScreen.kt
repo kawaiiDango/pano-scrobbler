@@ -29,7 +29,7 @@ import com.arn.scrobble.api.spotify.AlbumItem
 import com.arn.scrobble.api.spotify.ArtistItem
 import com.arn.scrobble.api.spotify.TrackItem
 import com.arn.scrobble.imageloader.MusicEntryImageReq
-import com.arn.scrobble.imageloader.clearMusicEntryImageCache
+import com.arn.scrobble.imageloader.PanoImageLoader
 import com.arn.scrobble.ui.AlertDialogOk
 import com.arn.scrobble.ui.EmptyText
 import com.arn.scrobble.ui.ErrorText
@@ -73,11 +73,11 @@ fun ImageSearchScreen(
     PlatformStuff.mainPrefs.data.collectAsStateWithInitialValue { it.currentAccountType }
 
     fun onDone() {
-        clearMusicEntryImageCache(
+        PanoImageLoader.clearMusicEntryImageCache(
             MusicEntryImageReq(musicEntry, accountType)
         )
         originalMusicEntry?.let {
-            clearMusicEntryImageCache(
+            PanoImageLoader.clearMusicEntryImageCache(
                 MusicEntryImageReq(it, accountType)
             )
         }

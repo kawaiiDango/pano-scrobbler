@@ -74,6 +74,7 @@ Installing the non-Play version from the F-Droid compatible repo, IzzyOnDroid or
 - Search Lastfm for a songs, artists, or albums
 - Themes
 - Remember and see apps you scrobbled from and play directly in them
+- Proxy support
 
 #### For desktop and Android (except TV):
 - Scrobble to a CSV or JSONL file locally

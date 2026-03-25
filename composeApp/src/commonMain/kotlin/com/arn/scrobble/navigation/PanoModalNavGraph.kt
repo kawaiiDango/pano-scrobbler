@@ -26,6 +26,7 @@ import com.arn.scrobble.main.MainViewModel
 import com.arn.scrobble.onboarding.LoginDestinations
 import com.arn.scrobble.onboarding.ShowLinkDialog
 import com.arn.scrobble.pref.MediaSearchPrefDialog
+import com.arn.scrobble.pref.ProxyPrefDialog
 import com.arn.scrobble.ui.getActivityOrNull
 import com.arn.scrobble.ui.verticalOverscanPadding
 import com.arn.scrobble.updates.ChangelogDialog
@@ -134,6 +135,12 @@ fun EntryProviderScope<PanoRoute>.panoModalNavGraph(
 
     modalEntry<PanoRoute.Modal.MediaSearchPref> {
         MediaSearchPrefDialog(
+            modifier = modalModifier(),
+        )
+    }
+
+    modalEntry<PanoRoute.Modal.ProxyPref> {
+        ProxyPrefDialog(
             modifier = modalModifier(),
         )
     }

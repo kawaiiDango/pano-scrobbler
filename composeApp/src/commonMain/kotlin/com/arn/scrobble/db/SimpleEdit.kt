@@ -7,10 +7,6 @@ import androidx.room3.PrimaryKey
 import kotlinx.serialization.Serializable
 
 
-/**
- * Created by arn on 11/09/2017.
- */
-
 @Entity(
     tableName = SimpleEditsDao.tableName,
     indices = [

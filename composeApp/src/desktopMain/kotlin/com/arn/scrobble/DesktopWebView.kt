@@ -54,7 +54,9 @@ object DesktopWebView {
         url: String,
         callbackPrefix: String,
         cookiesUrl: String,
-        dataDir: String
+        dataDir: String,
+        proxyHost: String,
+        proxyPort: Int,
     )
 
     @JvmStatic

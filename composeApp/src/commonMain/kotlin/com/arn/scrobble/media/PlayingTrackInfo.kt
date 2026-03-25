@@ -205,11 +205,16 @@ class PlayingTrackInfo(
         preprocessed = scrobbledState >= ScrobbledState.PREPROCESSED,
     )
 
-    fun putPreprocessedData(sd: ScrobbleData, additionalMetadataFetched: Boolean) {
+    fun putPreprocessedData(
+        sd: ScrobbleData,
+        loved: Boolean,
+        additionalMetadataFetched: Boolean
+    ) {
         title = sd.track
         album = sd.album.orEmpty()
         artist = sd.artist
         albumArtist = sd.albumArtist.orEmpty()
+        userLoved = loved
 
         scrobbledState = if (additionalMetadataFetched)
             ScrobbledState.ADDITIONAL_METADATA_FETCHED

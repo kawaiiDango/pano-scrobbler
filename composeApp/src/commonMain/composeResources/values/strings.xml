@@ -150,25 +150,9 @@
     <string name="clear_all_history"
         comment="(talking about search history, tag history)"
         >Clear all history</string>
-    <string name="library"
-        comment="search within the library"
-        >Library</string>
     <string name="global"
         comment="search globally across lastfm"
         >Global</string>
-    <string name="reindex">Quick index</string>
-    <string name="do_index"
-        comment="downloads the top scrobbles and indexes them into a database"
-        >Index your scrobbles</string>
-    <string name="full_index">Full index</string>
-    <string name="take_long_time">This can take a long time</string>
-    <string name="full_index_desc">Use this only if you have edited or deleted scrobbles from the website.</string>
-    <string name="searched_n_items" formatted="true"
-        comment="%1= number of tracks/albums/artists, always greater than 1000"
-        >Searched the top %1$s items in each category.</string>
-    <string name="last_indexed" formatted="true"
-        comment="%1= date"
-        >Last indexed on %1$s.</string>
     <string name="profile">Profile</string>
     <string name="profile_pic">Profile picture</string>
     <string name="item_options"
@@ -487,7 +471,7 @@
         comment="This feature actually grabs the first result from Spotify artist search regardless of what that result is"
         >Use approximate search for artist images</string>
     <string name="pref_link_heart_button_rating">Use the heart button in the notification to also favorite it on the media player</string>
-    <string name="pref_prevent_duplicate_ambient_scrobbles">Disable continuous scrobbling from microphone when the device is playing music</string>
+    <string name="pref_prevent_duplicate_ambient_scrobbles">Disable scrobbling from music recognition apps if the device is already playing music</string>
     <string name="pref_delay">Scrobble delay (whichever is earlier)</string>
     <string name="pref_delay_mins"
         comment="(Scrobble delay in minutes)"

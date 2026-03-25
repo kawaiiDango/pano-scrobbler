@@ -299,6 +299,7 @@ class ScrobbleQueue(
                 else -> {
                     trackInfo.putPreprocessedData(
                         preprocessResult.scrobbleData,
+                        preprocessResult.userLoved,
                         !additionalMeta.shouldFetchAgain
                     )
 

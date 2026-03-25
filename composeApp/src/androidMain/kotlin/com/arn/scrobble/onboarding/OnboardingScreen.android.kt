@@ -12,21 +12,18 @@ import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.listSaver
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
-import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.LifecycleResumeEffect
 import com.arn.scrobble.BuildKonfig
@@ -38,9 +35,12 @@ import com.arn.scrobble.pref.AppListSaveType
 import com.arn.scrobble.ui.AlertDialogOk
 import com.arn.scrobble.ui.testTagsAsResId
 import com.arn.scrobble.utils.AndroidStuff
+import com.arn.scrobble.utils.PanoNotifications
 import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff
 import com.arn.scrobble.utils.Stuff.collectAsStateWithInitialValue
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import org.jetbrains.compose.resources.stringResource
 import pano_scrobbler.composeapp.generated.resources.Res
 import pano_scrobbler.composeapp.generated.resources.allow_background
@@ -50,7 +50,6 @@ import pano_scrobbler.composeapp.generated.resources.grant_notification_access
 import pano_scrobbler.composeapp.generated.resources.grant_notification_access_desc
 import pano_scrobbler.composeapp.generated.resources.notification_access_tv
 import pano_scrobbler.composeapp.generated.resources.pref_login
-import pano_scrobbler.composeapp.generated.resources.pref_privacy_policy
 import pano_scrobbler.composeapp.generated.resources.pref_scrobble_from
 import pano_scrobbler.composeapp.generated.resources.send_notifications
 import pano_scrobbler.composeapp.generated.resources.send_notifications_desc
@@ -105,7 +104,6 @@ private fun NotificationListenerStep(
     onSkip: () -> Unit
 ) {
     var warningShown by rememberSaveable { mutableStateOf(false) }
-    val scope = rememberCoroutineScope()
 
     val toastText = stringResource(
         Res.string.check_nls,
@@ -205,6 +203,7 @@ actual fun OnboardingScreen(
 
     val isLoggedIn by PlatformStuff.mainPrefs.data.collectAsStateWithInitialValue { it.scrobbleAccounts.isNotEmpty() }
     val appListWasRun by PlatformStuff.mainPrefs.data.collectAsStateWithInitialValue { it.appListWasRun }
+    val showProxySettings = remember { WebViewProxyOverride.isWebViewProxyOverrideSupported() }
 
     LaunchedEffect(isLoggedIn) {
         if (isLoggedIn) {
@@ -226,23 +225,27 @@ actual fun OnboardingScreen(
         }
     }
 
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+        LaunchedEffect(Unit) {
+            withContext(Dispatchers.IO) {
+                PanoNotifications.createChannels()
+            }
+        }
+    }
+
     Column(
         modifier = modifier.testTagsAsResId(),
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
 
-        TextButton(
-            onClick = {
-                onNavigate(PanoRoute.PrivacyPolicy)
-            },
+        OnboardingTopRow(
+            onNavigate = onNavigate,
+            showProxySettings = showProxySettings,
             modifier = Modifier
                 .align(Alignment.End)
                 .padding(bottom = 16.dp)
                 .alpha(0.75f)
-                .testTag("button_privacy_policy")
-        ) {
-            Text(text = stringResource(Res.string.pref_privacy_policy))
-        }
+        )
 
         steps.indices.forEach { i ->
 

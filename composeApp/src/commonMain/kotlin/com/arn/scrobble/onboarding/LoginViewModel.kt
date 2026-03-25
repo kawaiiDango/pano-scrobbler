@@ -4,7 +4,10 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.arn.scrobble.api.AccountType
 import com.arn.scrobble.api.Requesters
+import com.arn.scrobble.api.Scrobblables
+import com.arn.scrobble.api.UserAccountSerializable
 import com.arn.scrobble.api.UserAccountTemp
+import com.arn.scrobble.api.UserCached
 import com.arn.scrobble.api.file.FileScrobblable
 import com.arn.scrobble.api.lastfm.ApiException
 import com.arn.scrobble.api.lastfm.GnuFm
@@ -47,7 +50,7 @@ class LoginViewModel : ViewModel() {
                 if (apiRoot.isNotBlank() && username.isNotBlank() && password.isNotBlank()) {
                     // test login
                     if (apiRoot.startsWith("test_creds_")) {
-                        Stuff.addTestCreds(
+                        addTestCreds(
                             apiRoot.substringAfter("test_creds_"),
                             username,
                             password
@@ -71,6 +74,32 @@ class LoginViewModel : ViewModel() {
             _result.emit(result)
         }
     }
+
+
+    private suspend fun addTestCreds(serviceStr: String, username: String, sk: String): Boolean {
+        val type = try {
+            AccountType.valueOf(serviceStr.uppercase())
+        } catch (e: IllegalArgumentException) {
+            return false
+        }
+
+        Scrobblables.add(
+            UserAccountSerializable(
+                type,
+                UserCached(
+                    username,
+                    "https://last.fm/user/$username",
+                    username,
+                    "",
+                    -1,
+                ),
+                sk
+            )
+        )
+
+        return true
+    }
+
 
     fun fetchToken(userAccountTemp: UserAccountTemp, apiKey: String, apiSecret: String) {
         if (_tokenResult.value != null) return

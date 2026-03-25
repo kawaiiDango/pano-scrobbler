@@ -1,204 +1,303 @@
 package com.arn.scrobble.db
 
-
 import androidx.room3.Dao
 import androidx.room3.Insert
 import androidx.room3.OnConflictStrategy
 import androidx.room3.Query
 import androidx.room3.Transaction
+import com.arn.scrobble.api.lastfm.Album
+import com.arn.scrobble.api.lastfm.Track
+import com.arn.scrobble.api.lastfm.webp300
 
+private fun String.norm() = this.trim()
+
+/**
+ * Stable separator that must not appear in any artist/track/album name.
+ * U+001F UNIT SEPARATOR — a C0 control character
+ */
+private const val SEP = "\u001F"
+
+private fun idKey(artist: String, second: String) = "$artist$SEP$second"
+
+// public API function names start with "save" or "get" only
 @Dao
 interface SeenEntitiesDao {
+    data class CompositeIdRow(
+        val _id: Long,
+        val compositeKey: String,
+    )
+
+    data class AssociationPriorityRow(
+        val compositeKey: String,
+        val priority: Int,
+    )
 
     // -------------------------------------------------------------------------
-    // Normalization helpers — all writes go through these
-    // -------------------------------------------------------------------------
-
-    private fun String.norm() = this.trim()
-
-    // -------------------------------------------------------------------------
-    // Raw insert / upsert primitives (internal use)
+    // Raw insert primitives (internal use only)
     // -------------------------------------------------------------------------
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
-    suspend fun insertTrackIgnore(track: SeenTrack): Long
+    suspend fun insertTracksIgnore(tracks: List<SeenTrack>)
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
-    suspend fun insertAlbumIgnore(album: SeenAlbum): Long
+    suspend fun insertAlbumsIgnore(albums: List<SeenAlbum>)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun replaceAssociation(assoc: SeenTrackAlbumAssociation)
+    suspend fun replaceAssociations(assocs: List<SeenTrackAlbumAssociation>)
+
 
     // -------------------------------------------------------------------------
-    // ID resolution helpers
+    // ID resolution helpers — batch (used by batch hooks)
     // -------------------------------------------------------------------------
-
-    @Query("SELECT _id FROM ${SeenTrack.TABLE} WHERE artist = :artist AND track = :track")
-    suspend fun getTrackId(artist: String, track: String): Long?
-
-    @Query("SELECT _id FROM ${SeenAlbum.TABLE} WHERE artist = :artist AND album = :album")
-    suspend fun getAlbumId(artist: String, album: String): Long?
 
     /**
-     * Returns the existing track id, or inserts a minimal row and returns the
-     * new id. Never returns null.
+     * Returns (_id, artist||SEP||track) pairs for any rows already in the table.
+     * We use string concatenation in SQL so Room can bind a single-column IN list
+     * of composite keys. The separator must not appear in the data.
      */
-    suspend fun resolveTrackId(artist: String, track: String): Long {
-        val existing = getTrackId(artist, track)
-        if (existing != null) return existing
-        val newId = insertTrackIgnore(SeenTrack(artist = artist, track = track))
-        return newId
+    @Query(
+        """
+        SELECT _id, artist || '$SEP' || track AS compositeKey
+        FROM ${SeenTrack.TABLE}
+        WHERE artist || '$SEP' || track IN (:keys)
+        """
+    )
+    suspend fun lookupTrackIdsForKeys(keys: List<String>): List<CompositeIdRow>
+
+    @Query(
+        """
+        SELECT _id, artist || '$SEP' || album AS compositeKey
+        FROM ${SeenAlbum.TABLE}
+        WHERE artist || '$SEP' || album IN (:keys)
+        """
+    )
+    suspend fun lookupAlbumIdsForKeys(keys: List<String>): List<CompositeIdRow>
+
+    /**
+     * Resolves IDs for a whole batch of (artist, second) pairs.
+     *
+     * Strategy (2 round-trips instead of 2N):
+     *   1. INSERT OR IGNORE all rows that don't exist yet (one statement).
+     *   2. SELECT all IDs by composite key (one statement).
+     *
+     * Returns a map of idKey(artist, second) → _id.
+     */
+    suspend fun resolveTrackIds(pairs: List<Pair<String, String>>): Map<String, Long> {
+        if (pairs.isEmpty()) return emptyMap()
+        val distinct = pairs.distinctBy { idKey(it.first, it.second) }
+        insertTracksIgnore(distinct.map { SeenTrack(artist = it.first, track = it.second) })
+        val keys = distinct.map { idKey(it.first, it.second) }
+        return lookupTrackIdsForKeys(keys).associate { it.compositeKey to it._id }
     }
 
-    /**
-     * Returns the existing album id, or inserts a minimal row and returns the
-     * new id. Never returns null.
-     */
-    suspend fun resolveAlbumId(artist: String, album: String): Long {
-        val existing = getAlbumId(artist, album)
-        if (existing != null) return existing
-        val newId = insertAlbumIgnore(SeenAlbum(artist = artist, album = album))
-        return newId
+    suspend fun resolveAlbumIds(pairs: List<Pair<String, String>>): Map<String, Long> {
+        if (pairs.isEmpty()) return emptyMap()
+        val distinct = pairs.distinctBy { idKey(it.first, it.second) }
+        insertAlbumsIgnore(distinct.map { SeenAlbum(artist = it.first, album = it.second) })
+        val keys = distinct.map { idKey(it.first, it.second) }
+        return lookupAlbumIdsForKeys(keys).associate { it.compositeKey to it._id }
     }
 
     // -------------------------------------------------------------------------
-    // Public write API — called from API hook sites
+    // Association priority — batch fetch
     // -------------------------------------------------------------------------
 
     /**
-     * Saves a track→album association.
-     * Only overwrites an existing association if [priority] is >= the stored one.
-     * Call this from: track.getInfo, album.getInfo, user.getRecentTracks,
-     * media player scrobble hooks.
+     * Fetches existing priorities for a set of (trackId, albumId) pairs in one
+     * query. Room can't bind a list of tuples
+     */
+    @Query(
+        """
+        SELECT trackId || '$SEP' || albumId AS compositeKey, priority
+        FROM ${SeenTrackAlbumAssociation.TABLE}
+        WHERE trackId || '$SEP' || albumId IN (:keys)
+        """
+    )
+    suspend fun lookupAssociationPriorities(keys: List<String>): List<AssociationPriorityRow>
+
+    // -------------------------------------------------------------------------
+    // Public write API — batch hooks
+    // -------------------------------------------------------------------------
+
+    /**
+     * Processes one full page of user.getRecentTracks / user.getTopTracks /
+     * track.getSimilar / user.getWeeklyTrackChart in a single transaction.
+     *
+     * Round-trips (for a page of N tracks):
+     *   New: 2 INSERTs + 2 SELECTs + 1 priority SELECT + 1 REPLACE batch = 6 (constant)
      */
     @Transaction
-    suspend fun saveTrackAlbumAssociation(
-        artist: String,
-        track: String,
-        albumArtist: String,
-        album: String,
-        artUrl: String? = "",
+    suspend fun saveRecentTracks(
+        items: List<Track>,
+        mayHaveAlbumArt: Boolean,
+        savedLoved: Boolean,
         priority: SeenTrackAlbumAssociation.Priority,
-        seenAt: Long = System.currentTimeMillis(),
     ) {
-        val normArtist = artist.norm()
-        val normTrack = track.norm()
-        val normAlbumArtist = albumArtist.norm()
-        val normAlbum = album.norm()
+        if (items.isEmpty()) return
+        val now = System.currentTimeMillis()
 
-        val trackId = resolveTrackId(normArtist, normTrack)
-        val albumId = resolveAlbumId(normAlbumArtist, normAlbum)
+        // Collect only items that have an album name — skip tracks with no album.
+        data class Resolved(
+            val trackId: Long,
+            val albumId: Long,
+            val artUrl: String?,
+            val isLoved: Boolean?,
+        )
 
-        // Update art URL if it is not the sentinel value (empty string)
-        if (artUrl != null)
-            updateAlbumArt(albumId, artUrl)
+        val trackPairs = items.map { it.artist.name.norm() to it.name.norm() }
+        val albumPairs = items.mapNotNull { item ->
+            val albumName = item.album?.name?.norm() ?: return@mapNotNull null
+            val albumArtist = (item.album.artist?.name ?: item.artist.name).norm()
+            albumArtist to albumName
+        }
 
-        // Only write the association if incoming priority is >= stored priority.
-        val stored = getAssociationPriority(trackId, albumId)
-        if (stored == null || priority.n >= stored) {
-            replaceAssociation(
+        val trackIds = resolveTrackIds(trackPairs)
+        val albumIds = resolveAlbumIds(albumPairs)
+
+        if (priority == SeenTrackAlbumAssociation.Priority.TRACK_INFO && trackIds.isNotEmpty())
+            updateTrackInfoFetchedAt(trackIds.values.distinct(), now)
+
+        // Album art: batch-update all at once via individual SQL calls still,
+        // but only for items that actually have art (see note below).
+        // Resolve all association priorities in one query.
+        val resolved = mutableListOf<Resolved>()
+        for (item in items) {
+            val albumName = item.album?.name?.norm() ?: continue
+            val albumArtist = (item.album.artist?.name ?: item.artist.name).norm()
+
+            val trackId = trackIds[idKey(item.artist.name.norm(), item.name.norm())] ?: continue
+            val albumId = albumIds[idKey(albumArtist, albumName)] ?: continue
+
+            resolved.add(Resolved(trackId, albumId, item.album.webp300, item.userloved))
+        }
+
+        // updateAlbumArtIfMissing is still per-row SQL
+
+        if (mayHaveAlbumArt) {
+            val artUpdates = resolved.distinctBy { it.albumId }
+            for (r in artUpdates) {
+                updateAlbumArtIfMissing(r.albumId, r.artUrl)
+            }
+        }
+
+        // Batch priority lookup.
+        val assocKeys = resolved.map { "${it.trackId}$SEP${it.albumId}" }
+        val storedPriorities = lookupAssociationPriorities(assocKeys)
+            .associate { it.compositeKey to it.priority }
+
+        // Build the associations to write.
+        val toReplace = resolved.mapNotNull { r ->
+            val stored = storedPriorities["${r.trackId}$SEP${r.albumId}"]
+            if (stored == null || priority.n <= stored) {
                 SeenTrackAlbumAssociation(
-                    trackId = trackId,
-                    albumId = albumId,
+                    trackId = r.trackId,
+                    albumId = r.albumId,
                     priority = priority.n,
-                    seenAt = seenAt,
+                    seenAt = now,
                 )
-            )
+            } else null
+        }
+        if (toReplace.isNotEmpty()) replaceAssociations(toReplace)
+
+        // Loved state: batch update for items that have a known loved state.
+        if (!savedLoved) return
+
+        val lovedItems = items.mapNotNull { item ->
+            val isLoved = item.userloved ?: return@mapNotNull null
+            val trackId = trackIds[idKey(item.artist.name.norm(), item.name.norm())]
+                ?: return@mapNotNull null
+            trackId to isLoved
+        }
+        if (lovedItems.isNotEmpty())
+            updateLovedStateBatch(lovedItems, now)
+    }
+
+    /**
+     * Processes one full page of user.getLovedTracks in a single transaction.
+     *
+     * Round-trips: 2 (batch INSERT + batch SELECT) + 1 UPDATE IN = 3 constant.
+     */
+    @Transaction
+    suspend fun saveLovedTracks(items: List<Track>) {
+        if (items.isEmpty()) return
+        val now = System.currentTimeMillis()
+        val pairs = items.map { it.artist.name.norm() to it.name.norm() }
+        val trackIds = resolveTrackIds(pairs).values.toList()
+        if (trackIds.isNotEmpty())
+            updateLovedStateForIds(trackIds, isLoved = true, updatedAt = now)
+    }
+
+    /**
+     * Stores album art URLs from user.getTopAlbums in a single transaction.
+     *
+     * Round-trips: 2 (batch INSERT + batch SELECT) + per-distinct-album UPDATE = constant + small.
+     */
+    @Transaction
+    suspend fun saveTopAlbumArts(items: List<Album>) {
+        val filtered = items.filter { it.artist != null && !it.webp300.isNullOrEmpty() }
+        if (filtered.isEmpty()) return
+
+        val pairs = filtered.map { it.artist!!.name.norm() to it.name.norm() }
+        val albumIds = resolveAlbumIds(pairs)
+
+        for (item in filtered) {
+            val albumId = albumIds[idKey(item.artist!!.name.norm(), item.name.norm())] ?: continue
+            updateAlbumArtIfMissing(albumId, item.webp300)
         }
     }
 
     /**
-     * Saves or updates the loved state for a track.
-     * Call this from: user.getLovedTracks, user.getRecentTracks,
-     * local love/unlove actions.
+     * Stores the tracklist from album.getInfo in a single transaction.
      *
-     * [updatedAt] should be the current time on local actions, or the
-     * timestamp from the API response when syncing from the network.
+     * Round-trips: 1 album resolve + 1 batch track INSERT + 1 batch track SELECT
+     *            + 1 priority batch SELECT + 1 REPLACE batch = 5 constant.
      */
     @Transaction
-    suspend fun saveLovedState(
-        artist: String,
-        track: String,
-        isLoved: Boolean,
-        updatedAt: Long = System.currentTimeMillis(),
-    ) {
-        val normArtist = artist.norm()
-        val normTrack = track.norm()
-        val trackId = resolveTrackId(normArtist, normTrack)
-        updateLovedState(trackId, isLoved, updatedAt)
-    }
-
-    /**
-     * Records that a track.getInfo call was attempted for this artist+track,
-     * regardless of whether the response contained an album.
-     * Call this unconditionally after every track.getInfo call.
-     */
-    @Transaction
-    suspend fun markTrackInfoFetched(
-        artist: String,
-        track: String,
-        fetchedAt: Long = System.currentTimeMillis(),
-    ) {
-        val normArtist = artist.norm()
-        val normTrack = track.norm()
-        val trackId = resolveTrackId(normArtist, normTrack)
-        updateTrackInfoFetchedAt(trackId, fetchedAt)
-    }
-
-    /**
-     * Convenience: saves association + loved state in one transaction.
-     * Suitable for processing a single user.getRecentTracks item, which
-     * provides all of these fields at once.
-     */
-    @Transaction
-    suspend fun saveRecentTrack(
-        artist: String,
-        track: String,
-        albumArtist: String,
-        album: String,
-        artUrl: String? = "",
-        isLoved: Boolean?,
-        priority: SeenTrackAlbumAssociation.Priority,
+    suspend fun saveAlbumInfoTracklist(
+        album: Album,
         seenAt: Long = System.currentTimeMillis(),
     ) {
-        saveTrackAlbumAssociation(
-            artist = artist,
-            track = track,
-            albumArtist = albumArtist,
-            album = album,
-            artUrl = artUrl,
-            priority = priority,
-            seenAt = seenAt,
-        )
+        val normAlbumArtist = album.artist?.name?.norm() ?: return
+        val normAlbum = album.name.norm()
+        val tracks = album.tracks?.track.orEmpty()
+        if (tracks.isEmpty()) return
 
-        if (isLoved != null)
-            saveLovedState(
-                artist = artist,
-                track = track,
-                isLoved = isLoved,
-                updatedAt = seenAt,
-            )
-    }
+        val albumId =
+            resolveAlbumIds(listOf(normAlbumArtist to normAlbum)).values.firstOrNull() ?: return
 
-    @Transaction
-    suspend fun saveAlbumArtIfMissing(
-        artist: String,
-        album: String,
-        artUrl: String,
-    ) {
-        val normArtist = artist.norm()
-        val normAlbum = album.norm()
-        val albumId = resolveAlbumId(normArtist, normAlbum)
-        updateAlbumArt(albumId, artUrl)
+        updateAlbumArtIfMissing(albumId, album.webp300)
+
+        val trackPairs = tracks.map { it.artist.name.norm() to it.name.norm() }
+        val trackIds = resolveTrackIds(trackPairs).map { (_, id) -> id }
+
+        updateTrackInfoFetchedAt(trackIds, seenAt)
+
+        val priority = SeenTrackAlbumAssociation.Priority.ALBUM_INFO.n
+        val assocKeys = trackIds.map { "${it}$SEP${albumId}" }
+        val storedPriorities = lookupAssociationPriorities(assocKeys)
+            .associate { it.compositeKey to it.priority }
+
+        val toReplace = trackIds.mapNotNull { trackId ->
+            val stored = storedPriorities["${trackId}$SEP${albumId}"]
+            if (stored == null || priority <= stored) {
+                SeenTrackAlbumAssociation(
+                    trackId = trackId,
+                    albumId = albumId,
+                    priority = priority,
+                    seenAt = seenAt,
+                )
+            } else null
+        }
+        if (toReplace.isNotEmpty()) replaceAssociations(toReplace)
     }
 
     // -------------------------------------------------------------------------
-    // Public read API — lookups
+    // Public read API
     // -------------------------------------------------------------------------
 
     /**
-     * Returns the highest-priority [SeenAlbum] for the given artist+track pair,
-     * or null if no association exists yet.
+     * Returns the highest-priority [SeenAlbum] for the given artist+track pair.
+     * Lower priority number = more trusted (MEDIA_PLAYER = 10 wins).
      */
     @Query(
         """
@@ -209,7 +308,7 @@ interface SeenEntitiesDao {
         WHERE st.artist = :artist AND st.track = :track
         ORDER BY taa.priority ASC, taa.seenAt DESC
         LIMIT 1
-    """
+        """
     )
     suspend fun getBestAlbumForTrack(artist: String, track: String): SeenAlbum?
 
@@ -222,28 +321,20 @@ interface SeenEntitiesDao {
         WHERE st.artist = :artist AND st.track = :track AND sa.artUpdatedAt IS NOT NULL
         ORDER BY taa.priority ASC, taa.seenAt DESC
         LIMIT 1
-    """
+        """
     )
     suspend fun getBestAlbumForTrackWithFetchedArt(artist: String, track: String): SeenAlbum?
 
-    /**
-     * Returns the art URL for the given album, or null if unknown / not yet fetched.
-     */
     @Query(
         """
         SELECT *
         FROM ${SeenAlbum.TABLE}
         WHERE artist = :artist AND album = :album AND artUpdatedAt IS NOT NULL
         LIMIT 1
-    """
+        """
     )
     suspend fun getAlbumWithFetchedArt(artist: String, album: String): SeenAlbum?
 
-    /**
-     * Returns the full [SeenTrack] row if it exists and has a known loved state,
-     * null otherwise.
-     * Callers should check [SeenTrack.isLoved] — it is non-null when this returns.
-     */
     @Query(
         """
         SELECT *
@@ -251,14 +342,10 @@ interface SeenEntitiesDao {
         WHERE artist = :artist AND track = :track
           AND isLoved IS NOT NULL
         LIMIT 1
-    """
+        """
     )
     suspend fun getTrackWithLovedState(artist: String, track: String): SeenTrack?
 
-    /**
-     * Returns the full [SeenTrack] regardless of loved state — useful for
-     * checking [SeenTrack.trackInfoFetchedAt] before deciding to call track.getInfo.
-     */
     @Query("SELECT * FROM ${SeenTrack.TABLE} WHERE artist = :artist AND track = :track LIMIT 1")
     suspend fun getTrack(artist: String, track: String): SeenTrack?
 
@@ -266,46 +353,58 @@ interface SeenEntitiesDao {
     // Internal targeted update queries
     // -------------------------------------------------------------------------
 
+    /**
+     * Batch version for when all items in the batch share the same loved state.
+     * Used by saveLovedTracks (all items are loved = true).
+     */
     @Query(
         """
         UPDATE ${SeenTrack.TABLE}
         SET isLoved = :isLoved, lovedStateUpdatedAt = :updatedAt
-        WHERE _id = :trackId
-    """
+        WHERE _id IN (:trackIds)
+        """
     )
-    suspend fun updateLovedState(
-        trackId: Long,
-        isLoved: Boolean,
+    suspend fun updateLovedStateForIds(trackIds: List<Long>, isLoved: Boolean, updatedAt: Long)
+
+    /**
+     * Batch loved-state update for mixed true/false values (used by saveRecentTracks).
+     * Splits into two UPDATE IN calls — one per distinct boolean value — which is
+     * still O(1) round-trips vs O(N).
+     */
+    suspend fun updateLovedStateBatch(
+        items: List<Pair<Long, Boolean>>,
         updatedAt: Long,
-    )
+    ) {
+        val loved = items.filter { it.second }.map { it.first }
+        val notLoved = items.filter { !it.second }.map { it.first }
+        if (loved.isNotEmpty()) updateLovedStateForIds(loved, true, updatedAt)
+        if (notLoved.isNotEmpty()) updateLovedStateForIds(notLoved, false, updatedAt)
+    }
 
     @Query(
         """
         UPDATE ${SeenTrack.TABLE}
         SET trackInfoFetchedAt = :fetchedAt
-        WHERE _id = :trackId
-    """
+        WHERE _id IN (:trackId) AND trackInfoFetchedAt IS NULL
+        """
     )
-    suspend fun updateTrackInfoFetchedAt(trackId: Long, fetchedAt: Long)
+    suspend fun updateTrackInfoFetchedAt(trackId: List<Long>, fetchedAt: Long)
 
+    /**
+     * artUpdatedAt is always written so the TTL clock advances even when there
+     * is no art (artUrl = null means "valid album, no art available").
+     * Only updates when artUrl IS NULL to avoid downgrading a better URL.
+     */
     @Query(
         """
         UPDATE ${SeenAlbum.TABLE}
         SET artUrl = :artUrl, artUpdatedAt = :updatedAt
-        WHERE _id = :albumId AND artUrl IS NULL
-    """
+        WHERE _id = :albumId AND (artUrl IS NULL OR artUpdatedAt IS NULL)
+        """
     )
-    suspend fun updateAlbumArt(
+    suspend fun updateAlbumArtIfMissing(
         albumId: Long,
         artUrl: String?,
-        updatedAt: Long = System.currentTimeMillis()
+        updatedAt: Long = System.currentTimeMillis(),
     )
-
-    @Query(
-        """
-        SELECT priority FROM ${SeenTrackAlbumAssociation.TABLE}
-        WHERE trackId = :trackId AND albumId = :albumId
-    """
-    )
-    suspend fun getAssociationPriority(trackId: Long, albumId: Long): Int?
 }

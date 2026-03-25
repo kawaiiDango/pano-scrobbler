@@ -9,10 +9,6 @@ import com.arn.scrobble.api.lastfm.ScrobbleData
 import kotlinx.coroutines.flow.Flow
 
 
-/**
- * Created by arn on 11/09/2017.
- */
-
 @Dao
 interface SimpleEditsDao {
     @Query("SELECT * FROM $tableName ORDER BY _id DESC")

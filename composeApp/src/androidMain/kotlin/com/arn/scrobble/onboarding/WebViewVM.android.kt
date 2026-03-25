@@ -4,6 +4,8 @@ import android.os.Build
 import android.webkit.CookieManager
 import android.webkit.WebView
 import co.touchlab.kermit.Logger
+import com.arn.scrobble.api.Requesters
+import com.arn.scrobble.utils.PlatformStuff
 
 actual fun WebViewVM.platformClear() {
     try {
@@ -19,5 +21,11 @@ actual fun WebViewVM.platformInit() {
     ) {
         Logger.e { "WebView unavailable" }
         loginState.value = WebViewLoginState.Unavailable
+    } else {
+        val proxyHostPort = Requesters.proxyHostPort.value
+        if (proxyHostPort == null)
+            WebViewProxyOverride.clearProxy()
+        else
+            WebViewProxyOverride.setSocksProxy(proxyHostPort.first, proxyHostPort.second)
     }
 }

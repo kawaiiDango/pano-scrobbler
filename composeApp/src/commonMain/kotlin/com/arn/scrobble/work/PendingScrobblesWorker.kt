@@ -13,8 +13,6 @@ import com.arn.scrobble.api.lastfm.Track
 import com.arn.scrobble.db.AccountBitmaskConverter
 import com.arn.scrobble.db.PanoDb
 import com.arn.scrobble.db.PendingScrobble
-import com.arn.scrobble.utils.isNetworkRetryable
-import com.arn.scrobble.utils.redactedMessage
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -127,17 +125,9 @@ class PendingScrobblesWorker(
             (idsAll - idsToDelete)
                 .takeIf { it.isNotEmpty() }
                 ?.let {
-                    val lastFailedTimestamp = System.currentTimeMillis()
                     val exceptions = scrobbleResults.values.mapNotNull { it.exceptionOrNull() }
-                    val lastFailedReason = exceptions.firstOrNull()?.redactedMessage?.take(100)
-                    val canForceRetry = exceptions.any { it.isNetworkRetryable }
 
-                    dao.logFailure(
-                        it.toList(),
-                        lastFailedTimestamp,
-                        lastFailedReason,
-                        canForceRetry
-                    )
+                    dao.logFailure(it.toList(), exceptions)
                 }
         }
     }
@@ -189,16 +179,7 @@ class PendingScrobblesWorker(
                 dao.delete(entry)
             else {
                 val exceptions = loveResults.values.mapNotNull { it.exceptionOrNull() }
-                val lastFailedReason = exceptions.firstOrNull()?.redactedMessage?.take(100)
-                val canForceRetry = exceptions.any { it.isNetworkRetryable }
-
-                val newPendingLove = entry.copy(
-                    services = services,
-                    lastFailedReason = lastFailedReason,
-                    canForceRetry = canForceRetry
-                )
-
-                dao.update(newPendingLove)
+                dao.logFailure(listOf(entry._id), exceptions)
             }
 
             delay(DELAY)

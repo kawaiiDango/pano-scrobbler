@@ -88,6 +88,7 @@ kotlin {
             implementation(libs.core.remoteviews)
             implementation(libs.coil.gif)
             implementation(libs.qrcode)
+            implementation(libs.webkit)
         }
 
         commonMain {

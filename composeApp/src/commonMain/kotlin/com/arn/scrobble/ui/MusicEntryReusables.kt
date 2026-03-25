@@ -1080,7 +1080,7 @@ fun EntriesRow(
         onClick = onHeaderClick,
     )
 
-    if (entries.itemCount == 0 && !shimmer) {
+    if (!entries.loadState.hasError && entries.itemCount == 0 && !shimmer) {
         Box(
             contentAlignment = Alignment.Center,
             modifier = Modifier
@@ -1148,7 +1148,10 @@ fun EntriesRow(
                 if (error != null) {
                     item {
                         ListLoadError(
-                            modifier = Modifier.animateItem(),
+                            modifier = Modifier
+                                .height(150.dp)
+                                .fillParentMaxWidth()
+                                .animateItem(),
                             throwable = error.error,
                             onRetry = { entries.retry() })
                     }
@@ -1290,7 +1293,7 @@ fun EntriesGridOrList(
     val shimmer by remember(entries.loadState.refresh) { mutableStateOf(entries.loadState.refresh is LoadState.Loading) }
     val gridMode by PlatformStuff.mainPrefs.data.collectAsStateWithInitialValue { it.gridMode }
 
-    if (entries.itemCount == 0 && !shimmer) {
+    if (!entries.loadState.hasError && entries.itemCount == 0 && !shimmer) {
         Box(
             contentAlignment = Alignment.Center,
             modifier = modifier

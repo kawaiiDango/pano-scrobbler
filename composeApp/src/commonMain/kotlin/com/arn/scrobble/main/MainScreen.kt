@@ -83,7 +83,7 @@ import com.arn.scrobble.api.DrawerData
 import com.arn.scrobble.api.UserCached
 import com.arn.scrobble.icons.Icons
 import com.arn.scrobble.icons.automirrored.ArrowBack
-import com.arn.scrobble.imageloader.newImageLoader
+import com.arn.scrobble.imageloader.PanoImageLoader
 import com.arn.scrobble.navigation.BottomSheetSceneStrategy
 import com.arn.scrobble.navigation.LocalNavigationType
 import com.arn.scrobble.navigation.NavFromOutsideEffect
@@ -300,7 +300,7 @@ fun PanoAppContent(
     )
 
     setSingletonImageLoaderFactory { context ->
-        newImageLoader(context)
+        PanoImageLoader.newImageLoader(context)
     }
 
     CompositionLocalProvider(LocalNavigationType provides navigationType) {

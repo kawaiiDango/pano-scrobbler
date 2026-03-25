@@ -3,14 +3,9 @@ package com.arn.scrobble.utils
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.arn.scrobble.api.AccountType
 import com.arn.scrobble.api.Requesters
 import com.arn.scrobble.api.Requesters.postString
-import com.arn.scrobble.api.Scrobblables
-import com.arn.scrobble.api.UserAccountSerializable
-import com.arn.scrobble.api.UserCached
 import com.arn.scrobble.api.cache.CacheStrategy
-import com.arn.scrobble.api.lastfm.ApiException
 import com.arn.scrobble.pref.MainPrefs
 import com.arn.scrobble.ui.PanoSnackbarVisuals
 import com.arn.scrobble.updates.UpdateAction
@@ -36,9 +31,6 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.sync.Semaphore
 import kotlinx.coroutines.sync.withPermit
 import kotlinx.serialization.json.Json
-import java.net.ConnectException
-import java.net.SocketTimeoutException
-import java.net.UnknownHostException
 import java.security.MessageDigest
 import java.text.DecimalFormat
 import java.text.NumberFormat
@@ -46,7 +38,6 @@ import java.util.Calendar
 import java.util.Locale
 import java.util.TimeZone
 import java.util.concurrent.TimeUnit
-import javax.net.ssl.SSLException
 import kotlin.io.encoding.Base64
 import kotlin.io.encoding.Base64.PaddingOption
 import kotlin.math.ln
@@ -446,30 +437,6 @@ object Stuff {
         }.awaitAll()
     }
 
-    suspend fun addTestCreds(serviceStr: String, username: String, sk: String): Boolean {
-        val type = try {
-            AccountType.valueOf(serviceStr.uppercase())
-        } catch (e: IllegalArgumentException) {
-            return false
-        }
-
-        Scrobblables.add(
-            UserAccountSerializable(
-                type,
-                UserCached(
-                    username,
-                    "https://last.fm/user/$username",
-                    username,
-                    "",
-                    -1,
-                ),
-                sk
-            )
-        )
-
-        return true
-    }
-
     fun formatBigHyphen(artist: String, title: String) = "$artist — $title"
 
     fun sha256Truncated(str: String) =
@@ -491,12 +458,3 @@ val Throwable.redactedMessage: String
 
         return m
     }
-
-val Throwable.isNetworkRetryable: Boolean
-    get() =
-        this is UnknownHostException ||
-                this is SSLException ||
-                this is SocketTimeoutException ||
-                this is ConnectException ||
-                this is ApiException && this.code == 11 // Access Denied - You cannot access this service
-

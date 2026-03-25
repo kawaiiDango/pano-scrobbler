@@ -33,7 +33,8 @@ actual object PendingScrobblesWork : CommonWorkImpl(PendingScrobblesWorker.NAME)
                 TimeUnit.HOURS
             )
             .apply {
-                if (force) {
+                // do not spam expedited from bg process
+                if (force && AndroidStuff.isMainProcess) {
                     setExpedited(OutOfQuotaPolicy.DROP_WORK_REQUEST)
                 } else {
                     setInitialDelay(30, TimeUnit.SECONDS)

@@ -1,8 +1,5 @@
 package com.arn.scrobble
 
-/**
- * Created by arn on 20/09/2017.
- */
 
 import com.arn.scrobble.utils.MetadataUtils
 import kotlinx.serialization.Serializable

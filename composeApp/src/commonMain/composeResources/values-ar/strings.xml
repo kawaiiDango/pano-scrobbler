@@ -54,15 +54,7 @@
     <string name="rank_change_new">لم تمسح خلال المدّة السابقة</string>
     <string name="search">البحث</string>
     <string name="clear_all_history" comment="(talking about search history, tag history)">محو كل السجل</string>
-    <string name="library" comment="search within the library">المكتبة</string>
     <string name="global" comment="search globally across lastfm">شامل</string>
-    <string name="reindex">فهرسة سريعة</string>
-    <string name="do_index" comment="downloads the top scrobbles and indexes them into a database">قم بفهرسة مسوحاتك الخاصة</string>
-    <string name="full_index">الفهرس الكامل</string>
-    <string name="take_long_time">قد يستغرق هذا وقتًا طويلًا</string>
-    <string name="full_index_desc">استخدم هذا فقط إذا كنت قد قمت بتعديل أو حذف المسوحات من الموقع.</string>
-    <string name="searched_n_items" formatted="true" comment="%1= number of tracks/albums/artists, always greater than 1000">بحث في أهم %1$s من كل فئة.</string>
-    <string name="last_indexed" formatted="true" comment="%1= date">آخر فهرسة في %1$s.</string>
     <string name="profile">الملف الشخصي</string>
     <string name="profile_pic">الصورة الشخصية</string>
     <string name="item_options" comment="Screen reader text for 3 dots menu button">خيارات لهذا البند</string>

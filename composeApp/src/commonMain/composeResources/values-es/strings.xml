@@ -104,15 +104,7 @@
     <string name="rank_change_new">No scrobbleado en el período anterior</string>
     <string name="search">Buscar</string>
     <string name="clear_all_history" comment="(talking about search history, tag history)">Borrar todo el historial</string>
-    <string name="library" comment="search within the library">Biblioteca</string>
     <string name="global" comment="search globally across lastfm">Global</string>
-    <string name="reindex">Índice rápido</string>
-    <string name="do_index" comment="downloads the top scrobbles and indexes them into a database">Indexar tus scrobbles</string>
-    <string name="full_index">Índice completo</string>
-    <string name="take_long_time">Esto puede tomar mucho tiempo</string>
-    <string name="full_index_desc">Usa esto solo si ha editado o eliminado scrobbles del sitio web de last.fm.</string>
-    <string name="searched_n_items" formatted="true" comment="%1= number of tracks/albums/artists, always greater than 1000">Buscó los %1$s elementos principales en cada categoría.</string>
-    <string name="last_indexed" formatted="true" comment="%1= date">Última indexación el %1$s.</string>
     <string name="profile">Perfil</string>
     <string name="profile_pic">Imagen de perfil</string>
     <string name="item_options" comment="Screen reader text for 3 dots menu button">Opciones para este elemento</string>

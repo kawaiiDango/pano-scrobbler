@@ -32,7 +32,6 @@
     <string name="rank_change_new">Nu e valabil offline</string>
     <string name="search">Caută</string>
     <string name="clear_all_history" comment="(talking about search history, tag history)">Curăță istoricul</string>
-    <string name="library" comment="search within the library">Librărie</string>
     <string name="global" comment="search globally across lastfm">Global</string>
     <!--  pro  -->
 </resources>

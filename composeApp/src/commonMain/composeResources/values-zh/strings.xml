@@ -92,15 +92,7 @@
     <string name="rank_change_new">未在上一周期内进行记录</string>
     <string name="search">搜索</string>
     <string name="clear_all_history" comment="(talking about search history, tag history)">清除所有历史</string>
-    <string name="library" comment="search within the library">媒体库</string>
     <string name="global" comment="search globally across lastfm">全局</string>
-    <string name="reindex">快速索引</string>
-    <string name="do_index" comment="downloads the top scrobbles and indexes them into a database">建立记录索引</string>
-    <string name="full_index">完整索引</string>
-    <string name="take_long_time">可能会花很长时间</string>
-    <string name="full_index_desc">仅在您从网站编辑或删除过记录条目时使用该选项。</string>
-    <string name="searched_n_items" formatted="true" comment="%1= number of tracks/albums/artists, always greater than 1000">在每个类别下搜索前 %1$s 个项目。</string>
-    <string name="last_indexed" formatted="true" comment="%1= date">上次检索时间为 %1$s。</string>
     <string name="profile">主页</string>
     <string name="profile_pic">用户图片</string>
     <string name="item_options" comment="Screen reader text for 3 dots menu button">该项目的选项</string>

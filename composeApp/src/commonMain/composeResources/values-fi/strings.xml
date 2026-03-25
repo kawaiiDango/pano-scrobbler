@@ -97,15 +97,7 @@
     <string name="rank_change_new">Ei scrobblattu edellisessä jaksossa</string>
     <string name="search">Hae</string>
     <string name="clear_all_history" comment="(talking about search history, tag history)">Tyhjennä koko historia</string>
-    <string name="library" comment="search within the library">Kirjasto</string>
     <string name="global" comment="search globally across lastfm">Maailmanlaajuinen</string>
-    <string name="reindex">Pikaluettelo</string>
-    <string name="do_index" comment="downloads the top scrobbles and indexes them into a database">Luetteloi scrobblauksesi</string>
-    <string name="full_index">Täysi luettelo</string>
-    <string name="take_long_time">Tämä voi kestää kauan</string>
-    <string name="full_index_desc">Käytä tätä vain, jos olet muokannut tai poistanut scrobblauksia sivustolta.</string>
-    <string name="searched_n_items" formatted="true" comment="%1= number of tracks/albums/artists, always greater than 1000">Haettiin suosituimmat %1$s kohdetta jokaisesta kategoriasta.</string>
-    <string name="last_indexed" formatted="true" comment="%1= date">Viimeksi luetteloitu %1$s.</string>
     <string name="profile">Profiili</string>
     <string name="profile_pic">Profiilikuva</string>
     <string name="item_options" comment="Screen reader text for 3 dots menu button">Tämän kohteen valinnat</string>

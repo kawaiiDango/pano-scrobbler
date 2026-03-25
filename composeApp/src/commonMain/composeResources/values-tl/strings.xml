@@ -76,10 +76,6 @@
     <string name="rank_change_no_change">Walang pagbabago</string>
     <string name="search">Maghanap</string>
     <string name="clear_all_history" comment="(talking about search history, tag history)">I-clear ang lahat ng history</string>
-    <string name="do_index" comment="downloads the top scrobbles and indexes them into a database">I-index ang iyong mga scrobbles</string>
-    <string name="take_long_time">Maaaring magtagal ito</string>
-    <string name="full_index_desc">Gamitin lamang ito kung ikaw ay nag-edit o nag-delete ng mga scrobbles mula sa website.</string>
-    <string name="last_indexed" formatted="true" comment="%1= date">Hulimg na-index noong %1$s.</string>
     <string name="new_player_prompt">Ipagpatuloy ang pag-iiscrobble mula sa app na ito?</string>
     <string name="new_player_prompt_desktop">Pumunta sa settings para simulang mag-scrobble ang app na ito</string>
     <string name="cannot_access" comment="%1$s= the file or folder name">Hindi maakses ang %1$s</string>

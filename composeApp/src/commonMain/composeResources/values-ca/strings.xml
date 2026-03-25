@@ -94,13 +94,7 @@
     <string name="rank_change_new">No s'ha fet scribbling en el període anterior</string>
     <string name="search">Cerca</string>
     <string name="clear_all_history" comment="(talking about search history, tag history)">Neteja l'historial</string>
-    <string name="library" comment="search within the library">Biblioteca</string>
     <string name="global" comment="search globally across lastfm">Global</string>
-    <string name="reindex">Índex ràpid</string>
-    <string name="full_index">Índex complet</string>
-    <string name="take_long_time">Açò pot tardar molt</string>
-    <string name="full_index_desc">Utilitza-ho només si has editat o eliminar scrobbles des del lloc web.</string>
-    <string name="last_indexed" formatted="true" comment="%1= date">Última indexació el %1$s.</string>
     <string name="profile">Perfil</string>
     <string name="profile_pic">Foto de perfil</string>
     <string name="item_options" comment="Screen reader text for 3 dots menu button">Opcions per a aquest element</string>

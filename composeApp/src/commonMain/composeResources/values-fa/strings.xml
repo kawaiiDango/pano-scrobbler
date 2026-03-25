@@ -101,9 +101,6 @@
     <string name="search">جستجو</string>
     <string name="clear_all_history" comment="(talking about search history, tag history)">پاک‌کردن کل تاریخچه</string>
     <string name="global" comment="search globally across lastfm">جهانی</string>
-    <string name="take_long_time">این کار یه کم وقت‌گیره</string>
-    <string name="full_index_desc">اینو فقط وقتی اسفاده کن که اسکرابل‌ها رو از سایت حذف یا اصلاح کردی</string>
-    <string name="searched_n_items" formatted="true" comment="%1= number of tracks/albums/artists, always greater than 1000">%1$s مورد برتر در هر دسته رو جستجو کردم</string>
     <string name="profile">نمایه</string>
     <string name="profile_pic">عکس نمایه</string>
     <string name="new_player" formatted="true" comment="(%1 = App name) detected (shown in notification, when a new music player is detected)">%1$s رو تشخیص‌دادم</string>

@@ -122,15 +122,7 @@
     <string name="rank_change_new">Не заскробблено за предыдущий период</string>
     <string name="search">Поиск</string>
     <string name="clear_all_history" comment="(talking about search history, tag history)">Очистить всю историю</string>
-    <string name="library" comment="search within the library">Библиотека</string>
     <string name="global" comment="search globally across lastfm">Глобальное</string>
-    <string name="reindex">Быстрый индекс</string>
-    <string name="do_index" comment="downloads the top scrobbles and indexes them into a database">Индексировать свои скробблинги</string>
-    <string name="full_index">Полный индекс</string>
-    <string name="take_long_time">Это может занять некоторое время</string>
-    <string name="full_index_desc">Используйте это только если вы изменили или удалили скробблы с сайта.</string>
-    <string name="searched_n_items" formatted="true" comment="%1= number of tracks/albums/artists, always greater than 1000">Нашел топ %1$s элементов по каждой категории.</string>
-    <string name="last_indexed" formatted="true" comment="%1= date">Последнее индексирование: %1$s.</string>
     <string name="profile">Профиль</string>
     <string name="profile_pic">Изображение профиля</string>
     <string name="item_options" comment="Screen reader text for 3 dots menu button">Опции для этого элемента</string>

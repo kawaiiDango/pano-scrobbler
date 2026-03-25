@@ -89,15 +89,7 @@
     <string name="rank_change_new">이전 기간 내에 스크로블되지 않음</string>
     <string name="search">검색</string>
     <string name="clear_all_history" comment="(talking about search history, tag history)">기록 전체 삭제</string>
-    <string name="library" comment="search within the library">보관함</string>
     <string name="global" comment="search globally across lastfm">글로벌</string>
-    <string name="reindex">빠른 색인</string>
-    <string name="do_index" comment="downloads the top scrobbles and indexes them into a database">스크로블 색인화</string>
-    <string name="full_index">전체 색인</string>
-    <string name="take_long_time">시간이 많이 걸릴 수 있습니다</string>
-    <string name="full_index_desc">이것은 웹사이트에서 스크로블을 편집했거나 삭제한 경우에만 사용하십시오.</string>
-    <string name="searched_n_items" formatted="true" comment="%1= number of tracks/albums/artists, always greater than 1000">각 카테고리에서 검색된 상위 %1$s 항목</string>
-    <string name="last_indexed" formatted="true" comment="%1= date">마지막으로 %1$s에 색인화됨.</string>
     <string name="profile">프로필</string>
     <string name="profile_pic">프로필 사진</string>
     <string name="item_options" comment="Screen reader text for 3 dots menu button">이 항목에 대한 옵션</string>

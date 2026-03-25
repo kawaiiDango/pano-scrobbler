@@ -100,7 +100,6 @@
     <string name="hide">Göm</string>
     <string name="search">Sök</string>
     <string name="clear_all_history" comment="(talking about search history, tag history)">Rensa all historik</string>
-    <string name="library" comment="search within the library">Bibliotek</string>
     <string name="profile">Profil</string>
     <string name="profile_pic">Profilbild</string>
     <string name="new_app">Ny app</string>

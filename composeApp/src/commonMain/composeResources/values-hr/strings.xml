@@ -55,6 +55,11 @@
         <item quantity="few">%1$d podudaranja</item>
         <item quantity="other">%1$d podudaranja</item>
     </plurals>
+    <plurals name="num_hours">
+        <item quantity="one">%1$d sat</item>
+        <item quantity="few">%1$d sata</item>
+        <item quantity="other">%1$d sati</item>
+    </plurals>
     <string name="yes">Da</string>
     <string name="no">Ne</string>
     <string name="reset">Ponovno postavi</string>
@@ -111,15 +116,7 @@
     <string name="rank_change_new">Nije scrobbleano unutar prethodnog razdoblja</string>
     <string name="search">Traži</string>
     <string name="clear_all_history" comment="(talking about search history, tag history)">Očisti svu povijest</string>
-    <string name="library" comment="search within the library">Zbirka</string>
     <string name="global" comment="search globally across lastfm">Globalno</string>
-    <string name="reindex">Brzo indeksiranje</string>
-    <string name="do_index" comment="downloads the top scrobbles and indexes them into a database">Indeksiraj svoje scrobblove</string>
-    <string name="full_index">Potpuno indeksiranje</string>
-    <string name="take_long_time">Ovo može dugo potrajati</string>
-    <string name="full_index_desc">Koristite ovo samo ako su scrobblovi izbrisani ili uređeni na stranici.</string>
-    <string name="searched_n_items" formatted="true" comment="%1= number of tracks/albums/artists, always greater than 1000">Pretraženo je top %1$s stavki u svakoj kategoriji.</string>
-    <string name="last_indexed" formatted="true" comment="%1= date">Posljednje indeksiranje %1$s.</string>
     <string name="profile">Profil</string>
     <string name="profile_pic">Slika profila</string>
     <string name="item_options" comment="Screen reader text for 3 dots menu button">Opcije za ovu stavku</string>
@@ -289,6 +286,7 @@
     <string name="server_url" comment="For self hosted scrobbling services">URL poslužitelja</string>
     <string name="listenbrainz_info" formatted="true" comment="%1 = the link to page containing the token">Svoj autentikacijski token možete pronaći na adresi: %1$s</string>
     <string name="pref_now_playing">Dijeli što sada svira</string>
+    <string name="pref_fetch_missing_album" formatted="true" comment="%1= the name of a service like last.fm, Deezer etc">Dohvati album koji nedostaje sa servisa %1$s</string>
     <string name="pref_locale">Jezici</string>
     <string name="pref_crashlytics_enabled">Automatski prijavi greške</string>
     <string name="pref_misc">Razno</string>
@@ -398,6 +396,7 @@
     <string name="as_text" comment="Like copy as text, but in short">Kao tekst</string>
     <string name="album_art_now_playing_desc">Zahtijeva prijavu na last.fm</string>
     <string name="spotify_consent">Dohvatiti slike izvođača sa Spotifya?</string>
+    <string name="discord_app_name" comment="usually the media player app name, shown in discord rich presence">Naziv aplikacije</string>
     <!--  pro  -->
     <string name="get_pro">Podrži ovu aplikaciju</string>
     <string name="one_time_purchase">Jednom</string>

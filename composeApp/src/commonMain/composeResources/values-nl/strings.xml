@@ -94,15 +94,7 @@
     <string name="rank_change_new">Niet gescrobbeld in de vorige periode</string>
     <string name="search">Zoeken</string>
     <string name="clear_all_history" comment="(talking about search history, tag history)">Wis alle geschiedenis</string>
-    <string name="library" comment="search within the library">Bibliotheek</string>
     <string name="global" comment="search globally across lastfm">Globaal</string>
-    <string name="reindex">Snel indexeren</string>
-    <string name="do_index" comment="downloads the top scrobbles and indexes them into a database">Indexeer uw scrobbles</string>
-    <string name="full_index">Volledige index</string>
-    <string name="take_long_time">Dit kan lang duren</string>
-    <string name="full_index_desc">Gebruik dit alleen als u scrobbels van de website hebt bewerkt of verwijderd.</string>
-    <string name="searched_n_items" formatted="true" comment="%1= number of tracks/albums/artists, always greater than 1000">De top %1$s items in elke categorie doorzocht.</string>
-    <string name="last_indexed" formatted="true" comment="%1= date">Laatst geïndexeerd op %1$s.</string>
     <string name="profile">Profiel</string>
     <string name="profile_pic">Profielfoto</string>
     <string name="item_options" comment="Screen reader text for 3 dots menu button">Opties voor dit item</string>

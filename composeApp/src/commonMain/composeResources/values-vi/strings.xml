@@ -67,9 +67,7 @@
     <string name="rank_change_no_change">Không đổi</string>
     <string name="search">Tìm kiếm</string>
     <string name="clear_all_history" comment="(talking about search history, tag history)">Xóa lịch sử</string>
-    <string name="library" comment="search within the library">Thư viện</string>
     <string name="global" comment="search globally across lastfm">Toàn cầu</string>
-    <string name="take_long_time">Có thể hơi lâu</string>
     <string name="profile">Hồ sơ</string>
     <string name="profile_pic">Ảnh đại diện</string>
     <string name="show_all">Xem thêm</string>

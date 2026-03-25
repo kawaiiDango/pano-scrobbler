@@ -122,15 +122,7 @@
     <string name="rank_change_new">Nebylo scrobblováno v předchozím období</string>
     <string name="search">Hledat</string>
     <string name="clear_all_history" comment="(talking about search history, tag history)">Vymazat historii</string>
-    <string name="library" comment="search within the library">Knihovna</string>
     <string name="global" comment="search globally across lastfm">Globálně</string>
-    <string name="reindex">Rychlý index</string>
-    <string name="do_index" comment="downloads the top scrobbles and indexes them into a database">Indexujte své scrobbly</string>
-    <string name="full_index">Plný index</string>
-    <string name="take_long_time">Tohle může zabrat dlouho</string>
-    <string name="full_index_desc">Použijte pouze v případě, že jste upravili nebo odstranili scrobbly z webu.</string>
-    <string name="searched_n_items" formatted="true" comment="%1= number of tracks/albums/artists, always greater than 1000">Prohledáno top %1$s věcí v každé kategorii.</string>
-    <string name="last_indexed" formatted="true" comment="%1= date">Naposledy indexováno dne %1$s.</string>
     <string name="profile">Profil</string>
     <string name="profile_pic">Profilový obrázek</string>
     <string name="item_options" comment="Screen reader text for 3 dots menu button">Možnosti pro tuto položku</string>

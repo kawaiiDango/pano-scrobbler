@@ -89,15 +89,7 @@
     <string name="rank_change_new">Tidak di-scrobble pada periode sebelumnya</string>
     <string name="search">Cari</string>
     <string name="clear_all_history" comment="(talking about search history, tag history)">Hapus semua riwayat</string>
-    <string name="library" comment="search within the library">Pustaka</string>
     <string name="global" comment="search globally across lastfm">Global</string>
-    <string name="reindex">Indeks cepat</string>
-    <string name="do_index" comment="downloads the top scrobbles and indexes them into a database">Indeks scrobble-mu</string>
-    <string name="full_index">Indeks penuh</string>
-    <string name="take_long_time">Ini mungkin akan memakan waktu yang lama</string>
-    <string name="full_index_desc">Gunakan ini hanya jika Anda telah mengedit atau menghapus scrobble dari situs web.</string>
-    <string name="searched_n_items" formatted="true" comment="%1= number of tracks/albums/artists, always greater than 1000">Menelusuri %1$s item teratas di setiap kategori.</string>
-    <string name="last_indexed" formatted="true" comment="%1= date">Terakhir diindeks pada %1$s.</string>
     <string name="profile">Profil</string>
     <string name="profile_pic">Foto Profil</string>
     <string name="item_options" comment="Screen reader text for 3 dots menu button">Opsi untuk item ini</string>

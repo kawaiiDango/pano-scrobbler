@@ -88,15 +88,7 @@
     <string name="rank_change_new">前回期間でのScrobbleなし</string>
     <string name="search">検索</string>
     <string name="clear_all_history" comment="(talking about search history, tag history)">履歴を消去</string>
-    <string name="library" comment="search within the library">ライブラリ</string>
     <string name="global" comment="search globally across lastfm">全体</string>
-    <string name="reindex">簡易インデックス化</string>
-    <string name="do_index" comment="downloads the top scrobbles and indexes them into a database">Scrobbleをインデックス化</string>
-    <string name="full_index">フルインデックス化</string>
-    <string name="take_long_time">これには時間がかかる場合があります</string>
-    <string name="full_index_desc">ウェブサイトからScrobbleを編集や削除した際にのみこれを使用してください。</string>
-    <string name="searched_n_items" formatted="true" comment="%1= number of tracks/albums/artists, always greater than 1000">各カテゴリの上位%1$s件を検索しました。</string>
-    <string name="last_indexed" formatted="true" comment="%1= date">最後のインデックス化は%1$sです。</string>
     <string name="profile">プロフィール</string>
     <string name="profile_pic">プロフィール画像</string>
     <string name="item_options" comment="Screen reader text for 3 dots menu button">この項目のオプション</string>

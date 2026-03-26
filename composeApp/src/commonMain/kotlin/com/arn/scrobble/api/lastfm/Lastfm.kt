@@ -579,6 +579,7 @@ open class LastFm(userAccount: UserAccountSerializable) : Scrobblable(userAccoun
 
                 val response = unscrobbleClient.submitForm(url, parameters) {
                     header(HttpHeaders.Referrer, URL_USER + username)
+                    header(HttpHeaders.Origin, "https://www.last.fm")
                 }
 
                 if (response.status == HttpStatusCode.OK) {

@@ -7,9 +7,9 @@ import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.ui.graphics.Color
 
-object Themefe5722 : ThemeVariants {
+object ThemeFE5722 : ThemeVariants {
 
-    override val name = this::class.simpleName!!
+    override val name = "FE5722"
 
     override val light
         get() =

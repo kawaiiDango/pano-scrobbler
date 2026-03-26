@@ -9,7 +9,7 @@ import androidx.compose.ui.graphics.Color
 
 object Theme009788 : ThemeVariants {
 
-    override val name = this::class.simpleName!!
+    override val name = "009788"
 
     override val light
         get() =

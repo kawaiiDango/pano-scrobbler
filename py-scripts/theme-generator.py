@@ -88,7 +88,7 @@ def seed_to_class_name(seed: str) -> str:
     Convert a seed hex string like '#4385F6' to a valid Kotlin class name
     suffix, e.g. 'Theme4385F6'.
     """
-    clean = seed.lstrip("#").lower()
+    clean = seed.lstrip("#").upper()
     return f"Theme{clean}"
 
 
@@ -148,7 +148,7 @@ def generate_kotlin(theme_json: dict) -> str:
     lines.append("")
 
     # name property
-    lines.append('    override val name = this::class.simpleName!!')
+    lines.append(f'    override val name = "{display_name}"')
     lines.append("")
 
     # One override property per variant

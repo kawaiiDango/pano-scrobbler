@@ -33,8 +33,7 @@ actual fun EntryProviderScope<PanoRoute>.panoPlatformSpecificNavGraph(
         .fillMaxSize()
         .background(MaterialTheme.colorScheme.surface)
 
-    entry<PanoRoute.DiscordRpcSettings>(
-    ) { route ->
+    entry<PanoRoute.DiscordRpcSettings> { route ->
         onSetTitleRes(route, Res.string.discord_rich_presence)
         DiscordRpcScreen(
             modifier = modifier().addColumnPadding()

@@ -68,11 +68,10 @@ object WebViewProxyOverride {
                 try {
                     ProxyController.getInstance().setProxyOverride(
                         proxyConfig,
-                        SynchronousExecutor(),
-                        {
-                            _proxyOverrideStateFlow.value = ProxyOverrideState.ProxySet
-                        }
-                    )
+                        SynchronousExecutor()
+                    ) {
+                        _proxyOverrideStateFlow.value = ProxyOverrideState.ProxySet
+                    }
                 } catch (e: UnsupportedOperationException) {
                     _proxyOverrideStateFlow.value = ProxyOverrideState.OverrideUnsupported
                 } catch (e: IllegalArgumentException) {
@@ -91,11 +90,10 @@ object WebViewProxyOverride {
 
         try {
             ProxyController.getInstance().clearProxyOverride(
-                SynchronousExecutor(),
-                {
-                    _proxyOverrideStateFlow.value = ProxyOverrideState.ProxyCleared
-                }
-            )
+                SynchronousExecutor()
+            ) {
+                _proxyOverrideStateFlow.value = ProxyOverrideState.ProxyCleared
+            }
         } catch (e: UnsupportedOperationException) {
             _proxyOverrideStateFlow.value = ProxyOverrideState.OverrideUnsupported
         }

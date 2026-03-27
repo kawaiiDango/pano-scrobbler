@@ -1,11 +1,10 @@
 package com.arn.scrobble.onboarding
 
-import android.os.Build
 import android.webkit.CookieManager
-import android.webkit.WebView
+import androidx.webkit.WebViewCompat
 import co.touchlab.kermit.Logger
 import com.arn.scrobble.api.Requesters
-import com.arn.scrobble.utils.PlatformStuff
+import com.arn.scrobble.utils.AndroidStuff
 
 actual fun WebViewVM.platformClear() {
     try {
@@ -16,9 +15,7 @@ actual fun WebViewVM.platformClear() {
 }
 
 actual fun WebViewVM.platformInit() {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O &&
-        WebView.getCurrentWebViewPackage() == null
-    ) {
+    if (WebViewCompat.getCurrentWebViewPackage(AndroidStuff.applicationContext) == null) {
         Logger.e { "WebView unavailable" }
         loginState.value = WebViewLoginState.Unavailable
     } else {

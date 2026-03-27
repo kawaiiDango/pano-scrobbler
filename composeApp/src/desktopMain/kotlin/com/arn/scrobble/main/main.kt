@@ -266,6 +266,12 @@ fun main(args: Array<String>) {
                     else
                         ""
 
+                tooltipText +=
+                    if ((it as? PlayingTrackNotifyEvent.TrackPlaying)?.userLoved == true)
+                        "❤️ "
+                    else
+                        ""
+
                 tooltipText += it.scrobbleData.track
                 tooltipText += "\n" + it.scrobbleData.artist
 

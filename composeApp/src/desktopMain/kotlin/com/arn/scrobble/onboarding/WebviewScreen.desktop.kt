@@ -44,7 +44,7 @@ actual fun WebViewScreen(
         onSetTitle(title)
 
         if (DesktopWebView.inited) {
-            val (proxyHost, proxyPort) = Requesters.proxyHostPort.value ?: "" to 0
+            val (proxyHost, proxyPort) = Requesters.proxyHostPort.value ?: ("" to 0)
 
             DesktopWebView.launchWebView(
                 initialUrl,

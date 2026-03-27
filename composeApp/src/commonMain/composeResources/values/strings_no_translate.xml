@@ -38,22 +38,15 @@
 
     <!--  strings for unfinalized stuff  -->
 
-    <string name="proxy"
-        comment="network proxy"
-        >Proxy</string>
-    <string name="system"
-        comment="system default settings"
-        >System</string>
-    <string name="host"
-        comment="proxy host"
-        >Host</string>
-    <string name="port"
-        comment="proxy port"
-        >Port</string>
-    <string name="cache"
-        comment="as a noun"
-        >Cache</string>
+    <string name="proxy" comment="network proxy">Proxy</string>
+    <string name="system" comment="system default settings">System</string>
+    <string name="host" comment="proxy host">Host</string>
+    <string name="port" comment="proxy port">Port</string>
+    <string name="cache" comment="as a noun">Cache</string>
+    <string name="scanning">Scanning</string>
+    <string name="found">Found</string>
 
+    <string name="missing_local_network_permission">Missing permission to access the local network</string>
     <string name="upto_n_regexes" formatted="true">Up to %1$d regex rules</string>
     <string name="max_n" formatted="true">Maximum: %1$d</string>
     <string name="add_exception">Add an exception</string>
@@ -68,9 +61,7 @@
     <string name="desktop">Windows and Linux</string>
     <string name="android">Android</string>
     <string name="automation_cp_info">For Tasker, use Action > SQL Query. Set the mode to "URI Formatted", put any name in "Variable Array" and URI to one of these.</string>
-    <string name="automation_replace_app_id" formatted="true"
-        comment="%1$s is the literal text package_name on Android, APP_ID or MPRIS_ID on desktop"
-        >Replace %1$s with that of the app.</string>
+    <string name="automation_replace_app_id" formatted="true" comment="%1$s is the literal text package_name on Android, APP_ID or MPRIS_ID on desktop">Replace %1$s with that of the app.</string>
 
     <string name="billing_troubleshoot_github" translatable="false" formatted="true">Already donated?
 
@@ -80,7 +71,7 @@ Already purchased through Google Play?
 
 According to Google Play's policies, purchases made through Google Play cannot be used for apps downloaded outside of Google Play.
 </string>
-<!--  make them RTL agnostic  -->
+    <!--  make them RTL agnostic  -->
     <string name="move_left" translatable="false">Move left</string>
     <string name="move_right" translatable="false">Move right</string>
 

@@ -523,9 +523,9 @@ private fun getModifierIcons(regexEdit: RegexEdit): List<ImageVector> {
 
     if (!regexEdit.enabled) m += Icons.ToggleOff
 
-    if (regexEdit.blockPlayerAction != null) m += Icons.Block
-    else if (regexEdit.replacement == null) m += Icons.SwipeLeftAlt
-    else m += Icons.FindReplace
+    m += if (regexEdit.blockPlayerAction != null) Icons.Block
+    else if (regexEdit.replacement == null) Icons.SwipeLeftAlt
+    else Icons.FindReplace
 
     if (regexEdit.appIds.isNotEmpty()) m += Icons.Apps
     if (regexEdit.caseSensitive) m += Icons.MatchCase

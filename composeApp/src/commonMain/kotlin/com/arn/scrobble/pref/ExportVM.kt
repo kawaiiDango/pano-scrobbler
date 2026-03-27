@@ -7,6 +7,7 @@ import com.arn.scrobble.utils.PlatformFile
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.okhttp.OkHttp
 import io.ktor.client.plugins.HttpTimeout
+import io.ktor.client.request.parameter
 import io.ktor.client.request.post
 import io.ktor.client.request.setBody
 import io.ktor.client.statement.bodyAsText
@@ -24,16 +25,33 @@ import java.security.SecureRandom
 import javax.net.ssl.SSLContext
 import javax.net.ssl.TrustManagerFactory
 import javax.net.ssl.X509TrustManager
+import kotlin.random.Random
 
 
 class ExportVM : ViewModel() {
 
     private val _result = MutableStateFlow<Result<Unit>?>(null)
     val result = _result.asStateFlow()
+    private val mdns = Mdns()
+    val mdnsStatus = mdns.status
     private val imExporter by lazy { ImExporter() }
     private val ktorClient = viewModelScope.async(start = CoroutineStart.LAZY) {
         val ks = ImportVM.readKeystore()
         buildKtorClient(ks)
+    }
+
+    val idString = "pano-scrobbler-" + Random.nextBytes(2).toHexString(HexFormat.UpperCase)
+
+    init {
+        viewModelScope.launch {
+            mdns.status.collect { status ->
+                Logger.d { "Mdns discovery status: $status" }
+            }
+        }
+    }
+
+    fun discover() {
+        mdns.discover()
     }
 
     fun exportToFile(platformFile: PlatformFile, privateData: Boolean) {
@@ -54,17 +72,22 @@ class ExportVM : ViewModel() {
         }
     }
 
-    fun exportToServer(encodedAddress: String) {
+    fun exportToServer(mdnsServiceInfo: MdnsStatus.ServiceInfo) {
         viewModelScope.launch(Dispatchers.IO) {
+            mdns.stop()
+
             val outputStream = ByteArrayOutputStream()
             val exported = imExporter.export(outputStream)
             if (exported) {
                 val jsonBody = outputStream.toString()
                 _result.value = runCatching {
-                    val (ip, port) = IpPortCode.decode(encodedAddress)
+//                    val (ip, port) = IpPortCode.decode(encodedAddress)
 
+                    val ip = mdnsServiceInfo.ip
+                    val port = mdnsServiceInfo.port
                     val req = ktorClient.await()
                         .post("https://$ip:$port/import") {
+                            parameter("id", idString)
                             setBody(jsonBody)
                         }
 
@@ -108,4 +131,7 @@ class ExportVM : ViewModel() {
         }
     }
 
+    override fun onCleared() {
+        mdns.stop()
+    }
 }

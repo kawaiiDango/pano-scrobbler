@@ -19,7 +19,6 @@ import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff
 import com.arn.scrobble.utils.Stuff.stateInWithCache
 import io.ktor.client.HttpClient
-import io.ktor.client.engine.ProxyBuilder
 import io.ktor.client.engine.okhttp.OkHttp
 import io.ktor.client.plugins.HttpCallValidator
 import io.ktor.client.plugins.HttpTimeout
@@ -45,6 +44,8 @@ import kotlinx.coroutines.withContext
 import kotlinx.serialization.SerializationException
 import kotlinx.serialization.json.decodeFromStream
 import java.io.File
+import java.net.InetSocketAddress
+import java.net.Proxy
 import kotlin.coroutines.cancellation.CancellationException
 
 
@@ -77,12 +78,10 @@ object Requesters {
             engine {
                 dispatcher = Dispatchers.IO
 
-                val prox = proxyHostPort.value ?: PlatformStuff.getSystemSocksProxy()
+                proxy = proxyHostPort.value?.let { (host, port) ->
+                    Proxy(Proxy.Type.SOCKS, InetSocketAddress.createUnresolved(host, port))
+                } ?: PlatformStuff.getSystemSocksProxy()
                 // fix to tunnel dns through socks5 proxy if set at system level
-                prox?.let { (host, port) ->
-                    Logger.i { "SOCKS proxy detected at $host:$port, applying fix" }
-                    proxy = ProxyBuilder.socks(host, port)
-                }
             }
 
             install(HttpTimeout) {

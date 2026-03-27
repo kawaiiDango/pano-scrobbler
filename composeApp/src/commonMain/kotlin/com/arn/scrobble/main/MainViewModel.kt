@@ -45,8 +45,6 @@ class MainViewModel : ViewModel() {
     private val _selectedPackages = MutableSharedFlow<Pair<List<AppItem>, List<AppItem>>>()
     val selectedPackages = _selectedPackages.asSharedFlow()
 
-    var pendingSubmitAttempted = false
-
     val isItChristmas by lazy {
         val cal = Calendar.getInstance()
         BuildKonfig.DEBUG ||

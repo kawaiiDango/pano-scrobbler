@@ -12,8 +12,11 @@ kotlin {
     // See: https://kotlinlang.org/docs/multiplatform-discover-project.html#targets
     android {
         namespace = "com.arn.scrobble.extras.common"
-        compileSdk = libs.versions.targetSdk.get().toInt()
-//        compileSdkPreview = "CinnamonBun"
+        compileSdk {
+            version = release(libs.versions.targetSdk.get().toInt()) {
+                minorApiLevel = libs.versions.sdkMinor.get().toInt()
+            }
+        }
         minSdk = libs.versions.minSdk.get().toInt()
     }
 

@@ -24,7 +24,7 @@ expect fun WebViewScreen(
     },
 )
 
-suspend fun handleWebViewStatus(
+fun handleWebViewStatus(
     webViewLoginState: WebViewLoginState,
     onNavigate: (PanoRoute) -> Unit,
     onSetStatusText: (String) -> Unit,

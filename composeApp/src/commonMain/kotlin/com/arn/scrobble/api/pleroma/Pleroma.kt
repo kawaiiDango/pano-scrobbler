@@ -13,7 +13,6 @@ import com.arn.scrobble.api.UserAccountSerializable
 import com.arn.scrobble.api.UserAccountTemp
 import com.arn.scrobble.api.UserCached
 import com.arn.scrobble.api.cache.CacheStrategy
-import com.arn.scrobble.api.cache.ExpirationPolicy
 import com.arn.scrobble.api.lastfm.Album
 import com.arn.scrobble.api.lastfm.Artist
 import com.arn.scrobble.api.lastfm.MusicEntry
@@ -32,12 +31,10 @@ import io.ktor.client.request.forms.FormDataContent
 import io.ktor.client.request.parameter
 import io.ktor.client.request.setBody
 import io.ktor.client.request.url
-import io.ktor.http.Url
 import io.ktor.http.encodedPath
 import io.ktor.http.parameters
 import kotlinx.coroutines.delay
 import kotlinx.serialization.Serializable
-import java.util.concurrent.TimeUnit
 import kotlin.time.Instant
 
 class Pleroma(userAccount: UserAccountSerializable) : Scrobblable(userAccount) {
@@ -226,19 +223,6 @@ class Pleroma(userAccount: UserAccountSerializable) : Scrobblable(userAccount) {
             return tokenResponse.map { }
         }
     }
-}
-
-
-class PleromaExpirationPolicy : ExpirationPolicy {
-    private val ONE_WEEK = TimeUnit.DAYS.toMillis(7)
-
-    override fun getExpirationTime(url: Url) =
-        when (url.segments.lastOrNull()) {
-            "scrobbles",
-                -> ONE_WEEK
-
-            else -> -1
-        }
 }
 
 @Serializable

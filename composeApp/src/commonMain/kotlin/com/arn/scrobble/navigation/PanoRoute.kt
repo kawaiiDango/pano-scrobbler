@@ -124,7 +124,7 @@ sealed interface PanoRoute : NavKey {
             Res.string.add,
             Icons.Add,
             false,
-            PanoRoute.SimpleEditsAdd(null)
+            SimpleEditsAdd(null)
         )
     }
 
@@ -137,7 +137,7 @@ sealed interface PanoRoute : NavKey {
             Res.string.add,
             Icons.Add,
             false,
-            PanoRoute.RegexEditsAdd(null)
+            RegexEditsAdd(null)
         )
     }
 

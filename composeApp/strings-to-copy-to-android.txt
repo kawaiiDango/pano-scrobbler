@@ -14,7 +14,6 @@ persistent_noti_text
 channel_err
 monthly
 new_app
-pending_scrobbles
 s_top_scrobbles
 state_scrobbling
 weekly

@@ -207,7 +207,7 @@ actual object PlatformStuff {
 
     actual fun monotonicTimeMs(): Long = System.nanoTime() / 1_000_000L
 
-    actual fun getSystemSocksProxy(): Pair<String, Int>? {
+    actual fun getSystemSocksProxy(): Proxy? {
         val socksUrl = "socket://www.example.com"
         val proxySelector = ProxySelector.getDefault()
         val proxies = proxySelector.select(URI(socksUrl))
@@ -220,7 +220,7 @@ actual object PlatformStuff {
             ) {
                 val addr = firstProxy?.address()
                 if (addr is InetSocketAddress) {
-                    return addr.hostName to addr.port
+                    return firstProxy
                 }
             }
         }

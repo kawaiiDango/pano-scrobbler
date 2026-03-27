@@ -4,7 +4,6 @@ import android.app.ActivityManager
 import android.app.ApplicationExitInfo
 import android.app.PendingIntent
 import android.content.Context
-import android.content.pm.PackageManager
 import android.media.MediaMetadata
 import android.os.Build
 import android.os.Bundle
@@ -144,14 +143,6 @@ object AndroidStuff {
         // Caused by java.lang.IllegalArgumentException at getHistoricalProcessExitReasons
         // Comparison method violates its general contract!
         // probably a samsung bug
-    }
-
-    fun isPackageInstalled(packageName: String): Boolean {
-        return try {
-            applicationContext.packageManager.getPackageInfo(packageName, 0) != null
-        } catch (e: PackageManager.NameNotFoundException) {
-            false
-        }
     }
 
     fun MediaMetadata.dump() {

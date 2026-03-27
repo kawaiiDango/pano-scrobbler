@@ -8,6 +8,7 @@ import com.arn.scrobble.db.PanoDb
 import com.arn.scrobble.pref.MainPrefs
 import java.io.File
 import java.io.OutputStream
+import java.net.Proxy
 
 expect object PlatformStuff {
 
@@ -58,5 +59,5 @@ expect object PlatformStuff {
 
     fun monotonicTimeMs(): Long
 
-    fun getSystemSocksProxy(): Pair<String, Int>?
+    fun getSystemSocksProxy(): Proxy?
 }

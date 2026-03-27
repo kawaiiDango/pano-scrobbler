@@ -14,6 +14,7 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import pano_scrobbler.composeapp.generated.resources.Res
 import java.io.IOException
@@ -26,7 +27,9 @@ class ImportVM : ViewModel() {
 
     private val _serverAddress = MutableStateFlow<String?>(null)
     val serverAddress = _serverAddress.asStateFlow()
-    private val _serverResult = MutableStateFlow<Result<String>?>(null)
+    private val _incomingMdnsName = MutableStateFlow<String?>(null)
+    val incomingMdnsName = _incomingMdnsName.asStateFlow()
+    private val _serverResult = MutableStateFlow<Result<Unit>?>(null)
     val serverResult = _serverResult.asStateFlow()
     private val _availableImportTypes = MutableStateFlow<Set<ImExporter.ImportTypes>?>(null)
     val availableImportTypes = _availableImportTypes.asStateFlow()
@@ -35,45 +38,61 @@ class ImportVM : ViewModel() {
     private val imExporter by lazy { ImExporter() }
     val localIps by lazy { PlatformStuff.getLocalIpAddresses() }
     private var server: ImportServer? = null
+    private val mdns = Mdns()
+    val mdnsStatus = mdns.status
 
     init {
         viewModelScope.launch(Dispatchers.IO) {
             serverAddress
-                .collect { localIp ->
+                .collectLatest { localIp ->
                     server?.stop()
+                    mdns.stop()
 
                     if (localIp == null) {
                         _serverResult.value = null
-                        return@collect
+                        return@collectLatest
                     }
 
-                    val randomPort = (IpPortCode.PORT_BASE..IpPortCode.PORT_MAX).random()
+                    val randomPort = (PORT_BASE..PORT_MAX).random()
 
                     Logger.d { "Server running on: https://$localIp:$randomPort" }
 
                     try {
-                        val encodedAddress = IpPortCode.encode(localIp, randomPort)
+//                        val encodedAddress = IpPortCode.encode(localIp, randomPort)
                         server = ImportServer(
                             localIp,
                             randomPort,
                             "import",
                             readKeystore()
-                        ) {
+                        ) { mdnsName, inputStream ->
+                            _incomingMdnsName.value = mdnsName
+
                             try {
-                                _availableImportTypes.value = imExporter.createImportTypes(it)
+                                _availableImportTypes.value =
+                                    imExporter.createImportTypes(inputStream)
                             } catch (e: Exception) {
                                 Logger.i(e) { "Failed to read import data" }
                                 _importResult.tryEmit(Result.failure(e))
                             }
+
                         }
                         server?.start()
 
-                        _serverResult.value = Result.success(encodedAddress)
+                        _serverResult.value = Result.success(Unit)
+
+                        mdns.register(localIp, randomPort)
+
                     } catch (e: Exception) {
                         Logger.e(e) { "Failed to start import server" }
                         _serverResult.value = Result.failure(e)
                     }
                 }
+        }
+
+        viewModelScope.launch {
+            mdnsStatus.collect { status ->
+                Logger.d { "Mdns registration status: $status" }
+            }
         }
     }
 
@@ -119,7 +138,7 @@ class ImportVM : ViewModel() {
 
     override fun onCleared() {
         server?.stop()
-        super.onCleared()
+        mdns.stop()
     }
 
     private class ImportServer(
@@ -127,7 +146,7 @@ class ImportVM : ViewModel() {
         port: Int,
         private val path: String,
         ks: KeyStore,
-        private val onImport: (InputStream) -> Unit,
+        private val onImport: (String, InputStream) -> Unit,
     ) : NanoHTTPD(hostname, port) {
 
         init {
@@ -149,9 +168,15 @@ class ImportVM : ViewModel() {
 
         override fun serve(session: IHTTPSession): Response {
             return if (session.method == Method.POST && session.uri == "/$path") {
+                val id = session.queryParameterString.substringAfter("id=", "")
+                if (id.isEmpty()) return newFixedLengthResponse(
+                    Status.BAD_REQUEST,
+                    MIME_PLAINTEXT,
+                    "Missing id"
+                )
                 val contentLength = session.headers["content-length"]!!.toInt()
                 val lis = LimitedInputStream(session.inputStream, contentLength)
-                onImport(lis)
+                onImport(id, lis)
 
                 newFixedLengthResponse(
                     Status.OK,
@@ -195,6 +220,8 @@ class ImportVM : ViewModel() {
     }
 
     companion object {
+        private const val PORT_BASE = 8500
+        private const val PORT_MAX = PORT_BASE + 255
         suspend fun readKeystore(): KeyStore {
             val ks = KeyStore.getInstance("PKCS12")
             Res.readBytes("files/pano-embedded-server-ks.bin")

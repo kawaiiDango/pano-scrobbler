@@ -285,10 +285,10 @@ object ScrobbleEverywhere {
                 }
 
                 guessAlbum && scrobbleData.album.isNullOrEmpty() -> {
-                    val album = PanoDb.db.getSeenEntitiesDao().getBestAlbumForTrack(
+                    val album = PanoDb.db.getSeenEntitiesDao().getBestAlbumsForTrack(
                         scrobbleData.artist,
                         scrobbleData.track
-                    )
+                    ).firstOrNull()
 
                     if (album != null) {
                         val sd = scrobbleData.copy(

@@ -1,9 +1,26 @@
 #!/bin/bash
 
 scriptDir="$(cd "$(dirname "$0")" && pwd)"
+pkgbuildDir="$scriptDir/../pano-scrobbler-bin"
+
+# --- Re-launch inside Arch container if not Arch ---
+if [[ -z "$(command -v makepkg)" ]]; then
+  exec podman run --rm \
+    -e IN_CONTAINER=1 \
+    -e GITHUB_TOKEN="${GITHUB_TOKEN:-}" \
+    -v "$scriptDir:/scripts:z" \
+    -v "$(realpath "$pkgbuildDir"):/pkgbuild:z" \
+    -w /scripts \
+    docker.io/archlinux:base \
+    bash -c "pacman -Sy --noconfirm jq ed && useradd -u $(id -u) -m dango && su dango -c 'bash /scripts/$(basename "$0")'"
+fi
+
+# if inside container, set pkgbuildDir to /pkgbuild. Don't do it if the host is Arch.
+if [[ -n "${IN_CONTAINER:-}" ]]; then  
+  pkgbuildDir="/pkgbuild"
+fi
 
 # Update PKGBUILD (_pkgver, pkgver, sha256sums)
-pkgbuildDir="$scriptDir/../pano-scrobbler-bin"
 if [ -f "$pkgbuildDir/PKGBUILD" ]; then
     OWNER="kawaiiDango"
     REPO="pano-scrobbler"
@@ -66,12 +83,16 @@ if [ -f "$pkgbuildDir/PKGBUILD" ]; then
     sha_x64="$(get_sha256_for_asset "$ASSET_X64")"
     sha_arm64="$(get_sha256_for_asset "$ASSET_ARM64")"
 
-    sed -i "s/^_pkgver=.*/_pkgver=$tag/" "$pkgbuildDir/PKGBUILD"
-    sed -i "s/^pkgver=.*/pkgver=$verName/" "$pkgbuildDir/PKGBUILD"
-    sed -i "s/^pkgrel=.*/pkgrel=1/" "$pkgbuildDir/PKGBUILD"
-    sed -i "s/^sha256sums_x86_64=(.*/sha256sums_x86_64=('$sha_x64')/" "$pkgbuildDir/PKGBUILD"
-    sed -i "s/^sha256sums_aarch64=(.*/sha256sums_aarch64=('$sha_arm64')/" "$pkgbuildDir/PKGBUILD"
-    echo "PKGBUILD updated: _pkgver=$tag, pkgver=$verName, sha_x64=$sha_x64, sha_arm64=$sha_arm64"
+    ed -s "$pkgbuildDir/PKGBUILD" <<EOF
+g/^_pkgver=/s|.*|_pkgver=$tag|
+g/^pkgver=/s|.*|pkgver=$verName|
+g/^pkgrel=/s|.*|pkgrel=1|
+g/^sha256sums_x86_64=(/s|.*|sha256sums_x86_64=('$sha_x64')|
+g/^sha256sums_aarch64=(/s|.*|sha256sums_aarch64=('$sha_arm64')|
+w
+q
+EOF
+    echo -e "PKGBUILD updated:\n_pkgver=$tag\npkgver=$verName\nsha_x64=$sha_x64\nsha_arm64=$sha_arm64"
     makepkg -D "$pkgbuildDir" --printsrcinfo > "$pkgbuildDir/.SRCINFO"
 else
     echo "PKGBUILD not found" >&2

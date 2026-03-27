@@ -32,7 +32,6 @@ import com.arn.scrobble.api.lastfm.MusicEntry
 import com.arn.scrobble.api.lastfm.Track
 import com.arn.scrobble.db.PanoDb
 import com.arn.scrobble.media.NLService
-import com.arn.scrobble.onboarding.WebViewProxyOverride
 import com.arn.scrobble.pref.MainPrefs
 import com.arn.scrobble.ui.PanoSnackbarVisuals
 import com.arn.scrobble.utils.AndroidStuff.applicationContext
@@ -53,6 +52,7 @@ import pano_scrobbler.composeapp.generated.resources.tv_url_notice
 import java.io.File
 import java.io.OutputStream
 import java.net.Inet4Address
+import java.net.Proxy
 import java.util.concurrent.TimeUnit
 
 actual object PlatformStuff {
@@ -330,5 +330,5 @@ actual object PlatformStuff {
 
     actual fun monotonicTimeMs() = SystemClock.elapsedRealtime()
 
-    actual fun getSystemSocksProxy(): Pair<String, Int>? = null // desktop only
+    actual fun getSystemSocksProxy(): Proxy? = null // desktop only
 }

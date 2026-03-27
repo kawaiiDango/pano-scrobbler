@@ -17,6 +17,10 @@ private fun String.norm() = this.trim()
  */
 private const val SEP = "\u001F"
 
+// SQLite has a default max of 999 variables per statement
+// Use a safe lower number to allow for any additional parameters in the queries
+private const val VAR_LIMIT = 990
+
 private fun idKey(artist: String, second: String) = "$artist$SEP$second"
 
 // public API function names start with "save" or "get" only
@@ -87,7 +91,9 @@ interface SeenEntitiesDao {
         val distinct = pairs.distinctBy { idKey(it.first, it.second) }
         insertTracksIgnore(distinct.map { SeenTrack(artist = it.first, track = it.second) })
         val keys = distinct.map { idKey(it.first, it.second) }
-        return lookupTrackIdsForKeys(keys).associate { it.compositeKey to it._id }
+        return keys.chunked(VAR_LIMIT)
+            .flatMap { lookupTrackIdsForKeys(it) }
+            .associate { it.compositeKey to it._id }
     }
 
     suspend fun resolveAlbumIds(pairs: List<Pair<String, String>>): Map<String, Long> {
@@ -95,7 +101,9 @@ interface SeenEntitiesDao {
         val distinct = pairs.distinctBy { idKey(it.first, it.second) }
         insertAlbumsIgnore(distinct.map { SeenAlbum(artist = it.first, album = it.second) })
         val keys = distinct.map { idKey(it.first, it.second) }
-        return lookupAlbumIdsForKeys(keys).associate { it.compositeKey to it._id }
+        return keys.chunked(VAR_LIMIT)
+            .flatMap { lookupAlbumIdsForKeys(it) }
+            .associate { it.compositeKey to it._id }
     }
 
     // -------------------------------------------------------------------------
@@ -154,8 +162,11 @@ interface SeenEntitiesDao {
         val trackIds = resolveTrackIds(trackPairs)
         val albumIds = resolveAlbumIds(albumPairs)
 
-        if (priority == SeenTrackAlbumAssociation.Priority.TRACK_INFO && trackIds.isNotEmpty())
-            updateTrackInfoFetchedAt(trackIds.values.distinct(), now)
+        if (priority == SeenTrackAlbumAssociation.Priority.TRACK_INFO) {
+            trackIds.values.distinct().chunked(VAR_LIMIT).forEach {
+                updateTrackInfoFetchedAt(it, now)
+            }
+        }
 
         // Album art: batch-update all at once via individual SQL calls still,
         // but only for items that actually have art (see note below).
@@ -182,7 +193,8 @@ interface SeenEntitiesDao {
 
         // Batch priority lookup.
         val assocKeys = resolved.map { "${it.trackId}$SEP${it.albumId}" }
-        val storedPriorities = lookupAssociationPriorities(assocKeys)
+        val storedPriorities = assocKeys.chunked(VAR_LIMIT)
+            .flatMap { lookupAssociationPriorities(it) }
             .associate { it.compositeKey to it.priority }
 
         // Build the associations to write.
@@ -202,14 +214,7 @@ interface SeenEntitiesDao {
         // Loved state: batch update for items that have a known loved state.
         if (!savedLoved) return
 
-        val lovedItems = items.mapNotNull { item ->
-            val isLoved = item.userloved ?: return@mapNotNull null
-            val trackId = trackIds[idKey(item.artist.name.norm(), item.name.norm())]
-                ?: return@mapNotNull null
-            trackId to isLoved
-        }
-        if (lovedItems.isNotEmpty())
-            updateLovedStateBatch(lovedItems, now)
+        saveLovedTracks(items, now, trackIds)
     }
 
     /**
@@ -217,14 +222,30 @@ interface SeenEntitiesDao {
      *
      * Round-trips: 2 (batch INSERT + batch SELECT) + 1 UPDATE IN = 3 constant.
      */
-    @Transaction
-    suspend fun saveLovedTracks(items: List<Track>) {
+    suspend fun saveLovedTracks(
+        items: List<Track>,
+        updatedAt: Long = System.currentTimeMillis(),
+        trackIdsp: Map<String, Long>? = null,
+    ) {
         if (items.isEmpty()) return
-        val now = System.currentTimeMillis()
-        val pairs = items.map { it.artist.name.norm() to it.name.norm() }
-        val trackIds = resolveTrackIds(pairs).values.toList()
-        if (trackIds.isNotEmpty())
-            updateLovedStateForIds(trackIds, isLoved = true, updatedAt = now)
+
+        val trackIds = trackIdsp
+            ?: resolveTrackIds(items.map { it.artist.name.norm() to it.name.norm() })
+
+        val (loved, notLoved) = items.mapNotNull { item ->
+            val isLoved = item.userloved ?: return@mapNotNull null
+            val trackId = trackIds[idKey(item.artist.name.norm(), item.name.norm())]
+                ?: return@mapNotNull null
+            trackId to isLoved
+        }
+            .partition { (_, isLoved) -> isLoved }
+
+        loved.map { it.first }.chunked(VAR_LIMIT).forEach {
+            updateLovedStateForIds(it, true, updatedAt)
+        }
+        notLoved.map { it.first }.chunked(VAR_LIMIT).forEach {
+            updateLovedStateForIds(it, false, updatedAt)
+        }
     }
 
     /**
@@ -270,11 +291,14 @@ interface SeenEntitiesDao {
         val trackPairs = tracks.map { it.artist.name.norm() to it.name.norm() }
         val trackIds = resolveTrackIds(trackPairs).map { (_, id) -> id }
 
-        updateTrackInfoFetchedAt(trackIds, seenAt)
+        trackIds.chunked(VAR_LIMIT).forEach {
+            updateTrackInfoFetchedAt(it, seenAt)
+        }
 
         val priority = SeenTrackAlbumAssociation.Priority.ALBUM_INFO.n
         val assocKeys = trackIds.map { "${it}$SEP${albumId}" }
-        val storedPriorities = lookupAssociationPriorities(assocKeys)
+        val storedPriorities = assocKeys.chunked(VAR_LIMIT)
+            .flatMap { lookupAssociationPriorities(it) }
             .associate { it.compositeKey to it.priority }
 
         val toReplace = trackIds.mapNotNull { trackId ->
@@ -307,23 +331,9 @@ interface SeenEntitiesDao {
         INNER JOIN ${SeenTrack.TABLE} st ON st._id = taa.trackId
         WHERE st.artist = :artist AND st.track = :track
         ORDER BY taa.priority ASC, taa.seenAt DESC
-        LIMIT 1
         """
     )
-    suspend fun getBestAlbumForTrack(artist: String, track: String): SeenAlbum?
-
-    @Query(
-        """
-        SELECT sa.*
-        FROM ${SeenAlbum.TABLE} sa
-        INNER JOIN ${SeenTrackAlbumAssociation.TABLE} taa ON taa.albumId = sa._id
-        INNER JOIN ${SeenTrack.TABLE} st ON st._id = taa.trackId
-        WHERE st.artist = :artist AND st.track = :track AND sa.artUpdatedAt IS NOT NULL
-        ORDER BY taa.priority ASC, taa.seenAt DESC
-        LIMIT 1
-        """
-    )
-    suspend fun getBestAlbumForTrackWithFetchedArt(artist: String, track: String): SeenAlbum?
+    suspend fun getBestAlbumsForTrack(artist: String, track: String): List<SeenAlbum>
 
     @Query(
         """
@@ -365,21 +375,6 @@ interface SeenEntitiesDao {
         """
     )
     suspend fun updateLovedStateForIds(trackIds: List<Long>, isLoved: Boolean, updatedAt: Long)
-
-    /**
-     * Batch loved-state update for mixed true/false values (used by saveRecentTracks).
-     * Splits into two UPDATE IN calls — one per distinct boolean value — which is
-     * still O(1) round-trips vs O(N).
-     */
-    suspend fun updateLovedStateBatch(
-        items: List<Pair<Long, Boolean>>,
-        updatedAt: Long,
-    ) {
-        val loved = items.filter { it.second }.map { it.first }
-        val notLoved = items.filter { !it.second }.map { it.first }
-        if (loved.isNotEmpty()) updateLovedStateForIds(loved, true, updatedAt)
-        if (notLoved.isNotEmpty()) updateLovedStateForIds(notLoved, false, updatedAt)
-    }
 
     @Query(
         """

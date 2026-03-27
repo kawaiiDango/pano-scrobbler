@@ -40,12 +40,14 @@ import org.jetbrains.compose.resources.getString
 import org.jetbrains.compose.resources.stringResource
 import pano_scrobbler.composeapp.generated.resources.Res
 import pano_scrobbler.composeapp.generated.resources.artist_splitting_exceptions
+import pano_scrobbler.composeapp.generated.resources.from
 import pano_scrobbler.composeapp.generated.resources.import_lists_keep
 import pano_scrobbler.composeapp.generated.resources.import_lists_replace_all
 import pano_scrobbler.composeapp.generated.resources.import_lists_replace_existing
 import pano_scrobbler.composeapp.generated.resources.import_options
 import pano_scrobbler.composeapp.generated.resources.import_settings
 import pano_scrobbler.composeapp.generated.resources.imported
+import pano_scrobbler.composeapp.generated.resources.missing_local_network_permission
 import pano_scrobbler.composeapp.generated.resources.network_error
 import pano_scrobbler.composeapp.generated.resources.pref_blocked_metadata
 import pano_scrobbler.composeapp.generated.resources.pref_imexport_code
@@ -61,16 +63,15 @@ fun ImportScreen(
     modifier: Modifier = Modifier,
     viewModel: ImportVM = viewModel { ImportVM() },
 ) {
-    var codeText by rememberSaveable { mutableStateOf<String?>(null) }
     var errorText by rememberSaveable { mutableStateOf<String?>(null) }
     var toggleButtonSelectedIndex by rememberSaveable { mutableIntStateOf(-1) }
     val networkMode =
         rememberSaveable(toggleButtonSelectedIndex) { toggleButtonSelectedIndex == 1 }
 
-    val availableImportTypes by viewModel.availableImportTypes.collectAsStateWithLifecycle(null)
+    val availableImportTypes by viewModel.availableImportTypes.collectAsStateWithLifecycle()
     val importSuccessText = stringResource(Res.string.imported)
     var filePickerShown by remember { mutableStateOf(false) }
-
+    val incomingMdnsName by viewModel.incomingMdnsName.collectAsStateWithLifecycle()
 
     // On Android 11 TV:
     // Permission Denial: opening provider com.android.externalstorage.ExternalStorageProvider
@@ -90,6 +91,7 @@ fun ImportScreen(
         ) { index ->
             when (index) {
                 0 -> {
+                    viewModel.setServerAddress(null)
                     filePickerShown = true
                 }
 
@@ -106,14 +108,26 @@ fun ImportScreen(
             modifier = Modifier.padding(bottom = 16.dp)
         )
 
-        AnimatedVisibility(visible = networkMode) {
+        AnimatedVisibility(visible = networkMode && availableImportTypes == null) {
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
                 val serverAddress by viewModel.serverAddress.collectAsStateWithLifecycle()
+                val mdnsStatus by viewModel.mdnsStatus.collectAsStateWithLifecycle()
+                val missingPermText = stringResource(Res.string.missing_local_network_permission)
 
-                LaunchedEffect(Unit) {
-                    if (serverAddress == null) {
+                var canStartServer by rememberSaveable { mutableStateOf(false) }
+
+                if (!canStartServer) {
+                    ImportScreenPermissionsRequest(onGranted = {
+                        canStartServer = true
+                    }, onDenied = {
+                        errorText = missingPermText
+                    })
+                }
+
+                LaunchedEffect(canStartServer) {
+                    if (canStartServer && serverAddress == null) {
                         val firstIp = viewModel.localIps.firstOrNull()
 
                         if (firstIp != null) {
@@ -130,18 +144,20 @@ fun ImportScreen(
                     style = MaterialTheme.typography.bodyMedium,
                 )
 
-                Text(
-                    text = codeText ?: "",
-                    textAlign = TextAlign.Center,
-                    style = MaterialTheme.typography.displaySmall,
-                    modifier = Modifier.padding(bottom = 16.dp)
-                )
+                if (mdnsStatus is MdnsStatus.Registered) {
+                    Text(
+                        text = (mdnsStatus as MdnsStatus.Registered).name,
+                        textAlign = TextAlign.Center,
+                        style = MaterialTheme.typography.displaySmall,
+                        modifier = Modifier.padding(bottom = 16.dp)
+                    )
+                }
 
                 Spacer(
                     modifier = Modifier.height(8.dp)
                 )
 
-                if (serverAddress != null) {
+                if (canStartServer && serverAddress != null) {
                     ButtonWithSpinner(
                         prefixText = "IP",
                         itemToTexts = remember {
@@ -205,7 +221,8 @@ fun ImportScreen(
                 modifier = Modifier.fillMaxWidth(),
             ) {
                 Text(
-                    text = stringResource(Res.string.import_options),
+                    text = incomingMdnsName?.let { stringResource(Res.string.from, it) }
+                        ?: stringResource(Res.string.import_options),
                     style = MaterialTheme.typography.headlineSmall,
                 )
 
@@ -253,7 +270,6 @@ fun ImportScreen(
     LaunchedEffect(Unit) {
         viewModel.serverResult.filterNotNull().collect { result ->
             result.onSuccess {
-                codeText = it.chunkedSequence(4).joinToString(" ")
                 errorText = null
             }.onFailure {
                 errorText = it.redactedMessage
@@ -284,3 +300,9 @@ fun ImportScreen(
         viewModel.setPlatformFile(it)
     }
 }
+
+@Composable
+expect fun ImportScreenPermissionsRequest(
+    onGranted: () -> Unit,
+    onDenied: () -> Unit,
+)

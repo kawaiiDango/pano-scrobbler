@@ -110,7 +110,6 @@ class WebViewVM(
     override fun onCleared() {
         // clear cookies
         platformClear()
-        super.onCleared()
     }
 }
 

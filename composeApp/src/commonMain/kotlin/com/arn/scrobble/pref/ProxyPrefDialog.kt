@@ -9,8 +9,8 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -23,7 +23,9 @@ import com.arn.scrobble.ui.PanoOutlinedTextField
 import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff
 import com.arn.scrobble.utils.Stuff.collectAsStateWithInitialValue
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import okhttp3.HttpUrl
 import org.jetbrains.compose.resources.stringResource
 import pano_scrobbler.composeapp.generated.resources.Res
 import pano_scrobbler.composeapp.generated.resources.host
@@ -42,20 +44,39 @@ fun ProxyPrefDialog(modifier: Modifier = Modifier) {
 
         var enabledEditable by remember { mutableStateOf(enabled) }
         var hostEditable by remember { mutableStateOf(host) }
-        var portEditable by remember { mutableIntStateOf(port) }
+        var portEditable by remember { mutableStateOf(port.toString()) }
 
-        val hostValid = hostEditable.isNotBlank()
-        val portValid = portEditable in 1..65535
+        var isValid by remember { mutableStateOf(true) }
+
+        fun validate(text: String, port: String): Boolean {
+            val portInt = port.toIntOrNull() ?: return false
+
+            return try {
+                HttpUrl.Builder()
+                    .host(text)
+                    .port(portInt)
+                    .scheme("http")
+                    .build()
+                true
+            } catch (e: Exception) {
+                false
+            }
+        }
+
+        LaunchedEffect(hostEditable, portEditable) {
+            delay(300) // debounce
+            isValid = hostEditable.isNotBlank() && validate(hostEditable, portEditable)
+        }
 
         DisposableEffect(Unit) {
             onDispose {
-                if (hostValid && portValid) {
+                if (validate(hostEditable, portEditable)) {
                     Stuff.appScope.launch {
                         PlatformStuff.mainPrefs.updateData {
                             it.copy(
                                 customProxyEnabled = enabledEditable,
                                 proxyHost = hostEditable,
-                                proxyPort = portEditable
+                                proxyPort = portEditable.toInt()
                             )
                         }
                     }
@@ -91,15 +112,15 @@ fun ProxyPrefDialog(modifier: Modifier = Modifier) {
                 },
                 enabled = enabledEditable,
                 singleLine = true,
-                isError = !hostValid,
+                isError = !isValid,
                 modifier = Modifier
                     .weight(1f)
                     .padding(end = 8.dp)
             )
 
             PanoOutlinedTextField(
-                value = if (portEditable == 0) "" else portEditable.toString(),
-                onValueChange = { portEditable = it.toIntOrNull() ?: 0 },
+                value = portEditable,
+                onValueChange = { portEditable = it },
                 label = {
                     Text(stringResource(Res.string.port))
                 },
@@ -108,7 +129,7 @@ fun ProxyPrefDialog(modifier: Modifier = Modifier) {
                 ),
                 enabled = enabledEditable,
                 singleLine = true,
-                isError = !portValid,
+                isError = !isValid,
                 modifier = Modifier
                     .width(120.dp)
             )

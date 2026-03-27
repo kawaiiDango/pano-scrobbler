@@ -6,8 +6,11 @@ plugins {
 
 android {
     namespace = "com.arn.scrobble.extras.play"
-//    compileSdkPreview = "CinnamonBun"
-    compileSdk = libs.versions.targetSdk.get().toInt()
+    compileSdk {
+        version = release(libs.versions.targetSdk.get().toInt()) {
+            minorApiLevel = libs.versions.sdkMinor.get().toInt()
+        }
+    }
 
     defaultConfig {
         minSdk = libs.versions.minSdk.get().toInt()

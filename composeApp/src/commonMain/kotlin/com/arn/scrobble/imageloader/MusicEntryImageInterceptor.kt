@@ -139,39 +139,53 @@ class MusicEntryImageInterceptor : Interceptor {
                                 musicEntryImageReq.accountType == AccountType.LASTFM
                             ) {
                                 val seenAlbum = when (entry) {
-                                    is Album -> dao.getAlbumWithFetchedArt(
-                                        entry.artist!!.name,
-                                        entry.name
-                                    )
+                                    is Album -> {
+                                        dao.getAlbumWithFetchedArt(
+                                            entry.artist!!.name,
+                                            entry.name
+                                        )
+                                    }
 
-                                    is Track -> dao.getBestAlbumForTrackWithFetchedArt(
-                                        entry.artist.name,
-                                        entry.name
-                                    )
+                                    is Track -> {
+                                        val bestAlbums = dao.getBestAlbumsForTrack(
+                                            entry.artist.name,
+                                            entry.name
+                                        )
+
+                                        val bestAlbumWithArt =
+                                            bestAlbums.firstOrNull { it.artUpdatedAt != null }
+
+                                        bestAlbumWithArt ?: bestAlbums.firstOrNull()
+                                    }
                                 }
 
                                 webp300 = seenAlbum?.artUrl
 
                                 // if the image from cache was still a placeholder, don't do a lookup
-                                if (seenAlbum == null) {
-                                    semaphore.withPermit {
-                                        delay(delayMs)
 
-                                        when (entry) {
-                                            is Album -> {
+                                when (entry) {
+                                    is Album -> {
+                                        if (seenAlbum == null) {
+                                            semaphore.withPermit {
+                                                delay(delayMs)
                                                 Requesters.lastfmUnauthedRequester.getAlbumInfo(
                                                     entry
                                                 ).onSuccess {
                                                     webp300 = it.webp300
                                                 }
                                             }
+                                        }
+                                    }
 
-                                            is Track -> {
-                                                val t = dao.getTrack(
-                                                    entry.artist.name,
-                                                    entry.name
-                                                )
-                                                if (t?.trackInfoFetchedAt == null) {
+                                    is Track -> {
+                                        if (seenAlbum == null) {
+                                            val t = dao.getTrack(
+                                                entry.artist.name,
+                                                entry.name
+                                            )
+                                            if (t?.trackInfoFetchedAt == null) {
+                                                semaphore.withPermit {
+                                                    delay(delayMs)
                                                     Requesters.lastfmUnauthedRequester.getTrackInfo(
                                                         entry
                                                     ).onSuccess {
@@ -179,21 +193,29 @@ class MusicEntryImageInterceptor : Interceptor {
                                                     }
                                                 }
                                             }
+                                        } else if (seenAlbum.artUpdatedAt == null) {
+                                            semaphore.withPermit {
+                                                delay(delayMs)
+                                                Requesters.lastfmUnauthedRequester.getAlbumInfo(
+                                                    Album(
+                                                        seenAlbum.album,
+                                                        Artist(entry.artist.name)
+                                                    )
+                                                ).onSuccess {
+                                                    webp300 = it.webp300
+                                                }
+                                            }
                                         }
                                     }
                                 }
                             }
 
-                            if (!webp300.isNullOrEmpty()) {
-                                FetchedImageUrls(
-                                    webp300,
-                                    webp300
-                                        .takeIf { it.startsWith("https://lastfm.freetls.fastly.net") }
-                                        ?.replace("300x300", "600x600")
-                                )
-                            } else {
-                                FetchedImageUrls(null)
-                            }
+                            FetchedImageUrls(
+                                webp300,
+                                webp300
+                                    ?.takeIf { it.startsWith("https://lastfm.freetls.fastly.net") }
+                                    ?.replace("300x300", "600x600")
+                            )
                         }
                     }
                 }

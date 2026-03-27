@@ -10,11 +10,9 @@ import org.jetbrains.compose.reload.gradle.ComposeHotRun
 import java.io.IOException
 import java.net.HttpURLConnection
 import java.net.URI
-import java.nio.file.Files
 import java.security.MessageDigest
 import javax.xml.parsers.DocumentBuilderFactory
 import kotlin.io.encoding.Base64
-import kotlin.io.path.name
 
 plugins {
     alias(libs.plugins.kotlin.multiplatform)
@@ -63,8 +61,11 @@ kotlin {
     }
 
     android {
-        compileSdk = libs.versions.targetSdk.get().toInt()
-//        compileSdkPreview = "CinnamonBun"
+        compileSdk {
+            version = release(libs.versions.targetSdk.get().toInt()) {
+                minorApiLevel = libs.versions.sdkMinor.get().toInt()
+            }
+        }
         namespace = APP_ID
         minSdk = libs.versions.minSdk.get().toInt()
 
@@ -140,6 +141,7 @@ kotlin {
             implementation(libs.kotlinx.coroutines.swing)
             implementation(projects.extrasNonplay)
             implementation(libs.sqlite.bundled)
+            implementation(libs.jmdns)
         }
     }
 
@@ -420,50 +422,6 @@ tasks.register<Copy>("copyReleaseDmg") {
     rename(
         "(.*).dmg",
         fileName
-    )
-}
-
-tasks.register<Exec>("packageWindowsNsis") {
-    val executableDir = file("build/compose/native/$resourcesDirName")
-    val nsisFilesDir = file("nsis-files")
-    val distDir = file("../dist")
-
-    val distFile = File(distDir, "$APP_NAME_NO_SPACES-$resourcesDirName.exe")
-    val nsisScriptFile = File(nsisFilesDir, "install-script.nsi")
-    val iconFile = file("app-icons/pano-scrobbler.ico")
-
-    val nsisDir = System.getenv("PROGRAMFILES(x86)") + "\\NSIS"
-
-    doFirst {
-        distFile.parentFile.mkdirs()
-
-        // create install.log with relative paths of all regular files under executableDir
-        if (executableDir.exists()) {
-            val installLogFile = File(executableDir, "install.log")
-            val lines = mutableListOf<String>()
-            Files.walk(executableDir.toPath()).use { stream ->
-                stream.filter {
-                    Files.isRegularFile(it) && it.name != installLogFile.name
-                }
-                    .forEach { p ->
-                        val rel = executableDir.toPath().relativize(p).toString()
-                        lines.add(rel)
-                    }
-            }
-            lines.sort()
-            installLogFile.writeText(lines.joinToString("\n"))
-        }
-    }
-
-    commandLine(
-        "\"$nsisDir\\makensis\"",
-        "/DOUTFILENAME=" + distFile.name,
-        "/DOUTFILEDIR=" + distFile.parentFile.absolutePath,
-        "/DAPPDIR=" + executableDir.absolutePath,
-        "/DVERSION_CODE=$VER_CODE",
-        "/DVERSION_NAME=$VER_NAME",
-        "/DICON_FILE=" + iconFile.absolutePath,
-        nsisScriptFile.absolutePath
     )
 }
 

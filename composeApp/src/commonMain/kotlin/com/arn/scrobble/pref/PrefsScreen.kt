@@ -122,6 +122,7 @@ import pano_scrobbler.composeapp.generated.resources.scrobbles
 import pano_scrobbler.composeapp.generated.resources.search
 import pano_scrobbler.composeapp.generated.resources.simple_edits
 import pano_scrobbler.composeapp.generated.resources.spotify
+import pano_scrobbler.composeapp.generated.resources.system
 import pano_scrobbler.composeapp.generated.resources.when_not_using
 import java.util.Calendar
 import java.util.Locale
@@ -664,10 +665,10 @@ fun PrefsScreen(
 
         item(MainPrefs::customProxyEnabled.name) {
             TextPref(
-                text = stringResource(Res.string.proxy) + " (Experimental)",
+                text = stringResource(Res.string.proxy),
                 summary = proxyHostPort?.let { (host, port) ->
                     "$host:$port"
-                },
+                } ?: stringResource(Res.string.system),
                 onClick = {
                     onNavigate(PanoRoute.Modal.ProxyPref)
                 }

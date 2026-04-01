@@ -56,7 +56,6 @@
     <string name="scrobble_sources">Scrobble sources</string>
     <string name="stop">Stop</string>
     <string name="random_on_start">Random on process start</string>
-    <string name="not_running_desktop">The scrobbler has stopped. Check logs.</string>
     <string name="notification_access_tv">This setting is usually at Apps > Special app access > Notification access</string>
     <string name="desktop">Windows and Linux</string>
     <string name="android">Android</string>

@@ -510,7 +510,6 @@ fun RegexEditsAddScreen(
                         blockPlayerAction = blockPlayerAction,
                         onChange = { blockPlayerAction = it },
                         enabled = isLicenseValid,
-                        modifier = Modifier.fillMaxWidth()
                     )
                 }
             }

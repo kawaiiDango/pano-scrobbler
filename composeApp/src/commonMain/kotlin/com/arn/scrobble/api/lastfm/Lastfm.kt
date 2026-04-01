@@ -43,14 +43,17 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
+import org.jetbrains.compose.resources.getString
+import pano_scrobbler.composeapp.generated.resources.Res
+import pano_scrobbler.composeapp.generated.resources.lastfm_reauth
 import java.math.BigInteger
 import java.security.MessageDigest
 import java.util.Calendar
 import java.util.TreeMap
 
 open class LastFm(userAccount: UserAccountSerializable) : Scrobblable(userAccount) {
-    class CookiesInvalidatedException :
-        IllegalStateException("cookies invalidated, please re-login")
+    class CookiesInvalidatedException(override val message: String) :
+        IllegalStateException()
 
     protected open val apiKey = Requesters.lastfmUnauthedRequester.apiKey
     protected open val apiSecret = Requesters.lastfmUnauthedRequester.apiSecret
@@ -564,7 +567,8 @@ open class LastFm(userAccount: UserAccountSerializable) : Scrobblable(userAccoun
                 val parameters = Parameters.build {
                     append(
                         FIELD_CSRFTOKEN,
-                        csrfToken ?: throw CookiesInvalidatedException()
+                        csrfToken
+                            ?: throw CookiesInvalidatedException(getString(Res.string.lastfm_reauth))
                     )
                     append(FIELD_ARTIST, track.artist.name)
                     append(FIELD_TRACK, track.name)
@@ -589,7 +593,7 @@ open class LastFm(userAccount: UserAccountSerializable) : Scrobblable(userAccoun
                         throw IllegalStateException("LastfmUnscrobbler: error unscrobbling")
                 } else if (response.status == HttpStatusCode.Forbidden) {
                     cookieStorage.clear()
-                    throw CookiesInvalidatedException()
+                    throw CookiesInvalidatedException(getString(Res.string.lastfm_reauth))
                 } else {
                     throw ResponseException(
                         response,

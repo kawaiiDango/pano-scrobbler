@@ -10,7 +10,6 @@ import android.graphics.drawable.Icon
 import android.os.Build
 import android.provider.Settings
 import androidx.annotation.RequiresApi
-import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.platform.LocalContext
 import com.arn.scrobble.MasterSwitchQS
@@ -40,15 +39,15 @@ import pano_scrobbler.composeapp.generated.resources.scrobbler_on
 import pano_scrobbler.composeapp.generated.resources.show_persistent_noti
 
 actual object PlatformSpecificPrefs {
-    actual fun prefQuickSettings(listScope: LazyListScope, scrobblerEnabled: Boolean) {
+    actual fun prefQuickSettings(filteredItem: FilteredItem, scrobblerEnabled: Boolean) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU && !PlatformStuff.isTv) {
-            listScope.item("master_qs_add") {
+            filteredItem("master_qs_add", Res.string.pref_master_qs_add, null) { title ->
                 val scrobblerEnabledText =
                     stringResource(if (scrobblerEnabled) Res.string.scrobbler_on else Res.string.scrobbler_off)
                 val context = LocalContext.current
                 val scope = rememberCoroutineScope()
                 TextPref(
-                    text = stringResource(Res.string.pref_master_qs_add),
+                    text = title,
                     onClick = {
                         val statusBarManager =
                             context.getSystemService(StatusBarManager::class.java)
@@ -103,13 +102,13 @@ actual object PlatformSpecificPrefs {
         context.startActivity(intent)
     }
 
-    actual fun prefChartsWidget(listScope: LazyListScope) {
+    actual fun prefChartsWidget(filteredItem: FilteredItem) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && !PlatformStuff.isTv) {
-            listScope.item("widget") {
+            filteredItem("widget", Res.string.pref_widget_charts, null) { title ->
                 val context = LocalContext.current
 
                 TextPref(
-                    text = stringResource(Res.string.pref_widget_charts),
+                    text = title,
                     onClick = {
                         requestPinWidget(context)
                     }
@@ -118,12 +117,12 @@ actual object PlatformSpecificPrefs {
         }
     }
 
-    actual fun prefNotifications(listScope: LazyListScope) {
+    actual fun prefNotifications(filteredItem: FilteredItem) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && !PlatformStuff.isTv) {
-            listScope.item("notifications") {
+            filteredItem("notifications", Res.string.pref_noti, null) { title ->
                 val context = LocalContext.current
                 TextPref(
-                    text = stringResource(Res.string.pref_noti),
+                    text = title,
                     onClick = {
                         launchNotificationsActivity(context)
                     }
@@ -132,13 +131,17 @@ actual object PlatformSpecificPrefs {
         }
     }
 
-    actual fun prefPersistentNoti(listScope: LazyListScope, notiEnabled: Boolean) {
+    actual fun prefPersistentNoti(filteredItem: FilteredItem, notiEnabled: Boolean) {
         if (AndroidStuff.canShowPersistentNotiIfEnabled) {
-            listScope.item(MainPrefs::notiPersistent.name) {
+            filteredItem(
+                MainPrefs::notiPersistent.name,
+                Res.string.show_persistent_noti,
+                null
+            ) { title ->
                 val context = LocalContext.current
 
                 SwitchPref(
-                    text = stringResource(Res.string.show_persistent_noti),
+                    text = title,
                     summary = stringResource(Res.string.fix_it_desc),
                     value = notiEnabled,
                     copyToSave = {
@@ -154,29 +157,29 @@ actual object PlatformSpecificPrefs {
         }
     }
 
-    actual fun prefAutostart(listScope: LazyListScope) {}
+    actual fun prefAutostart(filteredItem: FilteredItem) {}
 
-    actual fun discordRpc(listScope: LazyListScope, onNavigate: (PanoRoute) -> Unit) {
+    actual fun discordRpc(filteredItem: FilteredItem, onNavigate: (PanoRoute) -> Unit) {
         // no-op
     }
 
-    actual fun tidalSteelSeries(listScope: LazyListScope, enabled: Boolean) {
+    actual fun tidalSteelSeries(filteredItem: FilteredItem, enabled: Boolean) {
     }
 
-    actual fun deezerApi(listScope: LazyListScope, enabled: Boolean) {
+    actual fun deezerApi(filteredItem: FilteredItem, enabled: Boolean) {
     }
 
     actual fun prefScrobbler(
-        listScope: LazyListScope,
+        filteredItem: FilteredItem,
         scrobblerEnabled: Boolean,
         nlsEnabled: Boolean,
         onNavigate: (PanoRoute) -> Unit,
     ) {
-        listScope.item(MainPrefs::scrobblerEnabled.name) {
+        filteredItem(MainPrefs::scrobblerEnabled.name, Res.string.pref_master, null) { title ->
             val scope = rememberCoroutineScope()
 
             SwitchPref(
-                text = stringResource(Res.string.pref_master),
+                text = title,
                 summary = if (!nlsEnabled)
                     stringResource(Res.string.grant_notification_access)
                 else

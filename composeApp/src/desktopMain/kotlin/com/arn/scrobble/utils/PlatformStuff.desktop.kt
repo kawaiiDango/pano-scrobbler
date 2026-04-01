@@ -13,6 +13,7 @@ import com.arn.scrobble.api.lastfm.Artist
 import com.arn.scrobble.api.lastfm.MusicEntry
 import com.arn.scrobble.api.lastfm.Track
 import com.arn.scrobble.db.PanoDb
+import com.arn.scrobble.main.ScrobblerState
 import com.arn.scrobble.pref.MainPrefs
 import com.arn.scrobble.ui.PanoSnackbarVisuals
 import com.arn.scrobble.utils.Stuff.stateInWithCache
@@ -40,8 +41,6 @@ import java.net.URI
 actual object PlatformStuff {
 
     actual const val isJava8OrGreater = true
-
-    actual fun isNotificationListenerEnabled() = true
 
     actual const val isTv = false
 
@@ -108,8 +107,12 @@ actual object PlatformStuff {
         }
     }
 
-    actual fun isScrobblerRunning(): Boolean {
-        return PanoNativeComponents.isMediaListenerRunning
+    actual suspend fun checkScrobblerState(): ScrobblerState {
+        // check pref
+        return if (!mainPrefs.data.map { it.scrobblerEnabled }.first())
+            ScrobblerState.Disabled
+        else
+            ScrobblerState.Running
     }
 
     actual fun getDeviceIdentifier(): String {

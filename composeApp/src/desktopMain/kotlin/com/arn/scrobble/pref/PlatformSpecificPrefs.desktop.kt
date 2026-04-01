@@ -1,6 +1,5 @@
 package com.arn.scrobble.pref
 
-import androidx.compose.foundation.lazy.LazyListScope
 import com.arn.scrobble.PanoNativeComponents
 import com.arn.scrobble.navigation.PanoRoute
 import com.arn.scrobble.ui.PanoSnackbarVisuals
@@ -13,7 +12,6 @@ import pano_scrobbler.composeapp.generated.resources.disable
 import pano_scrobbler.composeapp.generated.resources.discord_rich_presence
 import pano_scrobbler.composeapp.generated.resources.done
 import pano_scrobbler.composeapp.generated.resources.enable
-import pano_scrobbler.composeapp.generated.resources.not_running_desktop
 import pano_scrobbler.composeapp.generated.resources.pref_fetch_missing_album
 import pano_scrobbler.composeapp.generated.resources.pref_master
 import pano_scrobbler.composeapp.generated.resources.pref_offline_info
@@ -23,30 +21,30 @@ import pano_scrobbler.composeapp.generated.resources.tidal_steelseries
 import pano_scrobbler.composeapp.generated.resources.when_using
 
 actual object PlatformSpecificPrefs {
-    actual fun prefQuickSettings(listScope: LazyListScope, scrobblerEnabled: Boolean) {
+    actual fun prefQuickSettings(filteredItem: FilteredItem, scrobblerEnabled: Boolean) {
         // no-op
     }
 
-    actual fun prefChartsWidget(listScope: LazyListScope) {
+    actual fun prefChartsWidget(filteredItem: FilteredItem) {
         // no-op
     }
 
-    actual fun prefNotifications(listScope: LazyListScope) {
+    actual fun prefNotifications(filteredItem: FilteredItem) {
         // no-op
     }
 
-    actual fun prefPersistentNoti(listScope: LazyListScope, notiEnabled: Boolean) {
+    actual fun prefPersistentNoti(filteredItem: FilteredItem, notiEnabled: Boolean) {
         // no-op
     }
 
-    actual fun prefAutostart(listScope: LazyListScope) {
+    actual fun prefAutostart(filteredItem: FilteredItem) {
         // only implemented for Linux
         if (DesktopStuff.os == DesktopStuff.Os.Linux) {
-            listScope.item("startup") {
+            filteredItem("startup", Res.string.run_on_start, null) { title ->
                 val doneString = stringResource(Res.string.done)
 
                 DropdownPref(
-                    text = stringResource(Res.string.run_on_start),
+                    text = title,
                     selectedValue = null,
                     values = listOf(true, false),
                     toLabel = {
@@ -59,7 +57,7 @@ actual object PlatformSpecificPrefs {
                         PanoNativeComponents.autoStartLinux(it)
                         val snackbarData = PanoSnackbarVisuals(doneString)
                         Stuff.globalSnackbarFlow.tryEmit(snackbarData)
-                        
+
                         this
                     }
                 )
@@ -67,24 +65,25 @@ actual object PlatformSpecificPrefs {
         }
     }
 
-    actual fun discordRpc(listScope: LazyListScope, onNavigate: (PanoRoute) -> Unit) {
-        listScope.item(MainPrefs::discordRpc.name) {
+    actual fun discordRpc(filteredItem: FilteredItem, onNavigate: (PanoRoute) -> Unit) {
+        filteredItem(MainPrefs::discordRpc.name, Res.string.discord_rich_presence, null) { title ->
             TextPref(
-                text = stringResource(Res.string.discord_rich_presence),
+                text = title,
                 onClick = { onNavigate(PanoRoute.DiscordRpcSettings) }
             )
         }
     }
 
 
-    actual fun tidalSteelSeries(listScope: LazyListScope, enabled: Boolean) {
+    actual fun tidalSteelSeries(filteredItem: FilteredItem, enabled: Boolean) {
         if (DesktopStuff.os == DesktopStuff.Os.Windows) {
-            listScope.item(MainPrefs::tidalSteelSeriesApi.name) {
+            filteredItem(
+                MainPrefs::tidalSteelSeriesApi.name,
+                Res.string.pref_fetch_missing_album,
+                Res.string.tidal_steelseries
+            ) { title ->
                 SwitchPref(
-                    text = stringResource(
-                        Res.string.pref_fetch_missing_album,
-                        stringResource(Res.string.tidal_steelseries)
-                    ),
+                    text = title,
                     summary = stringResource(
                         Res.string.when_using,
                         stringResource(Res.string.tidal)
@@ -96,14 +95,15 @@ actual object PlatformSpecificPrefs {
         }
     }
 
-    actual fun deezerApi(listScope: LazyListScope, enabled: Boolean) {
+    actual fun deezerApi(filteredItem: FilteredItem, enabled: Boolean) {
         if (DesktopStuff.os == DesktopStuff.Os.Windows) {
-            listScope.item(MainPrefs::deezerApi.name) {
+            filteredItem(
+                MainPrefs::deezerApi.name,
+                Res.string.pref_fetch_missing_album,
+                Res.string.deezer
+            ) { title ->
                 SwitchPref(
-                    text = stringResource(
-                        Res.string.pref_fetch_missing_album,
-                        stringResource(Res.string.deezer)
-                    ),
+                    text = title,
                     summary = stringResource(
                         Res.string.when_using,
                         stringResource(Res.string.deezer)
@@ -116,18 +116,15 @@ actual object PlatformSpecificPrefs {
     }
 
     actual fun prefScrobbler(
-        listScope: LazyListScope,
+        filteredItem: FilteredItem,
         scrobblerEnabled: Boolean,
         nlsEnabled: Boolean,
         onNavigate: (PanoRoute) -> Unit,
     ) {
-        listScope.item(MainPrefs::scrobblerEnabled.name) {
+        filteredItem(MainPrefs::scrobblerEnabled.name, Res.string.pref_master, null) { title ->
             SwitchPref(
-                text = stringResource(Res.string.pref_master),
-                summary = if (!nlsEnabled)
-                    stringResource(Res.string.not_running_desktop)
-                else
-                    stringResource(Res.string.pref_offline_info),
+                text = title,
+                summary = stringResource(Res.string.pref_offline_info),
                 value = scrobblerEnabled && nlsEnabled,
                 enabled = nlsEnabled,
                 copyToSave = { copy(scrobblerEnabled = it) }

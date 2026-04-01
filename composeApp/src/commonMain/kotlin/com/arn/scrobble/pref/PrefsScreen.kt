@@ -1,7 +1,10 @@
 package com.arn.scrobble.pref
 
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -10,15 +13,18 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.arn.scrobble.BuildKonfig
 import com.arn.scrobble.api.AccountType
 import com.arn.scrobble.api.Requesters
 import com.arn.scrobble.billing.LocalLicenseValidState
+import com.arn.scrobble.crashreporter.CrashReporterConfig
 import com.arn.scrobble.db.PanoDb
 import com.arn.scrobble.icons.Api
 import com.arn.scrobble.icons.BugReport
@@ -32,10 +38,13 @@ import com.arn.scrobble.icons.MusicNote
 import com.arn.scrobble.icons.Person
 import com.arn.scrobble.icons.SwapVert
 import com.arn.scrobble.icons.Translate
+import com.arn.scrobble.main.ScrobblerState
 import com.arn.scrobble.navigation.PanoRoute
 import com.arn.scrobble.themes.DayNightMode
 import com.arn.scrobble.ui.PanoLazyColumn
+import com.arn.scrobble.ui.SearchField
 import com.arn.scrobble.ui.SimpleHeaderItem
+import com.arn.scrobble.ui.accountTypeStringRes
 import com.arn.scrobble.ui.getActivityOrNull
 import com.arn.scrobble.ui.horizontalOverscanPadding
 import com.arn.scrobble.utils.LocaleUtils
@@ -50,11 +59,15 @@ import com.arn.scrobble.work.CommonWorkState
 import com.arn.scrobble.work.DigestWork
 import com.arn.scrobble.work.DigestWorker
 import com.arn.scrobble.work.UpdaterWork
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
+import org.jetbrains.compose.resources.StringResource
+import org.jetbrains.compose.resources.getString
 import org.jetbrains.compose.resources.stringResource
 import pano_scrobbler.composeapp.generated.resources.Res
 import pano_scrobbler.composeapp.generated.resources.album_art
@@ -94,7 +107,6 @@ import pano_scrobbler.composeapp.generated.resources.pref_first_day_of_week
 import pano_scrobbler.composeapp.generated.resources.pref_imexport
 import pano_scrobbler.composeapp.generated.resources.pref_import
 import pano_scrobbler.composeapp.generated.resources.pref_link_heart_button_rating
-import pano_scrobbler.composeapp.generated.resources.pref_lists
 import pano_scrobbler.composeapp.generated.resources.pref_locale
 import pano_scrobbler.composeapp.generated.resources.pref_misc
 import pano_scrobbler.composeapp.generated.resources.pref_notify_updates
@@ -131,12 +143,13 @@ import java.util.Locale
 @Composable
 fun PrefsScreen(
     onNavigate: (PanoRoute) -> Unit,
+    scrobblerStateFlow: StateFlow<ScrobblerState>,
     modifier: Modifier = Modifier,
 ) {
     val onNavigateToBilling = { onNavigate(PanoRoute.Billing) }
 
     val mainPrefs = remember { PlatformStuff.mainPrefs }
-    val nlsEnabled = remember { PlatformStuff.isNotificationListenerEnabled() }
+    val scrobblerState by scrobblerStateFlow.collectAsStateWithLifecycle()
 
     val scrobblerEnabled by mainPrefs.data.collectAsStateWithInitialValue { it.scrobblerEnabled }
     val allowedPackages by mainPrefs.data.collectAsStateWithInitialValue { it.allowedPackages }
@@ -199,16 +212,58 @@ fun PrefsScreen(
     } else {
         PanoDb.db.getBlockedMetadataDao().count().collectAsStateWithLifecycle(0)
     }
-    var crashReporterEnabled by remember {
-        mutableStateOf(
-            VariantStuff.crashReporter.isEnabled
-        )
-    }
+    var crashReporterEnabled by remember { mutableStateOf(CrashReporterConfig.isEnabled) }
     val isLicenseValid = LocalLicenseValidState.current
 
     val maybeActivity = getActivityOrNull()
 
-    val scope = rememberCoroutineScope()
+    var searchTerm by rememberSaveable { mutableStateOf("") }
+    val searchActive = searchTerm.isNotBlank()
+    val keysToTitleRes = remember { mutableMapOf<String, TitleStringResource>() }
+    var filteredKeys by remember { mutableStateOf(setOf<String>()) }
+    var localeChanged by remember { mutableStateOf(false) }
+
+    LaunchedEffect(searchTerm, localeChanged) {
+        delay(500)
+
+        if (searchActive) {
+            val fk = mutableSetOf<String>()
+            var prevHeaderKey: String? = null
+
+            for ((k, v) in keysToTitleRes) {
+                val isHeader = k.startsWith("header_")
+
+                if (isHeader) {
+                    prevHeaderKey = k
+                } else {
+                    // init if needed
+
+                    if (v.string == null || localeChanged) {
+                        v.string = if (v.formatRes == null)
+                            getString(v.res)
+                        else {
+                            getString(
+                                v.res,
+                                getString(v.formatRes)
+                            )
+                        }
+                    }
+
+                    if (v.string?.contains(searchTerm, ignoreCase = true) == true) {
+                        if (prevHeaderKey != null) {
+                            fk += prevHeaderKey
+                            prevHeaderKey = null
+                        }
+
+                        fk += k
+                    }
+                }
+            }
+
+            localeChanged = false
+            filteredKeys = fk
+        }
+    }
 
     LaunchedEffect(Unit) {
         if (!PlatformStuff.isDesktop && !PlatformStuff.isTv) {
@@ -226,53 +281,105 @@ fun PrefsScreen(
     }
 
     PanoLazyColumn(modifier = modifier) {
-        PlatformSpecificPrefs.prefScrobbler(this, scrobblerEnabled, nlsEnabled, onNavigate)
+        fun filteredItem(
+            key: String,
+            titleRes: StringResource,
+            formatRes: StringResource? = null,
+            content: @Composable (title: String) -> Unit
+        ) {
+            keysToTitleRes.computeIfAbsent(key) {
+                TitleStringResource(titleRes, formatRes)
+            }
 
-        PlatformSpecificPrefs.prefQuickSettings(this, scrobblerEnabled)
+            if (key in filteredKeys || !searchActive) {
+                item(key) {
+                    val titleStr = if (formatRes == null)
+                        stringResource(titleRes)
+                    else
+                        stringResource(titleRes, stringResource(formatRes))
 
-        PlatformSpecificPrefs.prefAutostart(this)
-
-        stickyHeader("scrobbling_header") {
-            SimpleHeaderItem(
-                text = stringResource(Res.string.scrobbles),
-                icon = Icons.MusicNote
-            )
+                    content(titleStr)
+                }
+            }
         }
 
-        item(MainPrefs::allowedPackages.name) {
-            AppIconsPref(
-                packageNames = allowedPackages,
-                title = stringResource(Res.string.pref_scrobble_from),
-                onClick = {
-                    onNavigate(
-                        PanoRoute.AppList(
-                            saveType = AppListSaveType.Scrobbling,
-                            preSelectedPackages = allowedPackages.toList(),
-                            isSingleSelect = false,
-                        )
+        fun filteredHeader(
+            keySuffix: String,
+            titleRes: StringResource,
+            imageVector: ImageVector,
+        ) {
+            val key = "header_$keySuffix"
+
+            keysToTitleRes.computeIfAbsent(key) {
+                TitleStringResource(titleRes, null)
+            }
+
+            if (key in filteredKeys || !searchActive) {
+                item(key) {
+                    SimpleHeaderItem(
+                        text = stringResource(titleRes),
+                        icon = imageVector,
                     )
                 }
-            )
+            }
         }
 
-        item(key = "choose_apps_notice") {
-            Text(
-                text = stringResource(Res.string.pref_enabled_apps_summary),
-                style = MaterialTheme.typography.bodyMedium,
-                modifier = Modifier.padding(
-                    vertical = 16.dp,
-                    horizontal = horizontalOverscanPadding()
+        stickyHeader("search_field") {
+            Surface {
+                SearchField(
+                    searchTerm,
+                    onSearchTermChange = { searchTerm = it },
+                    modifier = Modifier.padding(horizontal = horizontalOverscanPadding())
                 )
-            )
+            }
+        }
+
+        filteredHeader("scrobbling", Res.string.scrobbles, Icons.MusicNote)
+
+        PlatformSpecificPrefs.prefScrobbler(
+            ::filteredItem,
+            scrobblerEnabled,
+            scrobblerState != ScrobblerState.NLSDisabled,
+            onNavigate
+        )
+
+        PlatformSpecificPrefs.prefQuickSettings(::filteredItem, scrobblerEnabled)
+
+        PlatformSpecificPrefs.prefAutostart(::filteredItem)
+
+        filteredItem(MainPrefs::allowedPackages.name, Res.string.pref_scrobble_from) { title ->
+            Column(Modifier.fillMaxWidth()) {
+                AppIconsPref(
+                    packageNames = allowedPackages,
+                    title = title,
+                    onClick = {
+                        onNavigate(
+                            PanoRoute.AppList(
+                                saveType = AppListSaveType.Scrobbling,
+                                preSelectedPackages = allowedPackages.toList(),
+                                isSingleSelect = false,
+                            )
+                        )
+                    }
+                )
+                Text(
+                    text = stringResource(Res.string.pref_enabled_apps_summary),
+                    style = MaterialTheme.typography.bodyMedium,
+                    modifier = Modifier.padding(
+                        vertical = 16.dp,
+                        horizontal = horizontalOverscanPadding()
+                    )
+                )
+            }
         }
 
         if (!PlatformStuff.isTv && !PlatformStuff.isDesktop) {
-            item(MainPrefs::autoDetectApps.name) {
+            filteredItem(MainPrefs::autoDetectApps.name, Res.string.pref_auto_detect) { title ->
                 val notiEnabled =
                     remember { PanoNotifications.isNotiChannelEnabled(Stuff.CHANNEL_NOTI_NEW_APP) }
 
                 SwitchPref(
-                    text = stringResource(Res.string.pref_auto_detect),
+                    text = title,
                     summary = if (!notiEnabled) stringResource(Res.string.notification_channel_blocked) else null,
                     value = notiEnabled && autoDetectApps,
                     enabled = notiEnabled,
@@ -282,19 +389,25 @@ fun PrefsScreen(
         }
 
         if (!PlatformStuff.isDesktop && !PlatformStuff.isTv) {
-            item(MainPrefs::scrobbleSpotifyRemoteP.name) {
+            filteredItem(
+                MainPrefs::scrobbleSpotifyRemoteP.name,
+                Res.string.pref_spotify_remote
+            ) { title ->
                 SwitchPref(
-                    text = stringResource(Res.string.pref_spotify_remote),
+                    text = title,
                     value = scrobbleSpotifyRemoteP,
                     copyToSave = { copy(scrobbleSpotifyRemote = it) }
                 )
             }
         }
 
-        item(MainPrefs::extractFirstArtistPackages.name) {
+        filteredItem(
+            MainPrefs::extractFirstArtistPackages.name,
+            Res.string.first_artist
+        ) { title ->
             AppIconsPref(
                 packageNames = extractFirstArtistPackages,
-                title = stringResource(Res.string.first_artist),
+                title = title,
                 enabled = (allowedPackages.size + extractFirstArtistPackages.size) > 0,
                 onClick = {
                     onNavigate(
@@ -309,17 +422,17 @@ fun PrefsScreen(
             )
         }
 
-        item(MainPrefs::submitNowPlaying.name) {
+        filteredItem(MainPrefs::submitNowPlaying.name, Res.string.pref_now_playing) { title ->
             SwitchPref(
-                text = stringResource(Res.string.pref_now_playing),
+                text = title,
                 value = submitNowPlaying,
                 copyToSave = { copy(submitNowPlaying = it) }
             )
         }
 
-        item(MainPrefs::minDurationSecsP.name) {
+        filteredItem(MainPrefs::minDurationSecsP.name, Res.string.min_track_duration) { title ->
             SliderPref(
-                text = stringResource(Res.string.min_track_duration),
+                text = title,
                 value = minDurationSecs.toFloat(),
                 copyToSave = { copy(minDurationSecs = it) },
                 min = MainPrefs.PREF_MIN_DURATON_SECS_MIN,
@@ -329,18 +442,13 @@ fun PrefsScreen(
             )
         }
 
-        PlatformSpecificPrefs.discordRpc(this, onNavigate)
+        PlatformSpecificPrefs.discordRpc(::filteredItem, onNavigate)
 
-        stickyHeader("pref_delay_header") {
-            SimpleHeaderItem(
-                text = stringResource(Res.string.pref_delay),
-                icon = Icons.HourglassEmpty
-            )
-        }
+        filteredHeader("delay", Res.string.pref_delay, Icons.HourglassEmpty)
 
-        item(MainPrefs::delayPercentP.name) {
+        filteredItem(MainPrefs::delayPercentP.name, Res.string.pref_delay_per) { title ->
             SliderPref(
-                text = stringResource(Res.string.pref_delay_per),
+                text = title,
                 value = delayPercent.toFloat(),
                 copyToSave = { copy(delayPercent = it) },
                 min = MainPrefs.PREF_DELAY_PER_MIN,
@@ -350,9 +458,9 @@ fun PrefsScreen(
             )
         }
 
-        item(MainPrefs::delaySecsP.name) {
+        filteredItem(MainPrefs::delaySecsP.name, Res.string.pref_delay_mins) { title ->
             SliderPref(
-                text = stringResource(Res.string.pref_delay_mins),
+                text = title,
                 value = delaySecs.toFloat(),
                 copyToSave = { copy(delaySecs = it) },
                 min = MainPrefs.PREF_DELAY_SECS_MIN,
@@ -362,16 +470,11 @@ fun PrefsScreen(
             )
         }
 
-        stickyHeader("personalization_header") {
-            SimpleHeaderItem(
-                text = stringResource(Res.string.pref_personalization),
-                icon = Icons.Person
-            )
-        }
+        filteredHeader("personalization", Res.string.pref_personalization, Icons.Person)
 
-        item(MainPrefs::themeName.name) {
+        filteredItem(MainPrefs::themeName.name, Res.string.pref_themes) { title ->
             TextPref(
-                text = stringResource(Res.string.pref_themes),
+                text = title,
                 locked = !isLicenseValid,
                 onClick = {
                     onNavigate(PanoRoute.ThemeChooser)
@@ -380,9 +483,12 @@ fun PrefsScreen(
         }
 
         if (PlatformStuff.isDesktop) {
-            item(MainPrefs::trayIconTheme.name) {
+            filteredItem(
+                MainPrefs::trayIconTheme.name,
+                Res.string.pref_tray_icon_theme
+            ) { title ->
                 DropdownPref(
-                    text = stringResource(Res.string.pref_tray_icon_theme),
+                    text = title,
                     selectedValue = trayIconTheme,
                     values = DayNightMode.entries,
                     toLabel = {
@@ -399,20 +505,14 @@ fun PrefsScreen(
             }
         }
 
-        PlatformSpecificPrefs.prefChartsWidget(this)
+        PlatformSpecificPrefs.prefChartsWidget(::filteredItem)
 
-//        item(MainPrefs::showAlbumsInRecents.name) {
-//            SwitchPref(
-//                text = stringResource(Res.string.pref_show_albums),
-//                summary = stringResource(Res.string.pref_show_albums_desc),
-//                value = showAlbumsInRecents,
-//                copyToSave = { copy(showAlbumsInRecents = it) }
-//            )
-//        }
-
-        item(MainPrefs::showScrobbleSources.name) {
+        filteredItem(
+            MainPrefs::showScrobbleSources.name,
+            Res.string.pref_show_scrobble_sources
+        ) { title ->
             SwitchPref(
-                text = stringResource(Res.string.pref_show_scrobble_sources),
+                text = title,
                 summary = stringResource(Res.string.pref_show_scrobble_sources_desc),
                 value = showScrobbleSources,
                 onNavigateToBilling = onNavigateToBilling.takeIf { !isLicenseValid },
@@ -421,9 +521,12 @@ fun PrefsScreen(
         }
 
         if (!PlatformStuff.isDesktop) {
-            item(MainPrefs::searchInSource.name) {
+            filteredItem(
+                MainPrefs::searchInSource.name,
+                Res.string.pref_search_in_source
+            ) { title ->
                 SwitchPref(
-                    text = stringResource(Res.string.pref_search_in_source),
+                    text = title,
                     summary = stringResource(Res.string.pref_search_in_source_desc),
                     value = searchInSource,
                     onNavigateToBilling = onNavigateToBilling.takeIf { !isLicenseValid },
@@ -434,9 +537,12 @@ fun PrefsScreen(
         }
 
         if (!PlatformStuff.isTv) {
-            item(MainPrefs::searchUrlTemplate.name) {
+            filteredItem(
+                MainPrefs::searchUrlTemplate.name,
+                Res.string.pref_search_url_template
+            ) { title ->
                 TextPref(
-                    text = stringResource(Res.string.pref_search_url_template),
+                    text = title,
                     summary = searchUrlTemplate,
                     onClick = {
                         onNavigate(PanoRoute.Modal.MediaSearchPref)
@@ -446,9 +552,12 @@ fun PrefsScreen(
         }
 
         if (!PlatformStuff.isTv && !PlatformStuff.isDesktop) {
-            item(MainPrefs::linkHeartButtonToRating.name) {
+            filteredItem(
+                MainPrefs::linkHeartButtonToRating.name,
+                Res.string.pref_link_heart_button_rating
+            ) { title ->
                 SwitchPref(
-                    text = stringResource(Res.string.pref_link_heart_button_rating),
+                    text = title,
                     summary = stringResource(Res.string.pref_search_in_source_desc),
                     value = linkHeartButtonToRating,
                     onNavigateToBilling = onNavigateToBilling.takeIf { !isLicenseValid },
@@ -457,7 +566,10 @@ fun PrefsScreen(
             }
         }
 
-        item(MainPrefs::firstDayOfWeek.name) {
+        filteredItem(
+            MainPrefs::firstDayOfWeek.name,
+            Res.string.pref_first_day_of_week
+        ) { title ->
             val autoString = stringResource(Res.string.auto)
 
             val valuesToDays = remember {
@@ -481,7 +593,7 @@ fun PrefsScreen(
             }
 
             DropdownPref(
-                text = stringResource(Res.string.pref_first_day_of_week),
+                text = title,
                 selectedValue = firstDayOfWeek,
                 values = valuesToDays.keys,
                 toLabel = { valuesToDays[it] ?: autoString },
@@ -489,36 +601,31 @@ fun PrefsScreen(
             )
         }
 
-        PlatformSpecificPrefs.prefNotifications(this)
+        PlatformSpecificPrefs.prefNotifications(::filteredItem)
 
-        stickyHeader("lists_header") {
-            SimpleHeaderItem(
-                text = stringResource(Res.string.pref_lists),
-                icon = Icons.EditNote
-            )
-        }
+        filteredHeader("lists", Res.string.simple_edits, Icons.EditNote)
 
-        item("simple_edits") {
+        filteredItem("simple_edits", Res.string.simple_edits) { title ->
             TextPref(
-                text = stringResource(Res.string.simple_edits) + ": " + numSimpleEdits.format(),
+                text = title + ": " + numSimpleEdits.format(),
                 onClick = {
                     onNavigate(PanoRoute.SimpleEdits)
                 }
             )
         }
 
-        item("regex_edits") {
+        filteredItem("regex_edits", Res.string.regex_rules) { title ->
             TextPref(
-                text = stringResource(Res.string.regex_rules) + ": " + numRegexEdits.format(),
+                text = title + ": " + numRegexEdits.format(),
                 onClick = {
                     onNavigate(PanoRoute.RegexEdits)
                 }
             )
         }
 
-        item("blocked_metadata") {
+        filteredItem("blocked_metadata", Res.string.pref_blocked_metadata) { title ->
             TextPref(
-                text = stringResource(Res.string.pref_blocked_metadata) + ": " + numBlockedMetadata.format(),
+                text = title + ": " + numBlockedMetadata.format(),
                 onClick = {
                     onNavigate(PanoRoute.BlockedMetadatas)
                 },
@@ -526,65 +633,11 @@ fun PrefsScreen(
             )
         }
 
-        stickyHeader("languages_header") {
-            SimpleHeaderItem(
-                text = stringResource(Res.string.pref_locale),
-                icon = Icons.Translate
-            )
-        }
+        filteredHeader("additional_metatadata", Res.string.external_metadata, Icons.Api)
 
-        item(LocaleUtils::locale.name) {
-            val autoString = stringResource(Res.string.auto)
-
-            val localesMap = remember(locale) {
-                val autoEntry = mapOf("auto" to autoString)
-                LocaleUtils.localesMap().let {
-                    autoEntry + it
-                }
-            }
-
-            DropdownPref(
-                text = stringResource(Res.string.pref_locale),
-                selectedValue = locale,
-                values = localesMap.keys,
-                toLabel = { localesMap[it] ?: autoString },
-                copyToSave = {
-                    val l = it.takeIf { it != "auto" }
-                    LocaleUtils.setAppLocale(lang = l, maybeActivity)
-                    this
-                }
-            )
-        }
-
-        item("translate") {
-
-            TextPref(
-                text = stringResource(Res.string.pref_translate),
-                onClick = {
-                    PlatformStuff.openInBrowser(Stuff.CROWDIN_URL)
-                }
-            )
-        }
-
-        item("translate_credits") {
-            TextPref(
-                text = stringResource(Res.string.pref_translate_credits),
-                onClick = {
-                    onNavigate(PanoRoute.Translators)
-                }
-            )
-        }
-
-        stickyHeader("additional_metatadata_header") {
-            SimpleHeaderItem(
-                text = stringResource(Res.string.external_metadata),
-                icon = Icons.Api
-            )
-        }
-
-        item(MainPrefs::lastfmApiAlways.name) {
+        filteredItem(MainPrefs::lastfmApiAlways.name, Res.string.lastfm) { title ->
             SwitchPref(
-                text = stringResource(Res.string.lastfm),
+                text = title,
                 value = lastfmApiAlways,
                 summary = stringResource(
                     Res.string.when_not_using,
@@ -594,7 +647,11 @@ fun PrefsScreen(
             )
         }
 
-        item(MainPrefs::fetchAlbum.name) {
+        filteredItem(
+            MainPrefs::fetchAlbum.name,
+            Res.string.pref_fetch_missing_album,
+            Res.string.cache
+        ) { title ->
             SwitchPref(
                 text = stringResource(
                     Res.string.pref_fetch_missing_album,
@@ -606,9 +663,9 @@ fun PrefsScreen(
             )
         }
 
-        item(MainPrefs::spotifyApi.name) {
+        filteredItem(MainPrefs::spotifyApi.name, Res.string.spotify) { title ->
             SwitchPref(
-                text = stringResource(Res.string.spotify),
+                text = title,
                 summary = stringResource(Res.string.search) + ": " +
                         stringResource(Res.string.artist_image) + ", " +
                         stringResource(Res.string.album_art),
@@ -617,14 +674,15 @@ fun PrefsScreen(
             )
         }
 
-        item(MainPrefs::spotifyCountryP.name) {
+        filteredItem(
+            MainPrefs::spotifyCountryP.name,
+            Res.string.country_for_api,
+            Res.string.spotify
+        ) { title ->
             val countryCodes = remember { Locale.getISOCountries().toList() }
 
             DropdownPref(
-                text = stringResource(
-                    Res.string.country_for_api,
-                    stringResource(Res.string.spotify)
-                ),
+                text = title,
                 selectedValue = spotifyCountryP,
                 values = countryCodes,
                 toLabel = { it },
@@ -633,39 +691,136 @@ fun PrefsScreen(
             )
         }
 
-        item(MainPrefs::spotifyArtistSearchApproximate.name) {
+        filteredItem(
+            MainPrefs::spotifyArtistSearchApproximate.name,
+            Res.string.pref_spotify_artist_search_approximate
+        ) { title ->
             SwitchPref(
-                text = stringResource(Res.string.pref_spotify_artist_search_approximate),
+                text = title,
                 value = spotifyArtistSearchApproximate,
                 copyToSave = { copy(spotifyArtistSearchApproximate = it) },
                 enabled = useSpotify
             )
         }
 
-        PlatformSpecificPrefs.deezerApi(this, deezerApi)
+        PlatformSpecificPrefs.deezerApi(::filteredItem, deezerApi)
 
-        PlatformSpecificPrefs.tidalSteelSeries(this, tidalSteelSeries)
+        PlatformSpecificPrefs.tidalSteelSeries(::filteredItem, tidalSteelSeries)
 
-        stickyHeader("misc_header") {
-            SimpleHeaderItem(
-                text = stringResource(Res.string.pref_misc),
-                icon = Icons.MoreHoriz
+        filteredHeader("languages", Res.string.pref_locale, Icons.Translate)
+
+        filteredItem(LocaleUtils::locale.name, Res.string.pref_locale) { title ->
+            val autoString = stringResource(Res.string.auto)
+
+            val localesMap = remember(locale) {
+                val autoEntry = mapOf("auto" to autoString)
+                LocaleUtils.localesMap().let {
+                    autoEntry + it
+                }
+            }
+
+            DropdownPref(
+                text = title,
+                selectedValue = locale,
+                values = localesMap.keys,
+                toLabel = { localesMap[it] ?: autoString },
+                copyToSave = {
+                    val l = it.takeIf { it != "auto" }
+                    LocaleUtils.setAppLocale(lang = l, maybeActivity)
+                    localeChanged = true
+                    this
+                }
             )
         }
 
+        filteredItem("translate", Res.string.pref_translate) { title ->
+            TextPref(
+                text = title,
+                onClick = {
+                    PlatformStuff.openInBrowser(Stuff.CROWDIN_URL)
+                }
+            )
+        }
+
+        filteredItem("translate_credits", Res.string.pref_translate_credits) { title ->
+            TextPref(
+                text = title,
+                onClick = {
+                    onNavigate(PanoRoute.Translators)
+                }
+            )
+        }
+
+        filteredHeader("imexport", Res.string.pref_imexport, Icons.SwapVert)
+
+        filteredItem("export", Res.string.pref_export) { title ->
+            TextPref(
+                text = title,
+                summary = stringResource(Res.string.pref_export_desc),
+                onClick = {
+                    onNavigate(PanoRoute.Export)
+                }
+            )
+        }
+
+        filteredItem("import", Res.string.pref_import) { title ->
+            TextPref(
+                text = title,
+                onClick = {
+                    onNavigate(PanoRoute.Import)
+                }
+            )
+        }
+
+        filteredHeader("services", Res.string.scrobble_services, Icons.Dns)
+
+        AccountType.entries
+            .filterNot {
+                PlatformStuff.isTv && it == AccountType.FILE
+            }
+            .forEach { accountType ->
+                val (strRes, formatRes) = accountTypeStringRes(accountType)
+                filteredItem(
+                    accountType.name,
+                    strRes,
+                    formatRes
+                ) { title ->
+                    AccountPref(
+                        title,
+                        type = accountType,
+                        usernamesMap = scrobblableLabels,
+                        onNavigate = onNavigate
+                    )
+                }
+            }
+
+        filteredItem(key = "delete_account", Res.string.delete_account) { title ->
+            TextPref(
+                text = title,
+                onClick = {
+                    onNavigate(PanoRoute.DeleteAccount)
+                }
+            )
+        }
+
+        filteredHeader("misc", Res.string.pref_misc, Icons.MoreHoriz)
+
         if (!PlatformStuff.isDesktop && !PlatformStuff.isTv) {
-            item(MainPrefs::preventDuplicateAmbientScrobbles.name) {
+            filteredItem(
+                MainPrefs::preventDuplicateAmbientScrobbles.name,
+                Res.string.pref_prevent_duplicate_ambient_scrobbles
+            ) { title ->
                 SwitchPref(
-                    text = stringResource(Res.string.pref_prevent_duplicate_ambient_scrobbles),
+                    text = title,
                     value = preventDuplicateAmbientScrobbles,
                     copyToSave = { copy(preventDuplicateAmbientScrobbles = it) }
                 )
             }
         }
 
-        item(MainPrefs::customProxyEnabled.name) {
+        filteredItem(MainPrefs::customProxyEnabled.name, Res.string.proxy) { title ->
             TextPref(
-                text = stringResource(Res.string.proxy),
+                text = title,
                 summary = proxyHostPort?.let { (host, port) ->
                     "$host:$port"
                 } ?: stringResource(Res.string.system),
@@ -676,9 +831,9 @@ fun PrefsScreen(
         }
 
         if (VariantStuff.githubApiUrl != null) {
-            item(MainPrefs::autoUpdates.name) {
+            filteredItem(MainPrefs::autoUpdates.name, Res.string.pref_notify_updates) { title ->
                 SwitchPref(
-                    text = stringResource(Res.string.pref_notify_updates),
+                    text = title,
                     value = checkForUpdates,
                     copyToSave = {
                         if (!it)
@@ -691,9 +846,9 @@ fun PrefsScreen(
                 )
             }
 
-            item("check_for_updates") {
+            filteredItem("check_for_updates", Res.string.pref_check_updates) { title ->
                 TextPref(
-                    text = updateProgress?.message ?: stringResource(Res.string.pref_check_updates),
+                    text = updateProgress?.message ?: title,
                     enabled = updateProgress == null,
                     onClick = {
                         if (updateProgress == null)
@@ -703,12 +858,12 @@ fun PrefsScreen(
             }
         }
 
-        PlatformSpecificPrefs.prefPersistentNoti(this, notiPersistent)
+        PlatformSpecificPrefs.prefPersistentNoti(::filteredItem, notiPersistent)
 
         if (!PlatformStuff.isTv) {
-            item("automation") {
+            filteredItem("automation", Res.string.automation) { title ->
                 TextPref(
-                    text = stringResource(Res.string.automation),
+                    text = title,
                     onClick = {
                         onNavigate(PanoRoute.AutomationInfo)
                     },
@@ -717,146 +872,77 @@ fun PrefsScreen(
             }
         }
 
-        if (VariantStuff.crashReporter.isAvailable) {
-            item(VariantStuff::crashReporter.name) {
+        if (CrashReporterConfig.isAvailable) {
+            filteredItem(
+                "crash_reporter",
+                Res.string.pref_crashlytics_enabled
+            ) { title ->
                 SwitchPref(
-                    text = stringResource(Res.string.pref_crashlytics_enabled),
+                    text = title,
                     value = crashReporterEnabled,
                     copyToSave = {
                         crashReporterEnabled = it
-                        VariantStuff.crashReporter.isEnabled = it
+                        CrashReporterConfig.isEnabled = it
                         this
                     }
                 )
             }
         }
 
-        stickyHeader("imexport_header") {
-            SimpleHeaderItem(
-                text = stringResource(Res.string.pref_imexport),
-                icon = Icons.SwapVert
-            )
-        }
+        filteredHeader("about", Res.string.pref_about, Icons.Info)
 
-        item("export") {
+        filteredItem(key = "oss_credits", Res.string.pref_oss_credits) { title ->
             TextPref(
-                text = stringResource(Res.string.pref_export),
-                summary = stringResource(Res.string.pref_export_desc),
-                onClick = {
-                    onNavigate(PanoRoute.Export)
-                }
-            )
-        }
-
-        item("import") {
-            TextPref(
-                text = stringResource(Res.string.pref_import),
-                onClick = {
-                    onNavigate(PanoRoute.Import)
-                }
-            )
-        }
-
-        stickyHeader("services_header") {
-            SimpleHeaderItem(
-                text = stringResource(Res.string.scrobble_services),
-                icon = Icons.Dns
-            )
-        }
-
-        AccountType.entries
-            .filterNot {
-                PlatformStuff.isTv && it == AccountType.FILE
-            }
-            .forEach { accountType ->
-                item(accountType.name) {
-                    AccountPref(
-                        type = accountType,
-                        usernamesMap = scrobblableLabels,
-                        onNavigate = onNavigate
-                    )
-                }
-            }
-
-        item(key = "delete_account") {
-            TextPref(
-                text = stringResource(Res.string.delete_account),
-                onClick = {
-                    onNavigate(PanoRoute.DeleteAccount)
-                }
-            )
-        }
-
-        stickyHeader("about_header") {
-            SimpleHeaderItem(
-                text = stringResource(Res.string.pref_about),
-                icon = Icons.Info
-            )
-        }
-
-        item(key = "oss_credits") {
-            TextPref(
-                text = stringResource(Res.string.pref_oss_credits),
+                text = title,
                 onClick = {
                     onNavigate(PanoRoute.OssCredits)
                 }
             )
         }
 
-        item(key = "privacy_policy") {
+        filteredItem(key = "privacy_policy", Res.string.pref_privacy_policy) { title ->
             TextPref(
-                text = stringResource(Res.string.pref_privacy_policy),
+                text = title,
                 onClick = {
                     onNavigate(PanoRoute.PrivacyPolicy)
                 }
             )
         }
 
-        item(key = "github_link") {
+        filteredItem(
+            key = "github_link",
+            Res.string.also_available_on,
+            if (PlatformStuff.isDesktop)
+                Res.string.android
+            else
+                Res.string.desktop
+        ) { title ->
             TextPref(
-                text = stringResource(
-                    Res.string.also_available_on,
-                    if (PlatformStuff.isDesktop)
-                        stringResource(Res.string.android)
-                    else
-                        stringResource(Res.string.desktop)
-                ),
-                summary = Stuff.HOMEPAGE_URL,
+                text = title,
+                summary = Stuff.HOMEPAGE_URL + "\n" +
+                        ("v" + BuildKonfig.VER_NAME + if (BuildKonfig.DEBUG) " (Debug)" else ""),
                 onClick = {
                     onNavigate(PanoRoute.Modal.ShowLink(Stuff.HOMEPAGE_URL))
                 }
             )
         }
 
-        item(key = "version") {
-            Text(
-                text = ("v" + BuildKonfig.VER_NAME + if (BuildKonfig.DEBUG) " (Debug)" else ""),
-                modifier = Modifier.padding(
-                    vertical = 16.dp,
-                    horizontal = horizontalOverscanPadding()
-                )
-            )
-        }
-
         if (BuildKonfig.DEBUG) {
-            stickyHeader("debug_header") {
-                SimpleHeaderItem(
-                    text = stringResource(Res.string.debug_menu),
-                    icon = Icons.BugReport
-                )
-            }
+            filteredHeader("debug", Res.string.debug_menu, Icons.BugReport)
 
-            item(MainPrefs::demoModeP.name) {
+            filteredItem(MainPrefs::demoModeP.name, Res.string.demo_mode) { title ->
                 SwitchPref(
-                    text = stringResource(Res.string.demo_mode),
+                    text = title,
                     value = demoMode,
                     copyToSave = { copy(demoMode = it) }
                 )
             }
 
-            item("copy_sk") {
+            filteredItem("copy_sk", Res.string.copy_sk) { title ->
+                val scope = rememberCoroutineScope()
+
                 TextPref(
-                    text = stringResource(Res.string.copy_sk),
+                    text = title,
                     onClick = {
                         scope.launch {
                             PlatformStuff.mainPrefs.data
@@ -873,9 +959,11 @@ fun PrefsScreen(
                 )
             }
 
-            item("delete_receipt") {
+            filteredItem("delete_receipt", Res.string.delete_receipt) { title ->
+                val scope = rememberCoroutineScope()
+
                 TextPref(
-                    text = stringResource(Res.string.delete_receipt),
+                    text = title,
                     onClick = {
                         scope.launch {
                             mainPrefs.updateData {
@@ -888,4 +976,17 @@ fun PrefsScreen(
         }
     }
 }
+
+typealias FilteredItem = (
+    key: String,
+    titleRes: StringResource,
+    formatRes: StringResource?,
+    content: @Composable (title: String) -> Unit
+) -> Unit
+
+private data class TitleStringResource(
+    val res: StringResource,
+    val formatRes: StringResource?,
+    var string: String? = null
+)
 

@@ -145,7 +145,7 @@ class DigestWorker(
 //                        PanoTimeFormatter.dateRange(it.start, it.end)
 
                     LastfmPeriod.MONTH ->
-                        PanoTimeFormatter.month(it.start)
+                        PanoTimeFormatter.month(it.start, short = false)
 
                     LastfmPeriod.YEAR ->
                         PanoTimeFormatter.year(it.start)

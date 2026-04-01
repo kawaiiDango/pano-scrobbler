@@ -4,6 +4,9 @@ package com.arn.scrobble.ui
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.spring
+import androidx.compose.foundation.gestures.awaitEachGesture
+import androidx.compose.foundation.gestures.awaitFirstDown
+import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.gestures.detectDragGesturesAfterLongPress
 import androidx.compose.foundation.gestures.scrollBy
 import androidx.compose.foundation.layout.Arrangement
@@ -31,9 +34,11 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.input.pointer.changedToDown
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
+import com.arn.scrobble.utils.PlatformStuff
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.launch
@@ -59,9 +64,10 @@ fun LazyColumnDragAndDropScreen() {
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
         itemsIndexed(list, key = { _, item -> item }) { index, item ->
-            DraggableItem(dragDropState, index) { isDragging ->
+            DraggableItem(dragDropState, index) { dragHandleModifier ->
                 Text(
-                    "Item $item $isDragging", Modifier
+                    "Item $item",
+                    Modifier
                         .fillMaxWidth()
                         .padding(20.dp)
                 )
@@ -104,6 +110,9 @@ internal constructor(
 ) {
     var draggingItemIndex by mutableStateOf<Int?>(null)
         private set
+
+    // this should only work on desktop
+    internal var trackDragOnDesktop: Boolean = false
 
     internal val scrollChannel = Channel<Float>()
 
@@ -149,6 +158,7 @@ internal constructor(
         draggingItemDraggedDelta = 0f
         draggingItemIndex = null
         draggingItemInitialOffset = 0
+        trackDragOnDesktop = false
     }
 
     internal fun onDrag(offset: Offset) {
@@ -193,48 +203,102 @@ internal constructor(
         }
     }
 
+    internal fun isDragging(idx: Int): Boolean {
+        val d = idx == draggingItemIndex
+        return if (PlatformStuff.isDesktop)
+            d && trackDragOnDesktop
+        else
+            d
+    }
+
     private val LazyListItemInfo.offsetEnd: Int
         get() = this.offset + this.size
 }
 
 fun Modifier.dragContainer(dragDropState: DragDropState): Modifier {
     return pointerInput(dragDropState) {
-        detectDragGesturesAfterLongPress(
-            onDrag = { change, offset ->
-                change.consume()
-                dragDropState.onDrag(offset = offset)
-            },
-            onDragStart = { offset -> dragDropState.onDragStart(offset) },
-            onDragEnd = {
-                dragDropState.onDragInterrupted()
-                dragDropState.onDragEnd()
-            },
-            onDragCancel = { dragDropState.onDragInterrupted() }
-        )
+        if (PlatformStuff.isDesktop) {
+            detectDragGestures(
+                onDrag = { change, offset ->
+                    if (dragDropState.trackDragOnDesktop) {
+                        change.consume()
+                        dragDropState.onDrag(offset = offset)
+                    }
+                },
+                onDragStart = {
+                    dragDropState.onDragStart(it)
+                },
+                onDragEnd = {
+                    if (dragDropState.trackDragOnDesktop) {
+                        dragDropState.onDragInterrupted()
+                        dragDropState.onDragEnd()
+                    }
+                },
+                onDragCancel = {
+                    dragDropState.onDragInterrupted()
+                }
+            )
+        } else {
+            detectDragGesturesAfterLongPress(
+                onDrag = { change, offset ->
+                    change.consume()
+                    dragDropState.onDrag(offset = offset)
+                },
+                onDragStart = {
+                    dragDropState.onDragStart(it)
+                },
+                onDragEnd = {
+                    dragDropState.onDragInterrupted()
+                    dragDropState.onDragEnd()
+                },
+                onDragCancel = { dragDropState.onDragInterrupted() }
+            )
+        }
     }
 }
+
+private fun Modifier.isDragHandle(onDragAllow: () -> Unit) =
+    if (PlatformStuff.isDesktop)
+        pointerInput(Unit) {
+            awaitEachGesture {
+                val change = awaitFirstDown()
+                if (change.changedToDown())
+                    onDragAllow()
+            }
+        }
+    else
+        this
 
 @Composable
 fun LazyItemScope.DraggableItem(
     dragDropState: DragDropState,
     index: Int,
     modifier: Modifier = Modifier,
-    content: @Composable ColumnScope.(isDragging: Boolean) -> Unit
+    content: @Composable ColumnScope.(dragHandleModifier: Modifier) -> Unit
 ) {
-    val dragging = index == dragDropState.draggingItemIndex
+    val dragging = dragDropState.isDragging(index)
     val draggingModifier =
         if (dragging) {
             Modifier
                 .zIndex(1f)
-                .graphicsLayer { translationY = dragDropState.draggingItemOffset }
+                .graphicsLayer {
+                    alpha = 0.5f
+                    translationY = dragDropState.draggingItemOffset
+                }
         } else if (index == dragDropState.previousIndexOfDraggedItem) {
             Modifier
                 .zIndex(1f)
                 .graphicsLayer {
+                    alpha = 0.5f
                     translationY = dragDropState.previousItemOffset.value
                 }
         } else {
             Modifier.animateItem(fadeInSpec = null, fadeOutSpec = null)
         }
-    Column(modifier = modifier.then(draggingModifier)) { content(dragging) }
+
+    val dragHandleModifier = remember {
+        Modifier.isDragHandle { dragDropState.trackDragOnDesktop = true }
+    }
+
+    Column(modifier = modifier.then(draggingModifier)) { content(dragHandleModifier) }
 }

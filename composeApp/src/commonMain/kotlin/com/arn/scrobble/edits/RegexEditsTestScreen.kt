@@ -28,8 +28,8 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.arn.scrobble.api.lastfm.ScrobbleData
 import com.arn.scrobble.db.RegexEdit
+import com.arn.scrobble.icons.Add
 import com.arn.scrobble.icons.Album
-import com.arn.scrobble.icons.Apps
 import com.arn.scrobble.icons.Block
 import com.arn.scrobble.icons.Icons
 import com.arn.scrobble.icons.Mic
@@ -44,6 +44,7 @@ import com.arn.scrobble.ui.PanoOutlinedTextField
 import org.jetbrains.compose.resources.pluralStringResource
 import org.jetbrains.compose.resources.stringResource
 import pano_scrobbler.composeapp.generated.resources.Res
+import pano_scrobbler.composeapp.generated.resources.add
 import pano_scrobbler.composeapp.generated.resources.album
 import pano_scrobbler.composeapp.generated.resources.album_artist
 import pano_scrobbler.composeapp.generated.resources.artist
@@ -163,8 +164,8 @@ fun RegexEditsTestScreen(
                 },
                 avatar = {
                     Icon(
-                        imageVector = Icons.Apps,
-                        contentDescription = null
+                        imageVector = Icons.Add,
+                        contentDescription = stringResource(Res.string.add)
                     )
                 },
                 selected = false,

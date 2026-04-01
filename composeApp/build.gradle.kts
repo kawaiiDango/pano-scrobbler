@@ -301,6 +301,8 @@ compose.desktop {
             "-Xmx512m",
         )
 
+//        args += "-m"
+
         nativeDistributions {
             val formats = when {
                 os.isWindows -> mutableSetOf(TargetFormat.AppImage)

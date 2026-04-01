@@ -82,6 +82,8 @@ fun HomePagerScreen(
                 showChips = currentTab.showChips,
                 onNavigate = onNavigate,
                 editDataFlow = mainViewModel.editScrobbleUtils.editDataFlow,
+                scrobblerStateFlow = mainViewModel.scrobblerStateFlow,
+                updateScrobblerState = mainViewModel::updateScrobblerServiceState,
                 onTitleChange = {
                     scrobblesTitle = it
                 },

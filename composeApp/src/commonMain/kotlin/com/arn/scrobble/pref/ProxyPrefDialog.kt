@@ -64,7 +64,7 @@ fun ProxyPrefDialog(modifier: Modifier = Modifier) {
         }
 
         LaunchedEffect(hostEditable, portEditable) {
-            delay(300) // debounce
+            delay(500) // debounce
             isValid = hostEditable.isNotBlank() && validate(hostEditable, portEditable)
         }
 
@@ -106,7 +106,7 @@ fun ProxyPrefDialog(modifier: Modifier = Modifier) {
         ) {
             PanoOutlinedTextField(
                 value = hostEditable,
-                onValueChange = { hostEditable = it },
+                onValueChange = { hostEditable = it.trim() },
                 label = {
                     Text(stringResource(Res.string.host))
                 },
@@ -120,7 +120,7 @@ fun ProxyPrefDialog(modifier: Modifier = Modifier) {
 
             PanoOutlinedTextField(
                 value = portEditable,
-                onValueChange = { portEditable = it },
+                onValueChange = { portEditable = it.trim() },
                 label = {
                     Text(stringResource(Res.string.port))
                 },

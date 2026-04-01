@@ -3,11 +3,7 @@ package com.arn.scrobble.main
 import android.app.Application
 import android.os.Build
 import android.os.StrictMode
-import android.util.Log
-import androidx.work.Configuration
-import com.arn.scrobble.androidApp.BuildConfig
 import com.arn.scrobble.billing.BillingRepository
-import com.arn.scrobble.utils.AndroidStuff
 import com.arn.scrobble.utils.ExtrasVariantStuff
 import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff
@@ -16,17 +12,9 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.withContext
-import java.io.File
 
 
-class App : Application(), Configuration.Provider {
-
-    override val workManagerConfiguration =
-        Configuration.Builder().apply {
-            if (BuildConfig.DEBUG)
-                setMinimumLoggingLevel(Log.INFO)
-        }.build()
-
+class App : Application() {
 
     override fun onCreate() {
         super.onCreate()
@@ -67,18 +55,6 @@ class App : Application(), Configuration.Provider {
         )
 
         VariantStuff = ExtrasVariantStuff(billingRepository)
-
-        // the built-in content provider initializer only runs in the main process
-        if (AndroidStuff.isMainProcess) {
-            val crashlyticsKeys =
-                if (BuildConfig.DEBUG)
-                    mapOf("isDebug" to true.toString())
-                else
-                    emptyMap()
-
-            val crashReportDisabledFile = File(filesDir, "crash_reporter_disabled.txt")
-            VariantStuff.crashReporter.init(crashReportDisabledFile, crashlyticsKeys)
-        }
     }
 
     private fun enableStrictMode() {

@@ -122,8 +122,6 @@ class SessListener(
 
             val sessionTracker = AndroidSessionTracker(controller, playingTrackInfo)
 
-            controller.registerCallback(sessionTracker.callback)
-
             sessionTracker.callback.onPlaybackStateChanged(controller.playbackState)
             sessionTracker.callback.onMetadataChanged(controller.metadata)
 
@@ -223,6 +221,7 @@ class SessListener(
         override fun stop() {
             pause()
             controller.unregisterCallback(callback)
+            sessionTrackers.remove(controller.sessionToken)
         }
 
         val callback = object : MediaController.Callback() {

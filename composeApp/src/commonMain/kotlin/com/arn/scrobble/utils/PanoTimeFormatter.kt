@@ -10,7 +10,7 @@ expect object PanoTimeFormatter {
 
     fun day(millis: Long): String
 
-    fun month(millis: Long): String
+    fun month(millis: Long, short: Boolean = true): String
 
     fun dateRange(startMillis: Long, endMillis: Long): String
 

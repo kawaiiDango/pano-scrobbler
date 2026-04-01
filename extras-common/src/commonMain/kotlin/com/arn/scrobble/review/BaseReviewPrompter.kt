@@ -1,5 +1,7 @@
 package com.arn.scrobble.review
 
+import kotlin.time.Duration.Companion.days
+
 open class BaseReviewPrompter {
     open suspend fun showIfNeeded(
         activity: Any?,
@@ -12,12 +14,9 @@ open class BaseReviewPrompter {
             return false
         }
 
-        val shouldShowPrompt = System.currentTimeMillis() - lastReviewPromptTime >= INTERVAL
+        val shouldShowPrompt =
+            System.currentTimeMillis() - lastReviewPromptTime >= 60.days.inWholeMilliseconds
 
         return shouldShowPrompt
-    }
-
-    companion object {
-        private const val INTERVAL = 30 * 24 * 60 * 60 * 1000 // n days
     }
 }

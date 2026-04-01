@@ -122,8 +122,8 @@ fun Modifier.shimmerWindowBounds(
             val shimmerBrush = Brush.linearGradient(
                 colors = listOf(
                     Color.White.copy(alpha = 0.2f),
-                    Color.White.copy(alpha = 1f),
-                    Color.White.copy(alpha = 1f),
+                    Color.White.copy(alpha = 0.7f),
+                    Color.White.copy(alpha = 0.7f),
                     Color.White.copy(alpha = 0.2f),
                 ),
                 start = Offset(startX, startY),

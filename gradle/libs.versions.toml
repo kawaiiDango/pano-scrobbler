@@ -45,6 +45,7 @@ room3 = "3.0.0-alpha02"
 runner = "1.7.0"
 serialization-json = "1.10.0"
 sqlite = "2.7.0-alpha02"
+startup = "1.2.0"
 uiautomator = "2.4.0-beta02"
 webkit = "1.16.0-alpha04"
 work-runtime = "2.11.2"
@@ -108,6 +109,7 @@ paging-compose = { module = "androidx.paging:paging-compose", version.ref = "pag
 webkit = { module = "androidx.webkit:webkit", version.ref = "webkit" }
 jmdns = { module = "org.jmdns:jmdns", version.ref = "jmdns" }
 test-junit = { group = "androidx.test.ext", name = "junit", version.ref = "test-junit" }
+startup = { group = "androidx.startup", name = "startup-runtime", version.ref = "startup" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "android-application" }

@@ -334,6 +334,6 @@ class NLService : NotificationListenerService() {
     }
 
     companion object {
-        const val TAG_NOTI = "noti"
+        private const val TAG_NOTI = "noti"
     }
 }

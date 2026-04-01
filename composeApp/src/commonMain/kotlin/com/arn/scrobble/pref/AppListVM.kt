@@ -12,7 +12,10 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
-class AppListVM(packagesOverride: Set<String>?) : ViewModel() {
+class AppListVM(
+    preSelectedPackages: Set<String>,
+    packageListOverride: Set<String>?
+) : ViewModel() {
     private val _appList = MutableStateFlow(AppList())
     val appList = _appList.asStateFlow()
     private val _searchTerm = MutableStateFlow("")
@@ -36,23 +39,17 @@ class AppListVM(packagesOverride: Set<String>?) : ViewModel() {
         kotlinx.coroutines.flow.SharingStarted.Lazily,
         AppList()
     )
-    private val _selectedPackages = MutableStateFlow(emptySet<String>())
+    private val _selectedPackages = MutableStateFlow(preSelectedPackages)
     val selectedPackages = _selectedPackages.asStateFlow()
     private val _hasLoaded = MutableStateFlow(false)
     val hasLoaded = _hasLoaded.asStateFlow()
 
     init {
-        load(packagesOverride)
-    }
-
-    private fun load(packagesOverride: Set<String>? = null) {
         viewModelScope.launch {
             load(
-                packagesOverride = packagesOverride,
-                onSetSelectedPackages = { setSelectedPackages(it) },
+                packagesOverride = packageListOverride,
                 onSetAppList = { _appList.value = it },
                 onSetHasLoaded = { _hasLoaded.value = true },
-                false
             )
         }
     }
@@ -107,10 +104,8 @@ class AppListVM(packagesOverride: Set<String>?) : ViewModel() {
 
 expect suspend fun AppListVM.load(
     packagesOverride: Set<String>?,
-    onSetSelectedPackages: (Set<String>) -> Unit,
     onSetAppList: (AppList) -> Unit,
     onSetHasLoaded: () -> Unit,
-    checkDefaultApps: Boolean,
 )
 
 expect val AppListVM.pluginsNeeded: List<Pair<String, String>>

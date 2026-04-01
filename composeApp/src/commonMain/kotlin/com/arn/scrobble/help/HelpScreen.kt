@@ -19,6 +19,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.arn.scrobble.icons.BugReport
 import com.arn.scrobble.icons.Icons
+import com.arn.scrobble.main.ScrobblerState
 import com.arn.scrobble.ui.ButtonWithIcon
 import com.arn.scrobble.ui.EmptyText
 import com.arn.scrobble.ui.FilePicker
@@ -27,6 +28,7 @@ import com.arn.scrobble.ui.FileType
 import com.arn.scrobble.ui.SearchField
 import com.arn.scrobble.utils.BugReportUtils
 import com.arn.scrobble.utils.PlatformStuff
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
 import pano_scrobbler.composeapp.generated.resources.Res
@@ -45,6 +47,7 @@ expect fun HelpSaveLogsButton(
 fun HelpScreen(
     modifier: Modifier = Modifier,
     searchTerm: String,
+    scrobblerStateFlow: StateFlow<ScrobblerState>,
     viewModel: MdViewerVM = viewModel {
         MdViewerVM(
             "https://kawaiidango.github.io/pano-scrobbler/faq.md",
@@ -99,7 +102,7 @@ fun HelpScreen(
                     ButtonWithIcon(
                         text = stringResource(Res.string.bug_report),
                         onClick = {
-                            BugReportUtils.mail()
+                            BugReportUtils.mail(scrobblerStateFlow.value)
                         },
                         icon = Icons.BugReport,
                     )

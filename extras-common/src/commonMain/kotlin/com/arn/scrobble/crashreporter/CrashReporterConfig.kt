@@ -3,8 +3,8 @@ package com.arn.scrobble.crashreporter
 import java.io.File
 
 
-open class BaseCrashReporter {
-    protected var disabledFile: File? = null
+object CrashReporterConfig {
+    private var disabledFile: File? = null
     val isAvailable get() = disabledFile != null
 
     var isEnabled: Boolean
@@ -23,9 +23,7 @@ open class BaseCrashReporter {
             }
         }
 
-    open fun init(
-        disabledFile: File? = null,
-        keysMap: Map<String, String> = emptyMap(),
-    ) {
+    fun init(disabledFile: File) {
+        this.disabledFile = disabledFile
     }
 }

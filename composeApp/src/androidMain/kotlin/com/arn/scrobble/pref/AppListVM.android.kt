@@ -12,10 +12,8 @@ import kotlinx.coroutines.withContext
 
 actual suspend fun AppListVM.load(
     packagesOverride: Set<String>?,
-    onSetSelectedPackages: (Set<String>) -> Unit,
     onSetAppList: (AppList) -> Unit,
     onSetHasLoaded: () -> Unit,
-    checkDefaultApps: Boolean,
 ) {
     val packageManager = AndroidStuff.applicationContext.packageManager
 
@@ -118,9 +116,6 @@ actual suspend fun AppListVM.load(
 
         // remove music players from other apps
         musicPlayers.forEach { (key, _) -> otherApps.remove(key) }
-
-        if (checkDefaultApps)
-            onSetSelectedPackages(musicPlayers.keys)
 
         onSetAppList(
             AppList(

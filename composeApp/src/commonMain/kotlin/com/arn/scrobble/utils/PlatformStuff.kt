@@ -5,6 +5,7 @@ import androidx.datastore.core.DataStore
 import androidx.room3.RoomDatabase
 import com.arn.scrobble.api.lastfm.MusicEntry
 import com.arn.scrobble.db.PanoDb
+import com.arn.scrobble.main.ScrobblerState
 import com.arn.scrobble.pref.MainPrefs
 import java.io.File
 import java.io.OutputStream
@@ -26,8 +27,6 @@ expect object PlatformStuff {
 
     val supportsDynamicColors: Boolean
 
-    fun isNotificationListenerEnabled(): Boolean
-
     val isTv: Boolean
 
     val isDesktop: Boolean
@@ -36,7 +35,7 @@ expect object PlatformStuff {
 
     val appIdPlaceholder: String
 
-    fun isScrobblerRunning(): Boolean
+    suspend fun checkScrobblerState(): ScrobblerState
 
     fun openInBrowser(url: String)
 

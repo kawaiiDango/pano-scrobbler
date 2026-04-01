@@ -194,7 +194,7 @@ fun ProfileHeader(
                     style = MaterialTheme.typography.titleLargeEmphasized,
                     color = MaterialTheme.colorScheme.primary,
                     maxLines = 1,
-                    overflow = TextOverflow.Ellipsis,
+                    overflow = TextOverflow.MiddleEllipsis,
                     textAlign = TextAlign.End,
                     modifier = Modifier
                         .weight(1f, false)

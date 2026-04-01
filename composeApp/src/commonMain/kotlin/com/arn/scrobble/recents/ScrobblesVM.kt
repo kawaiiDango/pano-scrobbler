@@ -39,9 +39,6 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import org.jetbrains.compose.resources.getString
-import pano_scrobbler.composeapp.generated.resources.Res
-import pano_scrobbler.composeapp.generated.resources.lastfm_reauth
 import java.util.Calendar
 import kotlin.time.Duration.Companion.seconds
 
@@ -88,11 +85,6 @@ class ScrobblesVM(
             SharingStarted.Lazily,
             emptyList<PendingScrobble>() to 0
         )
-
-    private val _nlsEnabled = MutableStateFlow(PlatformStuff.isNotificationListenerEnabled())
-    val nlsEnabled = _nlsEnabled.asStateFlow()
-    private val _scrobblerServiceRunning = MutableStateFlow<Boolean?>(null)
-    val scrobblerServiceRunning = _scrobblerServiceRunning.asStateFlow()
 
     private val editsAndDeletes = MutableStateFlow<Map<String, Track?>>(emptyMap())
     val deletedTracksCount = editsAndDeletes
@@ -228,20 +220,6 @@ class ScrobblesVM(
             viewModelScope.launch {
                 fetchLovesForCacheIfNeeded()
             }
-
-            updateScrobblerServiceStatus()
-        }
-    }
-
-    fun updateScrobblerServiceStatus() {
-        viewModelScope.launch {
-            _nlsEnabled.value = PlatformStuff.isNotificationListenerEnabled()
-
-            if (_nlsEnabled.value &&
-                PlatformStuff.mainPrefs.data.map { it.scrobblerEnabled }.first() &&
-                scrobblerServiceRunning.value == null
-            ) // do only once
-                _scrobblerServiceRunning.value = PlatformStuff.isScrobblerRunning()
         }
     }
 
@@ -351,7 +329,7 @@ class ScrobblesVM(
                         if (it is LastFm.CookiesInvalidatedException) {
                             Stuff.globalSnackbarFlow.emit(
                                 PanoSnackbarVisuals(
-                                    getString(Res.string.lastfm_reauth),
+                                    it.message,
                                     isError = true
                                 )
                             )

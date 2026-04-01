@@ -8,6 +8,7 @@ import co.touchlab.kermit.Logger
 import com.arn.scrobble.BuildKonfig
 import com.arn.scrobble.billing.LicenseState
 import com.arn.scrobble.logger.JavaUtilFileLogger
+import com.arn.scrobble.main.ScrobblerState
 import com.arn.scrobble.ui.PanoSnackbarVisuals
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.first
@@ -17,7 +18,7 @@ import java.io.IOException
 
 actual object BugReportUtils {
 
-    actual fun mail() {
+    actual fun mail(scrobblerState: ScrobblerState) {
         var bgRam = -1
         val manager =
             AndroidStuff.applicationContext.getSystemService(ActivityManager::class.java)!!
@@ -45,10 +46,9 @@ actual object BugReportUtils {
         manager.getMemoryInfo(mi)
         text += "Background RAM usage: " + bgRam + "M \n"
 
-        if (!PlatformStuff.isNotificationListenerEnabled())
-            text += "Notification Listener is not enabled\n"
-        else if (!PlatformStuff.isScrobblerRunning())
-            text += "Background service isn't running\n"
+        if (scrobblerState != ScrobblerState.Running)
+            text += "ScrobblerState: ${scrobblerState::class.simpleName}\n"
+
         if (lastExitInfo != null)
             text += "Last exit reason: $lastExitInfo\n"
 

@@ -21,6 +21,7 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.BasicAlertDialog
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.ButtonGroupDefaults
 import androidx.compose.material3.CircularWavyProgressIndicator
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
@@ -41,6 +42,7 @@ import androidx.compose.material3.SingleChoiceSegmentedButtonRow
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.ToggleButtonDefaults
 import androidx.compose.material3.TooltipAnchorPosition
 import androidx.compose.material3.TooltipBox
 import androidx.compose.material3.TooltipDefaults
@@ -103,6 +105,7 @@ import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff.collectAsStateWithInitialValue
 import com.arn.scrobble.utils.redactedMessage
 import kotlinx.coroutines.delay
+import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringResource
 import pano_scrobbler.composeapp.generated.resources.Res
 import pano_scrobbler.composeapp.generated.resources.delete
@@ -185,6 +188,56 @@ fun OutlinedToggleButtons(
                 },
             ) {
                 Text(text = item)
+            }
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3ExpressiveApi::class)
+@Composable
+fun OutlinedToggleIconButtons(
+    items: List<String>,
+    icons: List<ImageVector>,
+    selectedIndex: Int,
+    onSelected: (Int) -> Unit,
+    modifier: Modifier = Modifier,
+    enabled: Boolean = true,
+) {
+    Row(
+        horizontalArrangement = Arrangement.spacedBy(
+            ButtonGroupDefaults.ConnectedSpaceBetween,
+            Alignment.CenterHorizontally
+        ),
+        modifier = modifier
+    ) {
+        (items zip icons).forEachIndexed { index, pair ->
+            val (text, icon) = pair
+
+            val checked = selectedIndex == index
+
+            OutlinedToggleButton(
+                checked = checked,
+                enabled = enabled,
+                onCheckedChange = {
+                    if (it)
+                        onSelected(index)
+                },
+                shapes = when (index) {
+                    0 -> ButtonGroupDefaults.connectedLeadingButtonShapes()
+                    items.size - 1 -> ButtonGroupDefaults.connectedTrailingButtonShapes()
+                    else -> ButtonGroupDefaults.connectedMiddleButtonShapes()
+                },
+            ) {
+                if (checked) {
+                    Icon(icon, contentDescription = text)
+                    Spacer(Modifier.size(ToggleButtonDefaults.IconSpacing))
+                    Text(text = text, maxLines = 1)
+                } else {
+                    Icon(
+                        icon,
+                        contentDescription = text
+                    )
+                }
             }
         }
     }
@@ -350,6 +403,7 @@ fun PanoOutlinedTextField(
 //        readOnly = PlatformStuff.isTv,
         placeholder = placeholder,
         singleLine = singleLine,
+        maxLines = if (singleLine) 1 else 10,
         leadingIcon = leadingIcon,
         trailingIcon = trailingIcon,
         supportingText = supportingText,
@@ -556,13 +610,12 @@ fun EmptyTextWithImportButtonOnTv(
 fun SimpleHeaderItem(
     text: String,
     icon: ImageVector,
-    modifier: Modifier = Modifier,
 ) {
     Surface(
         tonalElevation = 2.dp,
-        shadowElevation = 2.dp,
         shape = MaterialTheme.shapes.large,
-        modifier = modifier
+        contentColor = MaterialTheme.colorScheme.primary,
+        modifier = Modifier
             .fillMaxWidth()
     ) {
         Row(
@@ -573,7 +626,6 @@ fun SimpleHeaderItem(
             Icon(
                 imageVector = icon,
                 contentDescription = null,
-                tint = MaterialTheme.colorScheme.onSurface,
                 modifier = Modifier
                     .padding(end = 32.dp)
             )
@@ -581,7 +633,6 @@ fun SimpleHeaderItem(
             Text(
                 text = text,
                 style = MaterialTheme.typography.titleMedium,
-                color = MaterialTheme.colorScheme.onSurface
             )
         }
     }
@@ -648,9 +699,10 @@ fun VerifyButton(
 @Composable
 fun AvatarOrInitials(
     avatarUrl: String?,
-    avatarName: String?,
+    avatarName: String,
     modifier: Modifier = Modifier,
     textStyle: TextStyle = MaterialTheme.typography.titleMedium,
+    initials: String? = null, // null is default parsing method
 ) {
     if (!avatarUrl.isNullOrEmpty()) {
         AsyncImage(
@@ -660,14 +712,18 @@ fun AvatarOrInitials(
             contentDescription = stringResource(Res.string.profile_pic),
             modifier = modifier,
         )
-    } else if (avatarName != null) {
+    } else {
         val themeAttributes = LocalThemeAttributes.current
         val index =
             abs(avatarName.hashCode()) % themeAttributes.allOnSecondaryContainerColors.size
 
-        val initials = avatarName.split(" ", limit = 2)
-            .joinToString("") { it.take(1) }
-            .takeIf { it.isNotEmpty() } ?: " "
+        val initials by remember(avatarName, initials) {
+            val i = initials ?: avatarName.split(" ", limit = 2)
+                .joinToString("") { it.take(1).uppercase() }
+                .takeIf { it.isNotEmpty() } ?: " "
+
+            mutableStateOf(i)
+        }
 
         Box(
             contentAlignment = Alignment.Center,
@@ -675,7 +731,7 @@ fun AvatarOrInitials(
                 .background(themeAttributes.allSecondaryContainerColors[index])
         ) {
             Text(
-                text = initials.uppercase(),
+                text = initials,
                 style = textStyle,
                 softWrap = false,
                 textAlign = TextAlign.Center,
@@ -925,20 +981,34 @@ fun minGridSize(): Dp {
     }
 }
 
-@Composable
-fun accountTypeLabel(accountType: AccountType) = when (accountType) {
-    AccountType.LASTFM -> stringResource(Res.string.lastfm)
-    AccountType.LIBREFM -> stringResource(Res.string.librefm)
-    AccountType.GNUFM -> stringResource(Res.string.like_instance, stringResource(Res.string.lastfm))
-    AccountType.LISTENBRAINZ -> stringResource(Res.string.listenbrainz)
-    AccountType.CUSTOM_LISTENBRAINZ -> stringResource(
-        Res.string.like_instance,
-        stringResource(Res.string.listenbrainz)
-    )
+fun accountTypeStringRes(accountType: AccountType): Pair<StringResource, StringResource?> {
+    val strRes = when (accountType) {
+        AccountType.LASTFM -> Res.string.lastfm
+        AccountType.LIBREFM -> Res.string.librefm
+        AccountType.GNUFM -> Res.string.like_instance
+        AccountType.LISTENBRAINZ -> Res.string.listenbrainz
+        AccountType.CUSTOM_LISTENBRAINZ -> Res.string.like_instance
+        AccountType.PLEROMA -> Res.string.pleroma
+        AccountType.FILE -> Res.string.scrobble_to_file
+    }
 
-//    AccountType.MALOJA -> stringResource(Res.string.maloja)
-    AccountType.PLEROMA -> stringResource(Res.string.pleroma)
-    AccountType.FILE -> stringResource(Res.string.scrobble_to_file)
+    val formatRes = when (accountType) {
+        AccountType.GNUFM -> Res.string.lastfm
+        AccountType.CUSTOM_LISTENBRAINZ -> Res.string.listenbrainz
+        else -> null
+    }
+
+    return strRes to formatRes
+}
+
+@Composable
+fun accountTypeLabel(accountType: AccountType): String {
+    val (strRes, formatRes) = accountTypeStringRes(accountType)
+    return if (formatRes == null)
+        stringResource(strRes)
+    else {
+        stringResource(strRes, stringResource(formatRes))
+    }
 }
 
 @Composable

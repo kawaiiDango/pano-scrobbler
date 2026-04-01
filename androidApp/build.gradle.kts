@@ -162,7 +162,7 @@ android {
 
 dependencies {
     implementation(projects.composeApp)
-    implementation(libs.work.runtime)
+    implementation(libs.kotlinx.coroutines.android)
     implementation(projects.extrasCommon)
 
 

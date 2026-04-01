@@ -44,7 +44,6 @@ import com.arn.scrobble.icons.automirrored.KeyboardArrowRight
 import com.arn.scrobble.navigation.PanoRoute
 import com.arn.scrobble.onboarding.LoginDestinations
 import com.arn.scrobble.ui.AppIcon
-import com.arn.scrobble.ui.accountTypeLabel
 import com.arn.scrobble.ui.horizontalOverscanPadding
 import com.arn.scrobble.utils.PlatformStuff
 import kotlinx.coroutines.delay
@@ -393,19 +392,19 @@ fun SliderPref(
 
 @Composable
 fun AccountPref(
+    title: String,
     type: AccountType,
     usernamesMap: Map<AccountType, String>,
     onNavigate: (PanoRoute) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val label = accountTypeLabel(type)
     val logoutString = stringResource(Res.string.pref_logout)
     val scope = rememberCoroutineScope()
     var canLogoutNow by remember { mutableStateOf(false) }
     val confirmTime = 3000L
 
     TextPref(
-        text = label,
+        text = title,
         summary = if (canLogoutNow) {
             stringResource(Res.string.sure_tap_again)
         } else {

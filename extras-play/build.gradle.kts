@@ -40,6 +40,7 @@ dependencies {
     implementation(libs.kotlin.stdlib)
     implementation(libs.kotlinx.coroutines.android)
     implementation(libs.core)
+    implementation(libs.startup)
 
     implementation(libs.billing)
     implementation(libs.review)

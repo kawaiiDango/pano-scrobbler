@@ -79,7 +79,7 @@ fun AppListScreen(
     onSetPackagesSelection: (List<AppItem>, List<AppItem>) -> Unit,
     onNavigate: (PanoRoute) -> Unit,
     modifier: Modifier = Modifier,
-    viewModel: AppListVM = viewModel { AppListVM(packagesOverride) },
+    viewModel: AppListVM = viewModel { AppListVM(preSelectedPackages, packagesOverride) },
 ) {
     val appList by viewModel.appList.collectAsStateWithLifecycle()
     val appListFiltered by viewModel.appListFiltered.collectAsStateWithLifecycle()
@@ -94,10 +94,6 @@ fun AppListScreen(
 
     LaunchedEffect(searchTerm) {
         viewModel.setFilter(searchTerm)
-    }
-
-    LaunchedEffect(preSelectedPackages) {
-        viewModel.setSelectedPackages(preSelectedPackages)
     }
 
     DisposableEffect(Unit) {
@@ -272,9 +268,9 @@ fun AppListScreen(
                         }
                     }
                 } else {
-                    stickyHeader("header_primary") {
-                        when (saveType) {
-                            is AppListSaveType.Scrobbling if firstRun -> {
+                    when (saveType) {
+                        is AppListSaveType.Scrobbling if firstRun -> {
+                            stickyHeader("header_primary") {
                                 Surface(
                                     tonalElevation = 4.dp,
                                     shadowElevation = 4.dp,
@@ -289,8 +285,10 @@ fun AppListScreen(
                                     )
                                 }
                             }
+                        }
 
-                            else -> {
+                        else -> {
+                            item("header_action") {
                                 SimpleHeaderItem(
                                     text = stringResource(Res.string.music_players),
                                     icon = Icons.PlayCircle
@@ -307,7 +305,7 @@ fun AppListScreen(
                 addItems(appListFiltered.musicPlayers)
 
                 if (appListFiltered.otherApps.isNotEmpty()) {
-                    stickyHeader("header_other_apps") {
+                    item("header_other_apps") {
                         SimpleHeaderItem(
                             text = stringResource(Res.string.other_apps),
                             icon = Icons.Apps
@@ -319,7 +317,7 @@ fun AppListScreen(
 
                 if (saveType == AppListSaveType.Scrobbling && PlatformStuff.isDesktop) {
                     if (viewModel.pluginsNeeded.isNotEmpty()) {
-                        stickyHeader("header_plugins_needed") {
+                        item("header_plugins_needed") {
                             ExpandableHeaderItem(
                                 title = stringResource(Res.string.needs_plugin),
                                 icon = Icons.Info,

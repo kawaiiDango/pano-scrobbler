@@ -95,7 +95,9 @@ actual object PanoTimeFormatter {
         return dateTime.format(dateFormatter)
     }
 
-    actual fun month(millis: Long): String {
+    actual fun month(millis: Long, short: Boolean): String {
+        val monthPattern = if (short) "MMM" else "MMMM"
+
         val currentYear = LocalDateTime.now().year
 
         val dateTime = LocalDateTime.ofInstant(
@@ -103,7 +105,7 @@ actual object PanoTimeFormatter {
             ZoneId.systemDefault()
         )
         val dateFormatter = DateTimeFormatterBuilder()
-            .appendPattern("MMM")
+            .appendPattern(monthPattern)
             .apply {
                 if (dateTime.year != currentYear) {
                     appendPattern(" yyyy")

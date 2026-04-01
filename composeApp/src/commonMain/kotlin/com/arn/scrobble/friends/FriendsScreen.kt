@@ -1,5 +1,6 @@
 package com.arn.scrobble.friends
 
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -39,8 +40,8 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -56,6 +57,7 @@ import co.touchlab.kermit.Logger
 import com.arn.scrobble.api.UserCached
 import com.arn.scrobble.api.lastfm.Track
 import com.arn.scrobble.billing.LocalLicenseValidState
+import com.arn.scrobble.icons.DragHandle
 import com.arn.scrobble.icons.Error
 import com.arn.scrobble.icons.History
 import com.arn.scrobble.icons.Icons
@@ -285,13 +287,12 @@ fun FriendsScreen(
                 pinnedFriendsReordered,
                 key = { idx, friend -> friend.name }
             ) { idx, friend ->
-
-                DraggableItem(dragDropState, idx) { isDragging ->
+                DraggableItem(dragDropState, idx) { dragHandleModifier ->
                     FriendItem(
                         friend,
                         extraData = friendsExtraDataMapState[friend.name],
                         pinIndex = idx,
-                        canPinUnpin = user.isSelf,
+                        canPinUnpin = showPinned,
                         onPinUnpin = { pin ->
                             if (showPinned) {
                                 if (pin && friend.name !in pinnedUsernamesSet)
@@ -318,9 +319,7 @@ fun FriendsScreen(
                                 )
                             )
                         },
-                        modifier = Modifier
-                            .alpha(if (isDragging) 0.5f else 1f)
-                            .animateItem()
+                        dragHandleModifier = dragHandleModifier
                     )
                 }
             }
@@ -444,7 +443,10 @@ private fun FriendItemShimmer(
     )
 }
 
-@OptIn(ExperimentalMaterial3ExpressiveApi::class)
+@OptIn(
+    ExperimentalMaterial3ExpressiveApi::class, ExperimentalComposeUiApi::class,
+    ExperimentalFoundationApi::class
+)
 @Composable
 private fun FriendItem(
     friend: UserCached,
@@ -453,6 +455,7 @@ private fun FriendItem(
     onNavigateToScrobbles: (UserCached) -> Unit,
     onNavigateToTrackInfo: (Track, UserCached) -> Unit,
     modifier: Modifier = Modifier,
+    dragHandleModifier: Modifier = Modifier,
     forShimmer: Boolean = false,
     pinIndex: Int? = null,
     onPinUnpin: (Boolean) -> Unit = {},
@@ -479,53 +482,53 @@ private fun FriendItem(
                 .clickable(
                     enabled = !forShimmer,
                     onClick = { detailsShown = true })
-        ) {
-            Box(
-                modifier = Modifier
-                    .size(72.dp)
-            ) {
-                AvatarOrInitials(
-                    avatarUrl = friend.largeImage,
-                    avatarName = friend.name,
-                    textStyle = MaterialTheme.typography.titleLarge,
-                    modifier = Modifier
-                        .matchParentSize()
-                        .aspectRatio(1f)
-                        .clip(CircleShape)
-                        .then(if (forShimmer) Modifier.shimmerWindowBounds() else Modifier)
-                        .then(
-                            if (pinIndex != null)
-                                Modifier.border(
-                                    width = 2.dp,
-                                    color = MaterialTheme.colorScheme.secondary,
-                                    shape = CircleShape
-                                )
-                            else
-                                Modifier
-                        )
-                )
+                .then(if (canPinUnpin) dragHandleModifier else Modifier)
 
+        ) {
+            AvatarOrInitials(
+                avatarUrl = friend.largeImage,
+                avatarName = friend.name,
+                textStyle = MaterialTheme.typography.titleLarge,
+                modifier = Modifier
+                    .aspectRatio(1f)
+                    .clip(CircleShape)
+                    .then(if (forShimmer) Modifier.shimmerWindowBounds() else Modifier)
+                    .then(
+                        if (pinIndex != null)
+                            Modifier.border(
+                                width = 4.dp,
+                                color = MaterialTheme.colorScheme.secondary,
+                                shape = CircleShape
+                            )
+                        else
+                            Modifier
+                    )
+            )
+
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.fillMaxWidth()
+            ) {
                 if (pinIndex != null) {
                     Icon(
-                        imageVector = Icons.KeepOff,
+                        imageVector = Icons.DragHandle,
                         contentDescription = null,
                         tint = MaterialTheme.colorScheme.secondary,
-                        modifier = Modifier
-                            .align(Alignment.TopEnd)
+                        modifier = Modifier.size(16.dp)
                     )
                 }
-            }
 
-            Text(
-                text = if (Stuff.isInDemoMode) "user" else friend.name,
-                style = MaterialTheme.typography.bodyMedium,
-                fontWeight = if (pinIndex != null)
-                    FontWeight.Bold
-                else
-                    null,
-                textAlign = TextAlign.Center,
-                modifier = Modifier.fillMaxWidth()
-            )
+                Text(
+                    text = if (Stuff.isInDemoMode) "user" else friend.name,
+                    style = MaterialTheme.typography.bodyMedium,
+                    fontWeight = if (pinIndex != null)
+                        FontWeight.Bold
+                    else
+                        null,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.weight(1f)
+                )
+            }
         }
 
         if (extraData?.errorMessage != null) {

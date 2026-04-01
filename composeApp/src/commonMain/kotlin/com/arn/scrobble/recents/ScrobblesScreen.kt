@@ -62,6 +62,7 @@ import com.arn.scrobble.icons.HourglassEmpty
 import com.arn.scrobble.icons.Icons
 import com.arn.scrobble.icons.Refresh
 import com.arn.scrobble.main.PanoPullToRefresh
+import com.arn.scrobble.main.ScrobblerState
 import com.arn.scrobble.navigation.PanoRoute
 import com.arn.scrobble.ui.AutoRefreshEffect
 import com.arn.scrobble.ui.DismissableNotice
@@ -75,7 +76,9 @@ import com.arn.scrobble.utils.Stuff
 import com.arn.scrobble.utils.Stuff.collectAsStateWithInitialValue
 import com.arn.scrobble.utils.Stuff.format
 import com.arn.scrobble.utils.Stuff.timeToLocal
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.getString
 import org.jetbrains.compose.resources.pluralStringResource
@@ -111,6 +114,8 @@ fun ScrobblesScreen(
     onNavigate: (PanoRoute) -> Unit,
     onTitleChange: (String) -> Unit,
     editDataFlow: Flow<Pair<String, Track>>,
+    scrobblerStateFlow: StateFlow<ScrobblerState>,
+    updateScrobblerState: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel: ScrobblesVM = viewModel(key = user.key<ScrobblesVM>()) { ScrobblesVM(user, null) },
 ) {
@@ -127,9 +132,7 @@ fun ScrobblesScreen(
     val (pendingScrobbles, pendingScrobblesCount) = pendingScrobblesWithCount
     val total by viewModel.total.collectAsStateWithLifecycle()
     val pkgMap by viewModel.pkgMap.collectAsStateWithLifecycle()
-    val nlsEnabled by viewModel.nlsEnabled.collectAsStateWithLifecycle()
-    val scrobblerEnabled by PlatformStuff.mainPrefs.data.collectAsStateWithInitialValue { it.scrobblerEnabled }
-    val scrobblerRunning by viewModel.scrobblerServiceRunning.collectAsStateWithLifecycle()
+    val scrobblerState by scrobblerStateFlow.collectAsStateWithLifecycle()
     val showScrobbleSources by if (LocalLicenseValidState.current)
         PlatformStuff.mainPrefs.data.collectAsStateWithInitialValue { it.showScrobbleSources }
     else
@@ -358,53 +361,63 @@ fun ScrobblesScreen(
                 modifier = Modifier.fillMaxWidth().weight(1f)
             ) {
 
-                // todo remove canEditOrDelete
-                if (user.isSelf && (!nlsEnabled || !scrobblerEnabled || scrobblerRunning == false ||
-                            (!otherPlatformsLearnt && canEditOrDelete && !PlatformStuff.isTv && !PlatformStuff.isDesktop))
-                ) {
-                    item("notice") {
-                        when {
-                            !scrobblerEnabled || !nlsEnabled -> {
+                if (user.isSelf) {
+                    when (val scrobblerState = scrobblerState) {
+                        ScrobblerState.Disabled, ScrobblerState.NLSDisabled -> {
+                            item("notice") {
+                                val innerScope = rememberCoroutineScope()
                                 DismissableNotice(
                                     title = stringResource(Res.string.scrobbler_off),
                                     onClick = {
-                                        if (!scrobblerEnabled) {
-                                            onNavigate(PanoRoute.Prefs)
-                                        } else {
-                                            viewModel.updateScrobblerServiceStatus()
-                                            onNavigate(PanoRoute.Onboarding)
+                                        updateScrobblerState()
+
+                                        innerScope.launch {
+                                            delay(500)
+                                            if (scrobblerState == ScrobblerState.Disabled)
+                                                onNavigate(PanoRoute.Prefs)
+                                            else
+                                                onNavigate(PanoRoute.Onboarding)
+
                                         }
                                     },
                                     modifier = Modifier.animateItem()
                                 )
                             }
+                        }
 
-                            scrobblerRunning == false -> {
+                        is ScrobblerState.Killed -> {
+                            item("notice") {
                                 DismissableNotice(
                                     title = stringResource(Res.string.not_running),
-                                    onClick = { onNavigate(PanoRoute.Modal.FixIt) },
+                                    onClick = { onNavigate(PanoRoute.Modal.FixIt(scrobblerState.reason)) },
                                     modifier = Modifier.animateItem()
                                 )
                             }
+                        }
 
-                            else -> {
-                                DismissableNotice(
-                                    title = stringResource(
-                                        Res.string.also_available_on,
-                                        stringResource(Res.string.desktop)
-                                    ),
-                                    onClick = {
-                                        onNavigate(PanoRoute.Modal.ShowLink(Stuff.HOMEPAGE_URL))
-                                    },
-                                    onDismiss = {
-                                        scope.launch {
-                                            PlatformStuff.mainPrefs.updateData {
-                                                it.copy(desktopAppLearnt = true)
+                        ScrobblerState.Unknown,
+                        ScrobblerState.Running -> {
+                            // todo remove canEditOrDelete
+                            if (!otherPlatformsLearnt && canEditOrDelete && !PlatformStuff.isTv && !PlatformStuff.isDesktop) {
+                                item("notice") {
+                                    DismissableNotice(
+                                        title = stringResource(
+                                            Res.string.also_available_on,
+                                            stringResource(Res.string.desktop)
+                                        ),
+                                        onClick = {
+                                            onNavigate(PanoRoute.Modal.ShowLink(Stuff.HOMEPAGE_URL))
+                                        },
+                                        onDismiss = {
+                                            scope.launch {
+                                                PlatformStuff.mainPrefs.updateData {
+                                                    it.copy(desktopAppLearnt = true)
+                                                }
                                             }
-                                        }
-                                    },
-                                    modifier = Modifier.animateItem()
-                                )
+                                        },
+                                        modifier = Modifier.animateItem()
+                                    )
+                                }
                             }
                         }
                     }

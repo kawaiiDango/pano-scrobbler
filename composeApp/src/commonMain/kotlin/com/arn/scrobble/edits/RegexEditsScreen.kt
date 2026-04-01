@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.items
@@ -41,7 +40,6 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.arn.scrobble.billing.LocalLicenseValidState
 import com.arn.scrobble.db.RegexEdit
-import com.arn.scrobble.icons.Apps
 import com.arn.scrobble.icons.Block
 import com.arn.scrobble.icons.Delete
 import com.arn.scrobble.icons.DragHandle
@@ -58,7 +56,9 @@ import com.arn.scrobble.icons.SwipeLeftAlt
 import com.arn.scrobble.icons.ToggleOff
 import com.arn.scrobble.icons.ToggleOn
 import com.arn.scrobble.navigation.PanoRoute
+import com.arn.scrobble.pref.AppItem
 import com.arn.scrobble.pref.AppListSaveType
+import com.arn.scrobble.ui.AppIcon
 import com.arn.scrobble.ui.DraggableItem
 import com.arn.scrobble.ui.EmptyTextWithImportButtonOnTv
 import com.arn.scrobble.ui.LabeledCheckbox
@@ -70,6 +70,7 @@ import com.arn.scrobble.ui.rememberDragDropState
 import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff
 import com.arn.scrobble.utils.Stuff.collectAsStateWithInitialValue
+import com.arn.scrobble.utils.Stuff.format
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
@@ -98,6 +99,10 @@ fun RegexEditsScreen(
 ) {
     val regexEdits by viewModel.regexes.collectAsStateWithLifecycle()
     var regexEditsReordered by remember { mutableStateOf(regexEdits) }
+    val idxToSerialNumbers by remember(regexEditsReordered) {
+        var n = 1
+        mutableStateOf(regexEdits.map { if (it.enabled) n++ else null })
+    }
 
     val presetsWithState by PlatformStuff.mainPrefs.data.collectAsStateWithInitialValue {
         val presetsEnabled = it.regexPresets
@@ -113,6 +118,7 @@ fun RegexEditsScreen(
 
     RegexEditsList(
         regexEdits = regexEditsReordered,
+        idxToSerialNumbers = idxToSerialNumbers,
         presetsWithState = presetsWithState,
         onItemClick = {
             onNavigate(PanoRoute.RegexEditsAdd(it))
@@ -153,6 +159,7 @@ fun RegexEditsScreen(
 private fun RegexEditsList(
     presetsWithState: List<Pair<RegexPreset, Boolean>>,
     regexEdits: List<RegexEdit>,
+    idxToSerialNumbers: List<Int?>,
     onItemClick: (RegexEdit) -> Unit,
     onItemDelete: (RegexEdit) -> Unit,
     onItemToggle: (RegexEdit, Boolean) -> Unit,
@@ -302,9 +309,10 @@ private fun RegexEditsList(
         }
 
         itemsIndexed(regexEdits, key = { _, item -> item._id }) { index, item ->
-            DraggableItem(dragDropState, index + nonRegexItemsCount) { isDragging ->
+            DraggableItem(dragDropState, index + nonRegexItemsCount) { dragHandleModifier ->
                 RegexEditItem(
                     regexEdit = item,
+                    serialNumber = idxToSerialNumbers.getOrNull(index),
                     onItemClick = onItemClick,
                     canMoveUp = (index + nonRegexItemsCount) > 0,
                     canMoveDown = index < regexEdits.size - 1,
@@ -314,7 +322,7 @@ private fun RegexEditsList(
                     },
                     onItemDelete = onItemDelete,
                     onItemToggle = onItemToggle,
-                    modifier = Modifier.alpha(if (isDragging) 0.25f else 1f)
+                    dragHandleModifier = dragHandleModifier
                 )
             }
         }
@@ -357,6 +365,7 @@ private fun PresetItem(
 @Composable
 private fun RegexEditItem(
     regexEdit: RegexEdit,
+    serialNumber: Int?,
     canMoveUp: Boolean,
     canMoveDown: Boolean,
     onKeypressMoveItem: (fromIndex: Int, toIndex: Int) -> Unit,
@@ -364,6 +373,7 @@ private fun RegexEditItem(
     onItemDelete: (RegexEdit) -> Unit,
     onItemToggle: (RegexEdit, Boolean) -> Unit,
     modifier: Modifier = Modifier,
+    dragHandleModifier: Modifier,
     forShimmer: Boolean = false,
 ) {
     val modifierIcons = getModifierIcons(regexEdit)
@@ -387,6 +397,7 @@ private fun RegexEditItem(
                     .size(40.dp)
                     .clip(MaterialTheme.shapes.medium)
                     .padding(8.dp)
+                    .then(dragHandleModifier)
             )
         } else {
             SplitButtonLayout(
@@ -428,8 +439,10 @@ private fun RegexEditItem(
                 .padding(8.dp)
                 .backgroundForShimmer(forShimmer)
         ) {
+            val title = serialNumber?.format()?.let { "$it. ${regexEdit.name}" } ?: regexEdit.name
+
             Text(
-                text = regexEdit.name,
+                text = title,
                 style = MaterialTheme.typography.titleMedium,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis
@@ -439,13 +452,20 @@ private fun RegexEditItem(
                 horizontalArrangement = Arrangement.spacedBy(4.dp),
                 modifier = Modifier
                     .padding(top = 4.dp)
-                    .height(24.dp),
             ) {
                 modifierIcons.forEach { icon ->
                     Icon(
                         imageVector = icon,
                         contentDescription = null,
-                        tint = MaterialTheme.colorScheme.secondary
+                        tint = MaterialTheme.colorScheme.secondary,
+                        modifier = Modifier.size(24.dp)
+                    )
+                }
+
+                regexEdit.appIds.forEach {
+                    AppIcon(
+                        AppItem(it, PlatformStuff.loadApplicationLabel(it)),
+                        modifier = Modifier.size(24.dp)
                     )
                 }
             }
@@ -527,7 +547,6 @@ private fun getModifierIcons(regexEdit: RegexEdit): List<ImageVector> {
     else if (regexEdit.replacement == null) Icons.SwipeLeftAlt
     else Icons.FindReplace
 
-    if (regexEdit.appIds.isNotEmpty()) m += Icons.Apps
     if (regexEdit.caseSensitive) m += Icons.MatchCase
     if (regexEdit.replacement?.replaceAll == true) m += Icons.Public
 

@@ -1,12 +1,14 @@
 package com.arn.scrobble.utils
 
 import android.app.ActivityManager
+import android.app.Application.getProcessName
 import android.app.ApplicationExitInfo
 import android.app.PendingIntent
 import android.content.Context
 import android.media.MediaMetadata
 import android.os.Build
 import android.os.Bundle
+import android.provider.Settings
 import android.view.View
 import android.view.ViewTreeObserver
 import android.widget.Toast
@@ -15,16 +17,30 @@ import androidx.annotation.RequiresApi
 import androidx.annotation.StringRes
 import androidx.datastore.core.DataStoreFactory
 import co.touchlab.kermit.Logger
+import com.arn.scrobble.BuildKonfig
+import com.arn.scrobble.media.NLService
 import com.arn.scrobble.pref.WidgetPrefs
 import com.arn.scrobble.pref.WidgetPrefsSerializer
 import com.arn.scrobble.utils.Stuff.SCROBBLER_PROCESS_NAME
 import java.io.File
-import kotlin.properties.Delegates
 
 object AndroidStuff {
     lateinit var applicationContext: Context
 
-    var isMainProcess by Delegates.notNull<Boolean>()
+    val isMainProcess by lazy {
+        val procName = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+            // For API 28+ we can use Application.getProcessName()
+            getProcessName()
+        } else {
+            Class
+                .forName("android.app.ActivityThread")
+                .getDeclaredMethod("currentProcessName")
+                .apply { isAccessible = true }
+                .invoke(null) as String
+        }
+
+        procName == BuildKonfig.APP_ID
+    }
 
     const val updateCurrentOrImmutable =
         PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
@@ -194,4 +210,23 @@ object AndroidStuff {
             }
         )
     }
+
+
+    fun isNotificationListenerEnabled(): Boolean {
+        // adapted from NotificationManagerCompat.java
+
+        val enabledNotificationListeners = try {
+            Settings.Secure.getString(
+                applicationContext.contentResolver,
+                "enabled_notification_listeners"
+            )
+        } catch (e: SecurityException) {
+            return false
+        }
+
+        val nlsComponentStr = "${applicationContext.packageName}/${NLService::class.qualifiedName}"
+        // check for the exact component name instead of just package name
+        return enabledNotificationListeners?.split(":")?.any { it == nlsComponentStr } == true
+    }
+
 }

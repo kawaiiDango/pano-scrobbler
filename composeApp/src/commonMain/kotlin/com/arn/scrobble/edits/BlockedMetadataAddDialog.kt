@@ -2,10 +2,9 @@ package com.arn.scrobble.edits
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material3.FilterChip
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
@@ -25,12 +24,17 @@ import com.arn.scrobble.db.BlockPlayerAction
 import com.arn.scrobble.db.BlockedMetadata
 import com.arn.scrobble.db.BlockedMetadataDao.Companion.insertLowerCase
 import com.arn.scrobble.db.PanoDb
+import com.arn.scrobble.icons.Block
+import com.arn.scrobble.icons.Icons
+import com.arn.scrobble.icons.SkipNext
+import com.arn.scrobble.icons.automirrored.VolumeOff
 import com.arn.scrobble.media.PlayingTrackNotifyEvent
 import com.arn.scrobble.media.notifyPlayingTrackEvent
 import com.arn.scrobble.navigation.enumSaver
 import com.arn.scrobble.ui.ErrorText
 import com.arn.scrobble.ui.InlineCheckButton
 import com.arn.scrobble.ui.LabeledCheckbox
+import com.arn.scrobble.ui.OutlinedToggleIconButtons
 import com.arn.scrobble.ui.PanoOutlinedTextField
 import com.arn.scrobble.utils.PlatformStuff
 import kotlinx.coroutines.Dispatchers
@@ -241,50 +245,35 @@ private fun BlockedMetadataAddContent(
 }
 
 @Composable
-fun BlockPlayerActions(
+fun ColumnScope.BlockPlayerActions(
     blockPlayerAction: BlockPlayerAction,
     onChange: (BlockPlayerAction) -> Unit,
     enabled: Boolean,
-    modifier: Modifier = Modifier,
 ) {
-    Column(
-        modifier = modifier
-    ) {
-        FlowRow(
-            horizontalArrangement = Arrangement.spacedBy(8.dp)
-        ) {
-            Text(
-                text = stringResource(Res.string.player_actions),
-                color = MaterialTheme.colorScheme.secondary,
-                modifier = Modifier.align(Alignment.CenterVertically)
-            )
+    Text(
+        text = stringResource(Res.string.player_actions),
+        color = MaterialTheme.colorScheme.secondary,
+    )
 
-            FilterChip(
-                selected = blockPlayerAction == BlockPlayerAction.skip,
-                onClick = {
-                    onChange(BlockPlayerAction.skip)
-                },
-                label = { Text(stringResource(Res.string.skip)) },
-                enabled = enabled,
-            )
-            FilterChip(
-                selected = blockPlayerAction == BlockPlayerAction.mute,
-                onClick = {
-                    onChange(BlockPlayerAction.mute)
-                },
-                label = { Text(stringResource(Res.string.mute)) },
-                enabled = enabled,
-            )
-            FilterChip(
-                selected = blockPlayerAction == BlockPlayerAction.ignore,
-                onClick = {
-                    onChange(BlockPlayerAction.ignore)
-                },
-                label = { Text(stringResource(Res.string.do_nothing)) },
-                enabled = enabled,
-            )
-        }
-    }
+    OutlinedToggleIconButtons(
+        items = listOf(
+            stringResource(Res.string.skip),
+            stringResource(Res.string.mute),
+            stringResource(Res.string.do_nothing),
+        ),
+        icons = listOf(
+            Icons.SkipNext,
+            Icons.AutoMirrored.VolumeOff,
+            Icons.Block,
+        ),
+        onSelected = { idx ->
+            BlockPlayerAction.entries
+                .find { it.ordinal == idx }
+                ?.let { onChange(it) }
+        },
+        selectedIndex = blockPlayerAction.ordinal,
+        enabled = enabled,
+    )
 }
 
 @Composable

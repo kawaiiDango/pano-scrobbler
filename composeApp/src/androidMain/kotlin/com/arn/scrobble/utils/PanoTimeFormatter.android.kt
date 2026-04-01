@@ -69,11 +69,13 @@ actual object PanoTimeFormatter {
         )
     }
 
-    actual fun month(millis: Long): String {
+    actual fun month(millis: Long, short: Boolean): String {
+        val shortFlag = if (short) DateUtils.FORMAT_ABBREV_MONTH else 0
+
         return DateUtils.formatDateTime(
             applicationContext,
             millis,
-            DateUtils.FORMAT_ABBREV_MONTH or DateUtils.FORMAT_NO_MONTH_DAY
+            shortFlag or DateUtils.FORMAT_NO_MONTH_DAY
         )
     }
 

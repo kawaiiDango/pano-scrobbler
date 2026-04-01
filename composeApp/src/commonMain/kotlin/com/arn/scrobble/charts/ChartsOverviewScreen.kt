@@ -677,7 +677,7 @@ private fun ListeningActivityContent(
 
                                 DefaultBar(
                                     color = tintColor.copy(
-                                        alpha = 0.5f + 0.5f * (currentYValue / yValuesMax)
+                                        alpha = 0.3f + 0.7f * currentYValue / yValuesMax
                                     ),
                                     shape = MaterialTheme.shapes.small.copy(
                                         bottomEnd = CornerSize(0.dp),
@@ -688,7 +688,10 @@ private fun ListeningActivityContent(
                                 Text(
                                     currentYValue.toString(),
                                     style = MaterialTheme.typography.labelSmall,
-                                    color = MaterialTheme.colorScheme.secondary,
+                                    color = if (yValuesMax == currentYValue)
+                                        MaterialTheme.colorScheme.primary
+                                    else
+                                        MaterialTheme.colorScheme.secondary,
                                     maxLines = 1,
                                     softWrap = false,
                                     overflow = TextOverflow.Visible,

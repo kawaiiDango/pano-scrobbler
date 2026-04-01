@@ -15,18 +15,14 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import coil3.compose.AsyncImage
-import com.arn.scrobble.icons.Apps
 import com.arn.scrobble.icons.Close
 import com.arn.scrobble.icons.Delete
 import com.arn.scrobble.icons.Icons
 import com.arn.scrobble.icons.MoreVert
 import com.arn.scrobble.pref.AppItem
-import com.arn.scrobble.ui.PackageName
-import com.arn.scrobble.ui.placeholderPainter
+import com.arn.scrobble.ui.AppIcon
 import org.jetbrains.compose.resources.stringResource
 import pano_scrobbler.composeapp.generated.resources.Res
 import pano_scrobbler.composeapp.generated.resources.close
@@ -48,7 +44,6 @@ fun AppItemChip(
                 imageVector = Icons.Close,
                 contentDescription = stringResource(Res.string.close)
             )
-
         },
         label = {
             Text(
@@ -59,13 +54,7 @@ fun AppItemChip(
             )
         },
         avatar = {
-            AsyncImage(
-                model = PackageName(appListItem.appId),
-                error = rememberVectorPainter(Icons.Apps),
-                placeholder = placeholderPainter(),
-                contentDescription = null,
-                modifier = Modifier.size(24.dp)
-            )
+            AppIcon(appItem = appListItem, modifier = Modifier.size(24.dp))
         },
         selected = true,
         modifier = modifier

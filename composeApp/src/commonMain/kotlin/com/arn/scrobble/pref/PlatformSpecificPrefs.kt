@@ -1,27 +1,26 @@
 package com.arn.scrobble.pref
 
-import androidx.compose.foundation.lazy.LazyListScope
 import com.arn.scrobble.navigation.PanoRoute
 
 expect object PlatformSpecificPrefs {
-    fun prefNotifications(listScope: LazyListScope)
+    fun prefNotifications(filteredItem: FilteredItem)
 
     fun prefScrobbler(
-        listScope: LazyListScope,
+        filteredItem: FilteredItem,
         scrobblerEnabled: Boolean,
         nlsEnabled: Boolean,
         onNavigate: (PanoRoute) -> Unit
     )
 
-    fun prefQuickSettings(listScope: LazyListScope, scrobblerEnabled: Boolean)
+    fun prefQuickSettings(filteredItem: FilteredItem, scrobblerEnabled: Boolean)
 
-    fun prefPersistentNoti(listScope: LazyListScope, notiEnabled: Boolean)
+    fun prefPersistentNoti(filteredItem: FilteredItem, notiEnabled: Boolean)
 
-    fun prefChartsWidget(listScope: LazyListScope)
+    fun prefChartsWidget(filteredItem: FilteredItem)
 
-    fun prefAutostart(listScope: LazyListScope)
-    fun discordRpc(listScope: LazyListScope, onNavigate: (PanoRoute) -> Unit)
-    fun tidalSteelSeries(listScope: LazyListScope, enabled: Boolean)
+    fun prefAutostart(filteredItem: FilteredItem)
+    fun discordRpc(filteredItem: FilteredItem, onNavigate: (PanoRoute) -> Unit)
+    fun tidalSteelSeries(filteredItem: FilteredItem, enabled: Boolean)
 
-    fun deezerApi(listScope: LazyListScope, enabled: Boolean)
+    fun deezerApi(filteredItem: FilteredItem, enabled: Boolean)
 }

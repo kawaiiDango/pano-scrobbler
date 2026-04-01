@@ -236,7 +236,7 @@ fun InfoCounts(
                 Box(
                     contentAlignment = Alignment.Center,
                 ) {
-                    if (index == 0 && firstItemIsUsers) {
+                    if (index == 0 && firstItemIsUsers && avatarName != null) {
                         AvatarOrInitials(
                             avatarUrl = avatarUrl,
                             avatarName = avatarName,

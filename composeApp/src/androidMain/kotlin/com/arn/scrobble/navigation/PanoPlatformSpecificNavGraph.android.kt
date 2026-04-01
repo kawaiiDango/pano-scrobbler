@@ -8,8 +8,10 @@ actual fun EntryProviderScope<PanoRoute>.panoPlatformSpecificNavGraph(
     navigate: (PanoRoute) -> Unit,
     goBack: () -> Unit,
 ) {
-    modalEntry<PanoRoute.Modal.FixIt> {
+    modalEntry<PanoRoute.Modal.FixIt> { route ->
+
         FixItDialog(
+            killedReason = route.killedReason,
             onNavigate = navigate,
             modifier = modalModifier(),
         )

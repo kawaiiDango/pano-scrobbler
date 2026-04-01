@@ -1,6 +1,5 @@
 package com.arn.scrobble.onboarding
 
-import android.app.ApplicationExitInfo
 import android.content.ComponentName
 import android.content.Intent
 import android.os.Build
@@ -14,7 +13,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -24,8 +22,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
-import co.touchlab.kermit.Logger
 import com.arn.scrobble.BuildKonfig
+import com.arn.scrobble.main.ScrobblerState
 import com.arn.scrobble.media.PersistentNotificationService
 import com.arn.scrobble.navigation.PanoRoute
 import com.arn.scrobble.utils.AndroidStuff
@@ -50,11 +48,10 @@ import pano_scrobbler.composeapp.generated.resources.not_found
 import pano_scrobbler.composeapp.generated.resources.show_persistent_noti
 import pano_scrobbler.composeapp.generated.resources.special_app_access
 
-private class AppExitException(pss: Long, rss: Long) :
-    RuntimeException("pss=${pss / 1024}M, rss=${rss / 1024}M")
 
 @Composable
 fun FixItDialog(
+    killedReason: ScrobblerState.KilledReason?,
     onNavigate: (PanoRoute) -> Unit,
     modifier: Modifier,
 ) {
@@ -65,7 +62,7 @@ fun FixItDialog(
         !it.notiPersistent && AndroidStuff.canShowPersistentNotiIfEnabled
     }
 
-    var exitReasonText by remember { mutableStateOf<String?>(null) }
+    var exitReasonText by remember { mutableStateOf(killedReason?.formatted()) }
 
     val batteryIntent = remember {
         if (PlatformStuff.isTv) {
@@ -75,26 +72,6 @@ fun FixItDialog(
                 )
             } else null
         } else Intent(Settings.ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS)
-    }
-
-    LaunchedEffect(Unit) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            val exitReason = AndroidStuff.getScrobblerExitReasons()
-                .firstOrNull()
-            exitReasonText = exitReason?.description
-
-            if (exitReason?.description != null && exitReason.reason in arrayOf(
-                    ApplicationExitInfo.REASON_OTHER,
-                    ApplicationExitInfo.REASON_LOW_MEMORY,
-                    ApplicationExitInfo.REASON_EXCESSIVE_RESOURCE_USAGE,
-                    ApplicationExitInfo.REASON_UNKNOWN,
-                    ApplicationExitInfo.REASON_INITIALIZATION_FAILURE,
-                )
-            ) {
-                val message = "reason=${exitReason.reason}, description=${exitReason.description}"
-                Logger.w(AppExitException(exitReason.pss, exitReason.rss)) { message }
-            }
-        }
     }
 
     Column(

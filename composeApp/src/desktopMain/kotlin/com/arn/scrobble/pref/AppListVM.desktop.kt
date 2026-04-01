@@ -7,17 +7,12 @@ import kotlinx.coroutines.flow.map
 
 actual suspend fun AppListVM.load(
     packagesOverride: Set<String>?,
-    onSetSelectedPackages: (Set<String>) -> Unit,
     onSetAppList: (AppList) -> Unit,
     onSetHasLoaded: () -> Unit,
-    checkDefaultApps: Boolean,
 ) {
     val seenApps = PlatformStuff.mainPrefs.data.map { it.seenApps }.first()
 
-    if (checkDefaultApps)
-        onSetSelectedPackages(seenApps.keys)
-
-    val musicPlayers = seenApps.toList()
+    val (selectedList, unselectedList) = seenApps.asSequence()
         .filter { (appId, friendlyLabel) ->
             packagesOverride?.contains(appId) ?: true
         }
@@ -30,7 +25,9 @@ actual suspend fun AppListVM.load(
                 label = friendlyLabel,
             )
         }
+        .partition { it.appId in selectedPackages.value }
 
+    val musicPlayers = selectedList + unselectedList
     onSetAppList(AppList(musicPlayers, emptyList()))
     onSetHasLoaded()
 }

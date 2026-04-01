@@ -112,7 +112,7 @@ private fun NotificationListenerStep(
 
     LifecycleResumeEffect(Unit) {
         // on resume
-        if (PlatformStuff.isNotificationListenerEnabled()) {
+        if (AndroidStuff.isNotificationListenerEnabled()) {
             onDone()
         }
 
@@ -176,7 +176,7 @@ actual fun OnboardingScreen(
         listOfNotNull(
             OnboardingStepType.LOGIN,
             OnboardingStepType.NOTIFICATION_LISTENER,
-            if (!PlatformStuff.isTv && AndroidStuff.isDkmaNeeded() && !PlatformStuff.isNotificationListenerEnabled())
+            if (!PlatformStuff.isTv && AndroidStuff.isDkmaNeeded() && !AndroidStuff.isNotificationListenerEnabled())
                 OnboardingStepType.DKMA
             else null,
             OnboardingStepType.CHOOSE_APPS,

@@ -3,12 +3,13 @@ package com.arn.scrobble.utils
 import com.arn.scrobble.BuildKonfig
 import com.arn.scrobble.billing.LicenseState
 import com.arn.scrobble.logger.JavaUtilFileLogger
+import com.arn.scrobble.main.ScrobblerState
 import io.ktor.http.encodeURLPathPart
 import io.ktor.http.encodeURLQueryComponent
 
 
 actual object BugReportUtils {
-    actual fun mail() {
+    actual fun mail(scrobblerState: ScrobblerState) {
         val reportTo = Stuff.xorWithKey(
             Stuff.BUG_REPORT_TO,
             BuildKonfig.APP_ID
@@ -28,6 +29,8 @@ actual object BugReportUtils {
         text += BuildKonfig.APP_NAME + " v" + BuildKonfig.VER_NAME + "\n"
         text += "$osName $osVersion\n"
         text += "Arch: $arch\n"
+        if (scrobblerState != ScrobblerState.Running)
+            text += "ScrobblerState: $scrobblerState\n"
 
         // the ram values don't correspond to that shown in task manager (are too low)
 //        text += "RAM usage: $freeMemory M / $totalMemory M\n"

@@ -18,6 +18,7 @@ import com.arn.scrobble.db.SimpleEdit
 import com.arn.scrobble.icons.Add
 import com.arn.scrobble.icons.Check
 import com.arn.scrobble.icons.Icons
+import com.arn.scrobble.main.ScrobblerState
 import com.arn.scrobble.pref.AppListSaveType
 import com.arn.scrobble.updates.UpdateAction
 import kotlinx.serialization.Serializable
@@ -93,9 +94,6 @@ sealed interface PanoRoute : NavKey {
 
     @Serializable
     data object LoginPleroma : PanoRoute
-
-//    @Serializable
-//    data object LoginMaloja : PanoRoute
 
     @Serializable
     data object LoginGnufm : PanoRoute
@@ -306,7 +304,7 @@ sealed interface PanoRoute : NavKey {
 
 
         @Serializable
-        data object FixIt : Modal
+        data class FixIt(val killedReason: ScrobblerState.KilledReason?) : Modal
 
         @Serializable
         data class ShowLink(val url: String) : Modal

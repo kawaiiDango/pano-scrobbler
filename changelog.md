@@ -1,6 +1,5 @@
-- Added SOCKS5 proxy settings
-- Caches albums and track loved state
-- The cached loved state is shown in the tray menu on Windows and Linux and in the notification on Android
-- Optimizations for Android and Windows
-- Bug fixes
-- Translation updates by the translators on Crowdin
+- Targets Android 17
+- Added validation for the SOCKS5 proxy input
+- Added a search bar for settings
+- Import/export over network no longer requires typing a code
+- Better reorderable lists on Windows and Linux

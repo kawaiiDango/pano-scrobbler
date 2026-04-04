@@ -6,6 +6,7 @@ import android.app.UiModeManager
 import android.content.ActivityNotFoundException
 import android.content.ClipData
 import android.content.ClipboardManager
+import android.content.ComponentName
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.content.res.Configuration
@@ -15,6 +16,7 @@ import android.os.Build
 import android.os.SystemClock
 import android.provider.MediaStore
 import android.provider.Settings
+import android.service.notification.NotificationListenerService
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asAndroidBitmap
 import androidx.core.net.toUri
@@ -23,6 +25,7 @@ import androidx.room3.ExperimentalRoomApi
 import androidx.room3.Room
 import androidx.room3.RoomDatabase
 import androidx.sqlite.driver.AndroidSQLiteDriver
+import co.touchlab.kermit.Logger
 import com.arn.scrobble.BuildKonfig
 import com.arn.scrobble.api.lastfm.Album
 import com.arn.scrobble.api.lastfm.Artist
@@ -94,7 +97,7 @@ actual object PlatformStuff {
 
     actual const val isDesktop = false
 
-    actual suspend fun checkScrobblerState(): ScrobblerState {
+    actual suspend fun checkScrobblerState(requestRebind: Boolean): ScrobblerState {
         // check NLS enabled
         // adapted from NotificationManagerCompat.java
 
@@ -154,6 +157,21 @@ actual object PlatformStuff {
                     }
             else
                 null
+
+            if (requestRebind) {
+                Stuff.appScope.launch(Dispatchers.IO) {
+                    try {
+                        NotificationListenerService.requestRebind(
+                            ComponentName(
+                                applicationContext,
+                                NLService::class.java
+                            )
+                        )
+                    } catch (e: Exception) {
+                        Logger.w(e) { "requestRebind failed" }
+                    }
+                }
+            }
 
             return ScrobblerState.Killed(killedReason)
         }

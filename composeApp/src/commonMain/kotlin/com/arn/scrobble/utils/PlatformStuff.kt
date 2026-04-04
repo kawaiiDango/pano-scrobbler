@@ -35,7 +35,7 @@ expect object PlatformStuff {
 
     val appIdPlaceholder: String
 
-    suspend fun checkScrobblerState(): ScrobblerState
+    suspend fun checkScrobblerState(requestRebind: Boolean): ScrobblerState
 
     fun openInBrowser(url: String)
 

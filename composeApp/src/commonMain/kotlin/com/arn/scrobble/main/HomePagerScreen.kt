@@ -83,7 +83,7 @@ fun HomePagerScreen(
                 onNavigate = onNavigate,
                 editDataFlow = mainViewModel.editScrobbleUtils.editDataFlow,
                 scrobblerStateFlow = mainViewModel.scrobblerStateFlow,
-                updateScrobblerState = mainViewModel::updateScrobblerServiceState,
+                updateScrobblerState = { mainViewModel.updateScrobblerServiceState(false) },
                 onTitleChange = {
                     scrobblesTitle = it
                 },

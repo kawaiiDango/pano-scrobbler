@@ -111,16 +111,16 @@ class MainViewModel : ViewModel() {
             }
         }
 
-        updateScrobblerServiceState()
+        updateScrobblerServiceState(true)
     }
 
-    fun updateScrobblerServiceState() {
+    fun updateScrobblerServiceState(requestRebind: Boolean) {
         viewModelScope.launch(Dispatchers.IO) {
             delay(100)
-            val state = PlatformStuff.checkScrobblerState()
+            val state = PlatformStuff.checkScrobblerState(requestRebind)
             _scrobblerStateFlow.value = state
 
-            if (!killedReasonReported &&
+            if (!killedReasonReported && requestRebind &&
                 state is ScrobblerState.Killed && state.reason?.isProbablySystemKill == true
             ) {
                 killedReasonReported = true

@@ -107,7 +107,7 @@ actual object PlatformStuff {
         }
     }
 
-    actual suspend fun checkScrobblerState(): ScrobblerState {
+    actual suspend fun checkScrobblerState(requestRebind: Boolean): ScrobblerState {
         // check pref
         return if (!mainPrefs.data.map { it.scrobblerEnabled }.first())
             ScrobblerState.Disabled

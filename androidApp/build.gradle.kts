@@ -32,6 +32,8 @@ val localProperties = gradleLocalProperties(rootDir, project.providers)
     .toMap()
 
 android {
+    buildToolsVersion = "37.0.0"
+    
     compileSdk {
         version = release(libs.versions.targetSdk.get().toInt()) {
             minorApiLevel = libs.versions.sdkMinor.get().toInt()
@@ -51,7 +53,6 @@ android {
 
     buildFeatures {
         aidl = false
-        buildConfig = true
         resValues = false
         shaders = false
     }
@@ -162,16 +163,7 @@ android {
 
 dependencies {
     implementation(projects.composeApp)
-    implementation(libs.kotlinx.coroutines.android)
-    implementation(projects.extrasCommon)
-
-
 //        "baselineProfile"(project(mapOf("path" to ":baselineprofile")))
-
-    releaseImplementation(projects.extrasPlay)
-//    debugImplementation(projects.extrasNonplay)
-    debugImplementation(projects.extrasPlay)
-    "releaseGithubImplementation"(projects.extrasNonplay)
 
     androidTestImplementation(libs.test.uiautomator)
     androidTestImplementation(libs.test.runner)

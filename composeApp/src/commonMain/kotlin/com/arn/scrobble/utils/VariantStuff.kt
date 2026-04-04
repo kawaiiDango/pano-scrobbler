@@ -2,4 +2,4 @@ package com.arn.scrobble.utils
 
 import com.arn.scrobble.VariantStuffInterface
 
-lateinit var VariantStuff: VariantStuffInterface
+expect val VariantStuff: VariantStuffInterface

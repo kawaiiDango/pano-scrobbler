@@ -9,7 +9,6 @@ import java.io.File
 
 class CrashReporterInitializer : Initializer<CrashReporterConfig> {
     override fun create(context: Context): CrashReporterConfig {
-
         val f = File(context.filesDir, "crash_reporter_disabled.txt")
         CrashReporterConfig.init(f)
 

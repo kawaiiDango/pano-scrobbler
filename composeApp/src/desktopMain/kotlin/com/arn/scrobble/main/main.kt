@@ -40,7 +40,6 @@ import co.touchlab.kermit.Severity
 import com.arn.scrobble.BuildKonfig
 import com.arn.scrobble.PanoNativeComponents
 import com.arn.scrobble.automation.Automation
-import com.arn.scrobble.billing.BillingRepository
 import com.arn.scrobble.billing.LicenseState
 import com.arn.scrobble.discordrpc.DiscordRpc
 import com.arn.scrobble.logger.JavaUtilFileLogger
@@ -52,7 +51,6 @@ import com.arn.scrobble.themes.DayNightMode
 import com.arn.scrobble.ui.SerializableWindowState
 import com.arn.scrobble.updates.runUpdateAction
 import com.arn.scrobble.utils.DesktopStuff
-import com.arn.scrobble.utils.ExtrasVariantStuff
 import com.arn.scrobble.utils.LocaleUtils
 import com.arn.scrobble.utils.PanoNotifications
 import com.arn.scrobble.utils.PanoTrayUtils
@@ -65,11 +63,9 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.filterNot
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
@@ -165,22 +161,6 @@ private fun init() {
     LocaleUtils.setAppLocale(LocaleUtils.locale.value, activityContext = null)
 
     PanoNativeComponents.init()
-
-    val billingRepository = BillingRepository(
-        scope = Stuff.appScope,
-        lastCheckTime = flow { emitAll(PlatformStuff.mainPrefs.data.map { it.lastLicenseCheckTime }) },
-        setLastcheckTime = { time ->
-            PlatformStuff.mainPrefs.updateData { it.copy(lastLicenseCheckTime = time) }
-        },
-        receipt = flow { emitAll(Stuff.receiptFlow) },
-        setReceipt = Stuff::setReceipt,
-        httpPost = Stuff::httpPost,
-        deviceIdentifier = PlatformStuff::getDeviceIdentifier,
-        openInBrowser = PlatformStuff::openInBrowser,
-        context = null
-    )
-
-    VariantStuff = ExtrasVariantStuff(billingRepository)
 
     DiscordRpc.start()
 }

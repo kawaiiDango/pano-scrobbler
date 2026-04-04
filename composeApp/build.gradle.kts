@@ -90,6 +90,7 @@ kotlin {
             implementation(libs.coil.gif)
             implementation(libs.qrcode)
             implementation(libs.webkit)
+            implementation(projects.extrasAndroid)
         }
 
         commonMain {

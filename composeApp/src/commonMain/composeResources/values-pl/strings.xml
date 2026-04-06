@@ -399,6 +399,10 @@ https://www.google.com/search?q=regex+named+capture+groups</string>
     <string name="when_using" formatted="true" comment="%1$s is the web service or media player name">Podczas używania %1$s</string>
     <string name="when_not_using" formatted="true" comment="%1$s is the web service or media player name">Podczas gdy nie jest używane %1$s</string>
     <string name="as_text" comment="Like copy as text, but in short">Jako tekst</string>
+    <string name="show_track_url">Znajdź URL</string>
+    <string name="move_up" comment="Screen reader text for drag and drop reordering">Przesuń w górę</string>
+    <string name="move_down" comment="Screen reader text for drag and drop reordering">Przesuń w dół</string>
+    <string name="code_will_be_sent" formatted="true" comment="%1$s is either Ko-Fi or BuyMeACoffee, %2$s is the donation amount">Kod zostanie wysłany na maila powiązanego z twoim %1$s kontem, jeśli podarowałeś %2$s</string>
     <!--  pro  -->
     <string name="get_pro">Wesprzyj tę aplikację</string>
     <string name="one_time_purchase">Jednorazowo</string>

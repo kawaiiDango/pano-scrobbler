@@ -120,12 +120,10 @@ data class MainPrefs(
     val deezerApi: Boolean = true,
     val lastfmApiAlways: Boolean = false,
     private val logToFileOnAndroidSince: Long = -1,
+    val lovesFetchedForCache: Boolean = false,
     val extractFirstArtistPackages: Set<String> = emptySet(),
     val discordRpc: DiscordRpcSettings = DiscordRpcSettings(),
-    val customProxyEnabled: Boolean = false,
-    val proxyHost: String = "127.0.0.1",
-    val proxyPort: Int = 1080,
-    val lovesFetchedForCache: Boolean = false,
+    val proxy: ProxySettings = ProxySettings(),
 ) {
 
     @Serializable
@@ -142,6 +140,16 @@ data class MainPrefs(
         val detailsUrl: Boolean = true,
     )
 
+    @Serializable
+    data class ProxySettings(
+        val enabled: Boolean = false,
+        val host: String = "127.0.0.1",
+        val port: Int = 1080,
+        val user: String = "",
+        val pass: String = "",
+    ) {
+        val hasAuth get() = user.isNotEmpty() && pass.isNotEmpty()
+    }
 
     @Serializable
     data class Public(

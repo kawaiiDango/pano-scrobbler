@@ -26,9 +26,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.LifecycleResumeEffect
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.arn.scrobble.BuildKonfig
 import com.arn.scrobble.icons.Icons
 import com.arn.scrobble.icons.Warning
+import com.arn.scrobble.main.MainViewModel
+import com.arn.scrobble.main.ScrobblerState
 import com.arn.scrobble.navigation.PanoRoute
 import com.arn.scrobble.navigation.enumSaver
 import com.arn.scrobble.pref.AppListSaveType
@@ -100,6 +103,7 @@ private fun NotificationListenerStep(
     navigate: (PanoRoute) -> Unit,
     isDone: Boolean,
     isExpanded: Boolean,
+    scrobblerState: ScrobblerState,
     onDone: () -> Unit,
     onSkip: () -> Unit
 ) {
@@ -110,14 +114,11 @@ private fun NotificationListenerStep(
         BuildKonfig.APP_NAME
     )
 
-    LifecycleResumeEffect(Unit) {
+    LaunchedEffect(scrobblerState) {
         // on resume
-        if (AndroidStuff.isNotificationListenerEnabled()) {
+        if (scrobblerState != ScrobblerState.NLSDisabled && scrobblerState != ScrobblerState.Unknown) {
             onDone()
         }
-
-        //on pause
-        onPauseOrDispose { }
     }
 
     VerticalStepperItem(
@@ -169,14 +170,17 @@ private fun NotificationListenerStep(
 actual fun OnboardingScreen(
     onNavigate: (PanoRoute) -> Unit,
     onDone: () -> Unit,
+    mainViewModel: MainViewModel,
     modifier: Modifier,
 ) {
+    val scrobblerState by mainViewModel.scrobblerStateFlow.collectAsStateWithLifecycle()
+
     // make these lists and not maps otherwise the order gets messed up
     val steps = rememberSaveable {
         listOfNotNull(
             OnboardingStepType.LOGIN,
             OnboardingStepType.NOTIFICATION_LISTENER,
-            if (!PlatformStuff.isTv && AndroidStuff.isDkmaNeeded() && !AndroidStuff.isNotificationListenerEnabled())
+            if (!PlatformStuff.isTv && AndroidStuff.isDkmaNeeded() && scrobblerState == ScrobblerState.NLSDisabled)
                 OnboardingStepType.DKMA
             else null,
             OnboardingStepType.CHOOSE_APPS,
@@ -225,6 +229,14 @@ actual fun OnboardingScreen(
         }
     }
 
+    LifecycleResumeEffect(Unit) {
+        if (scrobblerState == ScrobblerState.NLSDisabled || scrobblerState == ScrobblerState.Unknown) {
+            mainViewModel.updateScrobblerServiceState(false)
+        }
+
+        onPauseOrDispose { }
+    }
+
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
         LaunchedEffect(Unit) {
             withContext(Dispatchers.IO) {
@@ -270,6 +282,7 @@ actual fun OnboardingScreen(
                         navigate = onNavigate,
                         isDone = isDone,
                         isExpanded = step == currentStep,
+                        scrobblerState = scrobblerState,
                         onDone = {
                             markAsDone(OnboardingStepType.NOTIFICATION_LISTENER)
                         },

@@ -1,5 +1,7 @@
 - Targets Android 17
-- Added validation for the SOCKS5 proxy input
+- Reimplemented SOCKS5 proxy with authentication support
 - Added a search bar for settings
 - Import/export over network no longer requires typing a code
 - Better reorderable lists on Windows and Linux
+- Bug fixes
+- Translation updates by the translators on Crowdin

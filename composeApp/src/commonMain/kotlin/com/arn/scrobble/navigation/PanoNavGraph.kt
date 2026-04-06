@@ -271,7 +271,7 @@ object PanoNavGraph {
             onSetTitleRes(route, Res.string.settings)
             PrefsScreen(
                 onNavigate = navigate,
-                scrobblerStateFlow = mainViewModel.scrobblerStateFlow,
+                mainViewModel = mainViewModel,
                 modifier = modifier()
             )
         }
@@ -495,9 +495,8 @@ object PanoNavGraph {
         entry<PanoRoute.Onboarding> {
             OnboardingScreen(
                 onNavigate = navigate,
-                onDone = {
-                    onSetOnboardingFinished()
-                },
+                onDone = onSetOnboardingFinished,
+                mainViewModel = mainViewModel,
                 modifier = modifier().addColumnPadding()
             )
         }

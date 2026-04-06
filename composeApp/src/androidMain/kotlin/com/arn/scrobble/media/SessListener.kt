@@ -32,8 +32,11 @@ import pano_scrobbler.composeapp.generated.resources.skip
 class SessListener(
     scope: CoroutineScope,
     scrobbleQueue: ScrobbleQueue,
-    private val audioManager: AudioManager,
 ) : MediaListener(scope, scrobbleQueue), OnActiveSessionsChangedListener {
+
+    private val audioManager by lazy {
+        AndroidStuff.applicationContext.getSystemService(AudioManager::class.java)!!
+    }
 
     override val notifyTimelineUpdates = false
     private val mainPrefs = PlatformStuff.mainPrefs
@@ -121,14 +124,6 @@ class SessListener(
             val playingTrackInfo = createTrackInfo(controller.packageName, notiKey)
 
             val sessionTracker = AndroidSessionTracker(controller, playingTrackInfo)
-
-            sessionTracker.callback.onPlaybackStateChanged(controller.playbackState)
-            sessionTracker.callback.onMetadataChanged(controller.metadata)
-
-            if (BuildKonfig.DEBUG) {
-                sessionTracker.callback.onExtrasChanged(controller.extras)
-                sessionTracker.callback.onAudioInfoChanged(controller.playbackInfo)
-            }
 
             sessionTrackers[controller.sessionToken] = sessionTracker
         }
@@ -221,13 +216,19 @@ class SessListener(
         override fun stop() {
             pause()
             controller.unregisterCallback(callback)
-            sessionTrackers.remove(controller.sessionToken)
         }
 
         val callback = object : MediaController.Callback() {
 
             init {
                 controller.registerCallback(this)
+                onPlaybackStateChanged(controller.playbackState)
+                onMetadataChanged(controller.metadata)
+
+                if (BuildKonfig.DEBUG) {
+                    onExtrasChanged(controller.extras)
+                    onAudioInfoChanged(controller.playbackInfo)
+                }
             }
 
             @Synchronized
@@ -262,6 +263,7 @@ class SessListener(
             override fun onSessionDestroyed() {
                 Logger.d { "onSessionDestroyed ${trackInfo.appId}" }
                 stop()
+                sessionTrackers.remove(controller.sessionToken)
             }
 
             override fun onExtrasChanged(extras: Bundle?) {

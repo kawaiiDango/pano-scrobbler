@@ -223,7 +223,7 @@ fun AppListScreen(
                         showAppId = showAppId,
                         onToggle = { selected ->
                             if (isSingleSelect) {
-                                viewModel.setSelectedPackages(setOf(appItem.appId))
+                                viewModel.setSingleSelection(appItem.appId)
                             } else {
                                 viewModel.setMultiSelection(appItem.appId, selected)
                             }

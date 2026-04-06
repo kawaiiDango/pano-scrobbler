@@ -3,8 +3,7 @@ package com.arn.scrobble.media
 import android.app.Notification
 import android.content.ComponentName
 import android.content.Context
-import android.media.AudioManager
-import android.media.session.MediaSession
+import android.content.Intent
 import android.media.session.MediaSessionManager
 import android.os.Build
 import android.service.notification.NotificationListenerService
@@ -29,7 +28,6 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
-import kotlin.time.ExperimentalTime
 import kotlin.time.Instant
 
 class NLService : NotificationListenerService() {
@@ -38,9 +36,6 @@ class NLService : NotificationListenerService() {
     private lateinit var coroutineScope: CoroutineScope
     private lateinit var scrobbleQueue: ScrobbleQueue
     private var job: Job? = null
-    private val audioManager by lazy {
-        getSystemService(AudioManager::class.java)!!
-    }
 
     @Volatile
     private var inited = false
@@ -48,6 +43,9 @@ class NLService : NotificationListenerService() {
     override fun attachBaseContext(newBase: Context?) {
         super.attachBaseContext(newBase?.applyAndroidLocaleLegacy() ?: return)
     }
+
+    // ListenBrainz app uses this, so it probably helps
+    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int) = START_STICKY
 
     override fun onListenerConnected() {
         //    This sometimes gets called twice without calling onListenerDisconnected or onDestroy
@@ -98,7 +96,6 @@ class NLService : NotificationListenerService() {
         sessListener = SessListener(
             coroutineScope,
             scrobbleQueue,
-            audioManager
         )
 
         try {
@@ -149,7 +146,7 @@ class NLService : NotificationListenerService() {
         Logger.i { "destroy" }
 
         if (sessListener != null) {
-            sessListener?.removeSessions(setOf<MediaSession.Token>())
+            sessListener?.removeSessions(emptySet())
             getSystemService(MediaSessionManager::class.java)!!
                 .removeOnActiveSessionsChangedListener(sessListener!!)
             sessListener = null
@@ -188,7 +185,6 @@ class NLService : NotificationListenerService() {
 
     }
 
-    @OptIn(ExperimentalTime::class)
     override fun onNotificationPosted(sbn: StatusBarNotification?) {
         if (!shouldCheckNoti(sbn))
             return

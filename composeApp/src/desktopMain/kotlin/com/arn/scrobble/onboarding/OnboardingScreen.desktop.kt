@@ -10,6 +10,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.unit.dp
+import com.arn.scrobble.main.MainViewModel
 import com.arn.scrobble.navigation.PanoRoute
 import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff.collectAsStateWithInitialValue
@@ -21,6 +22,7 @@ import pano_scrobbler.composeapp.generated.resources.pref_login
 actual fun OnboardingScreen(
     onNavigate: (PanoRoute) -> Unit,
     onDone: () -> Unit,
+    mainViewModel: MainViewModel,
     modifier: Modifier,
 ) {
     val isLoggedIn by PlatformStuff.mainPrefs.data.collectAsStateWithInitialValue { it.scrobbleAccounts.isNotEmpty() }

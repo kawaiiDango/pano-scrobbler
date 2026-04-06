@@ -21,6 +21,7 @@ import androidx.compose.material3.ButtonGroupDefaults
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
@@ -612,6 +613,10 @@ private fun FriendItem(
                         style = MaterialTheme.typography.bodyMedium,
                         modifier = textModifier,
                     )
+
+                HorizontalDivider(
+                    modifier = Modifier.padding(vertical = 4.dp)
+                )
 
                 if (pinIndex != null) {
                     PinControls(

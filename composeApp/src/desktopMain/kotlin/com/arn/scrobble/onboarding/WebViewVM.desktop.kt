@@ -2,6 +2,8 @@ package com.arn.scrobble.onboarding
 
 import co.touchlab.kermit.Logger
 import com.arn.scrobble.DesktopWebView
+import com.arn.scrobble.api.Requesters
+import com.arn.scrobble.utils.DesktopStuff
 
 actual fun WebViewVM.platformClear() {
     if (DesktopWebView.inited)
@@ -9,6 +11,11 @@ actual fun WebViewVM.platformClear() {
 }
 
 actual fun WebViewVM.platformInit() {
+    val proxy = Requesters.proxy.value
+    if (proxy.enabled && proxy.hasAuth && DesktopStuff.os != DesktopStuff.Os.Linux) {
+        startProxyRelay(proxy)
+    }
+
     try {
         DesktopWebView.load()
         DesktopWebView.init()

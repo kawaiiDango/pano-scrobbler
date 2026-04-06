@@ -38,6 +38,7 @@ import com.arn.scrobble.icons.MusicNote
 import com.arn.scrobble.icons.Person
 import com.arn.scrobble.icons.SwapVert
 import com.arn.scrobble.icons.Translate
+import com.arn.scrobble.main.MainViewModel
 import com.arn.scrobble.main.ScrobblerState
 import com.arn.scrobble.navigation.PanoRoute
 import com.arn.scrobble.themes.DayNightMode
@@ -60,7 +61,6 @@ import com.arn.scrobble.work.DigestWork
 import com.arn.scrobble.work.DigestWorker
 import com.arn.scrobble.work.UpdaterWork
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.first
@@ -143,13 +143,13 @@ import java.util.Locale
 @Composable
 fun PrefsScreen(
     onNavigate: (PanoRoute) -> Unit,
-    scrobblerStateFlow: StateFlow<ScrobblerState>,
+    mainViewModel: MainViewModel,
     modifier: Modifier = Modifier,
 ) {
     val onNavigateToBilling = { onNavigate(PanoRoute.Billing) }
 
     val mainPrefs = remember { PlatformStuff.mainPrefs }
-    val scrobblerState by scrobblerStateFlow.collectAsStateWithLifecycle()
+    val scrobblerState by mainViewModel.scrobblerStateFlow.collectAsStateWithLifecycle()
 
     val scrobblerEnabled by mainPrefs.data.collectAsStateWithInitialValue { it.scrobblerEnabled }
     val allowedPackages by mainPrefs.data.collectAsStateWithInitialValue { it.allowedPackages }
@@ -190,7 +190,7 @@ fun PrefsScreen(
     val extractFirstArtistPackages by
     mainPrefs.data.collectAsStateWithInitialValue { it.extractFirstArtistPackages }
     val demoMode by mainPrefs.data.collectAsStateWithInitialValue { it.demoModeP }
-    val proxyHostPort by Requesters.proxyHostPort.collectAsStateWithLifecycle()
+    val proxy by Requesters.proxy.collectAsStateWithLifecycle()
     val scrobblableLabels by
     mainPrefs.data.collectAsStateWithInitialValue { p -> p.scrobbleAccounts.associate { it.type to it.user.name } }
     val updateProgress by remember {
@@ -265,8 +265,8 @@ fun PrefsScreen(
         }
     }
 
-    LaunchedEffect(Unit) {
-        if (!PlatformStuff.isDesktop && !PlatformStuff.isTv) {
+    if (!PlatformStuff.isDesktop && !PlatformStuff.isTv) {
+        LaunchedEffect(Unit) {
             snapshotFlow { firstDayOfWeek }
                 .drop(1) // only for changes
                 .collect {
@@ -278,6 +278,10 @@ fun PrefsScreen(
                     )
                 }
         }
+    }
+
+    LaunchedEffect(scrobblerEnabled) {
+        mainViewModel.updateScrobblerServiceState(scrobblerEnabled)
     }
 
     PanoLazyColumn(modifier = modifier) {
@@ -818,12 +822,13 @@ fun PrefsScreen(
             }
         }
 
-        filteredItem(MainPrefs::customProxyEnabled.name, Res.string.proxy) { title ->
+        filteredItem(MainPrefs::proxy.name, Res.string.proxy) { title ->
             TextPref(
                 text = title,
-                summary = proxyHostPort?.let { (host, port) ->
-                    "$host:$port"
-                } ?: stringResource(Res.string.system),
+                summary = if (proxy.enabled)
+                    proxy.host + ":" + proxy.port
+                else
+                    stringResource(Res.string.system),
                 onClick = {
                     onNavigate(PanoRoute.Modal.ProxyPref)
                 }

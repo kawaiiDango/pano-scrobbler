@@ -67,7 +67,7 @@ abstract class MediaListener(
 
     @Synchronized
     fun removeSessions(
-        keysToKeep: Set<*>,
+        keysToKeep: Set<MediaTrackerKey>,
     ) {
         val it = sessionTrackers.iterator()
         while (it.hasNext()) {

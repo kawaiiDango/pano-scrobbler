@@ -125,7 +125,8 @@ class MainViewModel : ViewModel() {
             ) {
                 killedReasonReported = true
                 val message = state.reason.formatted()
-                Logger.e(AppExitException(message)) { message }
+                val rss = " ${state.reason.rssMb} MB"
+                Logger.e(AppExitException(message + rss)) { message }
             }
         }
     }

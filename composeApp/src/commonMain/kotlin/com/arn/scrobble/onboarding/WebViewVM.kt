@@ -6,6 +6,7 @@ import com.arn.scrobble.api.UserAccountTemp
 import com.arn.scrobble.api.lastfm.LastFm
 import com.arn.scrobble.api.pleroma.Pleroma
 import com.arn.scrobble.api.pleroma.PleromaOauthClientCreds
+import com.arn.scrobble.pref.MainPrefs
 import com.arn.scrobble.utils.Stuff
 import com.arn.scrobble.utils.redactedMessage
 import io.ktor.http.Cookie
@@ -24,6 +25,10 @@ class WebViewVM(
     val loginState = MutableStateFlow<WebViewLoginState>(WebViewLoginState.None)
     val callbackUrlAndCookies =
         MutableSharedFlow<Pair<String, Map<String, String>>>(extraBufferCapacity = 1)
+
+    private var tunnel: Socks5ProxyTunnel? = null
+    val tunnelPort: Int?
+        get() = tunnel?.localPort
 
     init {
         platformInit()
@@ -107,7 +112,29 @@ class WebViewVM(
         loginState.value = WebViewLoginState.Unavailable
     }
 
+    fun startProxyRelay(
+        upstreamProxy: MainPrefs.ProxySettings,
+    ): Int {
+        tunnel?.close()
+
+        // Need the local tunnel to strip auth
+        val t = Socks5ProxyTunnel(
+            upstreamHost = upstreamProxy.host,
+            upstreamPort = upstreamProxy.port,
+            username = upstreamProxy.user,
+            password = upstreamProxy.pass,
+            scope = viewModelScope,
+        )
+        val localPort = t.start()
+        tunnel = t
+
+        return localPort
+    }
+
     override fun onCleared() {
+        tunnel?.close()
+        tunnel = null
+
         // clear cookies
         platformClear()
     }

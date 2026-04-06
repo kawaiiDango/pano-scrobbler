@@ -22,16 +22,16 @@ interface SimpleEditsDao {
       AND (hasOrigAlbum = 0 OR origAlbum = :album)
       AND (hasOrigAlbumArtist = 0 OR origAlbumArtist = :albumArtist)
     ORDER BY
-      hasOrigArtist + hasOrigTrack + hasOrigAlbum + hasOrigAlbumArtist DESC
-    LIMIT 1
-  """
+      hasOrigArtist + hasOrigTrack + hasOrigAlbum + hasOrigAlbumArtist DESC,
+      _id DESC
+"""
     )
-    suspend fun find(
+    suspend fun findAll(
         track: String,
         artist: String,
         album: String,
         albumArtist: String,
-    ): SimpleEdit?
+    ): List<SimpleEdit>
 
     @Query(
         """
@@ -44,6 +44,7 @@ interface SimpleEditsDao {
         ORDER BY _id DESC
 """
     )
+    // ORDER BY _id DESC: most recently inserted edit wins
     fun searchPartial(term: String): Flow<List<SimpleEdit>>
 
     @Query("SELECT count(1) FROM $tableName")
@@ -78,17 +79,46 @@ interface SimpleEditsDao {
         suspend fun SimpleEditsDao.findAndPerformEdit(
             scrobbleData: ScrobbleData,
         ): Pair<ScrobbleData, Boolean>? {
-            val simpleEdit = find(
+            val matches = findAll(
                 scrobbleData.track.lowercase(),
                 scrobbleData.artist.lowercase(),
                 scrobbleData.album?.lowercase() ?: "",
                 scrobbleData.albumArtist?.lowercase() ?: "",
             )
 
-            return if (simpleEdit != null)
-                simpleEdit.performEdit(scrobbleData) to simpleEdit.continueMatching
-            else
-                null
+            if (matches.isEmpty()) return null
+
+            var result = scrobbleData
+            var trackClaimed = false
+            var artistClaimed = false
+            var albumClaimed = false
+            var albumArtistClaimed = false
+            var shouldContinueMatching = true
+
+            for (edit in matches) { // already sorted: most specific first
+                if (!trackClaimed && !edit.track.isNullOrEmpty()) {
+                    result = result.copy(track = edit.track)
+                    trackClaimed = true
+                }
+                if (!artistClaimed && !edit.artist.isNullOrEmpty()) {
+                    result = result.copy(artist = edit.artist)
+                    artistClaimed = true
+                }
+                if (!albumClaimed && edit.album != null) {
+                    result = result.copy(album = edit.album)
+                    albumClaimed = true
+                }
+                if (!albumArtistClaimed && edit.albumArtist != null) {
+                    result = result.copy(albumArtist = edit.albumArtist)
+                    albumArtistClaimed = true
+                }
+                if (!edit.continueMatching) {
+                    shouldContinueMatching = false
+//                    break // don't apply lower-specificity edits
+                }
+            }
+
+            return result to shouldContinueMatching
         }
 
         suspend fun SimpleEditsDao.insertReplaceLowerCase(e: SimpleEdit) {

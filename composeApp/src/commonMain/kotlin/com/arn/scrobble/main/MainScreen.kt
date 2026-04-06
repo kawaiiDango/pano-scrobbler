@@ -533,7 +533,6 @@ fun PanoAppContent(
                                         goBack = ::goBack,
                                         onSetOnboardingFinished = {
                                             replaceRoutes(listOf(PanoRoute.SelfHomePager()))
-                                            viewModel.updateScrobblerServiceState(false)
                                         },
                                         pullToRefreshState = { pullToRefreshState },
                                         onSetRefreshing = { id, prState ->

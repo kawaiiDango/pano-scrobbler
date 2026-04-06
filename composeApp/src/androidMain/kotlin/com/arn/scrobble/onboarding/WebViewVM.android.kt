@@ -19,10 +19,14 @@ actual fun WebViewVM.platformInit() {
         Logger.e { "WebView unavailable" }
         loginState.value = WebViewLoginState.Unavailable
     } else {
-        val proxyHostPort = Requesters.proxyHostPort.value
-        if (proxyHostPort == null)
+        val proxy = Requesters.proxy.value
+        if (proxy.enabled && !proxy.hasAuth)
+            WebViewProxyOverride.setSocksProxy(proxy.host, proxy.port)
+        else if (proxy.enabled && proxy.hasAuth) {
+            val tunnelPort = startProxyRelay(proxy)
+
+            WebViewProxyOverride.setSocksProxy("127.0.0.1", tunnelPort)
+        } else
             WebViewProxyOverride.clearProxy()
-        else
-            WebViewProxyOverride.setSocksProxy(proxyHostPort.first, proxyHostPort.second)
     }
 }

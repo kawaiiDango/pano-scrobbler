@@ -21,6 +21,7 @@ import com.arn.scrobble.navigation.PanoRoute
 import com.arn.scrobble.ui.ButtonWithIcon
 import com.arn.scrobble.utils.DesktopStuff
 import com.arn.scrobble.utils.Stuff
+import okhttp3.HttpUrl
 import org.jetbrains.compose.resources.stringResource
 import pano_scrobbler.composeapp.generated.resources.Res
 import pano_scrobbler.composeapp.generated.resources.help
@@ -44,14 +45,31 @@ actual fun WebViewScreen(
         onSetTitle(title)
 
         if (DesktopWebView.inited) {
-            val (proxyHost, proxyPort) = Requesters.proxyHostPort.value ?: ("" to 0)
+            val proxy = Requesters.proxy.value
+
+            val (proxyHostField, proxyPort) = if (proxy.enabled && !proxy.hasAuth)
+                proxy.host to proxy.port
+            // GTK3 webview supports auth
+            else if (proxy.enabled && proxy.hasAuth && DesktopStuff.os == DesktopStuff.Os.Linux) {
+                val url = HttpUrl.Builder()
+                    .scheme("http")
+                    .host(proxy.host)
+                    .username(proxy.user)
+                    .password(proxy.pass)
+                    .build()
+
+                "${url.encodedUsername}:${url.encodedPassword}@${proxy.host}" to proxy.port
+            } else if (proxy.enabled && proxy.hasAuth && viewModel.tunnelPort != null)
+                "127.0.0.1" to viewModel.tunnelPort!!
+            else
+                "" to 0
 
             DesktopWebView.launchWebView(
                 initialUrl,
                 Stuff.DEEPLINK_SCHEME,
                 "https://www.last.fm/",
                 DesktopStuff.webViewDir.absolutePath,
-                proxyHost,
+                proxyHostField,
                 proxyPort
             )
         }

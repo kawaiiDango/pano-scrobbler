@@ -54,8 +54,8 @@ class AppListVM(
         }
     }
 
-    fun setSelectedPackages(packages: Set<String>) {
-        _selectedPackages.value = packages
+    fun setSingleSelection(pkg: String) {
+        _selectedPackages.value = setOf(pkg)
     }
 
     fun setMultiSelection(packageName: String, add: Boolean) {

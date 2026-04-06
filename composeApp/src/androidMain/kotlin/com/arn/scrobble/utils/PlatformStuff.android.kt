@@ -1,5 +1,6 @@
 package com.arn.scrobble.utils
 
+import android.app.ActivityManager
 import android.app.ApplicationExitInfo
 import android.app.SearchManager
 import android.app.UiModeManager
@@ -107,12 +108,15 @@ actual object PlatformStuff {
                 "enabled_notification_listeners"
             )
         } catch (e: SecurityException) {
+            Logger.w(e) { "checkScrobblerState: no permission to read enabled_notification_listeners" }
             null
         }
 
         val nlsComponentStr = "${applicationContext.packageName}/${NLService::class.qualifiedName}"
         // check for the exact component name instead of just package name
-        if (enabledNotificationListeners?.split(":")?.any { it == nlsComponentStr } == false)
+        if (enabledNotificationListeners == null || enabledNotificationListeners.split(":")
+                .none { it == nlsComponentStr }
+        )
             return ScrobblerState.NLSDisabled
 
 
@@ -122,7 +126,17 @@ actual object PlatformStuff {
 
         // check NLS running
 
-        val nlsRunning = AndroidStuff.isNotificationListenerEnabled()
+        val serviceComponent = ComponentName(applicationContext, NLService::class.java)
+        val manager =
+            applicationContext.getSystemService(ActivityManager::class.java)!!
+        val nlsRunning = try {
+            manager.getRunningServices(Integer.MAX_VALUE)
+                ?.find { it.service == serviceComponent }
+                ?.let { it.clientCount > 0 } == true
+        } catch (e: SecurityException) {
+            Logger.e(e) { "isScrobblerRunning: no permission to get running services" }
+            true // just assume true to suppress the error message, if we don't have permission
+        }
 
         if (!nlsRunning) {
             // check kill reason
@@ -152,6 +166,7 @@ actual object PlatformStuff {
                             subReason = match?.groupValues[2]?.takeIf { it != "UNKNOWN" }
                                 ?: "",
                             desc = exitInfo.description ?: "",
+                            rssMb = (exitInfo.rss / 1024).toInt(),
                             isProbablySystemKill = isProbablySystemKill
                         )
                     }

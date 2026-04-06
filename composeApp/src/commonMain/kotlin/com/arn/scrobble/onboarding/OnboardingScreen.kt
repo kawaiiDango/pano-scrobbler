@@ -33,6 +33,7 @@ import com.arn.scrobble.icons.ArrowDropDown
 import com.arn.scrobble.icons.CheckCircle
 import com.arn.scrobble.icons.Circle
 import com.arn.scrobble.icons.Icons
+import com.arn.scrobble.main.MainViewModel
 import com.arn.scrobble.navigation.PanoRoute
 import com.arn.scrobble.ui.accountTypeLabel
 import com.arn.scrobble.ui.horizontalOverscanPadding
@@ -228,5 +229,6 @@ fun OnboardingTopRow(
 expect fun OnboardingScreen(
     onNavigate: (PanoRoute) -> Unit,
     onDone: () -> Unit,
+    mainViewModel: MainViewModel,
     modifier: Modifier = Modifier,
 )

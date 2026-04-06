@@ -46,7 +46,7 @@
     <string name="scanning">Scanning</string>
     <string name="found">Found</string>
 
-    <string name="missing_local_network_permission">Missing permission to access the local network</string>
+    <string name="missing_local_network_permission">Permission needed to connect to the local network for this feature</string>
     <string name="upto_n_regexes" formatted="true">Up to %1$d regex rules</string>
     <string name="max_n" formatted="true">Maximum: %1$d</string>
     <string name="add_exception">Add an exception</string>

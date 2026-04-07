@@ -51,6 +51,13 @@ jobs:
           $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --list_installed
           ./gradlew androidApp:assembleReleaseGithub --no-daemon
 
+      - if: matrix.resources-dir == 'linux-x64'
+        name: Upload Android binary
+        uses: actions/upload-artifact@v6
+        with:
+          name: pano-scrobbler-android-universal
+          path: dist/pano-scrobbler-android-universal*
+
       - name: Install Liberica NIK (GraalVM)
         uses: graalvm/setup-graalvm@v1
         with:
@@ -89,13 +96,6 @@ jobs:
         with:
           name: pano-scrobbler-${{ matrix.resources-dir }}
           path: dist/pano-scrobbler-${{ matrix.resources-dir }}*
-
-      - if: matrix.resources-dir == 'linux-x64'
-        name: Upload Android binary
-        uses: actions/upload-artifact@v6
-        with:
-          name: pano-scrobbler-android-universal
-          path: dist/pano-scrobbler-android-universal*
   
   upload-release:
     needs: [ build ]
@@ -131,6 +131,7 @@ jobs:
         uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ steps.release_metadata.outputs.verCode }}
+          target_commitish: ${{ github.sha }}
           name: ${{ steps.release_metadata.outputs.verName }}
           body: ${{ steps.release_metadata.outputs.changelog }}
           files: dist/**

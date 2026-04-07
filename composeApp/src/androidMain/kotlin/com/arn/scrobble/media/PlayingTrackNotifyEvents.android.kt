@@ -1,6 +1,5 @@
 package com.arn.scrobble.media
 
-import android.content.Intent
 import android.os.CancellationSignal
 import android.os.OperationCanceledException
 import androidx.core.net.toUri
@@ -22,15 +21,8 @@ actual fun notifyPlayingTrackEvent(event: PlayingTrackNotifyEvent) {
         // else scrobbler service is not running, do nothing
     } else {
         val context = AndroidStuff.applicationContext
-        val intent = Intent(PlayingTrackEventReceiver.BROADCAST_PLAYING_TRACK_EVENT)
-            .setPackage(context.packageName)
-            .putExtra(
-                PlayingTrackEventReceiver.EXTRA_EVENT,
-                Stuff.myJson.encodeToString(event)
-            ).putExtra(
-                PlayingTrackEventReceiver.EXTRA_EVENT_TYPE,
-                event::class.simpleName
-            )
+
+        val intent = PlayingTrackEventReceiver.createIntent(context, event)
         context.sendBroadcast(intent)
     }
 }

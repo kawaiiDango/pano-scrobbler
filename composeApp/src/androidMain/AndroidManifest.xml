@@ -70,15 +70,12 @@
 
         <receiver
             android:name="com.arn.scrobble.media.PlayingTrackEventReceiver"
-            android:enabled="true"
             android:exported="false"
-            android:process=":bgScrobbler">
-            <intent-filter>
-                <action android:name="${applicationId}.PLAYING_TRACK_EVENT" />
+            android:process=":bgScrobbler" />
 
-                <category android:name="android.intent.category.DEFAULT" />
-            </intent-filter>
-        </receiver>
+        <receiver
+            android:name="com.arn.scrobble.work.WorkEnqueuerReceiver"
+            android:exported="false" />
 
         <service
             android:name="androidx.core.widget.RemoteViewsCompatService"
@@ -205,11 +202,23 @@
                 android:resource="@xml/provider_path" />
         </provider>
 
-        <!--   Do it with setResourceReaderAndroidContext instead to make it work for multi process     -->
+        <!--    Manually initialize these for multiprocess support    -->
+
         <provider
             android:name="org.jetbrains.compose.resources.AndroidContextProvider"
             android:authorities="${applicationId}.resources.AndroidContextProvider"
             tools:node="remove" />
+
+        <provider
+            android:name="androidx.startup.InitializationProvider"
+            android:authorities="${applicationId}.androidx-startup"
+            android:exported="false"
+            tools:node="merge">
+            <meta-data
+                android:name="okhttp3.internal.platform.PlatformInitializer"
+                android:value="androidx.startup"
+                tools:node="remove" />
+        </provider>
 
     </application>
 </manifest>

@@ -23,6 +23,8 @@ class ReschedulerReceiver : BroadcastReceiver() {
         if (PlatformStuff.isTv)
             return
 
+        val pendingResult = goAsync()
         DigestWork.reschedule()
+        pendingResult.finish()
     }
 }

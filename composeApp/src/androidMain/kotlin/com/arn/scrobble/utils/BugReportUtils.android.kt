@@ -46,8 +46,10 @@ actual object BugReportUtils {
         manager.getMemoryInfo(mi)
         text += "Background RAM usage: " + bgRam + "M \n"
 
-        if (scrobblerState != ScrobblerState.Running)
-            text += "ScrobblerState: ${scrobblerState::class.simpleName}\n"
+        if (scrobblerState == ScrobblerState.Killed)
+            text += "ScrobblerState: Killed\n"
+        else if (scrobblerState != ScrobblerState.Running)
+            text += "ScrobblerState: $scrobblerState\n"
 
         if (lastExitInfo != null)
             text += "Last exit reason: $lastExitInfo\n"

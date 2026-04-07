@@ -111,14 +111,7 @@ actual object PanoNotifications {
             loved = !event.userLoved
         )
 
-        val loveIntent = Intent(PlayingTrackEventReceiver.BROADCAST_PLAYING_TRACK_EVENT)
-            .setPackage(context.packageName)
-            .putExtra(
-                PlayingTrackEventReceiver.EXTRA_EVENT,
-                Stuff.myJson.encodeToString(loveUnloveEvent)
-            )
-            .putExtra(PlayingTrackEventReceiver.EXTRA_EVENT_TYPE, loveUnloveEvent::class.simpleName)
-
+        val loveIntent = PlayingTrackEventReceiver.createIntent(context, loveUnloveEvent)
         val lovePi = PendingIntent.getBroadcast(
             context, 4, loveIntent,
             AndroidStuff.updateCurrentOrImmutable
@@ -203,14 +196,7 @@ actual object PanoNotifications {
                 editPi
             )
 
-            val cancelIntent = Intent(PlayingTrackEventReceiver.BROADCAST_PLAYING_TRACK_EVENT)
-                .setPackage(context.packageName)
-                .putExtra(
-                    PlayingTrackEventReceiver.EXTRA_EVENT,
-                    Stuff.myJson.encodeToString(cancelEvent)
-                )
-                .putExtra(PlayingTrackEventReceiver.EXTRA_EVENT_TYPE, cancelEvent::class.simpleName)
-
+            val cancelIntent = PlayingTrackEventReceiver.createIntent(context, cancelEvent)
             val cancelToastIntent = PendingIntent.getBroadcast(
                 context, 5, cancelIntent,
                 AndroidStuff.updateCurrentOrImmutable
@@ -325,26 +311,13 @@ actual object PanoNotifications {
             allowed = false
         )
 
-        val blockIntent = Intent(PlayingTrackEventReceiver.BROADCAST_PLAYING_TRACK_EVENT)
-            .setPackage(context.packageName)
-            .putExtra(
-                PlayingTrackEventReceiver.EXTRA_EVENT,
-                Stuff.myJson.encodeToString(blockEvent)
-            )
-            .putExtra(PlayingTrackEventReceiver.EXTRA_EVENT_TYPE, blockEvent::class.simpleName)
+        val blockIntent = PlayingTrackEventReceiver.createIntent(context, blockEvent)
         val blockPi = PendingIntent.getBroadcast(
             context, 1, blockIntent,
             AndroidStuff.updateCurrentOrImmutable
         )
 
-        val allowIntent = Intent(PlayingTrackEventReceiver.BROADCAST_PLAYING_TRACK_EVENT)
-            .setPackage(context.packageName)
-            .putExtra(
-                PlayingTrackEventReceiver.EXTRA_EVENT,
-                Stuff.myJson.encodeToString(allowEvent)
-            )
-            .putExtra(PlayingTrackEventReceiver.EXTRA_EVENT_TYPE, allowEvent::class.simpleName)
-
+        val allowIntent = PlayingTrackEventReceiver.createIntent(context, allowEvent)
         val allowPi = PendingIntent.getBroadcast(
             context, 2, allowIntent,
             AndroidStuff.updateCurrentOrImmutable

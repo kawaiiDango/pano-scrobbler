@@ -5,16 +5,28 @@ import androidx.work.Constraints
 import androidx.work.ExistingWorkPolicy
 import androidx.work.NetworkType
 import androidx.work.OneTimeWorkRequestBuilder
-import androidx.work.OutOfQuotaPolicy
 import androidx.work.WorkManager
 import androidx.work.workDataOf
 import com.arn.scrobble.utils.AndroidStuff
 import java.util.concurrent.TimeUnit
 
 actual object PendingScrobblesWork : CommonWorkImpl(PendingScrobblesWorker.NAME) {
-    const val RETRY_DELAY_HOURS = 1L
+    private const val RETRY_DELAY_HOURS = 1L
 
     actual fun schedule(force: Boolean) {
+        if (!AndroidStuff.isMainProcess) {
+            // todo find a better way to schedule from other processes
+            if (force) {
+                WorkEnqueuerReceiver.broadcast(
+                    AndroidStuff.applicationContext,
+                    name,
+                    force
+                )
+            }
+
+            return
+        }
+
         val constraints = Constraints.Builder()
             .setRequiredNetworkType(NetworkType.CONNECTED)
             .build()
@@ -33,10 +45,8 @@ actual object PendingScrobblesWork : CommonWorkImpl(PendingScrobblesWorker.NAME)
                 TimeUnit.HOURS
             )
             .apply {
-                // do not spam expedited from bg process
-                if (force && AndroidStuff.isMainProcess) {
-                    setExpedited(OutOfQuotaPolicy.DROP_WORK_REQUEST)
-                } else {
+                // works fine in fg without expedited
+                if (!force) {
                     setInitialDelay(30, TimeUnit.SECONDS)
                 }
             }

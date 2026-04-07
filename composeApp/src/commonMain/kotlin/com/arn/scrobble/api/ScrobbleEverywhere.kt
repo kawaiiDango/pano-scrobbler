@@ -338,10 +338,9 @@ object ScrobbleEverywhere {
 
         val pendingScrobblesDao = PanoDb.db.getPendingScrobblesDao()
 
-        if (scrobbleResults.isEmpty() ||
-            scrobbleResults.values.any { !it.isSuccess }
-        ) {
-            // failed
+        val failed = scrobbleResults.isEmpty() || scrobbleResults.values.any { !it.isSuccess }
+
+        if (failed) {
             val services = if (scrobbleResults.isEmpty())
                 PlatformStuff.mainPrefs.data
                     .map { it.scrobbleAccounts.map { it.type } }.first()

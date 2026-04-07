@@ -10,8 +10,6 @@ class PlayingTrackEventReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context?, intent: Intent?) {
         if (context == null || intent == null) return
 
-        if (intent.action != BROADCAST_PLAYING_TRACK_EVENT) return
-
         val eventStr = intent.getStringExtra(EXTRA_EVENT)
         val eventType = intent.getStringExtra(EXTRA_EVENT_TYPE)
 
@@ -54,8 +52,18 @@ class PlayingTrackEventReceiver : BroadcastReceiver() {
     }
 
     companion object {
-        const val EXTRA_EVENT = "event"
-        const val EXTRA_EVENT_TYPE = "event_type"
-        const val BROADCAST_PLAYING_TRACK_EVENT = "com.arn.scrobble.PLAYING_TRACK_EVENT"
+        private const val EXTRA_EVENT = "event"
+        private const val EXTRA_EVENT_TYPE = "event_type"
+
+        fun createIntent(context: Context, event: PlayingTrackNotifyEvent): Intent =
+            Intent(context, PlayingTrackEventReceiver::class.java)
+                .putExtra(
+                    EXTRA_EVENT,
+                    Stuff.myJson.encodeToString(event)
+                )
+                .putExtra(
+                    EXTRA_EVENT_TYPE,
+                    event::class.simpleName
+                )
     }
 }

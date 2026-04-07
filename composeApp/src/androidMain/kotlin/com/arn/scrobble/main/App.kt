@@ -1,5 +1,6 @@
 package com.arn.scrobble.main
 
+import android.app.ActivityManager
 import android.app.Application
 import android.os.Build
 import android.os.StrictMode
@@ -39,6 +40,28 @@ class App : Application() {
 
         setResourceReaderAndroidContext(applicationContext)
         OkHttp.initialize(applicationContext)
+
+        printStartInfo()
+    }
+
+    private fun printStartInfo() {
+        if (BuildKonfig.DEBUG && Build.VERSION.SDK_INT >= 36) {
+            val activityManager = getSystemService(ActivityManager::class.java)!!
+            activityManager.getHistoricalProcessStartReasons(5)
+                .forEachIndexed { index, startInfo ->
+                    val str = "startInfo" +
+                            " processName: " + startInfo.processName +
+                            " startComponent: " + startInfo.startComponent +
+                            " startType: " + startInfo.startType +
+                            " reason: " + startInfo.reason +
+                            " wasForceStopped: " + startInfo.wasForceStopped() +
+                            " launchMode: " + startInfo.launchMode +
+                            " startupState: " + startInfo.startupState +
+                            " intent: " + startInfo.intent +
+                            " startupTimestamps: " + startInfo.startupTimestamps
+                    Logger.d { "$index. $str" }
+                }
+        }
     }
 
     private fun enableStrictMode() {

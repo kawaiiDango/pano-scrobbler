@@ -286,7 +286,7 @@ fun FriendsScreen(
 
             itemsIndexed(
                 pinnedFriendsReordered,
-                key = { idx, friend -> friend.name }
+                key = { idx, friend -> "pinned " + friend.name }
             ) { idx, friend ->
                 DraggableItem(dragDropState, idx) { dragHandleModifier ->
                     FriendItem(
@@ -327,7 +327,7 @@ fun FriendsScreen(
 
             items(
                 friends.itemCount,
-                key = friends.itemKey { it.name }
+                key = friends.itemKey { "unpinned " + it.name }
             ) { idx ->
                 val friend = friends[idx]
 

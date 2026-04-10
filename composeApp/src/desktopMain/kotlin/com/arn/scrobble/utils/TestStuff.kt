@@ -1,13 +1,9 @@
 package com.arn.scrobble.utils
 
 import co.touchlab.kermit.Logger
-import com.arn.scrobble.api.Requesters
-import io.ktor.client.request.get
-import io.ktor.client.statement.bodyAsText
-import kotlinx.coroutines.launch
-import java.net.InetSocketAddress
-import java.net.ProxySelector
-import java.net.URI
+import java.security.KeyStore
+import javax.net.ssl.TrustManagerFactory
+import javax.net.ssl.X509TrustManager
 
 
 object TestStuff {
@@ -17,36 +13,18 @@ object TestStuff {
         Logger.i("\n\nSystem properties:")
         properties.forEach { (key, value) -> Logger.i("$key: $value") }
 
-        testProxy()
+        testCerts()
     }
 
-    private fun testProxy() {
-        val testUrls = arrayOf(
-            "http://www.example.com",
-            "https://www.example.com",
-            "socket://www.example.com"
-        )
-        val proxySelector = ProxySelector.getDefault()
+    private fun testCerts() {
+        val tmf = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm())
+        tmf.init(null as KeyStore?)
 
-        for (urlString in testUrls) {
-            val uri = URI(urlString)
-            println("\nProxy configuration for: $urlString")
-
-            proxySelector.select(uri).forEach { proxy ->
-                val addr = proxy.address() as? InetSocketAddress
-                println("" + proxy.type() + ": " + addr?.hostName + ":" + addr?.port)
-            }
-        }
-
-        // print ip
-        Stuff.appScope.launch {
-            try {
-                Requesters.baseKtorClient.get("https://myip.wtf/json").bodyAsText().let {
-                    Logger.i("IP info:\n$it")
-                }
-            } catch (e: Exception) {
-                Logger.e(e) { "Failed to get IP info" }
-            }
+        val trustManager = tmf.trustManagers[0] as X509TrustManager
+        Logger.i("Trust store type: ${System.getProperty("javax.net.ssl.trustStoreType")}")
+        Logger.i("Trusted CA count: ${trustManager.acceptedIssuers.size}")
+        trustManager.acceptedIssuers.take(5).forEach {
+            Logger.i("  CA: ${it.subjectX500Principal.name}")
         }
     }
 }

@@ -33,7 +33,7 @@ val localProperties = gradleLocalProperties(rootDir, project.providers)
 
 android {
     buildToolsVersion = "37.0.0"
-    
+
     compileSdk {
         version = release(libs.versions.targetSdk.get().toInt()) {
             minorApiLevel = libs.versions.sdkMinor.get().toInt()
@@ -79,8 +79,8 @@ android {
 
     packaging {
         resources {
-            excludes.add("/composeResources/**") // this is a duplicate. idk why this gets added.
             excludes.add("/META-INF/**/*.txt")
+            excludes.add("/META-INF/native-image/**")
             excludes.add("DebugProbesKt.bin")
         }
 

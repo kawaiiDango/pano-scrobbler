@@ -108,6 +108,9 @@ import pano_scrobbler.composeapp.generated.resources.sort
 import pano_scrobbler.composeapp.generated.resources.track
 import pano_scrobbler.composeapp.generated.resources.unpin
 
+private const val PINNED_PREFIX = "pinned_"
+private const val UNPINNED_PREFIX = "unpinned_"
+
 @Composable
 fun FriendsScreen(
     user: UserCached,
@@ -187,13 +190,20 @@ fun FriendsScreen(
             .collectLatest { visibleKeys ->
                 visibleKeys
                     .filterIsInstance<String>()
-                    .forEach { key -> // key is the username
-                        val cachedData = friendsExtraDataMapState[key]
+                    .map { key ->
+                        if (key.startsWith(PINNED_PREFIX))
+                            key.removePrefix(PINNED_PREFIX)
+                        else if (key.startsWith(UNPINNED_PREFIX))
+                            key.removePrefix(UNPINNED_PREFIX)
+                        else key
+                    }
+                    .forEach { username ->
+                        val cachedData = friendsExtraDataMapState[username]
                         if (cachedData == null ||
                             (System.currentTimeMillis() - cachedData.lastUpdated > Stuff.FRIENDS_REFRESH_INTERVAL)
                         ) {
-                            Logger.d { "Loading extra data for friend: $key" }
-                            viewModel.loadFriendsRecents(key)
+                            Logger.d { "Loading extra data for friend: $username" }
+                            viewModel.loadFriendsRecents(username)
                         }
                     }
             }
@@ -261,7 +271,7 @@ fun FriendsScreen(
             if (sortedFriends != null) {
                 items(
                     sortedFriends!!,
-                    key = { it.name }
+                    key = { UNPINNED_PREFIX + it.name }
                 ) { friend ->
                     FriendItem(
                         friend,
@@ -286,23 +296,19 @@ fun FriendsScreen(
 
             itemsIndexed(
                 pinnedFriendsReordered,
-                key = { idx, friend -> friend.name }
+                key = { idx, friend -> PINNED_PREFIX + friend.name }
             ) { idx, friend ->
                 DraggableItem(dragDropState, idx) { dragHandleModifier ->
                     FriendItem(
                         friend,
                         extraData = friendsExtraDataMapState[friend.name],
                         pinIndex = idx,
-                        canPinUnpin = showPinned,
+                        canPinUnpin = true,
                         onPinUnpin = { pin ->
-                            if (showPinned) {
-                                if (pin && friend.name !in pinnedUsernamesSet)
-                                    viewModel.addPinAndSave(friend)
-                                else if (!pin && friend.name in pinnedUsernamesSet)
-                                    viewModel.removePinAndSave(friend)
-                            } else {
-                                onNavigate(PanoRoute.Billing)
-                            }
+                            if (pin && friend.name !in pinnedUsernamesSet)
+                                viewModel.addPinAndSave(friend)
+                            else if (!pin && friend.name in pinnedUsernamesSet)
+                                viewModel.removePinAndSave(friend)
                         },
                         isLastPin = idx == pinnedFriendsReordered.size - 1,
                         onMove = { f, t ->
@@ -327,7 +333,7 @@ fun FriendsScreen(
 
             items(
                 friends.itemCount,
-                key = friends.itemKey { it.name }
+                key = friends.itemKey { UNPINNED_PREFIX + it.name }
             ) { idx ->
                 val friend = friends[idx]
 

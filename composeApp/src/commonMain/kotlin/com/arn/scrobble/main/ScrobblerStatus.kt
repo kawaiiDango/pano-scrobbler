@@ -27,7 +27,7 @@ sealed interface ScrobblerState {
         val reason: String,
         val subReason: String,
         val desc: String,
-        val rssMb: Int,
+        val pssMb: Int,
         val isProbablySystemKill: Boolean
     ) {
         fun formatted() = "$desc ($reason) $subReason".trimEnd()

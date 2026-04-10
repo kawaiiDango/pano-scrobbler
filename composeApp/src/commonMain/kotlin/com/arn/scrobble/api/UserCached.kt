@@ -13,7 +13,7 @@ data class UserCached(
     val country: String,
     val registeredTime: Long,
     val largeImage: String = "",
-    val order: Int = 0,
+    val order: Int? = null,  // pinned order
 ) {
 
     var lastUpdated = System.currentTimeMillis()

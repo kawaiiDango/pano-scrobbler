@@ -42,11 +42,9 @@ actual object BugReportUtils {
         text += "Android " + Build.VERSION.RELEASE + "\n"
         text += "Device: " + Build.BRAND + " " + Build.MODEL + " / " + Build.DEVICE + "\n" //Build.PRODUCT is obsolete
 
-        val mi = ActivityManager.MemoryInfo()
-        manager.getMemoryInfo(mi)
         text += "Background RAM usage: " + bgRam + "M \n"
 
-        if (scrobblerState == ScrobblerState.Killed)
+        if (scrobblerState is ScrobblerState.Killed)
             text += "ScrobblerState: Killed\n"
         else if (scrobblerState != ScrobblerState.Running)
             text += "ScrobblerState: $scrobblerState\n"

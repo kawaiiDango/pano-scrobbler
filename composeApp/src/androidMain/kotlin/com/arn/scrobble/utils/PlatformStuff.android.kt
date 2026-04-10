@@ -166,7 +166,7 @@ actual object PlatformStuff {
                             subReason = match?.groupValues[2]?.takeIf { it != "UNKNOWN" }
                                 ?: "",
                             desc = exitInfo.description ?: "",
-                            rssMb = (exitInfo.rss / 1024).toInt(),
+                            pssMb = (exitInfo.pss / 1024).toInt(),
                             isProbablySystemKill = isProbablySystemKill
                         )
                     }
@@ -319,6 +319,8 @@ actual object PlatformStuff {
             // may fix Exception java.lang.IllegalStateException: Cannot perform this operation because there is no current transaction.
             // Exception android.database.sqlite.SQLiteDatabaseLockedException: database is locked (code 5 SQLITE_BUSY)
             .setQueryCoroutineContext(Dispatchers.IO.limitedParallelism(1))
+            // may fix multiprocess android.database.sqlite.SQLiteDatabaseLockedException: database is locked (code 5 SQLITE_BUSY[5])
+            .setJournalMode(RoomDatabase.JournalMode.WRITE_AHEAD_LOGGING)
 //            .setQueryCoroutineContext(Dispatchers.IO)
 //            MultiInstanceInvalidation runs in the main process, keeping all the static caches alive
 //            .enableMultiInstanceInvalidation()

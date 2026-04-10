@@ -59,10 +59,6 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }
-
-//        val artists = "Siouxsie & The Banshees & The Creatures & John Cale & Lou Reed"
-//        val first = runBlocking { FirstArtistExtractor.extract(artists, true) }
-//        toast(first)
     }
 
     override fun attachBaseContext(newBase: Context?) {

@@ -581,6 +581,8 @@ tasks.register<Exec>("buildNativeImage") {
         "--enable-native-access=ALL-UNNAMED",
         "--include-locales",
 //        "--install-exit-handlers",
+        // I use trustStoreType=Windows-ROOT at runtime
+        if (os.isWindows) "-J-Djavax.net.ssl.trustStore=NONE" else null,
         if (os.isWindows) "-H:NativeLinkerOption=/SUBSYSTEM:WINDOWS" else null,
         if (os.isWindows) "-H:NativeLinkerOption=/ENTRY:mainCRTStartup" else null,
         if (os.isWindows) "-H:NativeLinkerOption=\"${winAppResFile.get().asFile.absolutePath}\"" else null,

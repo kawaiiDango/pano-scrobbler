@@ -21,6 +21,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
@@ -43,11 +44,13 @@ class FriendsVM(user: UserCached, private val showPinned: Boolean) : ViewModel()
     val pinnedFriends =
         if (showPinned)
             mainPrefs.data.map {
-                it.pinnedFriends[it.currentAccountType]
-                    ?.distinctBy { it.name } // hotfix for crash
-                    ?.sortedBy { it.order }
-                    ?: emptyList()
+                it.pinnedFriends[it.currentAccountType] ?: emptyList()
             }
+                .distinctUntilChanged()
+                .map {
+                    it.distinctBy { it.name } // hotfix for crash
+                        .sortedBy { it.order }
+                }
                 .stateIn(viewModelScope, SharingStarted.Lazily, emptyList())
         else
             MutableStateFlow<List<UserCached>>(emptyList()).asStateFlow()
@@ -74,12 +77,11 @@ class FriendsVM(user: UserCached, private val showPinned: Boolean) : ViewModel()
     ).flow
         .cachedIn(viewModelScope)
         .combine(pinnedFriends) { pagingData, pinnedFriends ->
-            val pinnedNames = pinnedFriends.map { it.name }.toSet()
-            val keysTillNow = mutableSetOf<String>()
+            val keysTillNow = pinnedFriends.map { it.name }.toMutableSet()
 
             pagingData.filter {
                 val key = it.name
-                val keep = key !in keysTillNow && key !in pinnedNames
+                val keep = key !in keysTillNow
                 keysTillNow += key
                 keep
             }

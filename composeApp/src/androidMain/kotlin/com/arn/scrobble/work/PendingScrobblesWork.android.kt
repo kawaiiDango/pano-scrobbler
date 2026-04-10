@@ -13,10 +13,13 @@ import java.util.concurrent.TimeUnit
 actual object PendingScrobblesWork : CommonWorkImpl(PendingScrobblesWorker.NAME) {
     private const val RETRY_DELAY_HOURS = 1L
 
+    private var scheduledFromBg = false
+
     actual fun schedule(force: Boolean) {
         if (!AndroidStuff.isMainProcess) {
             // todo find a better way to schedule from other processes
-            if (force) {
+            if (force || !scheduledFromBg) {
+                scheduledFromBg = true
                 WorkEnqueuerReceiver.broadcast(
                     AndroidStuff.applicationContext,
                     name,

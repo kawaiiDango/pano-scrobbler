@@ -17,7 +17,6 @@ import android.os.Build
 import android.os.SystemClock
 import android.provider.MediaStore
 import android.provider.Settings
-import android.service.notification.NotificationListenerService
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asAndroidBitmap
 import androidx.core.net.toUri
@@ -32,6 +31,7 @@ import com.arn.scrobble.api.lastfm.Album
 import com.arn.scrobble.api.lastfm.Artist
 import com.arn.scrobble.api.lastfm.MusicEntry
 import com.arn.scrobble.api.lastfm.Track
+import com.arn.scrobble.automation.Automation
 import com.arn.scrobble.db.PanoDb
 import com.arn.scrobble.main.ScrobblerState
 import com.arn.scrobble.media.NLService
@@ -101,12 +101,10 @@ actual object PlatformStuff {
     actual suspend fun checkScrobblerState(requestRebind: Boolean): ScrobblerState {
         // check NLS enabled
         // adapted from NotificationManagerCompat.java
+        val cr = applicationContext.contentResolver
 
         val enabledNotificationListeners = try {
-            Settings.Secure.getString(
-                applicationContext.contentResolver,
-                "enabled_notification_listeners"
-            )
+            Settings.Secure.getString(cr, "enabled_notification_listeners")
         } catch (e: SecurityException) {
             Logger.w(e) { "checkScrobblerState: no permission to read enabled_notification_listeners" }
             null
@@ -175,16 +173,14 @@ actual object PlatformStuff {
 
             if (requestRebind) {
                 Stuff.appScope.launch(Dispatchers.IO) {
-                    try {
-                        NotificationListenerService.requestRebind(
-                            ComponentName(
-                                applicationContext,
-                                NLService::class.java
-                            )
-                        )
-                    } catch (e: Exception) {
-                        Logger.w(e) { "requestRebind failed" }
-                    }
+                    val requestRebindResult = cr.query(
+                        "content://${Automation.PREFIX}/${Automation.ANDROID_REQUEST_REBIND}".toUri(),
+                        null,
+                        null,
+                        null,
+                        null,
+                    )
+                    requestRebindResult?.close()
                 }
             }
 

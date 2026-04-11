@@ -1,11 +1,15 @@
 package com.arn.scrobble.automation
 
+import android.content.ComponentName
 import android.content.ContentProvider
 import android.content.ContentValues
 import android.database.Cursor
 import android.database.MatrixCursor
 import android.net.Uri
+import android.service.notification.NotificationListenerService
+import co.touchlab.kermit.Logger
 import com.arn.scrobble.BuildKonfig
+import com.arn.scrobble.media.NLService
 import com.arn.scrobble.media.PlayingTrackNotifyEvent
 import com.arn.scrobble.utils.AndroidStuff.toast
 import com.arn.scrobble.utils.PanoNotifications
@@ -15,6 +19,8 @@ import kotlinx.coroutines.runBlocking
 
 
 class AutomationProvider : ContentProvider() {
+
+    // this does not get triggered on app start on some chinese OEMSs
     override fun onCreate(): Boolean {
         return true
     }
@@ -42,6 +48,8 @@ class AutomationProvider : ContentProvider() {
 
         if (command == Automation.ANDROID_NOW_PLAYING && callingPackage == BuildKonfig.APP_ID) {
             return nowPlayingDataCursor()
+        } else if (command == Automation.ANDROID_REQUEST_REBIND && callingPackage == BuildKonfig.APP_ID) {
+            return requestRebind()
         }
 
         val wasSuccessful = Automation.executeAction(
@@ -100,4 +108,20 @@ class AutomationProvider : ContentProvider() {
         p2: String?,
         p3: Array<out String?>?
     ): Int = 0
+
+    // triggering a content provider query has more chances to start the content provider's process
+    // than directly calling requestRebind from main process on some Chinese OEMSs
+    private fun requestRebind(): Cursor {
+        val res = try {
+            NotificationListenerService.requestRebind(
+                ComponentName(BuildKonfig.APP_ID, NLService::class.java.name)
+            )
+            true
+        } catch (e: Exception) {
+            Logger.w(e) { "requestRebind failed" }
+            false
+        }
+
+        return createCursor(res)
+    }
 }

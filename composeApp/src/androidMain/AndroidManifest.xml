@@ -189,7 +189,6 @@
             android:name="com.arn.scrobble.automation.AutomationProvider"
             android:authorities="${applicationId}.automation"
             android:exported="true"
-            android:grantUriPermissions="true"
             android:process=":bgScrobbler" />
 
         <provider

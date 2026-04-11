@@ -37,14 +37,18 @@ The desktop versions do not use any closed source libraries.
 [![IzzyOnDroid](img/izzyondroid.svg)](https://apt.izzysoft.de/fdroid/index/apk/com.arn.scrobble)
 [![play-store](img/play-store.svg)](https://play.google.com/store/apps/details?id=com.arn.scrobble)
 
-Since v4.0, the non-Play builds do not use Firebase Crashlytics, Google Play Services, or any closed source libraries.
+Since v4.0, the non-Play builds do not use Firebase Crashlytics, Google Play Services, or any closed
+source libraries.
 
 The non-Play variant can optionally display a persistent notification on Android 14+.
-This may or may not help prevent the system from killing the app in the background on devices from certain manufacturers.
+This may or may not help prevent the system from killing the app in the background on devices from
+certain manufacturers.
 
-Installing the non-Play version from the F-Droid compatible repo, IzzyOnDroid or Obtainium will get you automatic updates.
+Installing the non-Play version from the F-Droid compatible repo, IzzyOnDroid or Obtainium will get
+you automatic updates.
 
 **APK SHA256 fingerprint for non-Play builds:**
+
 ```
 9E:68:AB:6B:D6:11:CE:79:DD:5D:53:E3:5A:15:CF:93:CF:73:9A:4E:94:C4:9A:B1:BF:10:DD:12:65:F0:2E:6C
 ```
@@ -77,6 +81,7 @@ Installing the non-Play version from the F-Droid compatible repo, IzzyOnDroid or
 - Proxy support
 
 #### For desktop and Android (except TV):
+
 - Scrobble to a CSV or JSONL file locally
 - Interactive notification - view song info, edit, love, cancel, or block songs directly from the
   notification
@@ -86,23 +91,31 @@ Installing the non-Play version from the F-Droid compatible repo, IzzyOnDroid or
 - Control Pano Scrobbler from automation apps on Android or command-line on desktop
 
 #### Android only (except TV):
+
 - Scrobble from music recognition apps: Shazam, Ambient Music Mod and Audile
+- Scrobbling the new Pixel Now Playing app (since the March 2026 Pixel feature drop) is possible
+  only with root and KieronQuinn's Xposed module
+  [Public Compute Services](https://github.com/KieronQuinn/PublicComputeServices)
+  [\[Why?\]](https://github.com/kawaiiDango/pano-scrobbler/issues/876)
 - Charts as a customizable home-screen widget
 - Get your top scrobbles digests as a notification at the end of every week, month and year
 
 #### Desktop only:
+
 - Customizable Discord Rich Presence
 
 ### Credits
 
-- YouTube title parser from [Web Scrobbler](https://github.com/web-scrobbler/web-scrobbler) and [Metadata Filter](https://github.com/web-scrobbler/metadata-filter)
+- YouTube title parser from [Web Scrobbler](https://github.com/web-scrobbler/web-scrobbler)
+  and [Metadata Filter](https://github.com/web-scrobbler/metadata-filter)
 - Icons from [pictogrammers.com](https://pictogrammers.com) and [material.io](https://material.io)
 - Genres filter from [everynoise.com](https://everynoise.com)
 - Tidal SteelSeries Integration from [TidalRPC](https://github.com/BitesizedLion/TidalRPC)
 - Artists list from [MusicBrainz](https://musicbrainz.org)
 
-Thanks to the amazing [translators](composeApp/src/commonMain/composeResources/files/crowdin_members.txt) and everyone who
-reported bugs and helped me with this project.
+Thanks to the
+amazing [translators](composeApp/src/commonMain/composeResources/files/crowdin_members.txt) and
+everyone who reported bugs and helped me with this project.
 
 ### Disclaimer
 
@@ -112,4 +125,5 @@ This project is not affiliated with Last.fm, Libre.fm, ListenBrainz or any other
 
 SPDX-License-Identifier: GPL-3.0-or-later
 
-Pano Scrobbler is licensed under the [GNU General Public License v3 or later](http://www.gnu.org/copyleft/gpl.html).
+Pano Scrobbler is licensed under
+the [GNU General Public License v3 or later](http://www.gnu.org/copyleft/gpl.html).

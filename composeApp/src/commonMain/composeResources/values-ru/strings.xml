@@ -153,12 +153,12 @@
     <string name="grant_notification_access_desc">Требуется для получения метаданных музыки. Уведомления, не относящиеся к музыке, не читаются</string>
     <string name="send_notifications">Разрешить уведомления</string>
     <string name="notification_channel_blocked">Это требует включенные уведомления</string>
-    <string name="send_notifications_desc" comment="Shown before asking for notification permission on Android 13+">""- Проверяйте статус скроббла и количество
+    <string name="send_notifications_desc" comment="Shown before asking for notification permission on Android 13+">- Проверяйте статус скроббла и количество
 - Лайкайте или блокируйте прямо из уведомления
 - Получайте уведомления об ошибках и действиях, которые вы можете совершить
 - Получайте ваш топ скробблов каждую неделю
-- И более
-- Уведомления не издают звук""</string>
+- И другое
+- Уведомления не издают звук</string>
     <string name="will_not_scrobble">Пропуск этого шага отключит скробблинг</string>
     <string name="swap" comment="(Swap title and artist)">Поменять</string>
     <string name="time_just_now">сейчас</string>
@@ -292,6 +292,7 @@
     <string name="server_url" comment="For self hosted scrobbling services">URL сервера</string>
     <string name="listenbrainz_info" formatted="true" comment="%1 = the link to page containing the token">Вы можете найти ваш токен аутентификации на: %1$s</string>
     <string name="pref_now_playing">Отправить сейчас играет</string>
+    <string name="pref_fetch_missing_album" formatted="true" comment="%1= the name of a service like last.fm, Deezer etc">Получить недостающий альбом из %1$s</string>
     <string name="pref_locale">Языки</string>
     <string name="pref_crashlytics_enabled">Автоматически сообщать об ошибках</string>
     <string name="pref_misc">Разное</string>
@@ -386,7 +387,7 @@
     <string name="country_for_api" formatted="true" comment="%1$s is the name of the streaming service, like Spotify, Apple Music">Страна для метаданных %1$s</string>
     <string name="login_in_browser">Завершите вход в окне браузера</string>
     <string name="edit_no_save">Это не будет сохранено для будущих скробблов</string>
-    <string name="also_available_on" formatted="true" comment="%1$s is the platform name, like Android, PC">Скачать это приложение в %1$s</string>
+    <string name="also_available_on" formatted="true" comment="%1$s is the platform name, like Android, PC">Скачать это приложение для %1$s</string>
     <string name="first_artist">Использовать только первого исполнителя</string>
     <string name="external_metadata">Внешние источники метаданных</string>
     <string name="line_n" formatted="true" comment="%1$s is the line number, currently used in the context of Discord Rich Presence">Строка %1$s</string>
@@ -407,6 +408,10 @@
     <string name="edit_extract_track_example" formatted="true" comment="%1$s is the regex pattern">Например, для извлечения метаданных из поля трека, если трек содержит "Исполнитель - Трек", установите регулярные выражения для трека в %1$s</string>
     <string name="search_in_media_player" comment="This launches and searches in the media player app directly instead of opening a browser">Поиск в медиаплеере напрямую</string>
     <string name="forget_unchecked_apps" comment="Shown in the 'Scrobble From' apps list on desktop">Забыть невыбранные приложения</string>
+    <string name="discord_app_name" comment="usually the media player app name, shown in discord rich presence">Название приложения</string>
+    <string name="convert_file" formatted="true" comment="%1$s is the file extension, used in the context of converting from one file format to another">Конвертировать из %1$s</string>
+    <string name="at_least" formatted="true" comment="%1$s=some number">Как минимум %1$s</string>
+    <string name="code_will_be_sent" formatted="true" comment="%1$s is either Ko-Fi or BuyMeACoffee, %2$s is the donation amount">Код будет отправлен на адрес электронной почты, связанный с вашей учётной записью %1$s, если вы пожертвовали %2$s</string>
     <!--  pro  -->
     <string name="get_pro">Поддержите приложение</string>
     <string name="one_time_purchase">Разово</string>

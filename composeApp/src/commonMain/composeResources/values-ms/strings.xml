@@ -352,7 +352,6 @@
     <string name="also_available_on" formatted="true" comment="%1$s is the platform name, like Android, PC">Dapatkan app ini dari  %1$s</string>
     <string name="first_artist">Guna artis utama sahaja</string>
     <string name="external_metadata">Sumber metadata luaran</string>
-    <!--  pro  -->
     <string name="get_pro">Sokong aplikasi ini</string>
     <string name="one_time_purchase">Sekali sahaja</string>
     <string name="help">Bantuan</string>

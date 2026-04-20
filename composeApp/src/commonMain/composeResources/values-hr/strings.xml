@@ -397,7 +397,6 @@
     <string name="album_art_now_playing_desc">Zahtijeva prijavu na last.fm</string>
     <string name="spotify_consent">Dohvatiti slike izvođača sa Spotifya?</string>
     <string name="discord_app_name" comment="usually the media player app name, shown in discord rich presence">Naziv aplikacije</string>
-    <!--  pro  -->
     <string name="get_pro">Podrži ovu aplikaciju</string>
     <string name="one_time_purchase">Jednom</string>
     <string name="help">Pomoć</string>

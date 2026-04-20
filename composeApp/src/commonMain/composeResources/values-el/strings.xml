@@ -304,7 +304,6 @@
     <string name="low" comment="As in high/medium/low">Χαμηλό</string>
     <string name="line_n" formatted="true" comment="%1$s is the line number, currently used in the context of Discord Rich Presence">Γραμμή %1$s</string>
     <string name="as_text" comment="Like copy as text, but in short">Σαν κείμενο</string>
-    <!--  pro  -->
     <string name="get_pro">Υποστήριξη αυτής της εφαρμογής</string>
     <string name="one_time_purchase">Μια φορά</string>
     <string name="help">Βοήθεια</string>

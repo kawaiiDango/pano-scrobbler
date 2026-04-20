@@ -420,7 +420,6 @@
     <string name="move_down" comment="Screen reader text for drag and drop reordering">Nuleisti</string>
     <string name="at_least" formatted="true" comment="%1$s=some number">Bent %1$s</string>
     <string name="code_will_be_sent" formatted="true" comment="%1$s is either Ko-Fi or BuyMeACoffee, %2$s is the donation amount">Kodas bus išsiųstas į el. pašto adresą, susietą su jūsų „%1$s“ paskyra, jei paaukojote %2$s.</string>
-    <!--  pro  -->
     <string name="get_pro">Paremti šią programą</string>
     <string name="one_time_purchase">Vienkartinis</string>
     <string name="help">Pagalba</string>

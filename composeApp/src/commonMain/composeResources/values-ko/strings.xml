@@ -338,7 +338,6 @@
     <string name="login_in_browser">브라우저 창에서 로그인을 완료하세요</string>
     <string name="also_available_on" formatted="true" comment="%1$s is the platform name, like Android, PC">이 앱을 %1$s에서 설치하기</string>
     <string name="first_artist">첫번째 아티스트에만 사용하기</string>
-    <!--  pro  -->
     <string name="get_pro">앱 지원하기</string>
     <string name="one_time_purchase">한 번</string>
     <string name="help">도움말</string>

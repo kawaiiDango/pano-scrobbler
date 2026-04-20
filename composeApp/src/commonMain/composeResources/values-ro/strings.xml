@@ -33,5 +33,4 @@
     <string name="search">Caută</string>
     <string name="clear_all_history" comment="(talking about search history, tag history)">Curăță istoricul</string>
     <string name="global" comment="search globally across lastfm">Global</string>
-    <!--  pro  -->
 </resources>

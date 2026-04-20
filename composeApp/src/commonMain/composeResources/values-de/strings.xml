@@ -370,7 +370,6 @@
     <string name="when_using" formatted="true" comment="%1$s is the web service or media player name">Bei Verwendung von %1$s</string>
     <string name="when_not_using" formatted="true" comment="%1$s is the web service or media player name">Nicht bei Verwendung von %1$s</string>
     <string name="as_text" comment="Like copy as text, but in short">Als Text</string>
-    <!--  pro  -->
     <string name="get_pro">Diese App unterstützen</string>
     <string name="one_time_purchase">Einmalig</string>
     <string name="help">Hilfe</string>

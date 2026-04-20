@@ -420,7 +420,6 @@
     <string name="move_down" comment="Screen reader text for drag and drop reordering">Переместить ниже</string>
     <string name="at_least" formatted="true" comment="%1$s=some number">Как минимум %1$s</string>
     <string name="code_will_be_sent" formatted="true" comment="%1$s is either Ko-Fi or BuyMeACoffee, %2$s is the donation amount">Код будет отправлен на адрес электронной почты, связанный с вашей учётной записью %1$s, если вы пожертвовали %2$s</string>
-    <!--  pro  -->
     <string name="get_pro">Поддержите приложение</string>
     <string name="one_time_purchase">Разово</string>
     <string name="help">Помощь</string>

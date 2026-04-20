@@ -338,7 +338,6 @@
     <string name="also_available_on" formatted="true" comment="%1$s is the platform name, like Android, PC">%1$sでこのアプリを入手</string>
     <string name="first_artist">最初のアーティストのみを使用</string>
     <string name="external_metadata">外部メタデータソース</string>
-    <!--  pro  -->
     <string name="get_pro">このアプリを支援</string>
     <string name="help">ヘルプ</string>
     <string name="pro_support">支援は、このアプリの価値を認識していることを示す方法の一つです。あなたのような素晴らしいユーザー様なら、きっと容易いことでしょう。</string>

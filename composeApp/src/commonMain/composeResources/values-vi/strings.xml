@@ -175,7 +175,6 @@
     <string name="high" comment="As in high/medium/low">Cao</string>
     <string name="medium" comment="As in high/medium/low">Vừa</string>
     <string name="low" comment="As in high/medium/low">Thấp</string>
-    <!--  pro  -->
     <string name="get_pro">Ủng hộ ứng dụng</string>
     <string name="help">Hỗ trợ</string>
     <string name="thank_you">Cảm ơn bạn!</string>

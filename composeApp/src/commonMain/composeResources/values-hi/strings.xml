@@ -216,5 +216,4 @@
     <string name="pref_check_updates">नए अपडेट की जाँच करें</string>
     <string name="update_available" formatted="true" comment="%1= the version number">अपडेट उपलब्ध है: %1$s</string>
     <string name="download" comment="Its a verb">डाउनलोड</string>
-    <!--  pro  -->
 </resources>

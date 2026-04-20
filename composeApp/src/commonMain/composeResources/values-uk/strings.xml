@@ -382,7 +382,6 @@
     <string name="also_available_on" formatted="true" comment="%1$s is the platform name, like Android, PC">Отримайте цей застосунок на %1$s</string>
     <string name="first_artist">Використовувати лише першого виконавця</string>
     <string name="external_metadata">Зовнішні джерела метаданих</string>
-    <!--  pro  -->
     <string name="get_pro">Підтримати проєкт</string>
     <string name="one_time_purchase">Одноразова</string>
     <string name="help">Допомога</string>

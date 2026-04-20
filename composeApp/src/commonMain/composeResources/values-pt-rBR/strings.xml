@@ -396,7 +396,6 @@
     <string name="move_down" comment="Screen reader text for drag and drop reordering">Mover pra baixo</string>
     <string name="at_least" formatted="true" comment="%1$s=some number">Pelo menos %1$s</string>
     <string name="code_will_be_sent" formatted="true" comment="%1$s is either Ko-Fi or BuyMeACoffee, %2$s is the donation amount">O código será enviado para o endereço de email associado com a sua %1$s conta, se você doou %2$s</string>
-    <!--  pro  -->
     <string name="get_pro">Apoiar</string>
     <string name="one_time_purchase">Uma vez</string>
     <string name="help">Ajuda</string>

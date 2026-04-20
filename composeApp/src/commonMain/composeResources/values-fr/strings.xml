@@ -385,7 +385,6 @@
     <string name="edit_extract_track_example" formatted="true" comment="%1$s is the regex pattern">Par exemple, pour extraire les métadonnées du champ piste, si la piste contient « Artiste - Piste », définissez l'expression régulière de la piste sur %1$s</string>
     <string name="search_in_media_player" comment="This launches and searches in the media player app directly instead of opening a browser">Rechercher directement dans le lecteur multimédia</string>
     <string name="forget_unchecked_apps" comment="Shown in the 'Scrobble From' apps list on desktop">Oublier les applications non cochées</string>
-    <!--  pro  -->
     <string name="get_pro">Soutenir cette application</string>
     <string name="one_time_purchase">Achat unique</string>
     <string name="help">Aide</string>

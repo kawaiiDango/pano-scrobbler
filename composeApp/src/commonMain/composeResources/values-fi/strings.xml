@@ -298,7 +298,6 @@
     <string name="password">Salasana</string>
     <string name="open_existing" comment="Append to an existing file">Lisää olemassaolevaan</string>
     <string name="create" comment="Create a new file">Luo</string>
-    <!--  pro  -->
     <string name="get_pro">Tue tätä sovellusta</string>
     <string name="help">Tuki</string>
     <string name="pro_support">Tämä on sinun kaltaisillesi mahtaville käyttäjille helppo ja nopea tapa näyttää tukesi ja tunnistaa tämän sovelluksen tuoma arvo.</string>

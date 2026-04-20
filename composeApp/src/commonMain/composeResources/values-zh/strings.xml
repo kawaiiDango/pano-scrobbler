@@ -384,7 +384,6 @@
     <string name="move_down" comment="Screen reader text for drag and drop reordering">下移</string>
     <string name="at_least" formatted="true" comment="%1$s=some number">至少 %1$s</string>
     <string name="code_will_be_sent" formatted="true" comment="%1$s is either Ko-Fi or BuyMeACoffee, %2$s is the donation amount">如果您捐赠了 %2$s，代码将会被发送到与您 %1$s 帐户关联的电子邮件地址</string>
-    <!--  pro  -->
     <string name="get_pro">支持本应用</string>
     <string name="one_time_purchase">1次</string>
     <string name="help">帮助</string>

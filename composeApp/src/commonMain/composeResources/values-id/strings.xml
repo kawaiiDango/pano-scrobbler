@@ -347,7 +347,6 @@
     <string name="pref_tray_icon_theme">Tema ikon tray</string>
     <string name="min_track_duration">Scrobble lagu yang lebih panjang dari</string>
     <string name="automation">Kontrol Pano Scrobbler dari aplikasi otomatisasi</string>
-    <!--  pro  -->
     <string name="get_pro">Dukung aplikasi ini</string>
     <string name="help">Bantuan</string>
     <string name="pro_support">Ini adalah cara sederhana dan cepat bagi pengguna luar biasa seperti Anda untuk menunjukkan dukungan atas nilai yang diberikan aplikasi ini.</string>

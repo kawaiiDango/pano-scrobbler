@@ -355,7 +355,6 @@
     <string name="also_available_on" formatted="true" comment="%1$s is the platform name, like Android, PC">این برنامه رو از %1$s دریافت کن</string>
     <string name="first_artist">فقط ار هنرمند اول استفاده کن</string>
     <string name="external_metadata">منابع خارجی فراداده</string>
-    <!--  pro  -->
     <string name="get_pro">به این برنامه کمک کنید</string>
     <string name="one_time_purchase">پرداخت یک باره</string>
     <string name="help">کمک</string>

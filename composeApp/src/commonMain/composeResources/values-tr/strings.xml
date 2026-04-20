@@ -396,7 +396,6 @@
     <string name="move_down" comment="Screen reader text for drag and drop reordering">Aşağı taşı</string>
     <string name="at_least" formatted="true" comment="%1$s=some number">En az %1$s</string>
     <string name="code_will_be_sent" formatted="true" comment="%1$s is either Ko-Fi or BuyMeACoffee, %2$s is the donation amount">Bağış yaptıysanız (%2$s), kod %1$s hesabınızla ilişkili e-posta adresine gönderilecektir.</string>
-    <!--  pro  -->
     <string name="get_pro">Uygulamayı destekle</string>
     <string name="one_time_purchase">Bir kez</string>
     <string name="help">Yardım</string>

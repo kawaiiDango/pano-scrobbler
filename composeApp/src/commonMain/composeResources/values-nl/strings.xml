@@ -289,7 +289,6 @@
     <string name="from_gallery" comment="Pick an image for the artist or album from the device gallery">Uit galerij</string>
     <string name="scrobble_to_file">Bestand</string>
     <string name="password">Wachtwoord</string>
-    <!--  pro  -->
     <string name="get_pro">Steun deze app</string>
     <string name="help">Help</string>
     <string name="pro_support">Dit is een eenvoudige en snelle manier voor geweldige gebruikers zoals u om hun steun te betonen en de waarde van deze app te erkennen.</string>

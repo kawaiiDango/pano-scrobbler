@@ -182,6 +182,5 @@
     <string name="min_track_duration">I-scrobble ang mga kanta na mas mahaba sa</string>
     <string name="login_in_browser">Kompletuhin ang login sa browser window</string>
     <string name="edit_no_save">Ito ay hindi ma-sasave sa mga susunod na mga scrobble</string>
-    <!--  pro  -->
     <string name="get_pro">Suportahan ang app</string>
 </resources>

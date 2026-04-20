@@ -365,7 +365,6 @@
     <string name="also_available_on" formatted="true" comment="%1$s is the platform name, like Android, PC">Scarica quest'app su %1$s</string>
     <string name="first_artist">Usa solo il primo artista</string>
     <string name="external_metadata">Fonti esterni di metadata</string>
-    <!--  pro  -->
     <string name="get_pro">Sostieni questa app</string>
     <string name="one_time_purchase">Solo una volta</string>
     <string name="help">Aiuto</string>

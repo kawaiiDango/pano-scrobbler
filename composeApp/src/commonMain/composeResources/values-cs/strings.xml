@@ -394,7 +394,6 @@
     <string name="when_using" formatted="true" comment="%1$s is the web service or media player name">Při použití %1$s</string>
     <string name="when_not_using" formatted="true" comment="%1$s is the web service or media player name">Pokud nepoužívám %1$s</string>
     <string name="as_text" comment="Like copy as text, but in short">Jako text</string>
-    <!--  pro  -->
     <string name="get_pro">Podpořit aplikaci</string>
     <string name="one_time_purchase">Jednorázově</string>
     <string name="help">Pomoc</string>

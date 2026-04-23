@@ -420,6 +420,15 @@
     <string name="move_down" comment="Screen reader text for drag and drop reordering">Nuleisti</string>
     <string name="at_least" formatted="true" comment="%1$s=some number">Bent %1$s</string>
     <string name="code_will_be_sent" formatted="true" comment="%1$s is either Ko-Fi or BuyMeACoffee, %2$s is the donation amount">Kodas bus išsiųstas į el. pašto adresą, susietą su jūsų „%1$s“ paskyra, jei paaukojote %2$s.</string>
+    <string name="proxy" comment="network proxy">Tarpinis serveris</string>
+    <string name="system" comment="system default settings">Sistemos</string>
+    <string name="host" comment="proxy host">Pagrindinis kompiuteris</string>
+    <string name="port" comment="proxy port">Prievadas</string>
+    <string name="scanning" comment="finds other instances of Pano Scrobbler import server on the local network">Skenuojama</string>
+    <string name="missing_local_network_permission">Šiai funkcijai reikia leidimo jungtis prie vietinio tinklo.</string>
+    <string name="artist_splitting_exceptions" comment="exceptions for the use first artist feature">Atlikėjo padalijimo išimtys</string>
+    <string name="add_exception" comment="as in adding an exception to a rule or setting">Įtraukti išimtį</string>
+    <string name="upto_n" formatted="true">Iki %1$d</string>
     <string name="get_pro">Paremti šią programą</string>
     <string name="one_time_purchase">Vienkartinis</string>
     <string name="help">Pagalba</string>

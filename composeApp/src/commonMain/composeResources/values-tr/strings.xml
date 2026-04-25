@@ -396,6 +396,15 @@
     <string name="move_down" comment="Screen reader text for drag and drop reordering">Aşağı taşı</string>
     <string name="at_least" formatted="true" comment="%1$s=some number">En az %1$s</string>
     <string name="code_will_be_sent" formatted="true" comment="%1$s is either Ko-Fi or BuyMeACoffee, %2$s is the donation amount">Bağış yaptıysanız (%2$s), kod %1$s hesabınızla ilişkili e-posta adresine gönderilecektir.</string>
+    <string name="proxy" comment="network proxy">Proxy</string>
+    <string name="system" comment="system default settings">Sistem</string>
+    <string name="host" comment="proxy host">Sunucu</string>
+    <string name="port" comment="proxy port">Port</string>
+    <string name="scanning" comment="finds other instances of Pano Scrobbler import server on the local network">Taranıyor</string>
+    <string name="missing_local_network_permission">Bu özellik, yerel ağa bağlanmak için izin gerektirir</string>
+    <string name="artist_splitting_exceptions" comment="exceptions for the use first artist feature">Sanatçı Ayırma İstisnaları</string>
+    <string name="add_exception" comment="as in adding an exception to a rule or setting">Bir istisna ekle</string>
+    <string name="upto_n" formatted="true">%1$d'a kadar</string>
     <string name="get_pro">Uygulamayı destekle</string>
     <string name="one_time_purchase">Bir kez</string>
     <string name="help">Yardım</string>

@@ -19,6 +19,7 @@
 # in the templates via {{ site.myvariable }}.
 
 title: Pano Scrobbler
+tagline: For Windows, Linux & Android
 
 # Build settings
 

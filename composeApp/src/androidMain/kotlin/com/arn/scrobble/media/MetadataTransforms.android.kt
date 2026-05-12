@@ -116,6 +116,13 @@ actual fun transformMediaMetadata(
          */
     }
 
+    if (trackInfo.appId in BROWSER_PACKAGES_WITH_WEB_MEDIA_SESSION && album.isSomaFmStationAlbum()) {
+        album = ""
+        if (albumArtist.isSomaFmStationAlbum()) {
+            albumArtist = ""
+        }
+    }
+
 //    if (trackInfo.appId in Stuff.IGNORE_ARTIST_META)
 //        trackInfo.artist = trackInfo.artist.substringBeforeLast(" - Topic")
 
@@ -142,3 +149,21 @@ actual fun transformMediaMetadata(
 }
 
 private const val METADATA_KEY_ADVERTISEMENT = "android.media.metadata.ADVERTISEMENT"
+
+private val BROWSER_PACKAGES_WITH_WEB_MEDIA_SESSION = setOf(
+    "com.brave.browser",
+    "com.brave.browser_beta",
+    "com.brave.browser_nightly",
+    "com.android.chrome",
+    "com.chrome.beta",
+    "com.chrome.dev",
+    "com.chrome.canary",
+    "org.mozilla.firefox",
+    "org.mozilla.firefox_beta",
+    "org.mozilla.fenix",
+    "org.mozilla.fennec_fdroid",
+)
+
+private val SOMAFM_STATION_ALBUM_PATTERN = Regex("""\s+on\s+SomaFM\s*$""", RegexOption.IGNORE_CASE)
+
+private fun String.isSomaFmStationAlbum() = SOMAFM_STATION_ALBUM_PATTERN.containsMatchIn(this)

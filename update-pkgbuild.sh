@@ -2,6 +2,7 @@
 
 scriptDir="$(cd "$(dirname "$0")" && pwd)"
 pkgbuildDir="$scriptDir/../pano-scrobbler-bin"
+flakeDir="$scriptDir/../pano-scrobbler-flake"
 
 # --- Re-launch inside Arch container if not Arch ---
 if [[ -z "$(command -v makepkg)" ]]; then
@@ -10,15 +11,22 @@ if [[ -z "$(command -v makepkg)" ]]; then
     -e GITHUB_TOKEN="${GITHUB_TOKEN:-}" \
     -v "$scriptDir:/scripts:z" \
     -v "$(realpath "$pkgbuildDir"):/pkgbuild:z" \
+    -v "$(realpath "$flakeDir"):/flake:z" \
     -w /scripts \
     docker.io/archlinux:base \
-    bash -c "pacman -Sy --noconfirm jq ed && useradd -u $(id -u) -m dango && su dango -c 'bash /scripts/$(basename "$0")'"
+    bash -c "pacman -Sy --noconfirm jq ed tinyxxd nix && bash /scripts/$(basename "$0")"
 fi
 
-# if inside container, set pkgbuildDir to /pkgbuild. Don't do it if the host is Arch.
-if [[ -n "${IN_CONTAINER:-}" ]]; then  
+# if inside container, set dirs to their mount paths. Don't do it if the host is Arch.
+if [[ -n "${IN_CONTAINER:-}" ]]; then
   pkgbuildDir="/pkgbuild"
+  flakeDir="/flake"
 fi
+
+# Convert a 64-char hex SHA-256 string to Nix SRI format: sha256-<base64>
+hex_to_sri() {
+  echo "sha256-$(echo "$1" | xxd -r -p | base64)"
+}
 
 # Update PKGBUILD (_pkgver, pkgver, sha256sums)
 if [ -f "$pkgbuildDir/PKGBUILD" ]; then
@@ -93,7 +101,33 @@ w
 q
 EOF
     echo -e "PKGBUILD updated:\n_pkgver=$tag\npkgver=$verName\nsha_x64=$sha_x64\nsha_arm64=$sha_arm64"
-    makepkg -D "$pkgbuildDir" --printsrcinfo > "$pkgbuildDir/.SRCINFO"
+    runuser -u nobody -- makepkg -D "$pkgbuildDir" --printsrcinfo > "$pkgbuildDir/.SRCINFO"
 else
     echo "PKGBUILD not found" >&2
+fi
+
+# Update flake.nix (tag, version, x86_64-linux hash, aarch64-linux hash)
+if [ -f "$flakeDir/flake.nix" ]; then
+    # tag/sha vars are set above; bail if they're empty (PKGBUILD block was skipped)
+    if [[ -z "${tag:-}" || -z "${sha_x64:-}" || -z "${sha_arm64:-}" ]]; then
+      echo "Error: release metadata not available, skipping flake.nix update" >&2
+    else
+      sri_x64="$(hex_to_sri "$sha_x64")"
+      sri_arm64="$(hex_to_sri "$sha_arm64")"
+
+      ed -s "$flakeDir/flake.nix" <<EOF
+g/^ *tag = /s|.*|      tag = "$tag";|
+g/^ *version = /s|.*|      version = "$verName";|
+g/"x86_64-linux" = "sha256-/s|.*|        "x86_64-linux" = "$sri_x64";|
+g/"aarch64-linux" = "sha256-/s|.*|        "aarch64-linux" = "$sri_arm64";|
+w
+q
+EOF
+
+      nix --extra-experimental-features 'nix-command flakes' flake update nixpkgs --flake "$flakeDir"
+
+      echo -e "flake.nix updated:\ntag=$tag\nversion=$verName\nsri_x64=$sri_x64\nsri_arm64=$sri_arm64"
+    fi
+else
+    echo "flake.nix not found" >&2
 fi

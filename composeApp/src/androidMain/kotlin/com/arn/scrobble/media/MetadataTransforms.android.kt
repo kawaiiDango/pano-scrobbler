@@ -1,9 +1,7 @@
 package com.arn.scrobble.media
 
 import android.media.MediaMetadata
-import android.os.Build
 import com.arn.scrobble.utils.Stuff
-import java.util.Locale
 
 actual typealias PlatformMediaMetadata = MediaMetadata
 
@@ -67,13 +65,10 @@ actual fun transformMediaMetadata(
         }
 
         Stuff.PACKAGE_HUAWEI_MUSIC -> {
-            if (Build.MANUFACTURER.lowercase(Locale.ENGLISH) == Stuff.MANUFACTURER_HUAWEI) {
-                // Extra check for the manufacturer, because 'com.android.mediacenter' could match other music players.
-                val extra = " - $album"
-                if (artist.endsWith(extra))
-                    artist = artist.dropLast(extra.length)
-                albumArtist = ""
-            }
+            val extra = " - $album"
+            if (artist.endsWith(extra))
+                artist = artist.dropLast(extra.length)
+            albumArtist = ""
         }
 
         Stuff.PACKAGE_YANDEX_MUSIC -> {

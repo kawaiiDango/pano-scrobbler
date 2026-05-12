@@ -40,6 +40,7 @@ import pano_scrobbler.composeapp.generated.resources.discord_compact_view_line
 import pano_scrobbler.composeapp.generated.resources.enable
 import pano_scrobbler.composeapp.generated.resources.line_n
 import pano_scrobbler.composeapp.generated.resources.reset
+import pano_scrobbler.composeapp.generated.resources.show_loved
 import pano_scrobbler.composeapp.generated.resources.show_paused_for
 import pano_scrobbler.composeapp.generated.resources.show_track_url
 
@@ -130,6 +131,17 @@ fun DiscordRpcScreen(
             copyToSave = {
                 copy(
                     discordRpc = settings.copy(detailsUrl = it)
+                )
+            }
+        )
+
+        SwitchPref(
+            text = stringResource(Res.string.show_loved),
+            value = settings.lovedState,
+            enabled = settings.enabled,
+            copyToSave = {
+                copy(
+                    discordRpc = settings.copy(lovedState = it)
                 )
             }
         )

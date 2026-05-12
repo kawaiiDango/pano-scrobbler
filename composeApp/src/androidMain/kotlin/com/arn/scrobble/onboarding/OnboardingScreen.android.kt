@@ -57,7 +57,6 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.jetbrains.compose.resources.stringResource
 import pano_scrobbler.composeapp.generated.resources.Res
-import pano_scrobbler.composeapp.generated.resources.allow_background
 import pano_scrobbler.composeapp.generated.resources.choose_apps
 import pano_scrobbler.composeapp.generated.resources.grant_notification_access
 import pano_scrobbler.composeapp.generated.resources.grant_notification_access_desc
@@ -345,22 +344,6 @@ actual fun OnboardingScreen(
                     )
                 }
 
-                OnboardingStepType.DKMA -> {
-                    VerticalStepperItem(
-                        titleRes = Res.string.allow_background,
-                        description = "https://dontkillmyapp.com/",
-                        openAction = {
-                            PlatformStuff.openInBrowser(
-                                "https://dontkillmyapp.com/" + Build.MANUFACTURER.lowercase()
-                            )
-                            markAsDone(OnboardingStepType.DKMA)
-                        },
-                        isDone = isDone,
-                        isExpanded = step == currentStep,
-                    )
-                }
-
-
                 OnboardingStepType.CHOOSE_APPS -> {
                     VerticalStepperItem(
                         titleRes = Res.string.pref_scrobble_from,
@@ -390,6 +373,8 @@ actual fun OnboardingScreen(
                         )
                     }
                 }
+
+                else -> {}
             }
         }
     }

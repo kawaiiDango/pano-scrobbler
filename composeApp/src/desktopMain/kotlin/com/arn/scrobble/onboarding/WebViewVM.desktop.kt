@@ -7,7 +7,7 @@ import com.arn.scrobble.utils.DesktopStuff
 
 actual fun WebViewVM.platformClear() {
     if (DesktopWebView.inited)
-        DesktopWebView.deleteAndQuitP()
+        DesktopWebView.closeP()
 }
 
 actual fun WebViewVM.platformInit() {

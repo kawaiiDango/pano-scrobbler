@@ -205,17 +205,20 @@ object RegexPresets {
             RegexPreset.single_ep -> {
                 val pattern = " - (Single|EP)$"
                 val replacement = ""
-                val appIds = setOf(
-                    Stuff.PACKAGE_APPLE_MUSIC,
-                    Stuff.PACKAGE_APPLE_MUSIC_WIN_STORE,
-                    Stuff.PACKAGE_APPLE_MUSIC_WIN_STORE.split("!", limit = 2)
-                        .let { (first, second) -> first + "!" + second.uppercase() },
-                    Stuff.PACKAGE_APPLE_MUSIC_WIN_STORE.split("!", limit = 2)
-                        .let { (first, second) -> first + "!" + second.lowercase() },
-                    Stuff.PACKAGE_APPLE_MUSIC_WIN_EXE
-                )
+                val isAppleMusic = scrobbleData.appId == Stuff.PACKAGE_APPLE_MUSIC ||
+                        scrobbleData.appId == Stuff.PACKAGE_APPLE_MUSIC_WIN_EXE ||
+                        scrobbleData.appId.equals(
+                            Stuff.PACKAGE_APPLE_MUSIC_WIN_STORE,
+                            ignoreCase = true
+                        ) ||
+                        scrobbleData.appId == Stuff.PACKAGE_ITUNES_SMTC_WIN_EXE ||
+                        scrobbleData.appId.equals(
+                            Stuff.PACKAGE_ITUNES_SMTC_WIN_STORE,
+                            ignoreCase = true
+                        ) ||
+                        normalizedUrlHost == Stuff.HOST_APPLE_MUSIC
 
-                if (scrobbleData.appId in appIds || normalizedUrlHost == Stuff.HOST_APPLE_MUSIC) {
+                if (isAppleMusic) {
                     regexEdits += RegexEdit(
                         name = regexPreset.name,
                         search = RegexEdit.SearchPatterns(

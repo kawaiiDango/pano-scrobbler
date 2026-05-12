@@ -9,6 +9,13 @@ import javax.net.ssl.X509TrustManager
 object TestStuff {
     fun test() {
         // test stuff
+
+        // print env vars
+        val envVars = System.getenv()
+        Logger.i("Environment variables:")
+        envVars.forEach { (key, value) -> Logger.i("$key: $value") }
+
+        // print system properties
         val properties = System.getProperties()
         Logger.i("\n\nSystem properties:")
         properties.forEach { (key, value) -> Logger.i("$key: $value") }

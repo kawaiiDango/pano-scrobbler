@@ -69,8 +69,13 @@ actual object PanoNotifications {
         Build.VERSION.SDK_INT >= Build.VERSION_CODES.O &&
                 Build.MANUFACTURER.lowercase() in arrayOf(
             Stuff.MANUFACTURER_HUAWEI,
+            Stuff.MANUFACTURER_HONOR,
             Stuff.MANUFACTURER_XIAOMI,
             Stuff.MANUFACTURER_SAMSUNG,
+            Stuff.MANUFACTURER_MOTOROLA,
+            Stuff.MANUFACTURER_OPPO,
+            Stuff.MANUFACTURER_ONEPLUS,
+            Stuff.MANUFACTURER_TRANSSION,
         )
                 || PlatformStuff.isTv
     }

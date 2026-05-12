@@ -87,19 +87,19 @@ object AndroidStuff {
 //        }
 //    }
 
-    fun isDkmaNeeded(): Boolean {
-        val manufacturer = Build.MANUFACTURER.lowercase()
-
-        return manufacturer in arrayOf(
-            Stuff.MANUFACTURER_HUAWEI,
-            Stuff.MANUFACTURER_XIAOMI,
-            Stuff.MANUFACTURER_SAMSUNG,
-            Stuff.MANUFACTURER_ONEPLUS,
-            Stuff.MANUFACTURER_OPPO,
-            Stuff.MANUFACTURER_MEIZU,
-            Stuff.MANUFACTURER_VIVO,
-        )
-    }
+//    fun isDkmaNeeded(): Boolean {
+//        val manufacturer = Build.MANUFACTURER.lowercase()
+//
+//        return manufacturer in arrayOf(
+//            Stuff.MANUFACTURER_HUAWEI,
+//            Stuff.MANUFACTURER_XIAOMI,
+//            Stuff.MANUFACTURER_SAMSUNG,
+//            Stuff.MANUFACTURER_ONEPLUS,
+//            Stuff.MANUFACTURER_OPPO,
+//            Stuff.MANUFACTURER_MEIZU,
+//            Stuff.MANUFACTURER_VIVO,
+//        )
+//    }
 
     val widgetPrefs by lazy {
         DataStoreFactory.create(

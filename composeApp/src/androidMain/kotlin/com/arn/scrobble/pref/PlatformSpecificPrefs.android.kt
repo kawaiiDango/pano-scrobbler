@@ -21,6 +21,7 @@ import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff
 import com.arn.scrobble.widget.ChartsWidgetConfigActivity
 import com.arn.scrobble.widget.ChartsWidgetProvider
+import com.arn.scrobble.work.CommonWorkProgress
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.getString
@@ -28,6 +29,7 @@ import org.jetbrains.compose.resources.stringResource
 import pano_scrobbler.composeapp.generated.resources.Res
 import pano_scrobbler.composeapp.generated.resources.grant_notification_access
 import pano_scrobbler.composeapp.generated.resources.persistent_noti_desc
+import pano_scrobbler.composeapp.generated.resources.persistent_noti_fgs
 import pano_scrobbler.composeapp.generated.resources.persistent_noti_oems
 import pano_scrobbler.composeapp.generated.resources.pref_master
 import pano_scrobbler.composeapp.generated.resources.pref_master_qs_add
@@ -118,7 +120,7 @@ actual object PlatformSpecificPrefs {
         }
     }
 
-    actual fun prefNotifications(filteredItem: FilteredItem, notiPersistent: Boolean) {
+    actual fun prefNotifications(filteredItem: FilteredItem) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && !PlatformStuff.isTv) {
             filteredItem("notifications", Res.string.pref_noti, null) { title ->
                 val context = LocalContext.current
@@ -130,11 +132,13 @@ actual object PlatformSpecificPrefs {
                 )
             }
         }
+    }
 
+    actual fun prefPersistentNotification(filteredItem: FilteredItem, notiPersistent: Boolean) {
         if (AndroidStuff.canShowPersistentNotiIfEnabled && !PlatformStuff.isTv) {
             filteredItem(
                 MainPrefs::notiPersistent.name,
-                Res.string.show_persistent_noti,
+                Res.string.persistent_noti_fgs,
                 null
             ) { title ->
                 SwitchPref(
@@ -142,7 +146,7 @@ actual object PlatformSpecificPrefs {
                     summary = stringResource(
                         Res.string.persistent_noti_desc,
                         stringResource(Res.string.persistent_noti_oems)
-                    ),
+                    ) + "\n" + stringResource(Res.string.show_persistent_noti),
                     value = notiPersistent,
                     copyToSave = {
                         copy(notiPersistent = it)
@@ -153,6 +157,8 @@ actual object PlatformSpecificPrefs {
     }
 
     actual fun prefAutostart(filteredItem: FilteredItem) {}
+
+    actual fun prefAddToAppLauncher(filteredItem: FilteredItem) {}
 
     actual fun discordRpc(filteredItem: FilteredItem, onNavigate: (PanoRoute) -> Unit) {
         // no-op
@@ -198,5 +204,11 @@ actual object PlatformSpecificPrefs {
                 }
             )
         }
+    }
+
+    actual fun updateCheck(
+        filteredItem: FilteredItem, enabled: Boolean,
+        updateProgress: CommonWorkProgress?
+    ) {
     }
 }

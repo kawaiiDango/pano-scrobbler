@@ -2,14 +2,10 @@ package com.arn.scrobble.utils
 
 import co.touchlab.kermit.Logger
 import com.arn.scrobble.BuildKonfig
-import com.arn.scrobble.PanoNativeComponents
 import com.arn.scrobble.automation.Automation
-import com.arn.scrobble.db.PanoDb
-import com.arn.scrobble.work.DesktopWorkManager
 import java.io.File
 import java.net.URI
 import java.net.URISyntaxException
-import kotlin.system.exitProcess
 
 
 object DesktopStuff {
@@ -23,6 +19,8 @@ object DesktopStuff {
 
     private const val DATA_DIR_ARG = "data-dir"
     private const val NO_UPDATE_CHECK_ARG = "no-update-check"
+
+    private val appNameWithoutSpaces = BuildKonfig.APP_NAME.lowercase().replace(' ', '-')
 
     private val execDirPath =
         File(ProcessHandle.current().info().command().get()).parentFile.absolutePath
@@ -121,7 +119,7 @@ object DesktopStuff {
         }
 
         val dirFile = cmdlineArgs.dataDir?.let { File(it) }
-            ?: File(defaultDir, BuildKonfig.APP_NAME.lowercase().replace(' ', '-'))
+            ?: File(defaultDir, appNameWithoutSpaces)
 
         dirFile.mkdirs()
 
@@ -181,6 +179,31 @@ object DesktopStuff {
         }
     }
 
+    fun addAppImageToAppLauncher() {
+        val appImagePath = System.getenv("APPIMAGE")
+        val appDir = System.getenv("APPDIR")
+        if (os != Os.Linux || appImagePath.isNullOrEmpty() || appDir.isNullOrEmpty())
+            return
+
+        val dataHome = System.getenv("XDG_DATA_HOME")?.ifEmpty { null }
+            ?: (System.getProperty("user.home") + "/.local/share")
+
+        // Icon
+        val iconSrc =
+            File(appDir, "usr/share/icons/hicolor/scalable/apps/$appNameWithoutSpaces.svg")
+        val iconDest = File(dataHome, "icons/hicolor/scalable/apps/$appNameWithoutSpaces.svg")
+        iconDest.parentFile.mkdirs()
+        iconSrc.copyTo(iconDest, overwrite = true)
+
+        val desktopSrc = File(appDir, "usr/share/applications/$appNameWithoutSpaces.desktop")
+        val desktopDest = File(dataHome, "applications/$appNameWithoutSpaces.desktop")
+        desktopDest.parentFile.mkdirs()
+        val desktopContent = desktopSrc.readText()
+            .replace(Regex("^Exec=.*$", RegexOption.MULTILINE), "Exec=\"$appImagePath\" %U")
+            .replace(Regex("^Icon=.*$", RegexOption.MULTILINE), "Icon=$appNameWithoutSpaces")
+        desktopDest.writeText(desktopContent)
+    }
+
     fun normalizeAppId(appId: String): String {
         return when {
             os != Os.Linux ->
@@ -196,12 +219,5 @@ object DesktopStuff {
 
             else -> appId
         }
-    }
-
-    fun exit() {
-        PanoNativeComponents.stopListeningMedia()
-        DesktopWorkManager.clearAll()
-        PanoDb.db.close()
-        exitProcess(0)
     }
 }

@@ -174,10 +174,10 @@ object DiscordRpc {
         settings: MainPrefs.DiscordRpcSettings,
     ): DiscordActivity.Activity {
         val hash = trackPlaying.hash
-        val state = formatLine(settings.line2Format, trackPlaying, appName)
-        val details = formatLine(settings.line1Format, trackPlaying, appName)
-        val largeText = formatLine(settings.line3Format, trackPlaying, appName)
-        val name = formatLine(settings.nameFormat, trackPlaying, appName)
+        val state = formatLine(settings.line2Format, trackPlaying, appName, settings.lovedState)
+        val details = formatLine(settings.line1Format, trackPlaying, appName, settings.lovedState)
+        val largeText = formatLine(settings.line3Format, trackPlaying, appName, settings.lovedState)
+        val name = formatLine(settings.nameFormat, trackPlaying, appName, settings.lovedState)
         val startTimeMillis =
             trackPlaying.timelineStartTime.takeIf { it > 0 } ?: System.currentTimeMillis()
         val durationMillis = trackPlaying.scrobbleData.duration
@@ -220,11 +220,12 @@ object DiscordRpc {
         template: String,
         trackPlaying: PlayingTrackNotifyEvent.TrackPlaying,
         appName: String,
+        showLoved: Boolean,
     ): String {
         return template.replace(placeholderRegex) { match ->
             when (match.groupValues.getOrNull(1)) {
                 DiscordRpcPlaceholder.artist.name -> trackPlaying.scrobbleData.artist
-                DiscordRpcPlaceholder.title.name -> (if (trackPlaying.userLoved) "❤ " else "") +
+                DiscordRpcPlaceholder.title.name -> (if (trackPlaying.userLoved && showLoved) "❤ " else "") +
                         trackPlaying.scrobbleData.track
 
                 DiscordRpcPlaceholder.albumArtist.name -> trackPlaying.scrobbleData.albumArtist

@@ -307,7 +307,7 @@ actual object PlatformStuff {
             .setDriver(AndroidSQLiteDriver())
             // may fix Exception java.lang.IllegalStateException: Cannot perform this operation because there is no current transaction.
             // Exception android.database.sqlite.SQLiteDatabaseLockedException: database is locked (code 5 SQLITE_BUSY)
-            .setQueryCoroutineContext(Dispatchers.IO.limitedParallelism(1))
+            .setSingleConnectionPool()
             // may fix multiprocess android.database.sqlite.SQLiteDatabaseLockedException: database is locked (code 5 SQLITE_BUSY[5])
             .setJournalMode(RoomDatabase.JournalMode.WRITE_AHEAD_LOGGING)
 //            .setQueryCoroutineContext(Dispatchers.IO)

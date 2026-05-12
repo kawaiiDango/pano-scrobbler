@@ -526,6 +526,15 @@ tasks.register<Exec>("buildNativeImage") {
     else
         arrayOf()
 
+    val filesToDelete = arrayOf(
+        "libjsound.so",
+        "jsound.dll",
+        "libjavajpeg.so",
+        "javajpeg.dll",
+        "liblcms.so",
+        "lcms.dll",
+    )
+
     val outputDir = file("build/compose/native/$resourcesDirName")
     val outputFile = File(outputDir, APP_NAME_NO_SPACES)
 
@@ -636,6 +645,11 @@ tasks.register<Exec>("buildNativeImage") {
         if (copyDesktopAndIcon) {
             iconFile.copyTo(File(outputDir, "pano-scrobbler.svg"), overwrite = true)
             desktopFile.copyTo(File(outputDir, desktopFile.name), overwrite = true)
+        }
+
+        // delete unnecessary files
+        filesToDelete.forEach { fileName ->
+            File(outputDir, fileName).takeIf { it.exists() }?.delete()
         }
     }
 

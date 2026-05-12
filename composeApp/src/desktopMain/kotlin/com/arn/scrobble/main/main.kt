@@ -41,6 +41,7 @@ import com.arn.scrobble.BuildKonfig
 import com.arn.scrobble.PanoNativeComponents
 import com.arn.scrobble.automation.Automation
 import com.arn.scrobble.billing.LicenseState
+import com.arn.scrobble.db.PanoDb
 import com.arn.scrobble.discordrpc.DiscordRpc
 import com.arn.scrobble.logger.JavaUtilFileLogger
 import com.arn.scrobble.media.PlayingTrackNotifyEvent
@@ -58,6 +59,7 @@ import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff
 import com.arn.scrobble.utils.VariantStuff
 import com.arn.scrobble.utils.setAppLocale
+import com.arn.scrobble.work.DesktopWorkManager
 import com.arn.scrobble.work.UpdaterWork
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -206,6 +208,14 @@ fun main(args: Array<String>) {
 
     init()
     initHeadlessResourceEnvironment()
+
+    // ------------------------------- shutdown hook
+
+    Runtime.getRuntime().addShutdownHook(Thread {
+        PanoNativeComponents.stopListeningMedia()
+        DesktopWorkManager.clearAll()
+        PanoDb.db.close()
+    })
 
     // ------------------------------- tray menu
 
@@ -392,7 +402,6 @@ fun main(args: Array<String>) {
     mutableStateOf(DesktopStuff.os == DesktopStuff.Os.Linux || !cmdlineArgs.minimized)
     var windowCreated by mutableStateOf(windowShown)
     val windowOpenTrigger = MutableSharedFlow<Unit>(extraBufferCapacity = 1)
-    var exitApplicationVar: (() -> Unit)? = null
 
     fun openIfNeeded() {
         windowOpenTrigger.tryEmit(Unit)
@@ -400,15 +409,10 @@ fun main(args: Array<String>) {
         windowShown = true
     }
 
-    fun onExit() {
-        exitApplicationVar?.invoke()
-        DesktopStuff.exit()
-    }
-
     Stuff.appScope.launch {
         trayMenuClickListener(
             onOpenIfNeeded = ::openIfNeeded,
-            onExit = ::onExit
+            onExit = { exitProcess(0) }
         )
     }
 
@@ -444,7 +448,6 @@ fun main(args: Array<String>) {
                 }
             }
 
-            exitApplicationVar = ::exitApplication
             firstCompositionDone = true
         }
 
@@ -604,7 +607,7 @@ fun main(args: Array<String>) {
 
                 LaunchedEffect(Unit) {
                     if (DesktopStuff.os == DesktopStuff.Os.Windows)
-                        PanoNativeComponents.applyDarkModeWindows(window.windowHandle)
+                        PanoNativeComponents.setHwndWindows(window.windowHandle)
                 }
 
                 LaunchedEffect(Unit) {

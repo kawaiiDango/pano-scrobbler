@@ -17,6 +17,7 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
+import kotlin.system.exitProcess
 
 @Keep
 object PanoNativeComponents {
@@ -140,7 +141,7 @@ object PanoNativeComponents {
         if (command == Automation.DESKTOP_FOCUS_EXISTING) {
             PanoTrayUtils.onTrayMenuItemClickedFn(PanoTrayUtils.ItemId.Open.name)
         } else if (command == Automation.DESKTOP_QUIT) {
-            DesktopStuff.exit()
+            exitProcess(0)
         } else {
             val wasSuccessful = Automation.executeAction(command, arg.ifEmpty { null }, null)
             if (!wasSuccessful) {
@@ -206,7 +207,7 @@ object PanoNativeComponents {
     external fun setEnvironmentVariable(key: String, value: String)
 
     @JvmStatic
-    external fun applyDarkModeWindows(hwnd: Long)
+    external fun setHwndWindows(hwnd: Long)
 
     @JvmStatic
     external fun sendIpcCommand(command: String, arg: String): Boolean
@@ -215,13 +216,16 @@ object PanoNativeComponents {
     external fun isFileLockedWindows(path: String): Boolean
 
     @JvmStatic
-    external fun fileChooserLinux(
+    external fun fileChooser(
         requestId: Int,
         save: Boolean,
         title: String,
         fileName: String,
-        filters: Array<String>
+        extensions: Array<String>
     )
+
+    @JvmStatic
+    external fun openUrl(url: String)
 
     @JvmStatic
     external fun autoStartLinux(add: Boolean)

@@ -74,7 +74,11 @@ class NLService : NotificationListenerService() {
 
                 val scrobblerEnabled = mainPrefs.data.map { it.scrobblerEnabled }.first()
                 if (!scrobblerEnabled) {
-                    requestUnbind()
+                    try {
+                        requestUnbind()
+                    } catch (e: Exception) {
+                        Logger.w(e) { "Failed to unbind service" }
+                    }
                     inited = false
                 }
             }.invokeOnCompletion {

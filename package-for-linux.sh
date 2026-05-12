@@ -57,9 +57,15 @@ cp "$appDir/$appNameWithoutSpaces.svg" "$appDir/usr/share/icons/hicolor/scalable
 
 # Desktop file
 desktopFile="$libExecDir/$appNameWithoutSpaces.desktop"
-sed -i 's/^Exec=.*/Exec=AppRun %U/' "$desktopFile"
+sed -i "s/^Exec=.*/Exec=AppRun %U/" "$desktopFile"
 sed -i "s/^Icon=.*/Icon=$appNameWithoutSpaces/" "$desktopFile"
-mv "$desktopFile" "$appDir/"
+cp "$desktopFile" "$appDir/"
+
+# Again
+sed -i "s/^Exec=.*/Exec=$appNameWithoutSpaces %U/" "$desktopFile"
+sed -i "s/^Icon=.*/Icon=$appNameWithoutSpaces/" "$desktopFile"
+mkdir -p "$appDir/usr/share/applications/"
+mv "$desktopFile" "$appDir/usr/share/applications/"
 
 # Create AppRun symlink
 ln -srf "$libExecDir/$appNameWithoutSpaces" "$appDir/AppRun"

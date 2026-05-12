@@ -2,7 +2,7 @@ name: Generate F-droid repo and static site
 
 on:
   repository_dispatch:
-    types: [static_site]
+    types: [ static_site ]
   workflow_dispatch:
 
 # Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
@@ -29,25 +29,25 @@ jobs:
     steps:
       - uses: actions/checkout@v6
 
-#      - name: Create basic directory structure
-#        run: mkdir -p fdroid/repo
+      #      - name: Create basic directory structure
+      #        run: mkdir -p fdroid/repo
 
       - name: Restore correct mtime
         run: |
           sudo apt install git-restore-mtime 
           git restore-mtime
 
-#      - name: Install F-Droid server software
-#        run: |
-#         sudo add-apt-repository ppa:fdroid/fdroidserver
-#         sudo apt-get update
-#         sudo apt-get install fdroidserver
+      #      - name: Install F-Droid server software
+      #        run: |
+      #         sudo add-apt-repository ppa:fdroid/fdroidserver
+      #         sudo apt-get update
+      #         sudo apt-get install fdroidserver
 
       - name: Install F-Droid server software
         run: |
-         sudo apt-get update
-         sudo apt-get install python3-pip
-         pip install fdroidserver --break-system-packages
+          sudo apt-get update
+          sudo apt-get install python3-pip
+          pip install fdroidserver --break-system-packages
 
       - name: Set up repo secrets
         run: |
@@ -90,7 +90,7 @@ jobs:
           cp privacy-policy.md static-site/privacy-policy.md
 
       - name: Upload artifact
-        uses: actions/upload-pages-artifact@v4
+        uses: actions/upload-pages-artifact@v5
         with:
           path: './static-site'
 

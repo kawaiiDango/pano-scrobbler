@@ -93,10 +93,13 @@ object Stuff {
     const val LASTFM_URL = "https://www.last.fm/"
 
     const val MANUFACTURER_HUAWEI = "huawei"
+    const val MANUFACTURER_HONOR = "honor"
     const val MANUFACTURER_XIAOMI = "xiaomi"
     const val MANUFACTURER_SAMSUNG = "samsung"
+    const val MANUFACTURER_MOTOROLA = "motorola"
     const val MANUFACTURER_ONEPLUS = "oneplus"
     const val MANUFACTURER_OPPO = "oppo"
+    const val MANUFACTURER_TRANSSION = "transsion"
     const val MANUFACTURER_MEIZU = "meizu"
     const val MANUFACTURER_VIVO = "vivo"
 
@@ -149,8 +152,12 @@ object Stuff {
     const val PACKAGE_APPLE_MUSIC_CLASSICAL = "com.apple.android.music.classical"
     const val PACKAGE_TIDAL = "com.aspiro.tidal"
     const val PACKAGE_OMNIA = "com.rhmsoft.omnia"
+    const val PACKAGE_CHROMECAST_PLAYER = "com.google.android.apps.mediashell"
     const val PACKAGE_APPLE_MUSIC_WIN_EXE = "AppleMusic.exe"
     const val PACKAGE_APPLE_MUSIC_WIN_STORE = "AppleInc.AppleMusicWin_nzyj5cx40ttqa!App"
+    const val PACKAGE_ITUNES_SMTC_WIN_EXE = "iTunes.SMTC.exe"
+    const val PACKAGE_ITUNES_SMTC_WIN_STORE =
+        "49586DaveAntoine.MediaControllerforiTunes_9bzempp7dntjg!App"
     const val HOST_APPLE_MUSIC = "music.apple.com"
     const val HOST_YOUTUBE_MUSIC = "music.youtube.com"
     const val PACKAGE_KDE_CONNECT_LINUX = "org.mpris.MediaPlayer2.kdeconnect"

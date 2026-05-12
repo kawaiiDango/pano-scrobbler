@@ -22,7 +22,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
-import kotlinx.io.IOException
 import org.jetbrains.skia.EncodedImageFormat
 import org.jetbrains.skia.Image
 import java.awt.Desktop
@@ -80,31 +79,24 @@ actual object PlatformStuff {
     }
 
     actual fun openInBrowser(url: String) {
-        val desktop = Desktop.getDesktop()
-        if (Desktop.isDesktopSupported() && desktop.isSupported(Desktop.Action.BROWSE)) {
-            desktop.browse(URI(url))
-        } else {
-            if (DesktopStuff.os == DesktopStuff.Os.Linux) {
-                try {
-                    Logger.i { "Attempting to open with xdg-open" }
-                    ProcessBuilder("xdg-open", url).start()
-                } catch (e: IOException) {
-                    val snackbarData = PanoSnackbarVisuals(
-                        message = "Failed to open with xdg-open: $url",
-                        isError = true,
-                    )
-                    Stuff.globalSnackbarFlow.tryEmit(snackbarData)
-                } catch (e: InterruptedException) {
-                    Logger.w("Interrupted while waiting for xdg-open", e)
-                }
-            } else {
-                val snackbarData = PanoSnackbarVisuals(
-                    message = "Failed to open URL: $url",
-                    isError = true,
-                )
-                Stuff.globalSnackbarFlow.tryEmit(snackbarData)
+        val isMailTo = url.startsWith("mailto:", ignoreCase = true)
+
+        var desktop: Desktop? = null
+        if (DesktopStuff.os == DesktopStuff.Os.Linux && Desktop.isDesktopSupported())
+            desktop = Desktop.getDesktop().takeIf {
+                if (isMailTo)
+                    it.isSupported(Desktop.Action.MAIL)
+                else
+                    it.isSupported(Desktop.Action.BROWSE)
             }
-        }
+
+        if (desktop != null) {
+            if (isMailTo)
+                desktop.mail(URI(url))
+            else
+                desktop.browse(URI(url))
+        } else
+            PanoNativeComponents.openUrl(url)
     }
 
     actual suspend fun checkScrobblerState(requestRebind: Boolean): ScrobblerState {

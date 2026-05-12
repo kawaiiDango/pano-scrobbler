@@ -1,3 +1,5 @@
+Pano Scrobbler is a listening history and stats app for Android, Windows, and Linux, with core features shared across platforms.
+
 Features:
 
 #### For all platforms:
@@ -11,15 +13,15 @@ Features:
 - Block artists, songs, etc., and automatically skip or mute when they play
 - Check what your followed users are listening to and view their stats
 - Import and export settings, edits, and blocklists
-- View charts with change indicators for specific time periods,
+- View charts with change indicators for specific time periods
 - View scrobble count graphs and tag clouds
 - Get a random song, album, or artist from your listening history
-- Search Lastfm for a songs, artists, or albums
+- Search Lastfm for songs, artists, or albums
 - Themes
 - Remember and see apps you scrobbled from and play directly in them
-- Proxy support
+- Supports network proxies
 
-#### Android only (except TV):
+#### For platforms other than Android TV:
 
 - Scrobble to a CSV or JSONL file locally
 - Interactive notification - view song info, edit, love, cancel, or block songs directly from the
@@ -27,7 +29,12 @@ Features:
 - Collage generator
 - Add or remove personal tags from the info screen
 - Edit or delete existing scrobbles. Remembers edits
-- Control Pano Scrobbler from automation apps on Android or command-line on desktop
-- Scrobble from music recognition apps: Shazam, Ambient Music Mod and Audile
+- Control Pano Scrobbler from automation apps on Android
+
+#### Phones and tablets only:
+
+- Scrobble from apps that identify music playing around you: Shazam, Ambient Music Mod and Audile
+- Scrobbling the new Pixel Now Playing app (since the March 2026 Pixel feature drop) is possible
+  only with root and KieronQuinn's Xposed module, Public Compute Services (https://github.com/KieronQuinn/PublicComputeServices)
 - Charts as a customizable home-screen widget
 - Get your top scrobbles digests as a notification at the end of every week, month and year

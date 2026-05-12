@@ -32,8 +32,10 @@ import com.arn.scrobble.ui.verticalOverscanPadding
 import com.arn.scrobble.updates.ChangelogDialog
 import com.arn.scrobble.updates.UpdateAvailableDialog
 import com.arn.scrobble.utils.PlatformStuff
+import com.arn.scrobble.utils.Stuff
 import com.arn.scrobble.utils.Stuff.collectAsStateWithInitialValue
 import com.arn.scrobble.utils.VariantStuff
+import kotlinx.coroutines.launch
 
 fun EntryProviderScope<PanoRoute>.panoModalNavGraph(
     navigate: (PanoRoute) -> Unit,
@@ -152,6 +154,8 @@ fun EntryProviderScope<PanoRoute>.panoModalNavGraph(
     }
 
     modalEntry<PanoRoute.Modal.EditScrobble> { route ->
+        val activity = getActivityOrNull()
+
         SimpleEditsAddScreen(
             simpleEdit = SimpleEdit(
                 track = route.origScrobbleData.track,
@@ -171,7 +175,12 @@ fun EntryProviderScope<PanoRoute>.panoModalNavGraph(
             msid = route.msid,
             hash = route.hash,
             key = route.key,
-            onDone = goBack,
+            onDone = {
+                goBack()
+                Stuff.appScope.launch {
+                    VariantStuff.reviewPrompter.showIfNeeded(activity)
+                }
+            },
             onReauthenticate = {
                 goBack()
                 navigate(LoginDestinations.route(AccountType.LASTFM))

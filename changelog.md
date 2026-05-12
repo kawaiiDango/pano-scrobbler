@@ -1,7 +1,7 @@
-- Targets Android 17
-- Reimplemented SOCKS5 proxy with authentication support
-- Added a search bar for settings
-- Import/export over network no longer requires typing a code
-- Better reorderable lists on Windows and Linux
+- Added a NixOS flake
+- The Linux AppImage can optionally add itself to autostart and the application menu at onboarding
+- Improved YouTube title parsing
+- Option to hide the loved status in Discord Rich Presence
+- Merged the scrobble notifications with persistent notification on Android
 - Bug fixes
 - Translation updates by the translators on Crowdin

@@ -173,19 +173,19 @@ Check if you have the required dependencies installed
 - Arch:
 
 ```
-sudo pacman -S webkit2gtk-4.1
+sudo pacman -S webkitgtk-6.0
 ```
 
 - Debian:
 
 ```
-sudo apt install libwebkit2gtk-4.1-0
+sudo apt install libwebkitgtk-6.0-4
 ```
 
 - Fedora:
 
 ```
-sudo dnf install webkit2gtk4.1
+sudo dnf install webkitgtk6.0
 ```
 
 - Windows: WebView2 provided by Microsoft Edge Chromium

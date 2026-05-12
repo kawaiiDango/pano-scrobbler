@@ -54,7 +54,6 @@ import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff
 import com.arn.scrobble.utils.Stuff.collectAsStateWithInitialValue
 import com.arn.scrobble.utils.Stuff.format
-import com.arn.scrobble.utils.VariantStuff
 import com.arn.scrobble.utils.setAppLocale
 import com.arn.scrobble.work.CommonWorkState
 import com.arn.scrobble.work.DigestWork
@@ -94,7 +93,6 @@ import pano_scrobbler.composeapp.generated.resources.notification_channel_blocke
 import pano_scrobbler.composeapp.generated.resources.pref_about
 import pano_scrobbler.composeapp.generated.resources.pref_auto_detect
 import pano_scrobbler.composeapp.generated.resources.pref_blocked_metadata
-import pano_scrobbler.composeapp.generated.resources.pref_check_updates
 import pano_scrobbler.composeapp.generated.resources.pref_crashlytics_enabled
 import pano_scrobbler.composeapp.generated.resources.pref_delay
 import pano_scrobbler.composeapp.generated.resources.pref_delay_mins
@@ -109,7 +107,6 @@ import pano_scrobbler.composeapp.generated.resources.pref_import
 import pano_scrobbler.composeapp.generated.resources.pref_link_heart_button_rating
 import pano_scrobbler.composeapp.generated.resources.pref_locale
 import pano_scrobbler.composeapp.generated.resources.pref_misc
-import pano_scrobbler.composeapp.generated.resources.pref_notify_updates
 import pano_scrobbler.composeapp.generated.resources.pref_now_playing
 import pano_scrobbler.composeapp.generated.resources.pref_oss_credits
 import pano_scrobbler.composeapp.generated.resources.pref_personalization
@@ -351,6 +348,8 @@ fun PrefsScreen(
 
         PlatformSpecificPrefs.prefAutostart(::filteredItem)
 
+        PlatformSpecificPrefs.prefAddToAppLauncher(::filteredItem)
+
         filteredItem(MainPrefs::allowedPackages.name, Res.string.pref_scrobble_from) { title ->
             Column(Modifier.fillMaxWidth()) {
                 AppIconsPref(
@@ -447,6 +446,8 @@ fun PrefsScreen(
         }
 
         PlatformSpecificPrefs.discordRpc(::filteredItem, onNavigate)
+
+        PlatformSpecificPrefs.prefPersistentNotification(::filteredItem, notiPersistent)
 
         filteredHeader("delay", Res.string.pref_delay, Icons.HourglassEmpty)
 
@@ -605,7 +606,7 @@ fun PrefsScreen(
             )
         }
 
-        PlatformSpecificPrefs.prefNotifications(::filteredItem, notiPersistent)
+        PlatformSpecificPrefs.prefNotifications(::filteredItem)
 
         filteredHeader("lists", Res.string.simple_edits, Icons.EditNote)
 
@@ -835,33 +836,7 @@ fun PrefsScreen(
             )
         }
 
-        if (VariantStuff.githubApiUrl != null) {
-            filteredItem(MainPrefs::autoUpdates.name, Res.string.pref_notify_updates) { title ->
-                SwitchPref(
-                    text = title,
-                    value = checkForUpdates,
-                    copyToSave = {
-                        if (!it)
-                            UpdaterWork.cancel()
-                        else
-                            UpdaterWork.schedule(true)
-
-                        copy(autoUpdates = it)
-                    }
-                )
-            }
-
-            filteredItem("check_for_updates", Res.string.pref_check_updates) { title ->
-                TextPref(
-                    text = updateProgress?.message ?: title,
-                    enabled = updateProgress == null,
-                    onClick = {
-                        if (updateProgress == null)
-                            UpdaterWork.schedule(true)
-                    }
-                )
-            }
-        }
+        PlatformSpecificPrefs.updateCheck(::filteredItem, checkForUpdates, updateProgress)
 
         if (!PlatformStuff.isTv) {
             filteredItem("automation", Res.string.automation) { title ->

@@ -44,8 +44,8 @@ import pano_scrobbler.composeapp.generated.resources.fix_it_title
 import pano_scrobbler.composeapp.generated.resources.kill_reason
 import pano_scrobbler.composeapp.generated.resources.not_found
 import pano_scrobbler.composeapp.generated.resources.persistent_noti_desc
+import pano_scrobbler.composeapp.generated.resources.persistent_noti_fgs
 import pano_scrobbler.composeapp.generated.resources.persistent_noti_oems
-import pano_scrobbler.composeapp.generated.resources.show_persistent_noti
 import pano_scrobbler.composeapp.generated.resources.special_app_access
 
 
@@ -97,7 +97,7 @@ fun FixItDialog(
                     .padding(start = 16.dp)
             ) {
                 Text(
-                    text = stringResource(Res.string.show_persistent_noti),
+                    text = stringResource(Res.string.persistent_noti_fgs),
                     style = MaterialTheme.typography.titleMedium,
                     modifier = Modifier.weight(1f)
                 )

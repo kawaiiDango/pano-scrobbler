@@ -257,10 +257,22 @@ object MetadataUtils {
 
     fun cleanYoutubeTrack(track: String): String? {
         var cleanedTrack: String? = track
-        (youtubeTrackFilterRules + trimSymbolsFilterRules).forEach { rule ->
-            cleanedTrack = cleanedTrack?.applyFilter(rule)
-        }
+        (youtubeTrackFilterRules +
+                trimSymbolsFilterRules +
+                removeLtrRtlChars +
+                removeNumericPrefix
+                ).forEach { rule ->
+                cleanedTrack = cleanedTrack?.applyFilter(rule)
+            }
         return cleanedTrack
+    }
+
+    fun cleanYoutubeArtist(artist: String): String? {
+        var cleanedArtist: String? = artist
+        (removeLtrRtlChars + removeNumericPrefix).forEach { rule ->
+            cleanedArtist = cleanedArtist?.applyFilter(rule)
+        }
+        return cleanedArtist
     }
 
 
@@ -338,6 +350,15 @@ object MetadataUtils {
 
         if (isArtistTrackEmpty()) {
             track = title
+        }
+
+
+        if (track != null) {
+            track = cleanYoutubeTrack(track)
+        }
+
+        if (artist != null) {
+            artist = cleanYoutubeArtist(artist)
         }
 
         return Pair(artist, track)

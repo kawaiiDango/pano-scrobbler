@@ -55,9 +55,10 @@ import pano_scrobbler.composeapp.generated.resources.skip
 enum class OnboardingStepType {
     LOGIN,
     NOTIFICATION_LISTENER,
-    DKMA,
     CHOOSE_APPS,
     SEND_NOTIFICATIONS,
+    AUTOSTART,
+    APP_LAUNCHER,
 }
 
 @Composable

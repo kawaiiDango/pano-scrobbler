@@ -3,6 +3,7 @@ package com.arn.scrobble.updates
 import co.touchlab.kermit.Logger
 import com.arn.scrobble.api.github.GithubReleases
 import com.arn.scrobble.utils.DesktopStuff
+import kotlin.system.exitProcess
 
 actual suspend fun doAfterUpdateCheck(releases: GithubReleases): UpdateAction? {
     val updateFile = AutoUpdater.update(releases) ?: return null
@@ -34,5 +35,5 @@ actual fun runUpdateAction(updateAction: UpdateAction) {
         Logger.e(e) { "Failed to relaunch after update" }
     }
 
-    DesktopStuff.exit()
+    exitProcess(0)
 }

@@ -14,7 +14,7 @@ if [[ -z "$(command -v makepkg)" ]]; then
     -v "$(realpath "$flakeDir"):/flake:z" \
     -w /scripts \
     docker.io/archlinux:base \
-    bash -c "pacman -Sy --noconfirm jq ed tinyxxd nix && bash /scripts/$(basename "$0")"
+    bash -c "pacman -Sy --noconfirm jq ed tinyxxd nix git && bash /scripts/$(basename "$0")"
 fi
 
 # if inside container, set dirs to their mount paths. Don't do it if the host is Arch.

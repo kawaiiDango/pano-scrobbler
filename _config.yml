@@ -42,6 +42,7 @@ keep_files:
   - fastlane
   - desktop-screenshots
   - composeApp
+  - sitemap.xml
 
 plugins:
   - jekyll-relative-links

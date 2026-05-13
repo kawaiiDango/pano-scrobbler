@@ -60,8 +60,20 @@ jobs:
       - name: Run update script
         run: cd static-site/fdroid && bash update.sh 2>&1
 
-      - name: Remove unneded files and secrets
-        run: rm -r static-site/fdroid/keystore.p12 static-site/fdroid/config.yml static-site/fdroid/tmp static-site/fdroid/srclibs static-site/fdroid/update.sh static-site/fdroid/generate_metadata.sh static-site/fdroid/metadata
+      - name: Generate sitemap
+        run: bash static-site/generate_sitemap.sh > static-site/sitemap.xml
+
+      - name: Remove unneeded files and secrets
+        run: |
+          rm -r \
+            static-site/fdroid/keystore.p12 \
+            static-site/fdroid/config.yml \
+            static-site/fdroid/tmp \
+            static-site/fdroid/srclibs \
+            static-site/fdroid/update.sh \
+            static-site/fdroid/generate_metadata.sh \
+            static-site/fdroid/metadata \
+            static-site/generate_sitemap.sh
 
       - name: Copy static site assets
         run: |

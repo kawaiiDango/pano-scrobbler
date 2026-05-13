@@ -15,8 +15,10 @@ PAGES=(
 
 get_lastmod() {
   local file="$1"
-  # Returns the committer date of the last commit that touched this file
-  git log --follow -1 --format="%cI" -- "$file" 2>/dev/null | head -1
+  # Use file mtime set by git restore-mtime in CI
+  if [ -f "$file" ]; then
+    date -r "$file" --iso-8601=seconds 2>/dev/null
+  fi
 }
 
 echo '<?xml version="1.0" encoding="UTF-8"?>'

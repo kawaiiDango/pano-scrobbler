@@ -89,6 +89,10 @@ jobs:
           cp faq.md static-site/faq.md
           cp privacy-policy.md static-site/privacy-policy.md
 
+      - name: Patch JSON-LD in index.html
+        run: |
+          sed -i 's/}<\/script>/,"operatingSystem":"Windows, Linux, Android","applicationCategory":"MultimediaApplication","offers":{"@type":"Offer","price":0}}<\/script>/' static-site/index.html
+
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v5
         with:

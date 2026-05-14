@@ -83,8 +83,24 @@ titles_from_headings:
   strip_title: true
   collections: false
 
-webmaster_verifications:
-  google: SYxNEykHCbO8vhg17mUMrsO108eWLl6eUOpE0Fa-xGw
+defaults:
+  - scope:
+      path: "README.md"
+    values:
+      seo:
+        type: "SoftwareApplication"
+  - scope:
+      path: "faq.md"
+    values:
+      description: "Troubleshoot background scrobbling, missing metadata, duplicates, automation and more across desktop, Android and TV."
+  - scope:
+      path: "privacy-policy.md"
+    values:
+      description: "Pano Scrobbler is a free and open-source app. Learn exactly how the permissions are used, what data is collected and what is not collected."
+  - scope:
+      path: "instructions.md"
+    values:
+      description: "Steps to compile this application from source for desktop and Android targets."
 
 #defaults:
 #  -

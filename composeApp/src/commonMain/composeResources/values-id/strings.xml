@@ -115,7 +115,6 @@
     <string name="pending_scrobbles">Scrobble yang Tertunda</string>
     <string name="following" comment="accounts you are following on lastfm">Mengikuti</string>
     <string name="since_time" formatted="true" comment="%1= date of joining lastfm">Sejak %1$s</string>
-    <string name="allow_background">Izinkan scrobbling di latar belakang</string>
     <string name="grant_notification_access">Berikan akses notifikasi</string>
     <string name="grant_notification_access_desc">Diperlukan untuk mengambil metadata musik. Tidak ada notifikasi non-musik yang dibaca</string>
     <string name="send_notifications">Izinkan notifikasi</string>

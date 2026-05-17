@@ -6,13 +6,6 @@
 %global debug_package %{nil}
 %global __strip /bin/true
 
-%ifarch x86_64
-%global _download_arch x64
-%endif
-%ifarch aarch64
-%global _download_arch arm64
-%endif
-
 Name:           pano-scrobbler
 Version:        4.39
 Release:        1%{?dist}
@@ -20,7 +13,9 @@ Summary:        Feature packed cross-platform music tracker
 License:        GPL-3.0-or-later
 URL:            https://github.com/kawaiiDango/pano-scrobbler
 ExclusiveArch:  x86_64 aarch64
-Source0:        %{url}/releases/download/%{_pkgver}/%{_pkgname}-linux-%{_download_arch}.tar.gz
+
+Source0:        %{url}/releases/download/%{_pkgver}/%{_pkgname}-linux-x64.tar.gz
+Source1:        %{url}/releases/download/%{_pkgver}/%{_pkgname}-linux-arm64.tar.gz
 
 Requires:       dbus
 Requires:       webkitgtk6.0
@@ -35,7 +30,12 @@ With regex edits, charts & Discord Rich Presence on PC.
 
 %prep
 # -c creates a wrapping directory since the tarball may not have one
-%setup -q -c
+%ifarch x86_64
+%setup -q -c -T -b 0
+%endif
+%ifarch aarch64
+%setup -q -c -T -b 1
+%endif
 
 # Patch desktop entry
 sed -i 's|^Exec=.*|Exec=/usr/bin/%{_pkgname} %%U|' %{_pkgname}.desktop

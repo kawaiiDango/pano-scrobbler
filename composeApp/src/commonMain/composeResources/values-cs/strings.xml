@@ -147,7 +147,6 @@
     <string name="unlove" comment="Undo a love/like and make it neutral. This is not the same as Dislike">Zrušit oblíbení</string>
     <string name="pending_scrobbles">Čekající Scrobbly</string>
     <string name="following" comment="accounts you are following on lastfm">Sledovaní</string>
-    <string name="allow_background">Povolit scrobblování na pozadí</string>
     <string name="grant_notification_access">Udělit přístup k oznámením</string>
     <string name="grant_notification_access_desc">Nutné pro získání metadat skladeb. Nebudou přečtena žádná nehudební oznámení</string>
     <string name="send_notifications">Povolit oznámení</string>

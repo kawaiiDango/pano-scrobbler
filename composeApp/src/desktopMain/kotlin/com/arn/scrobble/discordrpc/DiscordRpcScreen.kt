@@ -137,7 +137,7 @@ fun DiscordRpcScreen(
         )
 
         SwitchPref(
-            text = stringResource(Res.string.appwidget_show) + ":" + stringResource(Res.string.loved),
+            text = stringResource(Res.string.appwidget_show) + ": " + stringResource(Res.string.loved),
             value = settings.lovedState,
             enabled = settings.enabled,
             copyToSave = {

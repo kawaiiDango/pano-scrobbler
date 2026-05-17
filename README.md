@@ -23,7 +23,7 @@ Windows releases are unsigned, so a SmartScreen warning about "Unknown Publisher
 
 [![Download AppImage for x64 from GitHub](img/github-appimage-x64.svg)](https://github.com/kawaiiDango/pano-scrobbler/releases/latest/download/pano-scrobbler-linux-x64.AppImage)
 [![Download AppImage for arm64 from GitHub](img/github-appimage-arm64.svg)](https://github.com/kawaiiDango/pano-scrobbler/releases/latest/download/pano-scrobbler-linux-arm64.AppImage)
-[![Install from AUR](img/aur.svg)](https://aur.archlinux.org/packages/pano-scrobbler-bin) [![Install via Nix flake](img/nix-flake.svg)](https://github.com/kawaiiDango/pano-scrobbler-flake)
+[![Install from AUR](img/aur.svg)](https://aur.archlinux.org/packages/pano-scrobbler-bin) [![Install via Nix flake](img/nix-flake.svg)](https://github.com/kawaiiDango/pano-scrobbler-flake) [![Install from COPR](img/copr.svg)](https://copr.fedorainfracloud.org/coprs/kawaiidango/pano-scrobbler/)
 
 [![Download tar.gz for x64 from GitHub](img/github-targz-x64.svg)](https://github.com/kawaiiDango/pano-scrobbler/releases/latest/download/pano-scrobbler-linux-x64.tar.gz)
 [![Download tar.gz for arm64 from GitHub](img/github-targz-arm64.svg)](https://github.com/kawaiiDango/pano-scrobbler/releases/latest/download/pano-scrobbler-linux-arm64.tar.gz)
@@ -50,8 +50,8 @@ nix profile install github:kawaiiDango/pano-scrobbler-flake
 #### Fedora (COPR):
 
 ```
-dnf copr enable kawaiidango/pano-scrobbler
-dnf install pano-scrobbler
+sudo dnf copr enable kawaiidango/pano-scrobbler
+sudo dnf install pano-scrobbler
 ```
 
 The desktop versions do not use any closed source libraries.

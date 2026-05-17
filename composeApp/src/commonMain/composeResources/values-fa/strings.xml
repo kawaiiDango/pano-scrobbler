@@ -124,7 +124,6 @@
     <string name="unlove" comment="Undo a love/like and make it neutral. This is not the same as Dislike">دوست ندارم</string>
     <string name="pending_scrobbles">اسکرابل های منتظر</string>
     <string name="following" comment="accounts you are following on lastfm">دنبال‌شده</string>
-    <string name="allow_background">اجازه اسکرابل در پس‌زمینه</string>
     <string name="grant_notification_access">دادن اجازه دسترسی به اعلانات</string>
     <string name="grant_notification_access_desc">برای بازیابی فراداده آهنگ لازمه، هیچ اعلان بی آهنگی رو نمی‌خونم</string>
     <string name="send_notifications">مجاز به اعلانات</string>

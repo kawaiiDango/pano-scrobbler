@@ -114,7 +114,6 @@
     <string name="unlove" comment="Undo a love/like and make it neutral. This is not the same as Dislike">Undur</string>
     <string name="pending_scrobbles">Scrobble sementara</string>
     <string name="following" comment="accounts you are following on lastfm">Mengikuti</string>
-    <string name="allow_background">Membolehkan scrobble di latar belakang</string>
     <string name="grant_notification_access">Berikan akses pemberitahuan</string>
     <string name="grant_notification_access_desc">Diperlukan untuk menjejak metadata muzik. Notifikasi selain ini tidak diakses</string>
     <string name="send_notifications">Membenarkan notifikasi</string>

@@ -119,7 +119,6 @@
     <string name="unlove" comment="Undo a love/like and make it neutral. This is not the same as Dislike">Poista tykkäys</string>
     <string name="pending_scrobbles">Odottavat scrobblaukset</string>
     <string name="following" comment="accounts you are following on lastfm">Seurataan</string>
-    <string name="allow_background">Salli scrobblaaminen taustalla</string>
     <string name="grant_notification_access">Myönnä ilmoitusten käyttöoikeus</string>
     <string name="grant_notification_access_desc">Tarvitaan musiikin metadatan hakemiseen. Ei lueta muita kuin musiikkia koskevia ilmoituksia</string>
     <string name="send_notifications">Salli ilmoitukset</string>

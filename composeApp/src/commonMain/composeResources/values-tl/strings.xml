@@ -89,7 +89,6 @@
     <string name="edit">I-edit</string>
     <string name="delete">Tanggalin</string>
     <string name="delete_all">Tanggalin lahat</string>
-    <string name="allow_background">I-allow ang pag-iiscrobble sa background</string>
     <string name="grant_notification_access">Payagan ang pag-access sa mga notification</string>
     <string name="grant_notification_access_desc">Kailangan para makuha ang mga impormasyon ng kanta. Walang hindi-kantang notification ang babasahin</string>
     <string name="send_notifications">I-allow ang notifications</string>

@@ -113,7 +113,6 @@
     <string name="unlove" comment="Undo a love/like and make it neutral. This is not the same as Dislike">Love解除</string>
     <string name="pending_scrobbles">Scrobbleの保留</string>
     <string name="following" comment="accounts you are following on lastfm">フォロー中</string>
-    <string name="allow_background">バックグラウンドでもScrobbleする</string>
     <string name="grant_notification_access">通知へのアクセスの許可</string>
     <string name="grant_notification_access_desc">音楽のメタデータを取得するために必要です。音楽以外の通知は読み取りません</string>
     <string name="send_notifications">通知を許可する</string>

@@ -124,7 +124,6 @@
     <string name="unlove" comment="Undo a love/like and make it neutral. This is not the same as Dislike">Unlove</string>
     <string name="pending_scrobbles">विचाराधीन स्क्रबल</string>
     <string name="following" comment="accounts you are following on lastfm">फलोइङ</string>
-    <string name="allow_background">ब्याकग्राउण्डमा स्क्रबल गर्ने अनुमति दिनुहोस्</string>
     <string name="grant_notification_access">सूचना अनुमति प्रदान गर्नुहोस्</string>
     <string name="grant_notification_access_desc">संगीत मेटाडेटा प्राप्त गर्न आवश्यक छ। अन्य कुनै पनि गैर-संगीत सूचनाहरू पढिने छैनन्</string>
     <string name="send_notifications">सूचनाहरूलाई अनुमति दिनुहोस्</string>

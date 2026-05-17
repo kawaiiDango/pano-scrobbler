@@ -125,7 +125,6 @@
     <string name="unlove" comment="Undo a love/like and make it neutral. This is not the same as Dislike">Nicht mehr favorisieren</string>
     <string name="pending_scrobbles">Ausstehende Scrobbles</string>
     <string name="following" comment="accounts you are following on lastfm">Abonniert</string>
-    <string name="allow_background">Scrobbeln im Hintergrund erlauben</string>
     <string name="grant_notification_access">Zugriff auf die Benachrichtigungen gewähren</string>
     <string name="grant_notification_access_desc">Benötigt, um Musik-Metadaten abzurufen. Keine Nicht-Musik-Benachrichtigungen werden gelesen</string>
     <string name="send_notifications">Benachrichtigungen zulassen</string>

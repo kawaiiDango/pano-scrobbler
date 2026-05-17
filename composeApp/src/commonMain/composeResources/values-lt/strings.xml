@@ -154,7 +154,6 @@
     <string name="pending_scrobbles">Laukiami skroblai</string>
     <string name="following" comment="accounts you are following on lastfm">Sekama</string>
     <string name="since_time" formatted="true" comment="%1= date of joining lastfm">Nuo %1$s</string>
-    <string name="allow_background">Leisti skrobolinimą fone</string>
     <string name="grant_notification_access">Suteikti pranešimo prieigą</string>
     <string name="grant_notification_access_desc">Reikalinga muzikos metaduomenims gauti. Neskaitomi jokie su muzika nesusiję pranešimai.</string>
     <string name="send_notifications">Leisti pranešimus</string>

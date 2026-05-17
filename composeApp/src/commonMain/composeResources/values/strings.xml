@@ -131,7 +131,6 @@
     <string name="pending_scrobbles">Pending Scrobbles</string>
     <string name="following" comment="accounts you are following on lastfm">Following</string>
     <string name="since_time" formatted="true" comment="%1= date of joining lastfm">Since %1$s</string>
-    <string name="allow_background">Allow scrobbling in background</string>
     <string name="grant_notification_access">Grant notification access</string>
     <string name="grant_notification_access_desc">Needed to retrieve music metadata. No non-music notifications are read</string>
     <string name="send_notifications">Allow notifications</string>
@@ -415,6 +414,15 @@
     <string name="artist_splitting_exceptions" comment="exceptions for the use first artist feature">Artist Splitting Exceptions</string>
     <string name="add_exception" comment="as in adding an exception to a rule or setting">Add an exception</string>
     <string name="upto_n" formatted="true">Up to %1$d</string>
+    <string name="add_to_app_launcher">Add a shortcut to the application launcher</string>
+    <string name="persistent_noti_fgs">Keep the scrobbler alive in background</string>
+    <string name="empty_apps_list">Apps will appear here once you play something in them</string>
+    <string name="supports_ambient_apps" formatted="true" comment="%1 = comma-separated list of music recognition apps">Also supports music recognition apps like %1$s</string>
+    <string name="persistent_noti_desc" formatted="true" comment="%1 = some names of phone manufacturers">Required on OEMs that aggressively kill background apps, such as %1$s etc</string>
+    <string name="cache" comment="as a noun">Cache</string>
+    <string name="random_on_start" comment="currently used as a toggle in the themes screen to pick a random theme when the app starts">Random on process start</string>
+    <string name="edit_continue_simple" comment="a toggle in the normal edits screen">If found, continue editing with regex rules &amp; presets</string>
+    <string name="edit_continue_regex" comment="a toggle in the regex edits screen">If found, continue editing with other regex rules &amp; presets</string>
 
     <string name="get_pro">Support this app</string>
     <string name="one_time_purchase">One time</string>

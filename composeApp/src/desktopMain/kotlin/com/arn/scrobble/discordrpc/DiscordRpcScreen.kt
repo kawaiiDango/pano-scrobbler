@@ -34,13 +34,14 @@ import pano_scrobbler.composeapp.generated.resources.Res
 import pano_scrobbler.composeapp.generated.resources.album_art
 import pano_scrobbler.composeapp.generated.resources.album_art_now_playing
 import pano_scrobbler.composeapp.generated.resources.album_art_now_playing_desc
+import pano_scrobbler.composeapp.generated.resources.appwidget_show
 import pano_scrobbler.composeapp.generated.resources.available_placeholders
 import pano_scrobbler.composeapp.generated.resources.discord_app_name
 import pano_scrobbler.composeapp.generated.resources.discord_compact_view_line
 import pano_scrobbler.composeapp.generated.resources.enable
 import pano_scrobbler.composeapp.generated.resources.line_n
+import pano_scrobbler.composeapp.generated.resources.loved
 import pano_scrobbler.composeapp.generated.resources.reset
-import pano_scrobbler.composeapp.generated.resources.show_loved
 import pano_scrobbler.composeapp.generated.resources.show_paused_for
 import pano_scrobbler.composeapp.generated.resources.show_track_url
 
@@ -136,7 +137,7 @@ fun DiscordRpcScreen(
         )
 
         SwitchPref(
-            text = stringResource(Res.string.show_loved),
+            text = stringResource(Res.string.appwidget_show) + ":" + stringResource(Res.string.loved),
             value = settings.lovedState,
             enabled = settings.enabled,
             copyToSave = {

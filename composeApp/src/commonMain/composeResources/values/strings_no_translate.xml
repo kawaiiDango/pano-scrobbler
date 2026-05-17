@@ -35,26 +35,16 @@
     <string name="log_to_file">Persist scrobble logs</string>
     <string name="affect_performance">Will affect performance</string>
     <string name="proxy_socks5" translatable="false">SOCKS5</string>
-    <string name="desktop" translatable="false">Windows and Linux</string>
+    <string name="desktop" translatable="false">Windows &amp; Linux</string>
     <string name="android" translatable="false">Android</string>
     <string name="persistent_noti_oems" translatable="false">Xiaomi, Samsung, Huawei</string>
     <string name="ambient_apps" translatable="false">Shazam, Audile, Ambient Music Mod</string>
 
     <!--  strings for unfinalized stuff  -->
 
-    <string name="add_to_app_launcher">Add a shortcut to the application launcher</string>
-    <string name="persistent_noti_fgs">Keep the scrobbler alive in background</string>
-    <string name="empty_apps_list">Apps will appear here once you play something in them</string>
-    <string name="supports_ambient_apps" formatted="true" comment="%1 = comma-separated list of music recognition apps">Also supports music recognition apps like %1$s</string>
-    <string name="persistent_noti_desc" formatted="true" comment="%1 = some names of phone manufacturers">Required on OEMs that aggressively kill background apps, such as %1$s etc</string>
-    <string name="cache" comment="as a noun">Cache</string>
     <string name="exit_reasons">Exit reasons</string>
-    <string name="edit_continue_simple">If found, continue editing with regex rules &amp; presets</string>
-    <string name="edit_continue_regex">If found, continue editing with other regex rules &amp; presets</string>
     <string name="scrobble_sources">Scrobble sources</string>
-    <string name="show_loved" comment="To show the loved state of a track, used in Discord Rich Presence">Show loved state</string>
     <string name="stop">Stop</string>
-    <string name="random_on_start">Random on process start</string>
     <string name="notification_access_tv">This setting is usually at Apps > Special app access > Notification access</string>
 
     <string name="automation_cp_info">For Tasker, use Action > SQL Query. Set the mode to "URI Formatted", put any name in "Variable Array" and URI to one of these.</string>

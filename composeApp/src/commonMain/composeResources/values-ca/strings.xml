@@ -111,7 +111,6 @@
     <string name="love" comment="Love/like a song">Preferit</string>
     <string name="unlove" comment="Undo a love/like and make it neutral. This is not the same as Dislike">Elimina dels preferits</string>
     <string name="pending_scrobbles">Scrobbles pendents</string>
-    <string name="allow_background">Permet fer scrobbling en segon pla</string>
     <string name="send_notifications">Permet notificacions</string>
     <string name="will_not_scrobble">Si salteu aquest pas, es desactivarà l'enviament d'scrobbles</string>
     <string name="swap" comment="(Swap title and artist)">Intercanvia</string>

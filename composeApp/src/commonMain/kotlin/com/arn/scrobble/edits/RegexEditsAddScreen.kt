@@ -84,6 +84,7 @@ import pano_scrobbler.composeapp.generated.resources.album_artist
 import pano_scrobbler.composeapp.generated.resources.apps
 import pano_scrobbler.composeapp.generated.resources.artist
 import pano_scrobbler.composeapp.generated.resources.block
+import pano_scrobbler.composeapp.generated.resources.cache
 import pano_scrobbler.composeapp.generated.resources.copy_from
 import pano_scrobbler.composeapp.generated.resources.delete
 import pano_scrobbler.composeapp.generated.resources.edit_all
@@ -100,8 +101,12 @@ import pano_scrobbler.composeapp.generated.resources.edit_regex
 import pano_scrobbler.composeapp.generated.resources.edit_regex_invalid
 import pano_scrobbler.composeapp.generated.resources.edit_regex_warning
 import pano_scrobbler.composeapp.generated.resources.edit_replace
+import pano_scrobbler.composeapp.generated.resources.external_metadata
+import pano_scrobbler.composeapp.generated.resources.is_turned_off
+import pano_scrobbler.composeapp.generated.resources.lastfm
 import pano_scrobbler.composeapp.generated.resources.no_apps_enabled
 import pano_scrobbler.composeapp.generated.resources.nothing
+import pano_scrobbler.composeapp.generated.resources.pref_fetch_missing_album
 import pano_scrobbler.composeapp.generated.resources.required_fields_empty
 import pano_scrobbler.composeapp.generated.resources.save
 import pano_scrobbler.composeapp.generated.resources.search
@@ -120,6 +125,7 @@ fun RegexEditsAddScreen(
 ) {
     val scope = rememberCoroutineScope()
     val regexLearnt by PlatformStuff.mainPrefs.data.collectAsStateWithInitialValue { it.regexLearnt }
+    val fetchAlbumGlobal by PlatformStuff.mainPrefs.data.collectAsStateWithInitialValue { it.fetchAlbum }
     var name by rememberSaveable { mutableStateOf(regexEdit?.name ?: "") }
     var appItems by rememberSaveable(saver = jsonSerializableSaver()) { mutableStateOf(emptySet<AppItem>()) }
     val dao = remember { PanoDb.db.getRegexEditsDao() }
@@ -165,6 +171,12 @@ fun RegexEditsAddScreen(
         )
     }
 
+    var fetchAlbum by rememberSaveable {
+        mutableStateOf(
+            regexEdit?.replacement?.fetchAlbum ?: false
+        )
+    }
+
     var blockPlayerAction by rememberSaveable {
         mutableStateOf(regexEdit?.blockPlayerAction ?: BlockPlayerAction.ignore)
     }
@@ -206,10 +218,11 @@ fun RegexEditsAddScreen(
                     search = search,
                     replacement = RegexEdit.ReplacementPatterns(
                         replacementTrack,
-                        replacementAlbum,
+                        replacementAlbum.takeIf { !fetchAlbum }.orEmpty(),
                         replacementArtist,
                         replacementAlbumArtist,
-                        replaceAll
+                        replaceAll,
+                        fetchAlbum
                     ),
                     appIds = appItems.map { it.appId }.toSet(),
                     caseSensitive = caseSensitive,
@@ -415,8 +428,33 @@ fun RegexEditsAddScreen(
                         onSearchChange = { searchAlbum = it },
                         onReplacementChange = { replacementAlbum = it },
                         copyFromField = albumCopyFrom,
-                        onCopyFromSelected = { albumCopyFrom = it }
+                        onCopyFromSelected = { albumCopyFrom = it },
+                        replacementRegexEnabled = !fetchAlbum
                     )
+
+                    LabeledCheckbox(
+                        checked = fetchAlbum,
+                        onCheckedChange = { fetchAlbum = it },
+                        enabled = fetchAlbumGlobal,
+                        text = stringResource(
+                            Res.string.pref_fetch_missing_album,
+                            stringResource(Res.string.cache) + " & " +
+                                    stringResource(Res.string.lastfm)
+                        ),
+                        modifier = Modifier.fillMaxWidth()
+                    )
+
+                    if (!fetchAlbumGlobal) {
+                        Text(
+                            stringResource(
+                                Res.string.is_turned_off,
+                                "",
+                                stringResource(Res.string.external_metadata)
+                            ),
+                            color = MaterialTheme.colorScheme.error,
+                            modifier = Modifier.fillMaxWidth()
+                        )
+                    }
 
                     SearchAndReplacePair(
                         label = stringResource(Res.string.album_artist),
@@ -697,7 +735,8 @@ private fun SearchAndReplacePair(
     onReplacementChange: (String) -> Unit,
     copyFromField: RegexEdit.Field?,
     onCopyFromSelected: (RegexEdit.Field?) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    replacementRegexEnabled: Boolean = true,
 ) {
     Column(
         modifier = modifier
@@ -746,7 +785,7 @@ private fun SearchAndReplacePair(
         PanoOutlinedTextField(
             value = replacementRegex,
             onValueChange = onReplacementChange,
-            enabled = copyFromField == null,
+            enabled = copyFromField == null && replacementRegexEnabled,
             label = { Text(stringResource(Res.string.edit_replace)) },
             enabledOnTv = false,
             modifier = Modifier

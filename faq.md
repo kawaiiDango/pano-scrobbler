@@ -45,8 +45,9 @@ Go to Configure > Use the first artist only
 ### The app is scrobbling non music videos from YouTube
 
 Unfortunately there is no way to detect whether a video is a music video, from just the video title
-and the channel name, reported to the OS media controls. You may block certain channels from
-scrobbling or turn off YouTube scrobbling entirely, from settings.
+and the channel name, reported to the OS media controls. Use the dedicated YouTube Music app for
+music instead. You may block certain channels from scrobbling or turn off YouTube scrobbling
+entirely, from settings.
 
 ### I cannot edit scrobbles older than 14 days
 
@@ -71,7 +72,7 @@ image will be displayed.
 
 ### Certain tracks are being ignored
 
-Last.FM has a spam filter, which filters out tracks/albums/artists with titles similar to
+Last.FM has a filter, which filters out tracks/albums/artists with titles similar to
 "Unknown", ".mp3", "Track_01" etc
 
 ### The scrobbler submits incomplete data / does not submit album artists
@@ -99,7 +100,8 @@ music player's app info and tap on "Clear defaults".
 ### [android] Where is the scrobble from mic feature?
 
 In-app scrobble from mic has been removed, in favor of scrobbling from Shazam/AutoShazam, Audile,
-Pixel's Now Playing or Ambient Music Mod.
+Ambient Music Mod and Pixel's Now Playing (before the March 2026 Pixel Feature Drop). Scrobbling the
+new Pixel Now Playing app is possible only with root and the Xposed module, Public Compute Services.
 
 ### [android] Where are the Tasker intents?
 

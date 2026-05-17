@@ -38,11 +38,14 @@
     <string name="desktop" translatable="false">Windows and Linux</string>
     <string name="android" translatable="false">Android</string>
     <string name="persistent_noti_oems" translatable="false">Xiaomi, Samsung, Huawei</string>
+    <string name="ambient_apps" translatable="false">Shazam, Audile, Ambient Music Mod</string>
 
     <!--  strings for unfinalized stuff  -->
 
     <string name="add_to_app_launcher">Add a shortcut to the application launcher</string>
     <string name="persistent_noti_fgs">Keep the scrobbler alive in background</string>
+    <string name="empty_apps_list">Apps will appear here once you play something in them</string>
+    <string name="supports_ambient_apps" formatted="true" comment="%1 = comma-separated list of music recognition apps">Also supports music recognition apps like %1$s</string>
     <string name="persistent_noti_desc" formatted="true" comment="%1 = some names of phone manufacturers">Required on OEMs that aggressively kill background apps, such as %1$s etc</string>
     <string name="cache" comment="as a noun">Cache</string>
     <string name="exit_reasons">Exit reasons</string>

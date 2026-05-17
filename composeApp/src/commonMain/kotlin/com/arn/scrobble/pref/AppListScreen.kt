@@ -62,12 +62,15 @@ import kotlinx.coroutines.launch
 import kotlinx.serialization.Serializable
 import org.jetbrains.compose.resources.stringResource
 import pano_scrobbler.composeapp.generated.resources.Res
+import pano_scrobbler.composeapp.generated.resources.ambient_apps
 import pano_scrobbler.composeapp.generated.resources.artist_splitting_exceptions
+import pano_scrobbler.composeapp.generated.resources.empty_apps_list
 import pano_scrobbler.composeapp.generated.resources.first_artist
 import pano_scrobbler.composeapp.generated.resources.forget_unchecked_apps
 import pano_scrobbler.composeapp.generated.resources.music_players
 import pano_scrobbler.composeapp.generated.resources.needs_plugin
 import pano_scrobbler.composeapp.generated.resources.other_apps
+import pano_scrobbler.composeapp.generated.resources.supports_ambient_apps
 
 
 @Composable
@@ -251,6 +254,17 @@ fun AppListScreen(
                 }
             }
 
+            if (PlatformStuff.isDesktop && appListFiltered.musicPlayers.isEmpty() &&
+                saveType == AppListSaveType.Scrobbling && hasLoaded && searchTerm.isBlank()
+            ) {
+                item("header_no_music_players") {
+                    SimpleHeaderItem(
+                        text = stringResource(Res.string.empty_apps_list),
+                        icon = Icons.Info,
+                    )
+                }
+            }
+
             if (appListFiltered.musicPlayers.isNotEmpty() || !hasLoaded) {
 
                 if (saveType is AppListSaveType.ExtractFirstArtist) {
@@ -303,6 +317,32 @@ fun AppListScreen(
                 addPlaceholderItems(10)
             } else {
                 addItems(appListFiltered.musicPlayers)
+
+                if (!PlatformStuff.isDesktop && !PlatformStuff.isTv &&
+                    saveType == AppListSaveType.Scrobbling && searchTerm.isBlank()
+                ) {
+                    item("notice_ambient_apps") {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = horizontalOverscanPadding(), vertical = 8.dp)
+                        ) {
+                            Icon(
+                                imageVector = Icons.Info,
+                                contentDescription = null,
+                                modifier = Modifier.padding(end = 16.dp)
+                            )
+                            Text(
+                                style = MaterialTheme.typography.labelMedium,
+                                text = stringResource(
+                                    Res.string.supports_ambient_apps,
+                                    stringResource(Res.string.ambient_apps),
+                                ),
+                            )
+                        }
+                    }
+                }
 
                 if (appListFiltered.otherApps.isNotEmpty()) {
                     item("header_other_apps") {

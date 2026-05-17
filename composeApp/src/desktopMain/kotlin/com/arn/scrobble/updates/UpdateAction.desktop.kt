@@ -3,6 +3,7 @@ package com.arn.scrobble.updates
 import co.touchlab.kermit.Logger
 import com.arn.scrobble.api.github.GithubReleases
 import com.arn.scrobble.utils.DesktopStuff
+import java.io.File
 import kotlin.system.exitProcess
 
 actual suspend fun doAfterUpdateCheck(releases: GithubReleases): UpdateAction? {
@@ -21,12 +22,10 @@ actual suspend fun doAfterUpdateCheck(releases: GithubReleases): UpdateAction? {
 actual fun runUpdateAction(updateAction: UpdateAction) {
     try {
         if (DesktopStuff.os == DesktopStuff.Os.Windows) {
-            // there doesn't seem to be a way to pass arguments to the installer when launching with explorer.exe
-            ProcessBuilder("explorer.exe", updateAction.urlOrFilePath)
+            ProcessBuilder(updateAction.urlOrFilePath)
                 .start()
         } else if (DesktopStuff.os == DesktopStuff.Os.Linux) {
-            val appDir = System.getenv("APPDIR")
-            val relauncher = "$appDir/usr/bin/relaunch.sh"
+            val relauncher = File(DesktopStuff.execDirPath, "relaunch.sh").absolutePath
             ProcessBuilder(relauncher, updateAction.urlOrFilePath)
                 .inheritIO()
                 .start()

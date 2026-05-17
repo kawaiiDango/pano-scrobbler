@@ -28,8 +28,8 @@ Windows releases are unsigned, so a SmartScreen warning about "Unknown Publisher
 [![Download tar.gz for x64 from GitHub](img/github-targz-x64.svg)](https://github.com/kawaiiDango/pano-scrobbler/releases/latest/download/pano-scrobbler-linux-x64.tar.gz)
 [![Download tar.gz for arm64 from GitHub](img/github-targz-arm64.svg)](https://github.com/kawaiiDango/pano-scrobbler/releases/latest/download/pano-scrobbler-linux-arm64.tar.gz)
 
-The AppImage runs anywhere, requires no installation, has automatic updates and can optionally add
-itself to the application launcher for convenience. Just make it executable before running it:
+The AppImage runs anywhere, requires no installation, has **automatic updates** and can optionally
+add itself to the **application launcher** for convenience. Just make it executable before running:
 
 ```
 chmod +x pano-scrobbler-linux-*.AppImage
@@ -47,6 +47,13 @@ yay -S pano-scrobbler-bin
 nix profile install github:kawaiiDango/pano-scrobbler-flake
 ```
 
+#### Fedora (COPR):
+
+```
+dnf copr enable kawaiidango/pano-scrobbler
+dnf install pano-scrobbler
+```
+
 The desktop versions do not use any closed source libraries.
 
 ### Android (phones, tablets, TVs and Chromebooks):
@@ -61,9 +68,9 @@ Since v4.0, the non-Play builds do not use Firebase Crashlytics, Google Play Ser
 source libraries.
 
 Installing the non-Play version from the F-Droid compatible repo, IzzyOnDroid or Obtainium will get
-you automatic updates.
+you **automatic updates**.
 
-**APK SHA256 fingerprint for non-Play builds:**
+#### APK SHA256 fingerprint for non-Play builds:
 
 ```
 9E:68:AB:6B:D6:11:CE:79:DD:5D:53:E3:5A:15:CF:93:CF:73:9A:4E:94:C4:9A:B1:BF:10:DD:12:65:F0:2E:6C

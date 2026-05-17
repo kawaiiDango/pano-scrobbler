@@ -37,7 +37,11 @@ data class PreprocessResult(
     val titleParseFailed: Boolean = false,
     val blockPlayerAction: BlockPlayerAction? = null,
     val userLoved: Boolean = false,
-)
+    private val fetchAlbumValue: Boolean = false,
+) {
+    val canFetchAlbum: Boolean
+        get() = (fetchAlbumValue || !userEditsApplied) && scrobbleData.album.isNullOrEmpty()
+}
 
 data class AdditionalMetadataResult(
     val scrobbleData: ScrobbleData?,
@@ -50,6 +54,12 @@ data class AdditionalMetadataResult(
             artUrl = null,
         )
     }
+}
+
+enum class AdditionalMetadataType {
+    ART_URL,
+    MISSING_METADATA,
+    ALBUM_GUESS
 }
 
 object ScrobbleEverywhere {
@@ -78,6 +88,7 @@ object ScrobbleEverywhere {
         var presetsApplied = false
         var titleParseFailed = false
         var continueMatching = true
+        var fetchAlbumValue = false
 
         PanoDb.db.getSimpleEditsDao().findAndPerformEdit(scrobbleData)
             ?.also { (newScrobbleData, _continueMatching) ->
@@ -103,6 +114,7 @@ object ScrobbleEverywhere {
                 scrobbleData = regexResults.scrobbleData
                 userEditsApplied = true
                 continueMatching = regexResults.matches.last().continueMatching
+                fetchAlbumValue = regexResults.matches.any { it.replacement?.fetchAlbum == true }
             }
         }
 
@@ -173,7 +185,8 @@ object ScrobbleEverywhere {
             presetsApplied = presetsApplied,
             userEditsApplied = userEditsApplied,
             titleParseFailed = titleParseFailed,
-            scrobbleData = scrobbleData.trimmed()
+            scrobbleData = scrobbleData.trimmed(),
+            fetchAlbumValue = fetchAlbumValue,
         )
     }
 
@@ -212,13 +225,9 @@ object ScrobbleEverywhere {
 
     suspend fun fetchAdditionalMetadata(
         scrobbleData: ScrobbleData,
+        type: AdditionalMetadataType,
         onNetworkRequestMade: suspend () -> Unit,
-        fetchArtUrlOnly: Boolean = false
     ): AdditionalMetadataResult {
-        val fetchMissingMetadataDeezer = PlatformStuff.mainPrefs.data.map { it.deezerApi }.first()
-        val guessAlbum = PlatformStuff.mainPrefs.data.map { it.fetchAlbum }.first()
-        val tidalSteelSeries = PlatformStuff.mainPrefs.data.map { it.tidalSteelSeriesApi }.first()
-
         try {
             when {
                 /*
@@ -253,12 +262,13 @@ object ScrobbleEverywhere {
                 }
                  */
 
-                fetchArtUrlOnly && !scrobbleData.album.isNullOrEmpty()
+                type == AdditionalMetadataType.ART_URL && !scrobbleData.album.isNullOrEmpty()
                     -> {
                     return fetchNowPlaying(scrobbleData, onNetworkRequestMade)
                 }
 
-                fetchMissingMetadataDeezer && (
+                type == AdditionalMetadataType.MISSING_METADATA &&
+                        PlatformStuff.mainPrefs.data.map { it.deezerApi }.first() && (
                         scrobbleData.appId == Stuff.PACKAGE_DEEZER_WIN ||
                                 scrobbleData.appId == Stuff.PACKAGE_DEEZER_WIN_EXE ||
                                 scrobbleData.appId.equals(
@@ -272,7 +282,8 @@ object ScrobbleEverywhere {
                     )
                 }
 
-                tidalSteelSeries && (
+                type == AdditionalMetadataType.MISSING_METADATA &&
+                        PlatformStuff.mainPrefs.data.map { it.tidalSteelSeriesApi }.first() && (
                         scrobbleData.appId == Stuff.PACKAGE_TIDAL_WIN ||
                                 scrobbleData.appId == Stuff.PACKAGE_TIDAL_WIN_EXE ||
                                 scrobbleData.appId.equals(
@@ -284,7 +295,9 @@ object ScrobbleEverywhere {
                     return SteelSeriesReceiverServer.getAdditionalData(scrobbleData)
                 }
 
-                guessAlbum && scrobbleData.album.isNullOrEmpty() -> {
+                type == AdditionalMetadataType.ALBUM_GUESS &&
+                        PlatformStuff.mainPrefs.data.map { it.fetchAlbum }.first() &&
+                        scrobbleData.album.isNullOrEmpty() -> {
                     val album = PanoDb.db.getSeenEntitiesDao().getBestAlbumsForTrack(
                         scrobbleData.artist,
                         scrobbleData.track
@@ -480,7 +493,7 @@ object ScrobbleEverywhere {
         val sd = scrobbleData.copy(
             artist = track.artist.name,
             track = track.name,
-            album = track.album?.name,
+            album = track.album?.name?.removeSuffix(" - Single"),
             albumArtist = albumArtistName,
         )
 

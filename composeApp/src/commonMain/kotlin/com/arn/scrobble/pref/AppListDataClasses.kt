@@ -14,6 +14,8 @@ data class AppItem(
             Stuff.PACKAGE_PIXEL_NP_R,
             Stuff.PACKAGE_PIXEL_NP_AMM -> "Pixel Now Playing"
 
+            Stuff.PACKAGE_SHAZAM -> "Shazam / AutoShazam"
+
             Stuff.PACKAGE_FIREFOX_WIN -> "Mozilla Firefox"
 
             Stuff.PACKAGE_KDE_CONNECT_LINUX -> "KDE Connect"

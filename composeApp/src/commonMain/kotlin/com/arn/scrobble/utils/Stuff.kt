@@ -160,6 +160,7 @@ object Stuff {
         "49586DaveAntoine.MediaControllerforiTunes_9bzempp7dntjg!App"
     const val HOST_APPLE_MUSIC = "music.apple.com"
     const val HOST_YOUTUBE_MUSIC = "music.youtube.com"
+    const val HOST_YOUTUBE = "youtube.com"
     const val PACKAGE_KDE_CONNECT_LINUX = "org.mpris.MediaPlayer2.kdeconnect"
     const val PACKAGE_FIREFOX_WIN = "308046B0AF4A39CB"
     const val PACKAGE_DEEZER_WIN = "com.deezer.deezer-desktop"

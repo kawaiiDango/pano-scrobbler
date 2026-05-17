@@ -87,6 +87,7 @@ if [ -f "$pkgbuildDir/PKGBUILD" ]; then
     }
 
     verName="$((tag / 100)).$((tag % 100))"
+    published_at="$(jq -r '.published_at // empty' <<<"$release_json")"
 
     sha_x64="$(get_sha256_for_asset "$ASSET_X64")"
     sha_arm64="$(get_sha256_for_asset "$ASSET_ARM64")"
@@ -130,4 +131,26 @@ EOF
     fi
 else
     echo "flake.nix not found" >&2
+fi
+
+# Update .spec file (_pkgver, Version, %changelog)
+specFile="$scriptDir/pano-scrobbler.spec"
+if [ -f "$specFile" ]; then
+    if [[ -z "${tag:-}" || -z "${verName:-}" || -z "${published_at:-}" ]]; then
+      echo "Error: release metadata not available, skipping .spec update" >&2
+    else
+      changelog_date="$(date -d "$published_at" "+%a %b %d %Y")"
+
+      ed -s "$specFile" <<EOF
+g/^%global _pkgver /s|.*|%global _pkgver $tag|
+g/^Version:/s|.*|Version:        $verName|
+g/^\* [A-Za-z]/s|^\* [A-Za-z][a-z]* [A-Za-z][a-z]* [0-9]* [0-9]* \(.*\) - .*|* $changelog_date \1 - $verName-1|
+g/^- Update to /s|.*|- Update to $verName|
+w
+q
+EOF
+      echo -e ".spec updated:\n_pkgver=$tag\nVersion=$verName\nchangelog_date=$changelog_date"
+    fi
+else
+    echo ".spec not found" >&2
 fi

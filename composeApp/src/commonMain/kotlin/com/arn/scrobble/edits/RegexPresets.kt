@@ -46,18 +46,14 @@ object RegexPresets {
         RegexPreset.single_ep,
     )
 
-    val hasSettings = listOf(
-        RegexPreset.parse_title,
-        RegexPreset.parse_title_with_fallback,
-    )
-
-    private val androidOnlyPresets = listOf(
-        RegexPreset.parse_title,
-        RegexPreset.parse_title_with_fallback,
-//        RegexPreset.album_artist_as_artist,
-    )
-
-    private val desktopOnlyPresets = emptyList<RegexPreset>()
+    // app id settings are currently ignored on linux, uses domain name instead
+    val hasSettings = if (!PlatformStuff.isDesktop)
+        listOf(
+            RegexPreset.parse_title,
+            RegexPreset.parse_title_with_fallback,
+        )
+    else
+        emptyList()
 
     private val applyOncePresets = listOf(
         RegexPreset.parse_title,
@@ -66,10 +62,10 @@ object RegexPresets {
 
     val filteredPresets by lazy {
         RegexPreset.entries.filterNot {
-            if (!PlatformStuff.isDesktop)
-                it in desktopOnlyPresets
+            if (System.getProperty("os.name").startsWith("windows", ignoreCase = true))
+                it in applyOncePresets
             else
-                it in androidOnlyPresets
+                false
         }
     }
 
@@ -135,7 +131,12 @@ object RegexPresets {
 
             RegexPreset.parse_title,
             RegexPreset.parse_title_with_fallback -> {
-                if (scrobbleData.appId in regexPresetsApps) {
+                if (scrobbleData.appId in regexPresetsApps ||
+                    regexPreset == RegexPreset.parse_title &&
+                    normalizedUrlHost == Stuff.HOST_YOUTUBE ||
+                    regexPreset == RegexPreset.parse_title_with_fallback &&
+                    normalizedUrlHost == Stuff.HOST_YOUTUBE_MUSIC
+                ) {
                     val shouldParseTitle = (scrobbleData.album.isNullOrEmpty() &&
                             !scrobbleData.artist.endsWith("- Topic")) ||
                             scrobbleData.appId == Stuff.PACKAGE_YMUSIC && scrobbleData.album == "YMusic"

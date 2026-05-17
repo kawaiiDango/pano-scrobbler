@@ -53,6 +53,7 @@ data class RegexEdit(
         val replacementArtist: String,
         val replacementAlbumArtist: String,
         val replaceAll: Boolean = false,
+        val fetchAlbum: Boolean = false,
     )
 
     @Keep

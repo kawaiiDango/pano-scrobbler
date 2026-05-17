@@ -22,7 +22,7 @@ object DesktopStuff {
 
     private val appNameWithoutSpaces = BuildKonfig.APP_NAME.lowercase().replace(' ', '-')
 
-    private val execDirPath =
+    val execDirPath: String =
         File(ProcessHandle.current().info().command().get()).parentFile.absolutePath
 
     val appDataRoot: File by lazy { getDataDir() }

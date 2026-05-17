@@ -2,6 +2,7 @@ package com.arn.scrobble.media
 
 import co.touchlab.kermit.Logger
 import com.arn.scrobble.api.AccountType
+import com.arn.scrobble.api.AdditionalMetadataType
 import com.arn.scrobble.api.Scrobblable
 import com.arn.scrobble.api.ScrobbleEverywhere
 import com.arn.scrobble.api.ScrobbleResult
@@ -178,8 +179,8 @@ class ScrobbleQueue(
                         if (shouldFetchNpArtUrl().firstOrNull { it } == true) {
                             val additionalMetadata = ScrobbleEverywhere.fetchAdditionalMetadata(
                                 scrobbleData,
+                                AdditionalMetadataType.ART_URL,
                                 ::canFetchAdditionalMetadata,
-                                true,
                             )
 
                             if (additionalMetadata.artUrl != null) {
@@ -204,6 +205,7 @@ class ScrobbleQueue(
                 val scrobbleSd = if (fetchAdditionalMetadata) {
                     val additionalMetadata = ScrobbleEverywhere.fetchAdditionalMetadata(
                         scrobbleData,
+                        AdditionalMetadataType.MISSING_METADATA,
                         { }
                     )
 
@@ -260,10 +262,11 @@ class ScrobbleQueue(
 
             val additionalMeta = ScrobbleEverywhere.fetchAdditionalMetadata(
                 scrobbleData,
+                AdditionalMetadataType.MISSING_METADATA,
                 ::canFetchAdditionalMetadata
             )
 
-            val preprocessResult = ScrobbleEverywhere.preprocessMetadata(
+            var preprocessResult = ScrobbleEverywhere.preprocessMetadata(
                 additionalMeta.scrobbleData ?: scrobbleData,
                 trackInfo.normalizedUrlHost
             )
@@ -297,18 +300,34 @@ class ScrobbleQueue(
                 }
 
                 else -> {
+                    var artUrl = additionalMeta.artUrl
+
+                    if (preprocessResult.canFetchAlbum) {
+                        val additionalMetaAlbumGuess = ScrobbleEverywhere.fetchAdditionalMetadata(
+                            preprocessResult.scrobbleData,
+                            AdditionalMetadataType.ALBUM_GUESS,
+                            ::canFetchAdditionalMetadata
+                        )
+
+                        preprocessResult = if (additionalMetaAlbumGuess.scrobbleData != null)
+                            preprocessResult.copy(scrobbleData = additionalMetaAlbumGuess.scrobbleData)
+                        else
+                            preprocessResult
+
+                        artUrl = artUrl ?: additionalMetaAlbumGuess.artUrl
+                    }
+
                     trackInfo.putPreprocessedData(
                         preprocessResult.scrobbleData,
                         preprocessResult.userLoved,
                         !additionalMeta.shouldFetchAgain
                     )
 
-                    if (additionalMeta.artUrl != null) {
-                        trackInfo.setArtUrl(additionalMeta.artUrl)
+                    if (artUrl != null) {
+                        trackInfo.setArtUrl(artUrl)
                     }
 
                     notifyPlayingTrackEvent(
-
                         trackInfo.toTrackPlayingEvent().copy(
                             origScrobbleData = additionalMeta.scrobbleData ?: origScrobbleData,
                             nowPlaying = true,

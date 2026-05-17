@@ -130,7 +130,6 @@
     <string name="pending_scrobbles">Scrobbles pendientes</string>
     <string name="following" comment="accounts you are following on lastfm">Siguiendo</string>
     <string name="since_time" formatted="true" comment="%1= date of joining lastfm">Desde el %1$s</string>
-    <string name="allow_background">Permitir scrobbling en segundo plano</string>
     <string name="grant_notification_access">Permitir acceso a notificaciones</string>
     <string name="grant_notification_access_desc">Es necesario para recuperar los metadatos de las canciones. No se leen las notificaciones que no sean de canción.</string>
     <string name="send_notifications">Permitir notificaciones</string>

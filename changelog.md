@@ -1,4 +1,4 @@
-- Added a NixOS flake
+- Added a NixOS flake and a Fedora COPR repository
 - The Linux AppImage can optionally add itself to autostart and the application menu at onboarding
 - Added YouTube and YouTube Music support on Linux. The browser must report the page URL to MPRIS
   for this to work

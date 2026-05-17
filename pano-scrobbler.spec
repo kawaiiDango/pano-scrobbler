@@ -6,6 +6,13 @@
 %global debug_package %{nil}
 %global __strip /bin/true
 
+%ifarch x86_64
+%global _download_arch x64
+%endif
+%ifarch aarch64
+%global _download_arch arm64
+%endif
+
 Name:           pano-scrobbler
 Version:        4.39
 Release:        1%{?dist}
@@ -13,13 +20,7 @@ Summary:        Feature packed cross-platform music tracker
 License:        GPL-3.0-or-later
 URL:            https://github.com/kawaiiDango/pano-scrobbler
 ExclusiveArch:  x86_64 aarch64
-
-%ifarch x86_64
-Source0:        %{url}/releases/download/%{_pkgver}/%{_pkgname}-linux-x64.tar.gz
-%endif
-%ifarch aarch64
-Source0:        %{url}/releases/download/%{_pkgver}/%{_pkgname}-linux-arm64.tar.gz
-%endif
+Source0:        %{url}/releases/download/%{_pkgver}/%{_pkgname}-linux-%{_download_arch}.tar.gz
 
 Requires:       dbus
 Requires:       webkitgtk6.0

@@ -29,12 +29,12 @@ Supports Last.fm, ListenBrainz, Libre.fm & Pleroma.
 With regex edits, charts & Discord Rich Presence on PC. 
 
 %prep
-# -c creates a wrapping directory since the tarball may not have one
+# -c creates a wrapping directory since the tarball does not have one
 %ifarch x86_64
-%setup -q -c -T -b 0
+%setup -q -c -T -a 0
 %endif
 %ifarch aarch64
-%setup -q -c -T -b 1
+%setup -q -c -T -a 1
 %endif
 
 # Patch desktop entry

@@ -130,7 +130,6 @@
     <string name="pending_scrobbles">Bekleyen Skroplar</string>
     <string name="following" comment="accounts you are following on lastfm">Takip Edilen</string>
     <string name="since_time" formatted="true" comment="%1= date of joining lastfm">%1$s tarihinden beri</string>
-    <string name="allow_background">Arkaplanda skroplamaya izin ver</string>
     <string name="grant_notification_access">Bildirimlere erişim izni ver</string>
     <string name="grant_notification_access_desc">Müzik meta verilerini almak için gerekli. Müzik dışı bildirimler okunmaz</string>
     <string name="send_notifications">Bildirimlere izin ver</string>

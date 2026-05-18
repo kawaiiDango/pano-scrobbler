@@ -13,6 +13,8 @@
 [![Download installer for x64 from GitHub](img/github-exe-x64.svg)](https://github.com/kawaiiDango/pano-scrobbler/releases/latest/download/pano-scrobbler-windows-x64.exe)
 [![Install via winget](img/winget.svg)](https://winstall.app/apps/kawaiiDango.pano-scrobbler)
 
+#### WinGet:
+
 ```
 winget install -e --id kawaiiDango.pano-scrobbler
 ```
@@ -27,13 +29,6 @@ Windows releases are unsigned, so a SmartScreen warning about "Unknown Publisher
 
 [![Download tar.gz for x64 from GitHub](img/github-targz-x64.svg)](https://github.com/kawaiiDango/pano-scrobbler/releases/latest/download/pano-scrobbler-linux-x64.tar.gz)
 [![Download tar.gz for arm64 from GitHub](img/github-targz-arm64.svg)](https://github.com/kawaiiDango/pano-scrobbler/releases/latest/download/pano-scrobbler-linux-arm64.tar.gz)
-
-The AppImage runs anywhere, requires no installation, has **automatic updates** and can optionally
-add itself to the **application launcher** for convenience. Just make it executable before running:
-
-```
-chmod +x pano-scrobbler-linux-*.AppImage
-```
 
 #### Arch:
 
@@ -52,6 +47,15 @@ nix profile install github:kawaiiDango/pano-scrobbler-flake
 ```
 sudo dnf copr enable kawaiidango/pano-scrobbler
 sudo dnf install pano-scrobbler
+```
+
+#### AppImage:
+
+The AppImage runs anywhere, requires no installation, has **automatic updates** and can optionally
+add itself to the **application launcher** for convenience. Just make it executable before running:
+
+```
+chmod +x pano-scrobbler-linux-*.AppImage
 ```
 
 The desktop versions do not use any closed source libraries.

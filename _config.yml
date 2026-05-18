@@ -35,6 +35,7 @@ exclude:
   - "Gemfile.lock"
   - "*.sh"
   - "*.bat"
+  - "*.spec"
 
 keep_files:
   - fdroid

@@ -139,16 +139,16 @@ class ChartsVM(
 
     val scrobblesCount = _inputDebounced.mapLatest { input ->
         if (firstPageOnly && Scrobblables.current?.userAccount?.type == AccountType.LASTFM) {
-            val from = input.timePeriod.lastfmPeriod
-                ?.toTimePeriod()
-                ?.start ?: input.timePeriod.start
-
+            val lastfmTimePeriod = input.timePeriod.lastfmPeriod?.toTimePeriod()
+            val from = lastfmTimePeriod?.start ?: input.timePeriod.start
+            val to = lastfmTimePeriod?.end ?: input.timePeriod.end
 
             Scrobblables.current
                 ?.getRecents(
                     1,
                     user.name,
                     from = from,
+                    to = to,
                     limit = 1
                 )
                 ?.getOrNull()?.attr?.total ?: 0

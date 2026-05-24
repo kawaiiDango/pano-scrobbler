@@ -374,6 +374,7 @@
     <string name="line_n" formatted="true" comment="%1$s is the line number, currently used in the context of Discord Rich Presence">Linie %1$s</string>
     <string name="is_turned_off" formatted="true" comment="%1$s= the name of a web service, e.g. Spotify, %2$s=the section name in settings screen where this setting can be found">%1$s ist in %2$s deaktiviert</string>
     <string name="available_placeholders" formatted="true" comment="%1 = placeholder strings, e.g. $artist, $title etc.">Verfügbare Platzhalter: %1$s</string>
+    <string name="edit_example">z.B. Um Künstler1 durch Künstler2 zu ersetzen, ohne die übrigen Metadaten zu verändern, aktiviere nur das Künstlerfeld und gib die ursprünglichen sowie die korrigierten Künstlerwerte ein, während die anderen Felder deaktiviert bleiben.</string>
     <string name="when_using" formatted="true" comment="%1$s is the web service or media player name">Bei Verwendung von %1$s</string>
     <string name="when_not_using" formatted="true" comment="%1$s is the web service or media player name">Nicht bei Verwendung von %1$s</string>
     <string name="as_text" comment="Like copy as text, but in short">Als Text</string>

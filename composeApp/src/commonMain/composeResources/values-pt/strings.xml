@@ -404,6 +404,7 @@
     <string name="artist_splitting_exceptions" comment="exceptions for the use first artist feature">Exceções de separação do Artista</string>
     <string name="add_exception" comment="as in adding an exception to a rule or setting">Adicionar uma exceção</string>
     <string name="upto_n" formatted="true">Até %1$d</string>
+    <string name="cache" comment="as a noun">Cache</string>
     <string name="get_pro">Apoiar a aplicação</string>
     <string name="one_time_purchase">Compra única</string>
     <string name="help">Ajuda</string>

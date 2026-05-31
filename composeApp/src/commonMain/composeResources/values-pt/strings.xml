@@ -393,7 +393,7 @@
     <string name="convert_file" formatted="true" comment="%1$s is the file extension, used in the context of converting from one file format to another">Converter de %1$s</string>
     <string name="move_up" comment="Screen reader text for drag and drop reordering">Mover para cima</string>
     <string name="move_down" comment="Screen reader text for drag and drop reordering">Mover para baixo</string>
-    <string name="at_least" formatted="true" comment="%1$s=some number">Pelo menos %1$s</string>
+    <string name="at_least" formatted="true" comment="%1$s=some number">Por apenas %1$s</string>
     <string name="code_will_be_sent" formatted="true" comment="%1$s is either Ko-Fi or BuyMeACoffee, %2$s is the donation amount">O código será enviado para o endereço de correio eletrónico associado à sua conta %1$s, se doou %2$s</string>
     <string name="proxy" comment="network proxy">Proxy</string>
     <string name="system" comment="system default settings">Sistema</string>
@@ -404,7 +404,15 @@
     <string name="artist_splitting_exceptions" comment="exceptions for the use first artist feature">Exceções de separação do Artista</string>
     <string name="add_exception" comment="as in adding an exception to a rule or setting">Adicionar uma exceção</string>
     <string name="upto_n" formatted="true">Até %1$d</string>
+    <string name="add_to_app_launcher">Adicionar atalho ao ecrã inicial</string>
+    <string name="persistent_noti_fgs">Manter o scrobbler ativo em segundo plano</string>
+    <string name="empty_apps_list">Apps aparecerão aqui quando reproduzir algo nelas</string>
+    <string name="supports_ambient_apps" formatted="true" comment="%1 = comma-separated list of music recognition apps">Também suporta apps de reconhecimento de música, como %1$s</string>
+    <string name="persistent_noti_desc" formatted="true" comment="%1 = some names of phone manufacturers">Necessário em sistemas que suspendem aplicações em segundo plano, tais como %1$s etc</string>
     <string name="cache" comment="as a noun">Cache</string>
+    <string name="random_on_start" comment="currently used as a toggle in the themes screen to pick a random theme when the app starts">Aleatório ao abrir a aplicação</string>
+    <string name="edit_continue_simple" comment="a toggle in the normal edits screen">Se encontrado, continue a editar com as regras regex &amp; predefinições</string>
+    <string name="edit_continue_regex" comment="a toggle in the regex edits screen">Se encontrado, continue a editar com outras regras regex &amp; predefinições</string>
     <string name="get_pro">Apoiar a aplicação</string>
     <string name="one_time_purchase">Compra única</string>
     <string name="help">Ajuda</string>

@@ -387,6 +387,7 @@
     <string name="automation_cli_info">فایل اجرایی pano-scrobbler را با یکی از این آرگومان‌های خط فرمان، در حالی که یک نمونه از آن در حال اجرا است، اجرا کنید.</string>
     <string name="album_art_now_playing_desc">به ورود به سیستم last.fm نیاز دارد</string>
     <string name="spotify_consent">تصاویر هنرمندان را از اسپاتیفای دریافت می‌کنید؟</string>
+    <string name="show_track_url">آدرس اینترنتی (URL) قطعه</string>
     <string name="get_pro">به این برنامه کمک کنید</string>
     <string name="one_time_purchase">پرداخت یک باره</string>
     <string name="help">کمک</string>

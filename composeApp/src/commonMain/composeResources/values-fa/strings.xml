@@ -44,6 +44,10 @@
         <item quantity="one">%1$d شبیه</item>
         <item quantity="other">%1$d تا مشابه</item>
     </plurals>
+    <plurals name="num_hours">
+        <item quantity="one">%1$d ساعت</item>
+        <item quantity="other">%1$d ساعت</item>
+    </plurals>
     <string name="yes">بله</string>
     <string name="no">نه</string>
     <string name="reset">ریست</string>
@@ -89,7 +93,9 @@
 %1$s %2$s</string>
     <string name="recents_share_username" formatted="true" comment="%1= artist — track, %2= relative time (with preposition e.g. on Sep 9), %3= username">%3$s داشت به این گوش میداد\n
 %1$s %2$s</string>
+    <string name="share_sig">(از طریق Pano Scrobbler)</string>
     <string name="share">اشتراک‌ گذاری</string>
+    <string name="legend" comment="Chart legend - descriptions of the symbols used">افسانه</string>
     <string name="grid" comment="Grid view">جدول</string>
     <string name="list" comment="Single column list view">لیست</string>
     <string name="more_info">اطلاعات بیشتر</string>
@@ -103,6 +109,7 @@
     <string name="global" comment="search globally across lastfm">جهانی</string>
     <string name="profile">نمایه</string>
     <string name="profile_pic">عکس نمایه</string>
+    <string name="item_options" comment="Screen reader text for 3 dots menu button">گزینه‌های این مورد</string>
     <string name="new_player" formatted="true" comment="(%1 = App name) detected (shown in notification, when a new music player is detected)">%1$s رو تشخیص‌دادم</string>
     <string name="new_player_prompt">این برنامه رو اسکرابل کنم؟</string>
     <string name="new_player_prompt_desktop">به تنظیمات برید تا اسکرابل این برنامه رو شروع کنم</string>
@@ -124,6 +131,7 @@
     <string name="unlove" comment="Undo a love/like and make it neutral. This is not the same as Dislike">دوست ندارم</string>
     <string name="pending_scrobbles">اسکرابل های منتظر</string>
     <string name="following" comment="accounts you are following on lastfm">دنبال‌شده</string>
+    <string name="since_time" formatted="true" comment="%1= date of joining lastfm">از %1$s</string>
     <string name="grant_notification_access">دادن اجازه دسترسی به اعلانات</string>
     <string name="grant_notification_access_desc">برای بازیابی فراداده آهنگ لازمه، هیچ اعلان بی آهنگی رو نمی‌خونم</string>
     <string name="send_notifications">مجاز به اعلانات</string>
@@ -147,6 +155,7 @@
     <string name="details">جزئیات</string>
     <string name="saved_as_pending">به عنوان اسکرابل منتظر ذخیره شد</string>
     <string name="sort">ترتیب</string>
+    <string name="time_jump" comment="Button shows scrobbles from a specific time">پرش زمانی</string>
     <string name="my_scrobbles">اسکرابل‌های من</string>
     <string name="listeners">شنوندگان</string>
     <string name="scrobbles">اسکرابل‌شده</string>
@@ -176,6 +185,7 @@
     <string name="corrected" comment="Corrected metadata after editing">تصحیح‌شده</string>
     <string name="tag" comment="last.fm tag">تگ</string>
     <string name="taggers" comment="(number of) people who have tagged">تگ نویسان</string>
+    <string name="taggings" comment="(total count of) a particular tag">تگ زدن</string>
     <string name="s_top_scrobbles" formatted="true" comment="%1= the word weekly or monthly">%1$s اسکرابل برتر</string>
     <string name="my_tags" comment="Tags, the user has added">تگهای من</string>
     <string name="close" comment="To close a dialog or something">بستن</string>
@@ -203,6 +213,7 @@
     <string name="edit_extract_extra_groups" formatted="true" comment="%1= the name of the capture group https://www.google.com/search?q=regex+named+capture+groups">ریجکس های شما قابل قبول نیست چون بیشتر از یک گروه ضبط (%1$s) دارد</string>
     <string name="edit_regex_invalid" formatted="true" comment="%1= the regex error message">ریجکس نامعتبر: %1$s</string>
     <string name="edit_regex_rules_matched" comment="the specific regex patterns that were used">الگوهای استفاده‌شده:</string>
+    <string name="edit_continue">در صورت یافتن، تطبیق با سایر regexes را ادامه بده</string>
     <string name="edit_case_sensitive">حساسیت کوچک بزرگی حروف</string>
     <string name="edit_regex_test" comment="(Test regex rules)">امتحان‌کن</string>
     <string name="edit_presets" comment="Regex presets">پیش‌تنظیمات</string>
@@ -210,6 +221,7 @@
     <string name="edit_drag_handle" comment="screen reader text for drag and drop button">دسته‌های کشیدنی</string>
     <string name="edit_regex_warning" comment="shown before adding a custom pattern edit">⚠ لطفا قبل از اینکه اینو استفاده کنید بفهمید که <a href="https://www.google.com/search?q=regex+guide+farsi"> ریجکس چیه </a> یا یکی از<b>پیش‌تنظیم‌‌</b>های تهیه شده استفاده کن. مطابقات ریجکس ازبالا به پایین انجام میشوند</string>
     <string name="blocked_metadata_noti" comment="to block and skip a track from scrobbling and playing">برای مسدود و رد کردن، ضربه بزنید</string>
+    <string name="player_actions" comment="music player actions such as skip/mute">اقدامات پخش کننده رسانه</string>
     <string name="skip" comment="skip to next track">ردکردن</string>
     <string name="mute" comment="mute the sound">قطع صدا</string>
     <string name="do_nothing" comment="do nothing on the media player">کاری نکن</string>
@@ -221,6 +233,7 @@
     <string name="pin_limit_reached" formatted="true">به حداکثر تعداد پین رسیدید (%1$d)</string>
     <string name="pin_help">روی آیتم های پین‌شده فشار دهیدتا مرتب‌سازی کنید</string>
     <string name="use_channel" comment="(Use youtube channel name)">از نام کانال استفاده کن</string>
+    <string name="regex_edits_suggestion" formatted="true" comment="%1= the preset name (e.g. Remastered)">آیا می‌خواهید قانون ویرایش الگو را فعال کنید: %1$s؟</string>
     <string name="show_persistent_noti">یک اعلان مقاوم نشون بده</string>
     <string name="fix_it_desc">اینا در برخی از دستگاهها کمک می‌کنند تا اسکرابلر در پس‌زمینه فعالیت کند</string>
     <string name="persistent_noti_text">برای مخفی‌ کردن کلیک کن</string>
@@ -237,6 +250,8 @@
     <string name="captions" comment="Collage image captions such as artist names, play counts">عنوان عکس</string>
     <string name="username" comment="last.fm Username">نام‌کاربر</string>
     <string name="pref_master">اسکرابل موسیقی</string>
+    <string name="pref_master_qs_add">کاشی تنظیمات سریع را اضافه کنید</string>
+    <string name="pref_master_qs_already_addded">کاشی تنظیمات سریع از قبل اضافه شده است</string>
     <string name="pref_noti">اعلانات</string>
     <string name="pref_offline_info">اسکرابل‌های آفلاین &amp; مواردعلاقه برای ارسال در آینده ذخیره میشوند.</string>
     <string name="pref_scrobble_from" comment="Scrobble from (these apps)">اسکرابل از</string>
@@ -260,6 +275,7 @@
     <string name="server_url" comment="For self hosted scrobbling services">لینک سرور</string>
     <string name="listenbrainz_info" formatted="true" comment="%1 = the link to page containing the token">شما میتونید توکن دسترسی‌تون تواینجا پیداکنید: %1$s</string>
     <string name="pref_now_playing">ثبت آهنگ درحال پخش</string>
+    <string name="pref_fetch_missing_album" formatted="true" comment="%1= the name of a service like last.fm, Deezer etc">آلبوم گمشده را از %1$s دریافت کنید</string>
     <string name="pref_locale">زبان</string>
     <string name="pref_crashlytics_enabled">خطاها رو خودکار گزارش کن</string>
     <string name="pref_misc">متفرقه</string>
@@ -329,6 +345,7 @@
     <string name="square_photo_hint">برای بهترین نتیجه از یه تصویر مربعی استفاده کن</string>
     <string name="scrobble_to_file">فایل</string>
     <string name="password">رمز عبور</string>
+    <string name="open_existing" comment="Append to an existing file">ضمیمه به موارد موجود</string>
     <string name="create" comment="Create a new file">ساخت</string>
     <string name="scan_qr">این کد رو اسکن کن تاوارد سیستم بشی</string>
     <string name="copy_from">کپی از</string>
@@ -347,13 +364,29 @@
     <string name="low" comment="As in high/medium/low">کم</string>
     <string name="needs_plugin" comment="Used for some desktop media players">برخی برنامه ها به افزونه نیاز دارند</string>
     <string name="reload" comment="Reload or refresh">بارگذاری مجدد</string>
+    <string name="pref_tray_icon_theme">تم آیکون سینی</string>
     <string name="min_track_duration">اسکرابل آهنگ‌های طولانی‌تر از</string>
+    <string name="automation">کنترل Pano Scrobbler از طریق برنامه‌های اتوماسیون</string>
     <string name="country_for_api" formatted="true" comment="%1$s is the name of the streaming service, like Spotify, Apple Music">کشور برای فراداده %1$s</string>
     <string name="login_in_browser">ورود را در پنجره مرورگر تکمیل کنید</string>
     <string name="edit_no_save">این برای اسکروبل‌های آینده ذخیره نخواهد شد.</string>
     <string name="also_available_on" formatted="true" comment="%1$s is the platform name, like Android, PC">این برنامه رو از %1$s دریافت کن</string>
     <string name="first_artist">فقط ار هنرمند اول استفاده کن</string>
     <string name="external_metadata">منابع خارجی فراداده</string>
+    <string name="line_n" formatted="true" comment="%1$s is the line number, currently used in the context of Discord Rich Presence">خط %1$s</string>
+    <string name="album_art_now_playing">در صورت نیاز، کاور آلبوم Now Playing را دریافت کنید</string>
+    <string name="is_turned_off" formatted="true" comment="%1$s= the name of a web service, e.g. Spotify, %2$s=the section name in settings screen where this setting can be found">%1$s در %2$s غیرفعال شده است</string>
+    <string name="discord_compact_view_line">نمایش به صورت «در حال گوش دادن به»:</string>
+    <string name="available_placeholders" formatted="true" comment="%1 = placeholder strings, e.g. $artist, $title etc.">متغیرهای موجود: %1$s</string>
+    <string name="show_paused_for">نمایش رسانه‌های متوقف‌شده برای</string>
+    <string name="edit_example">برای مثال، برای جایگزینی Artist1 با Artist2 در حالی که بقیه‌ی فراداده‌ها بدون تغییر باقی می‌مانند، فقط فیلد artist را فعال کنید و مقادیر اصلی و تصحیح‌شده‌ی artist را وارد کنید و سایر فیلدها را غیرفعال بگذارید.</string>
+    <string name="when_using" formatted="true" comment="%1$s is the web service or media player name">هنگام استفاده از %1$s</string>
+    <string name="when_not_using" formatted="true" comment="%1$s is the web service or media player name">وقتی از %1$s استفاده نمی‌شود</string>
+    <string name="as_text" comment="Like copy as text, but in short">به عنوان متن</string>
+    <string name="automation_cli">آرگومان‌های خط فرمان</string>
+    <string name="automation_cli_info">فایل اجرایی pano-scrobbler را با یکی از این آرگومان‌های خط فرمان، در حالی که یک نمونه از آن در حال اجرا است، اجرا کنید.</string>
+    <string name="album_art_now_playing_desc">به ورود به سیستم last.fm نیاز دارد</string>
+    <string name="spotify_consent">تصاویر هنرمندان را از اسپاتیفای دریافت می‌کنید؟</string>
     <string name="get_pro">به این برنامه کمک کنید</string>
     <string name="one_time_purchase">پرداخت یک باره</string>
     <string name="help">کمک</string>

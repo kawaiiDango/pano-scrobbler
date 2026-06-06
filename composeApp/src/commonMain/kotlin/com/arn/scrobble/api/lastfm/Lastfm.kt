@@ -50,6 +50,7 @@ import java.math.BigInteger
 import java.security.MessageDigest
 import java.util.Calendar
 import java.util.TreeMap
+import kotlin.time.Duration.Companion.seconds
 
 open class LastFm(userAccount: UserAccountSerializable) : Scrobblable(userAccount) {
     class CookiesInvalidatedException(override val message: String) :
@@ -602,7 +603,7 @@ open class LastFm(userAccount: UserAccountSerializable) : Scrobblable(userAccoun
                 }
 
                 // add a random delay to prevent 406 error
-                delay((1000L..10000L).random())
+                delay((5..10).random().seconds)
             }
 
         private const val COOKIE_CSRFTOKEN = "csrftoken"
@@ -680,8 +681,8 @@ open class LastFm(userAccount: UserAccountSerializable) : Scrobblable(userAccoun
                 apiKey,
                 apiSecret,
                 userAccountTemp.authKey
-            ).onSuccess {
-                // store cookies
+            ).onSuccess { session ->
+                // store lastfm cookies
 
                 val lastfmUrl = Url(Stuff.LASTFM_URL)
 
@@ -695,15 +696,27 @@ open class LastFm(userAccount: UserAccountSerializable) : Scrobblable(userAccoun
                     parameter("method", "user.getInfo")
                     parameter("format", "json")
                     parameter("api_key", apiKey)
-                    parameter("sk", it.key)
-                    parameter("user", it.name)
-                }.map { it.user }
+                    parameter("sk", session.key)
+                    parameter("user", session.name)
+                }
+                    .map { it.user.toUserCached() }
+                    .recover {
+                        // if fetching user info fails, create a user with just the name
+                        val username = session.name ?: "user"
+                        UserCached(
+                            username,
+                            "$apiRoot/user/$username",
+                            username,
+                            "",
+                            -1,
+                        )
+                    }
                     .onSuccess { user ->
                         // save account
                         val account = UserAccountSerializable(
                             userAccountTemp.type,
-                            user.toUserCached(),
-                            it.key,
+                            user,
+                            session.key,
                             userAccountTemp.apiRoot,
                         )
 

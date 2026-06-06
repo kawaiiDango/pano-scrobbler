@@ -91,7 +91,9 @@ jobs:
 
       - name: Patch JSON-LD in index.html
         run: |
-          sed -i 's/}<\/script>/,"operatingSystem":"Windows, Linux, Android","applicationCategory":"MultimediaApplication","offers":{"@type":"Offer","price":0}}<\/script>/' static-site/index.html
+          SCREENSHOTS_ARR_STR=$(bash static-site/generate_screenshot_jsonld.sh)
+          sed -i 's|}</script>|,"sameAs":["https://github.com/kawaiiDango/pano-scrobbler/"],"operatingSystem":"Windows, Linux, Android","applicationCategory":"MultimediaApplication","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"screenshot":'"$SCREENSHOTS_ARR_STR"'}</script>|' static-site/index.html
+          rm static-site/generate_screenshot_jsonld.sh
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v5

@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?><resources tools:ignore="MissingTranslation" xmlns:tools="http://schemas.android.com/tools">
     <string name="settings">Configureren</string>
+    <string name="album_art">Albumhoes</string>
     <string name="artists">Artiesten</string>
     <string name="albums">Albums</string>
     <string name="tracks">Nummers</string>

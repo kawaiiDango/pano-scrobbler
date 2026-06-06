@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?><resources tools:ignore="MissingTranslation" xmlns:tools="http://schemas.android.com/tools">
     <string name="settings">Configurați</string>
+    <string name="album_art">Copertă album</string>
     <string name="artists">Artiști</string>
     <string name="search">Caută</string>
 </resources>

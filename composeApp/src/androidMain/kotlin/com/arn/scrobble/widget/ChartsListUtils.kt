@@ -2,10 +2,14 @@ package com.arn.scrobble.widget
 
 import android.appwidget.AppWidgetManager
 import android.content.Intent
+import android.net.Uri
 import android.view.View
 import android.widget.RemoteViews
+import androidx.core.widget.RemoteViewsCompat.setViewBackgroundResource
+import com.arn.scrobble.BuildKonfig
 import com.arn.scrobble.R
 import com.arn.scrobble.navigation.DeepLinkUtils
+import com.arn.scrobble.pref.WidgetPrefs
 import com.arn.scrobble.utils.AndroidStuff
 import com.arn.scrobble.utils.Stuff
 import com.arn.scrobble.utils.Stuff.format
@@ -21,23 +25,69 @@ object ChartsListUtils {
     }
 
     fun createMusicItem(
+        widgetId: Int,
+        dataKey: WidgetPrefs.ChartsDataKey,
         tab: Int,
+        images: Boolean,
         idx: Int,
-        item: ChartsWidgetListItem,
+        item: WidgetPrefs.ChartsWidgetListItem,
     ): RemoteViews {
+
+        fun buildImageUri() =
+            Uri.Builder()
+                .scheme("content")
+                .authority(BuildKonfig.APP_ID + ".image")
+                .appendPath("image")
+                .appendPath(widgetId.toString())
+                .appendPath(dataKey.str)
+                .appendQueryParameter(
+                    "item",
+                    Stuff.myJson.encodeToString(item)
+                )
+                .build()
+
         val rv =
             RemoteViews(AndroidStuff.applicationContext.packageName, R.layout.appwidget_charts_item)
-//        rv.setTextViewText(
-//            R.id.appwidget_charts_serial, (idx + 1).format() + "."
-//        )
-        rv.setTextViewText(R.id.appwidget_charts_title, (idx + 1).format() + ". " + item.title)
-        rv.setImageViewResource(
-            R.id.appwidget_charts_stonks_icon, stonksIconForDelta(item.stonksDelta)
-        )
-        rv.setImageViewResource(
-            R.id.appwidget_charts_stonks_icon_shadow, stonksIconForDelta(item.stonksDelta)
-        )
-        rv.setContentDescription(R.id.appwidget_charts_stonks_icon, item.stonksDelta.toString())
+        rv.setTextViewText(R.id.appwidget_charts_title, item.title)
+
+        if (item.stonksDelta != null) {
+            rv.setImageViewResource(
+                R.id.appwidget_charts_stonks_icon, stonksIconForDelta(item.stonksDelta)
+            )
+            rv.setImageViewResource(
+                R.id.appwidget_charts_stonks_icon_shadow, stonksIconForDelta(item.stonksDelta)
+            )
+            rv.setContentDescription(R.id.appwidget_charts_stonks_icon, item.stonksDelta.toString())
+            rv.setViewVisibility(R.id.appwidget_charts_stonks_icon, View.VISIBLE)
+            rv.setViewVisibility(R.id.appwidget_charts_stonks_icon_shadow, View.VISIBLE)
+        } else {
+            rv.setViewVisibility(R.id.appwidget_charts_stonks_icon, View.GONE)
+            rv.setViewVisibility(R.id.appwidget_charts_stonks_icon_shadow, View.GONE)
+        }
+
+        if (images) {
+            rv.setViewVisibility(R.id.appwidget_charts_image, View.VISIBLE)
+//            rv.setViewBackgroundResource(
+//                R.id.appwidget_charts_serial,
+//                R.drawable.widget_bg_rounded_soild
+//            )
+//            rv.setTextViewText(R.id.appwidget_charts_serial, (idx + 1).format())
+            rv.setViewVisibility(R.id.appwidget_charts_serial, View.GONE)
+
+            if (item.cachedImage != null && item.cachedImage.isEmpty()) {
+                rv.setImageViewResource(R.id.appwidget_charts_image, R.drawable.vd_album)
+            } else {
+                rv.setImageViewUri(R.id.appwidget_charts_image, buildImageUri())
+            }
+        } else {
+            rv.setViewVisibility(R.id.appwidget_charts_image, View.GONE)
+            rv.setViewVisibility(R.id.appwidget_charts_serial, View.VISIBLE)
+            rv.setViewBackgroundResource(
+                R.id.appwidget_charts_serial,
+                0
+            )
+            rv.setTextViewText(R.id.appwidget_charts_serial, (idx + 1).format())
+        }
 
         if (item.subtitle != null) {
             rv.setTextViewText(R.id.appwidget_charts_subtitle, item.subtitle)

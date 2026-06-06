@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?><resources tools:ignore="MissingTranslation" xmlns:tools="http://schemas.android.com/tools">
     <string name="settings">設定</string>
+    <string name="album_art">アルバムアート</string>
     <string name="artists">アーティスト</string>
     <string name="albums">アルバム</string>
     <string name="tracks">トラック</string>

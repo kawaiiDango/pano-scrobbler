@@ -103,6 +103,9 @@ object Stuff {
     const val MANUFACTURER_MEIZU = "meizu"
     const val MANUFACTURER_VIVO = "vivo"
 
+    const val XIAOMI_AUTOSTART_ACTIVITY =
+        "com.miui.securitycenter/com.miui.permcenter.autostart.AutoStartManagementActivity"
+
     const val PACKAGE_TV_SETTINGS = "com.android.tv.settings"
     const val ACTIVITY_TV_SETTINGS = "com.android.tv.settings.device.apps.AppsActivity"
     const val CHANNEL_PIXEL_NP =

@@ -18,12 +18,16 @@ import java.io.File
 
 object PanoImageLoader {
     private var inited = false
+    const val CACHE_DIR_NAME = "coil"
 
     private val musicEntryImageInterceptor by lazy { MusicEntryImageInterceptor() }
 
     fun clearMusicEntryImageCache(req: MusicEntryImageReq) {
         musicEntryImageInterceptor.clearCacheForEntry(req)
     }
+
+    suspend fun resolveImageUrls(musicEntryImageReq: MusicEntryImageReq) =
+        musicEntryImageInterceptor.resolveUrls(musicEntryImageReq)
 
     fun newImageLoader(
         context: PlatformContext,
@@ -57,7 +61,7 @@ object PanoImageLoader {
             .additionalOptions()
             .diskCache {
                 DiskCache.Builder()
-                    .directory(File(PlatformStuff.cacheDir, "coil"))
+                    .directory(File(PlatformStuff.cacheDir, CACHE_DIR_NAME))
                     .maxSizeBytes(50 * 1024 * 1024) // 50MB
                     .build()
             }

@@ -13,7 +13,7 @@ import androidx.compose.runtime.getValue
 import androidx.core.view.WindowInsetsControllerCompat
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.lifecycleScope
-import com.arn.scrobble.pref.SpecificWidgetPrefs
+import com.arn.scrobble.pref.WidgetPrefs
 import com.arn.scrobble.themes.AppTheme
 import com.arn.scrobble.themes.LocalThemeAttributes
 import com.arn.scrobble.utils.AndroidStuff
@@ -70,7 +70,7 @@ class ChartsWidgetConfigActivity : ComponentActivity() {
 
                     ChartsWidgetConfigScreen(
                         isPinned = isPinned,
-                        prefs = prefs.widgets[appWidgetId] ?: SpecificWidgetPrefs(),
+                        prefs = prefs.widgets[appWidgetId] ?: WidgetPrefs.SpecificWidgetPrefs(),
                         onSave = ::savePrefsAndFinish,
                         onCancel = ::cancel
                     )
@@ -79,7 +79,7 @@ class ChartsWidgetConfigActivity : ComponentActivity() {
         }
     }
 
-    private fun savePrefsAndFinish(prefs: SpecificWidgetPrefs, reFetch: Boolean) {
+    private fun savePrefsAndFinish(prefs: WidgetPrefs.SpecificWidgetPrefs, reFetch: Boolean) {
         lifecycleScope.launch {
             var exists = false
 
@@ -93,7 +93,7 @@ class ChartsWidgetConfigActivity : ComponentActivity() {
             if (!exists || reFetch)
                 ChartsWidgetUpdaterWorker.schedule(
                     this@ChartsWidgetConfigActivity.applicationContext,
-                    true
+                    appWidgetId
                 )
             setResult(true)
             finish()

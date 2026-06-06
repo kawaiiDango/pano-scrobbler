@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?><resources tools:ignore="MissingTranslation" xmlns:tools="http://schemas.android.com/tools">
     <string name="settings">सेटिंग</string>
+    <string name="album_art">एल्बम चित्र</string>
     <string name="artists">कलाकार</string>
     <string name="albums">एल्बम</string>
     <string name="tracks">गीत</string>

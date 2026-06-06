@@ -22,3 +22,4 @@ num_years
 num_months
 num_weeks
 scrobbles
+album_art

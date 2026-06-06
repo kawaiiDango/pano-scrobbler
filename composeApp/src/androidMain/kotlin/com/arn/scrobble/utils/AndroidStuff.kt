@@ -9,6 +9,7 @@ import android.content.Context
 import android.media.MediaMetadata
 import android.os.Build
 import android.os.Bundle
+import android.os.PowerManager
 import android.view.View
 import android.view.ViewTreeObserver
 import android.widget.Toast
@@ -159,6 +160,12 @@ object AndroidStuff {
         } catch (e: Exception) {
             Logger.w(e) { "requestRebindFromContentProvider failed" }
         }
+    }
+
+    fun isIgnoringBatteryOptimizations(): Boolean {
+        return applicationContext.getSystemService(PowerManager::class.java)
+            ?.isIgnoringBatteryOptimizations(applicationContext.packageName)
+            ?: false
     }
 
     fun MediaMetadata.dump() {

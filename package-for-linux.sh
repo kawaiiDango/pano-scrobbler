@@ -80,3 +80,58 @@ fi
 # Build AppImage
 distFile="$distDir/$appNameWithoutSpaces-$resourcesDirName.AppImage"
 ARCH=$arch VERSION="$verName" "$appImageToolFile" "$appDir" "$distFile"
+
+# Build deb package, if dpkg-deb is available
+if ! command -v dpkg-deb &> /dev/null; then
+    echo "dpkg-deb could not be found, skipping deb package creation."
+    exit 0
+fi
+
+debFile="${distDir}/${appNameWithoutSpaces}-${resourcesDirName}.deb"
+debPkgDir="/tmp/pano-scrobbler-deb"
+
+rm -rf "$debPkgDir"
+
+mkdir -p \
+  $debPkgDir/usr/{bin,opt/pano-scrobbler/lib,share/{applications,licenses/pano-scrobbler,icons/hicolor/scalable/apps}} \
+  $debPkgDir/DEBIAN
+
+install -m644 "${nativeImageDir}"/*.so        "${debPkgDir}/usr/opt/$appNameWithoutSpaces/"
+install -m644 "${nativeImageDir}"/lib/*.so    "${debPkgDir}/usr/opt/$appNameWithoutSpaces/lib/"
+install -m755 "${nativeImageDir}/${appNameWithoutSpaces}" "${debPkgDir}/usr/opt/$appNameWithoutSpaces"
+ln -srf "${debPkgDir}/usr/opt/$appNameWithoutSpaces/$appNameWithoutSpaces" "${debPkgDir}/usr/bin/${appNameWithoutSpaces}"
+
+desktopDst="${debPkgDir}/usr/share/applications/${appNameWithoutSpaces}.desktop"
+sed \
+    -e 's|^Exec=.*|Exec=pano-scrobbler %U|' \
+    -e 's|^Icon=.*|Icon=pano-scrobbler|' \
+    "${nativeImageDir}/${appNameWithoutSpaces}.desktop" > "${desktopDst}"
+chmod 644 "${desktopDst}"
+
+install -m644 "${nativeImageDir}/${appNameWithoutSpaces}.svg" \
+    "${debPkgDir}/usr/share/icons/hicolor/scalable/apps/${appNameWithoutSpaces}.svg"
+install -m644 "${nativeImageDir}/LICENSE" \
+    "${debPkgDir}/usr/share/licenses/${appNameWithoutSpaces}/LICENSE"
+
+installedSize=$(du -sk "${debPkgDir}" | awk '{print $1}')
+
+if [ "$arch" = "aarch64" ]; then
+    debArch="arm64"
+else
+    debArch="amd64"
+fi
+
+cat > "${debPkgDir}/DEBIAN/control" <<EOF
+Package: ${appNameWithoutSpaces}
+Version: ${verName}
+Architecture: ${debArch}
+Maintainer: kawaiiDango <kawaiiDango@protonmail.com>
+Installed-Size: ${installedSize}
+Depends: dbus, libwebkitgtk-6.0-4
+Section: sound
+Priority: optional
+Homepage: https://github.com/kawaiiDango/pano-scrobbler
+Description: Feature packed cross-platform music tracker
+EOF
+
+dpkg-deb -Zzstd -z22 --build --root-owner-group "${debPkgDir}" "${debFile}"

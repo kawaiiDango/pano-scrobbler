@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?><resources tools:ignore="MissingTranslation" xmlns:tools="http://schemas.android.com/tools">
     <string name="settings">Tùy chỉnh</string>
+    <string name="album_art">Ảnh bìa</string>
     <string name="artists">Nghệ sĩ</string>
     <string name="albums">Album</string>
     <string name="tracks">Bài hát</string>

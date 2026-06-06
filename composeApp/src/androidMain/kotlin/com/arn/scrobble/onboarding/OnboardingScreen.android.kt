@@ -32,10 +32,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.LifecycleStartEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import co.touchlab.kermit.Logger
 import com.arn.scrobble.icons.Icons
 import com.arn.scrobble.icons.Warning
 import com.arn.scrobble.main.MainViewModel
@@ -58,6 +60,8 @@ import kotlinx.coroutines.withContext
 import org.jetbrains.compose.resources.stringResource
 import pano_scrobbler.composeapp.generated.resources.Res
 import pano_scrobbler.composeapp.generated.resources.choose_apps
+import pano_scrobbler.composeapp.generated.resources.fix_it_battery_title
+import pano_scrobbler.composeapp.generated.resources.fix_it_startup_title
 import pano_scrobbler.composeapp.generated.resources.grant_notification_access
 import pano_scrobbler.composeapp.generated.resources.grant_notification_access_desc
 import pano_scrobbler.composeapp.generated.resources.notification_access_tv
@@ -235,6 +239,12 @@ actual fun OnboardingScreen(
 //            if (!PlatformStuff.isTv && AndroidStuff.isDkmaNeeded() && scrobblerState == ScrobblerState.NLSDisabled)
 //                OnboardingStepType.DKMA
 //            else null,
+            if (Build.MANUFACTURER.lowercase() == Stuff.MANUFACTURER_XIAOMI && !PlatformStuff.isTv)
+                OnboardingStepType.AUTOSTART
+            else null,
+            if (Build.MANUFACTURER.lowercase() == Stuff.MANUFACTURER_XIAOMI && !PlatformStuff.isTv)
+                OnboardingStepType.BATTERY_OPTIMIZATIONS_IGNORE
+            else null,
             OnboardingStepType.CHOOSE_APPS,
             if (!PlatformStuff.isTv && Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU)
                 OnboardingStepType.SEND_NOTIFICATIONS
@@ -255,6 +265,7 @@ actual fun OnboardingScreen(
         doneStatus[steps.indexOf(step)] = true
     }
 
+    val context = LocalContext.current
     var currentStep by rememberSaveable(saver = enumSaver()) { mutableStateOf(steps.first()) }
 
     val isLoggedIn by PlatformStuff.mainPrefs.data.collectAsStateWithInitialValue { it.scrobbleAccounts.isNotEmpty() }
@@ -288,6 +299,16 @@ actual fun OnboardingScreen(
         }
 
         onStopOrDispose { }
+    }
+
+    if (OnboardingStepType.BATTERY_OPTIMIZATIONS_IGNORE in steps) {
+        LifecycleStartEffect(Unit) {
+            if (AndroidStuff.isIgnoringBatteryOptimizations()) {
+                markAsDone(OnboardingStepType.BATTERY_OPTIMIZATIONS_IGNORE)
+            }
+
+            onStopOrDispose { }
+        }
     }
 
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -341,6 +362,51 @@ actual fun OnboardingScreen(
                             markAsDone(OnboardingStepType.NOTIFICATION_LISTENER)
                         },
                         onSkip = onDone
+                    )
+                }
+
+                OnboardingStepType.AUTOSTART -> {
+                    VerticalStepperItem(
+                        titleRes = Res.string.fix_it_startup_title,
+                        description = stringResource(Res.string.persistent_noti_fgs),
+                        openAction = {
+                            val intent = Intent()
+                                .setComponent(
+                                    ComponentName.unflattenFromString(Stuff.XIAOMI_AUTOSTART_ACTIVITY)
+                                )
+                                .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+
+                            try {
+                                context.startActivity(intent)
+                            } catch (e: Exception) {
+                                Logger.e("Failed to open MIUI autostart settings", e)
+                            }
+
+                            markAsDone(OnboardingStepType.AUTOSTART)
+                        },
+                        isDone = isDone,
+                        isExpanded = step == currentStep,
+                    )
+                }
+
+                OnboardingStepType.BATTERY_OPTIMIZATIONS_IGNORE -> {
+                    VerticalStepperItem(
+                        titleRes = Res.string.fix_it_battery_title,
+                        description = stringResource(Res.string.persistent_noti_fgs),
+                        openAction = {
+                            val intent =
+                                Intent(Settings.ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS)
+                                    .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+
+                            try {
+                                context.startActivity(intent)
+                            } catch (e: Exception) {
+                                Logger.e("Failed to open battery optimization settings", e)
+                                markAsDone(OnboardingStepType.BATTERY_OPTIMIZATIONS_IGNORE)
+                            }
+                        },
+                        isDone = isDone,
+                        isExpanded = step == currentStep,
                     )
                 }
 

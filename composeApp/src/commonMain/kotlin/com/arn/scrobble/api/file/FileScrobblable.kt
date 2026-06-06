@@ -23,8 +23,9 @@ import com.arn.scrobble.ui.PackageNameMetadata.englishLabel
 import com.arn.scrobble.ui.PackageNameMetadata.version
 import com.arn.scrobble.utils.PanoTimeFormatter
 import com.arn.scrobble.utils.PlatformFile
-import com.github.doyaaaaaken.kotlincsv.dsl.csvReader
-import com.github.doyaaaaaken.kotlincsv.dsl.csvWriter
+import com.jsoizo.kotlincsv.csvReader
+import com.jsoizo.kotlincsv.csvWriter
+import com.jsoizo.kotlincsv.writer.write
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.Serializable
@@ -83,7 +84,7 @@ class FileScrobblable(userAccount: UserAccountSerializable) : Scrobblable(userAc
         when (fileType) {
             FileFormat.csv -> {
                 withContext(Dispatchers.IO) {
-                    csvWriter.writeAllAsync(listOf(entry.toCsvRow()), outputStream)
+                    csvWriter.write(listOf(entry.toCsvRow()), outputStream)
                 }
             }
 
@@ -276,7 +277,7 @@ class FileScrobblable(userAccount: UserAccountSerializable) : Scrobblable(userAc
                             try {
                                 val entry = Entry.fromJson(line)
                                 val row = entry.toCsvRow()
-                                val convertedLine = csvWriter.writeAllAsString(listOf(row))
+                                val convertedLine = csvWriter.writeAll(listOf(row))
 
                                 outputStream.write(convertedLine.toByteArray())
                             } catch (e: SerializationException) {
@@ -310,12 +311,12 @@ class FileScrobblable(userAccount: UserAccountSerializable) : Scrobblable(userAc
             timeMs.toString(),
             artist,
             track,
-            album,
-            albumArtist,
+            album.orEmpty(),
+            albumArtist.orEmpty(),
             durationMs.toString(),
-            mediaPlayerPackage,
-            mediaPlayerName,
-            mediaPlayerVersion,
+            mediaPlayerPackage.orEmpty(),
+            mediaPlayerName.orEmpty(),
+            mediaPlayerVersion.orEmpty(),
             event.name
         )
 

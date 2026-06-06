@@ -70,6 +70,7 @@ minima:
 
 author:
   name: kawaiiDango
+  url: "https://github.com/kawaiiDango"
 
 optional_front_matter:
   remove_originals: true
@@ -88,6 +89,7 @@ defaults:
   - scope:
       path: "README.md"
     values:
+      image: "desktop-screenshots/2-charts-desktop.jpg"
       seo:
         type: "SoftwareApplication"
   - scope:

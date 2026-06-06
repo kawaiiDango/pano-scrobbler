@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?><resources tools:ignore="MissingTranslation" xmlns:tools="http://schemas.android.com/tools">
     <string name="settings">Ayarlar</string>
+    <string name="album_art">Albüm kapağı</string>
     <string name="artists">Sanatçılar</string>
     <string name="albums">Albümler</string>
     <string name="tracks">Parçalar</string>

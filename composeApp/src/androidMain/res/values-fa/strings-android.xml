@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?><resources tools:ignore="MissingTranslation" xmlns:tools="http://schemas.android.com/tools">
     <string name="settings">تنظیمات</string>
+    <string name="album_art">عکس آلبوم</string>
     <string name="artists">هنرمندان</string>
     <string name="albums">آلبوم‌ها</string>
     <string name="tracks">آهنگ‌ها</string>

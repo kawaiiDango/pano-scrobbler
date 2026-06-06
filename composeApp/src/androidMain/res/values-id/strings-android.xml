@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?><resources tools:ignore="MissingTranslation" xmlns:tools="http://schemas.android.com/tools">
     <string name="settings">Konfigurasi</string>
+    <string name="album_art">Sampul album</string>
     <string name="artists">Artis</string>
     <string name="albums">Album</string>
     <string name="tracks">Trek</string>

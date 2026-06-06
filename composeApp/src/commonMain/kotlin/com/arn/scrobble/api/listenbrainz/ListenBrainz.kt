@@ -600,12 +600,7 @@ class ListenBrainz(userAccount: UserAccountSerializable) : Scrobblable(userAccou
 
             result.onSuccess { validateToken ->
                 validateToken.user_name ?: return Result.failure(ApiException(-1, "Invalid token"))
-                val isCustom = userAccountTemp.apiRoot != Stuff.LISTENBRAINZ_API_ROOT
-                val profileUrl = if (isCustom)
-                    userAccountTemp.apiRoot!!.toHttpUrl()
-                        .let { url -> url.scheme + "://" + url.host }
-                else
-                    "https://listenbrainz.org/user/${validateToken.user_name}"
+                val profileUrl = guessProfileUrl(userAccountTemp.apiRoot, validateToken.user_name)
 
                 val account = UserAccountSerializable(
                     userAccountTemp.type,
@@ -624,6 +619,19 @@ class ListenBrainz(userAccount: UserAccountSerializable) : Scrobblable(userAccou
             }
 
             return result.map { Session(it.user_name, userAccountTemp.authKey) }
+        }
+
+        private fun guessProfileUrl(apiRoot: String?, userName: String): String {
+            val profileUrl = if (apiRoot != null && apiRoot != Stuff.LISTENBRAINZ_API_ROOT) {
+                val url = apiRoot.toHttpUrl()
+                val topPrivateDomain = url.topPrivateDomain()
+
+                url.scheme + "://" + topPrivateDomain
+            } else {
+                "https://listenbrainz.org/user/$userName"
+            }
+
+            return profileUrl
         }
     }
 }

@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?><resources tools:ignore="MissingTranslation" xmlns:tools="http://schemas.android.com/tools">
     <string name="settings">Konfigurera</string>
+    <string name="album_art">Skivomslag</string>
     <string name="artists">Artister</string>
     <string name="albums">Album</string>
     <string name="tracks">Spår</string>

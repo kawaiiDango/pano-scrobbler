@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?><resources tools:ignore="MissingTranslation" xmlns:tools="http://schemas.android.com/tools">
     <string name="settings">Konfiguracija</string>
+    <string name="album_art">Naslovnica albuma</string>
     <string name="artists">Izvođači</string>
     <string name="albums">Albumi</string>
     <string name="tracks">Pjesme</string>

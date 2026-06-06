@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?><resources tools:ignore="MissingTranslation" xmlns:tools="http://schemas.android.com/tools">
     <string name="settings">Asetukset</string>
+    <string name="album_art">Albumin kansi</string>
     <string name="artists">Esittäjät</string>
     <string name="albums">Albumit</string>
     <string name="tracks">Kappaleet</string>

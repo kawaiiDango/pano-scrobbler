@@ -8,4 +8,5 @@ data class MusicEntryImageReq(
     val accountType: AccountType?,
     val isHeroImage: Boolean = false,
     val fetchAlbumInfoIfMissing: Boolean = false,
+    val allowNetwork: Boolean = true,
 )

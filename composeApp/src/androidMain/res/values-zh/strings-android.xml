@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?><resources tools:ignore="MissingTranslation" xmlns:tools="http://schemas.android.com/tools">
     <string name="settings">设置</string>
+    <string name="album_art">专辑封面</string>
     <string name="artists">艺术家</string>
     <string name="albums">专辑</string>
     <string name="tracks">曲目</string>

@@ -89,8 +89,7 @@ responsibility for the content, privacy policies, or practices of any third-part
 ### Children’s Privacy
 
 This app is intended for a general audience. I do not knowingly collect personally identifiable
-contact information from children under 13. Please refer to our third
-party [Last.fm's children's privacy policy](https://privacy.paramount.com/en/childrens).
+contact information from children under 13.
 
 ### Changes to This Privacy Policy
 

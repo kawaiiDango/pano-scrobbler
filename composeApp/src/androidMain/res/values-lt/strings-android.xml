@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?><resources tools:ignore="MissingTranslation" xmlns:tools="http://schemas.android.com/tools">
     <string name="settings">Konfigūruoti</string>
+    <string name="album_art">Albumo viršelis</string>
     <string name="artists">Atlikėjai</string>
     <string name="albums">Albumai</string>
     <string name="tracks">Takeliai</string>

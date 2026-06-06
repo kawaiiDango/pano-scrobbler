@@ -5,27 +5,39 @@
     android:layout_height="wrap_content"
     android:background="?android:selectableItemBackground"
     android:orientation="horizontal"
-    android:paddingStart="16dp"
-    android:paddingEnd="14dp"
-    android:paddingVertical="6dp">
+    android:paddingVertical="6dp"
+    android:paddingStart="12dp"
+    android:paddingEnd="12dp">
 
+    <FrameLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        android:layout_marginEnd="8dp">
 
-<!--    <FrameLayout-->
-<!--        android:layout_width="32dp"-->
-<!--        android:layout_height="wrap_content"-->
-<!--        android:layout_gravity="center_vertical">-->
+        <ImageView
+            android:id="@+id/appwidget_charts_image"
+            android:layout_width="56dp"
+            android:layout_height="56dp"
+            android:background="@drawable/widget_bg_rounded_translucent"
+            android:clipToOutline="true"
+            android:contentDescription="@string/album_art"
+            android:scaleType="fitCenter" />
 
-<!--        <TextView-->
-<!--            android:id="@+id/appwidget_charts_serial"-->
-<!--            android:layout_width="wrap_content"-->
-<!--            android:layout_height="wrap_content"-->
-<!--            android:textSize="16sp"-->
-<!--            tools:text="11." />-->
-<!--    </FrameLayout>-->
+        <TextView
+            android:id="@+id/appwidget_charts_serial"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="2dp"
+            android:textSize="13sp"
+            tools:text="11" />
+
+    </FrameLayout>
 
     <LinearLayout
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
         android:layout_weight="1"
         android:orientation="vertical">
 
@@ -35,7 +47,7 @@
             android:layout_height="wrap_content"
             android:ellipsize="end"
             android:maxLines="2"
-            android:textSize="16sp"
+            android:textSize="15sp"
             android:textStyle="bold"
             tools:text="@string/appwidget_loading" />
 
@@ -43,9 +55,9 @@
             android:id="@+id/appwidget_charts_subtitle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:alpha="0.95"
             android:ellipsize="end"
             android:maxLines="2"
-            android:paddingStart="8dp"
             android:textSize="14sp"
             tools:text="@string/appwidget_loading" />
     </LinearLayout>

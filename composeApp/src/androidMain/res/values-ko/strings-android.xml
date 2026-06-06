@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?><resources tools:ignore="MissingTranslation" xmlns:tools="http://schemas.android.com/tools">
     <string name="settings">환경설정</string>
+    <string name="album_art">앨범 아트</string>
     <string name="artists">아티스트</string>
     <string name="albums">앨범</string>
     <string name="tracks">트랙</string>

@@ -81,21 +81,23 @@ object LocaleUtils {
 
 
     fun localesMap(): Map<String, String> {
-        return localesSet.associateWith {
+        return localesSet.map {
             val localeObj = Locale.forLanguageTag(it)
-            val displayLanguage = localeObj.displayLanguage
+            val displayLanguage = localeObj.getDisplayLanguage(localeObj)
 
             val suffix = when (localeObj.language) {
-                in showScriptSet -> " (${localeObj.displayScript})"
-                in showCountrySet -> localeObj.displayCountry
+                in showScriptSet -> " " + localeObj.getDisplayScript(localeObj)
+                in showCountrySet -> localeObj.getDisplayCountry(localeObj)
                     .ifEmpty { null }
-                    ?.let { " ($it)" } ?: ""
+                    ?.let { " $it" } ?: ""
 
                 else -> ""
             }
 
-            displayLanguage + suffix
-        }
+            it to displayLanguage + suffix
+        }.sortedWith { (k1, v1), (k2, v2) ->
+            v1.compareTo(v2, ignoreCase = true)
+        }.toMap()
     }
 }
 

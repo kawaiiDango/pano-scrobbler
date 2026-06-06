@@ -19,11 +19,14 @@ The location of these settings will depend on your MIUI / HyperOS version
 - Search for "Never sleeping apps" in the system settings
 - Add the app to the list
 
-For other devices, go to [dontkillmyapp.com](https://dontkillmyapp.com), click on your mobile
+Go to [dontkillmyapp.com](https://dontkillmyapp.com), click on your mobile
 manufacturer's name on the site and follow all the steps in there.
 
 It may be impossible to use this app on a stock ROM from certain manufacturers, due to the said
 restrictions.
+
+Most custom ROMs do not have such restrictions, and the app should work out of the box without
+changing any battery settings.
 
 ### [android] The app says that scrobbling is disabled
 
@@ -74,6 +77,11 @@ image will be displayed.
 
 Last.FM has a filter, which filters out tracks/albums/artists with titles similar to
 "Unknown", ".mp3", "Track_01" etc
+
+### Scrobbles are going to a wrong artist or track with a similar spelling on last.fm
+
+Turn off the legacy artist and track corrections on the Last.fm website:
+[https://www.last.fm/settings/website](https://www.last.fm/settings/website)
 
 ### The scrobbler submits incomplete data / does not submit album artists
 
@@ -157,10 +165,12 @@ Use the `--data-dir` or `-d` command line argument, followed by the path to the 
 
 ### [desktop] How do I correctly scrobble media playing on a web browser?
 
-Browsers on Windows do not report the complete song metadata to the OS media controls. The situation
-is better on Linux, but depends on the website correctly reporting the metadata in their
-MediaSession. The same applies to browser-like apps (e.g. most Electron and WebView apps). Use
-WebScrobbler for web browsers, instead.
+The metadata reported to the OS media controls by web browsers depends on your browser and how the
+website has implemented their `MediaSession`. If you are on Windows, you must use Chrome v150 or
+higher, or other browsers based on Chromium v150+, as earlier versions do not report the album name
+at all. The situation is better on Linux, but still depends on the website correctly reporting the
+metadata. The same applies to browser-like apps (e.g. most Electron and WebView apps). For the best
+experience, use WebScrobbler on web browsers, instead.
 
 ### [desktop] The app does not show notifications on Windows
 

@@ -63,7 +63,7 @@ interface SeenEntitiesDao {
         """
         SELECT _id, artist || '$SEP' || track AS compositeKey
         FROM ${SeenTrack.TABLE}
-        WHERE artist || '$SEP' || track IN (:keys)
+        WHERE artist || '$SEP' || track COLLATE NOCASE IN (:keys)
         """
     )
     suspend fun lookupTrackIdsForKeys(keys: List<String>): List<CompositeIdRow>
@@ -72,7 +72,7 @@ interface SeenEntitiesDao {
         """
         SELECT _id, artist || '$SEP' || album AS compositeKey
         FROM ${SeenAlbum.TABLE}
-        WHERE artist || '$SEP' || album IN (:keys)
+        WHERE artist || '$SEP' || album COLLATE NOCASE IN (:keys)
         """
     )
     suspend fun lookupAlbumIdsForKeys(keys: List<String>): List<CompositeIdRow>
@@ -118,7 +118,7 @@ interface SeenEntitiesDao {
         """
         SELECT trackId || '$SEP' || albumId AS compositeKey, priority
         FROM ${SeenTrackAlbumAssociation.TABLE}
-        WHERE trackId || '$SEP' || albumId IN (:keys)
+        WHERE trackId || '$SEP' || albumId COLLATE NOCASE IN (:keys)
         """
     )
     suspend fun lookupAssociationPriorities(keys: List<String>): List<AssociationPriorityRow>

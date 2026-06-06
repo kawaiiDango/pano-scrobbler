@@ -58,6 +58,7 @@ enum class OnboardingStepType {
     CHOOSE_APPS,
     SEND_NOTIFICATIONS,
     AUTOSTART,
+    BATTERY_OPTIMIZATIONS_IGNORE,
     APP_LAUNCHER,
 }
 

@@ -67,6 +67,7 @@ import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.pluralStringResource
 import org.jetbrains.compose.resources.stringResource
 import pano_scrobbler.composeapp.generated.resources.Res
+import pano_scrobbler.composeapp.generated.resources.charts_custom
 import pano_scrobbler.composeapp.generated.resources.help
 import pano_scrobbler.composeapp.generated.resources.item_options
 import pano_scrobbler.composeapp.generated.resources.num_scrobbles_today
@@ -92,6 +93,9 @@ fun ProfileHeader(
     val displayText = when {
         Stuff.isInDemoMode -> "nobody"
         currentAccountType == AccountType.LASTFM -> userName
+        currentAccountType == AccountType.CUSTOM_LISTENBRAINZ || currentAccountType == AccountType.GNUFM ->
+            stringResource(Res.string.charts_custom) + ": " + userName
+
         else -> accountTypeLabel(currentAccountType) + ": " + userName
     }
 
@@ -303,10 +307,17 @@ fun ProfileHeaderDropdown(
         ) {
             if (currentUser.isSelf) {
                 otherAccounts.forEach { account ->
+                    val accountTypeLabel =
+                        if (account.type == AccountType.CUSTOM_LISTENBRAINZ || account.type == AccountType.GNUFM)
+                            stringResource(Res.string.charts_custom)
+                        else
+                            accountTypeLabel(account.type)
+
                     DropdownMenuItem(
                         text = {
                             Text(
-                                accountTypeLabel(account.type) + ": " + account.user.name,
+                                accountTypeLabel + ": " + account.user.name,
+                                overflow = TextOverflow.MiddleEllipsis,
                                 maxLines = 1
                             )
                         },

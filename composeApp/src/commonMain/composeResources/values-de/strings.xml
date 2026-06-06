@@ -44,6 +44,10 @@
         <item quantity="one">%1$d Übereinstimmung</item>
         <item quantity="other">%1$d Übereinstimmungen</item>
     </plurals>
+    <plurals name="num_hours">
+        <item quantity="one">%1$d Stunde</item>
+        <item quantity="other">%1$d Stunden</item>
+    </plurals>
     <string name="yes">Ja</string>
     <string name="no">Nein</string>
     <string name="reset">Zurücksetzen</string>
@@ -125,6 +129,7 @@
     <string name="unlove" comment="Undo a love/like and make it neutral. This is not the same as Dislike">Nicht mehr favorisieren</string>
     <string name="pending_scrobbles">Ausstehende Scrobbles</string>
     <string name="following" comment="accounts you are following on lastfm">Abonniert</string>
+    <string name="since_time" formatted="true" comment="%1= date of joining lastfm">Seit %1$s</string>
     <string name="grant_notification_access">Zugriff auf die Benachrichtigungen gewähren</string>
     <string name="grant_notification_access_desc">Benötigt, um Musik-Metadaten abzurufen. Keine Nicht-Musik-Benachrichtigungen werden gelesen</string>
     <string name="send_notifications">Benachrichtigungen zulassen</string>
@@ -268,6 +273,7 @@
     <string name="server_url" comment="For self hosted scrobbling services">Server URL</string>
     <string name="listenbrainz_info" formatted="true" comment="%1 = the link to page containing the token">Du findest deinen Authentifizierungs-Token unter: %1$s</string>
     <string name="pref_now_playing">"Scrobbelt gerade" senden</string>
+    <string name="pref_fetch_missing_album" formatted="true" comment="%1= the name of a service like last.fm, Deezer etc">Fehlendes Album von %1$s abrufen</string>
     <string name="pref_locale">Sprachen</string>
     <string name="pref_crashlytics_enabled">Fehler automatisch melden</string>
     <string name="pref_misc">Sonst.</string>
@@ -366,9 +372,13 @@
     <string name="first_artist">Nur den ersten Künstler verwenden</string>
     <string name="external_metadata">Externe Metadaten Quellen</string>
     <string name="line_n" formatted="true" comment="%1$s is the line number, currently used in the context of Discord Rich Presence">Linie %1$s</string>
+    <string name="is_turned_off" formatted="true" comment="%1$s= the name of a web service, e.g. Spotify, %2$s=the section name in settings screen where this setting can be found">%1$s ist in %2$s deaktiviert</string>
+    <string name="available_placeholders" formatted="true" comment="%1 = placeholder strings, e.g. $artist, $title etc.">Verfügbare Platzhalter: %1$s</string>
+    <string name="edit_example">z.B. Um Künstler1 durch Künstler2 zu ersetzen, ohne die übrigen Metadaten zu verändern, aktiviere nur das Künstlerfeld und gib die ursprünglichen sowie die korrigierten Künstlerwerte ein, während die anderen Felder deaktiviert bleiben.</string>
     <string name="when_using" formatted="true" comment="%1$s is the web service or media player name">Bei Verwendung von %1$s</string>
     <string name="when_not_using" formatted="true" comment="%1$s is the web service or media player name">Nicht bei Verwendung von %1$s</string>
     <string name="as_text" comment="Like copy as text, but in short">Als Text</string>
+    <string name="at_least" formatted="true" comment="%1$s=some number">Mindestens %1$s</string>
     <string name="get_pro">Diese App unterstützen</string>
     <string name="one_time_purchase">Einmalig</string>
     <string name="help">Hilfe</string>

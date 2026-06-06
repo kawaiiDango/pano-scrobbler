@@ -41,7 +41,7 @@
     <string name="reset">重置</string>
     <string name="settings">设置</string>
     <string name="bug_report">Bug 报告</string>
-    <string name="faq">FAQ</string>
+    <string name="faq">常见问题</string>
     <string name="album_art">专辑封面</string>
     <string name="artist_image">艺术家图像</string>
     <string name="parse_error" comment="Title parsing error for Youtube etc">无法解析标题</string>
@@ -257,7 +257,7 @@
     <string name="pref_privacy_policy">隐私策略</string>
     <string name="pref_user_label" comment="(Like username)">用户名</string>
     <string name="pref_token_label" comment="For Listenbrainz">认证密钥</string>
-    <string name="api_url" comment="For Listenbrainz">API URL</string>
+    <string name="api_url" comment="For Listenbrainz">API 网址</string>
     <string name="server_url" comment="For self hosted scrobbling services">服务器 URL</string>
     <string name="listenbrainz_info" formatted="true" comment="%1 = the link to page containing the token">您可以在 %1$s 找到您的验证 token。</string>
     <string name="pref_now_playing">提交当前播放的音乐</string>
@@ -383,6 +383,24 @@
     <string name="move_down" comment="Screen reader text for drag and drop reordering">下移</string>
     <string name="at_least" formatted="true" comment="%1$s=some number">至少 %1$s</string>
     <string name="code_will_be_sent" formatted="true" comment="%1$s is either Ko-Fi or BuyMeACoffee, %2$s is the donation amount">如果您捐赠了 %2$s，代码将会被发送到与您 %1$s 帐户关联的电子邮件地址</string>
+    <string name="proxy" comment="network proxy">代理</string>
+    <string name="system" comment="system default settings">系统</string>
+    <string name="host" comment="proxy host">主机</string>
+    <string name="port" comment="proxy port">端口</string>
+    <string name="scanning" comment="finds other instances of Pano Scrobbler import server on the local network">正在扫描</string>
+    <string name="missing_local_network_permission">此功能需要连接本地网络的权限</string>
+    <string name="artist_splitting_exceptions" comment="exceptions for the use first artist feature">艺人拆分例外</string>
+    <string name="add_exception" comment="as in adding an exception to a rule or setting">添加例外</string>
+    <string name="upto_n" formatted="true">最多 %1$d</string>
+    <string name="add_to_app_launcher">向应用程序启动器添加快捷方式</string>
+    <string name="persistent_noti_fgs">在后台保持 scrobbler 运行</string>
+    <string name="empty_apps_list">当您在应用中播放内容时，应用将出现在这里</string>
+    <string name="supports_ambient_apps" formatted="true" comment="%1 = comma-separated list of music recognition apps">同时支持 %1$s 等音乐识别应用</string>
+    <string name="persistent_noti_desc" formatted="true" comment="%1 = some names of phone manufacturers">在激进地终止后台应用（如 %1$s 等）的 OEM 上需要</string>
+    <string name="cache" comment="as a noun">缓存</string>
+    <string name="random_on_start" comment="currently used as a toggle in the themes screen to pick a random theme when the app starts">进程启动时随机</string>
+    <string name="edit_continue_simple" comment="a toggle in the normal edits screen">如果找到，继续使用正则表达式规则和预设进行编辑</string>
+    <string name="edit_continue_regex" comment="a toggle in the regex edits screen">如果找到，继续使用其他正则表达式规则和预设进行编辑</string>
     <string name="get_pro">支持本应用</string>
     <string name="one_time_purchase">1次</string>
     <string name="help">帮助</string>

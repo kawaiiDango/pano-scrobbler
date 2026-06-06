@@ -170,7 +170,7 @@
     <string name="no_mail_apps">Почтовый клиент не установлен</string>
     <string name="add">Добавить новый элемент</string>
     <string name="loved" comment="Its a noun">Любимые</string>
-    <string name="unloved" comment="Its a noun">Не любимые</string>
+    <string name="unloved" comment="Its a noun">Нелюбимые</string>
     <string name="simple_edits">Редактирования</string>
     <string name="charts" comment="User's top artists, albums, tracks, line chart of daily scrobble counts and tag cloud">Чарты</string>
     <string name="tag_cloud" comment="https://www.google.com/search?&amp;q=tag+cloud">Облако тегов</string>
@@ -419,6 +419,16 @@
     <string name="move_down" comment="Screen reader text for drag and drop reordering">Переместить ниже</string>
     <string name="at_least" formatted="true" comment="%1$s=some number">Как минимум %1$s</string>
     <string name="code_will_be_sent" formatted="true" comment="%1$s is either Ko-Fi or BuyMeACoffee, %2$s is the donation amount">Код будет отправлен на адрес электронной почты, связанный с вашей учётной записью %1$s, если вы пожертвовали %2$s</string>
+    <string name="proxy" comment="network proxy">Прокси</string>
+    <string name="system" comment="system default settings">Системный</string>
+    <string name="host" comment="proxy host">Хост</string>
+    <string name="port" comment="proxy port">Порт</string>
+    <string name="scanning" comment="finds other instances of Pano Scrobbler import server on the local network">Сканирование</string>
+    <string name="missing_local_network_permission">Этой функции требуется разрешение на подключение к локальной сети</string>
+    <string name="artist_splitting_exceptions" comment="exceptions for the use first artist feature">Исключения в разделении исполнителей</string>
+    <string name="add_exception" comment="as in adding an exception to a rule or setting">Добавить исключение</string>
+    <string name="empty_apps_list">Приложения появятся здесь, когда вы воспроизведете что-либо в них</string>
+    <string name="cache" comment="as a noun">Кэш</string>
     <string name="get_pro">Поддержите приложение</string>
     <string name="one_time_purchase">Разово</string>
     <string name="help">Помощь</string>

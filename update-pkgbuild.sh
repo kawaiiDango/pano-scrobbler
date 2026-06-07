@@ -3,6 +3,7 @@
 scriptDir="$(cd "$(dirname "$0")" && pwd)"
 pkgbuildDir="$scriptDir/../pano-scrobbler-bin"
 flakeDir="$scriptDir/../pano-scrobbler-flake"
+netlifyDir="$scriptDir/../pano-scrobbler-flake/netlify-root"
 
 # --- Re-launch inside Arch container if not Arch ---
 if [[ -z "$(command -v makepkg)" ]]; then
@@ -12,15 +13,19 @@ if [[ -z "$(command -v makepkg)" ]]; then
     -v "$scriptDir:/scripts:z" \
     -v "$(realpath "$pkgbuildDir"):/pkgbuild:z" \
     -v "$(realpath "$flakeDir"):/flake:z" \
+    -v "$(realpath "$netlifyDir"):/netlify-root:z" \
     -w /scripts \
+    -v "/run/user/$(id -u)/gnupg/S.gpg-agent:/root/.gnupg/S.gpg-agent" \
+    -v ~/.gnupg/pubring.kbx:/root/.gnupg/pubring.kbx:ro \
     docker.io/archlinux:base \
-    bash -c "pacman -Sy --noconfirm jq ed tinyxxd nix git && bash /scripts/$(basename "$0")"
+    bash -c "pacman -Sy --noconfirm jq ed tinyxxd nix git dpkg && bash /scripts/$(basename "$0")"
 fi
 
 # if inside container, set dirs to their mount paths. Don't do it if the host is Arch.
 if [[ -n "${IN_CONTAINER:-}" ]]; then
   pkgbuildDir="/pkgbuild"
   flakeDir="/flake"
+  netlifyDir="/netlify-root"
 fi
 
 # Convert a 64-char hex SHA-256 string to Nix SRI format: sha256-<base64>
@@ -154,3 +159,108 @@ EOF
 else
     echo ".spec not found" >&2
 fi
+
+# Update apt repo
+
+PKG_NAME=$REPO
+COMPONENT="main"
+REPO_DIR="${netlifyDir}/apt"
+POOL_PATH="pool/$COMPONENT/p/${PKG_NAME}"
+DIST="all"
+
+GPG_KEY_ID="5CB896FA8DAF303AEB5FCE4DDB06725ACB6921A0"
+
+GITHUB_RELEASE_BASE="https://github.com/kawaiiDango/${PKG_NAME}/releases/download/${tag}"
+REDIRECTS="${netlifyDir}/_redirects"
+
+TMPDIR="/tmp/pano-scrobbler-deb-files"
+trap 'rm -rf "${TMPDIR}"' EXIT
+mkdir -p "${TMPDIR}"
+rm -f "${REDIRECTS}"
+
+# Map APT arch to GitHub asset arch
+declare -A GH_ARCH=(
+    [amd64]="x64"
+    [arm64]="arm64"
+)
+
+for ARCH in amd64 arm64; do
+    ASSET="pano-scrobbler-linux-${GH_ARCH[$ARCH]}.deb"
+    URL="${GITHUB_RELEASE_BASE}/${ASSET}"
+    LOCAL_DEB="${TMPDIR}/${ASSET}"
+
+    curl -fL --progress-bar -o "${LOCAL_DEB}" "${URL}"
+
+    SIZE=$(stat -c%s "${LOCAL_DEB}")
+    SHA256=$(sha256sum "${LOCAL_DEB}" | awk '{print $1}')
+
+    # dpkg-deb --field emits all control fields, ready for a Packages file
+    CONTROL_FIELDS=$(dpkg-deb --field "${LOCAL_DEB}")
+
+    PACKAGES_ENTRY=$(printf '%s\nFilename: %s/%s\nSize: %s\nSHA256: %s\n' \
+        "${CONTROL_FIELDS}" \
+        "${POOL_PATH}" "${ASSET}" \
+        "${SIZE}" "${SHA256}")
+
+    echo "    Size: ${SIZE} B  SHA256: ${SHA256}"
+
+    # Write Packages files and Update _redirects
+
+    # APT-conventional filename advertised in the Packages index
+    APT_FNAME="pano-scrobbler_${verName}_${ARCH}.deb"
+
+    PKG_FILE="${REPO_DIR}/dists/${DIST}/${COMPONENT}/binary-${ARCH}/Packages"
+    printf '%s\nFilename: %s/%s\nSize: %s\nSHA256: %s\n\n' \
+        "${PACKAGES_ENTRY}" \
+        "${POOL_PATH}" "${APT_FNAME}" \
+        "${SIZE}" "${SHA256}" \
+        > "${PKG_FILE}"
+    # gzip -cn < "${PKG_FILE}" > "${PKG_FILE}.gz"
+
+    # Write _redirects
+    printf '/%s/%s  %s/%s  302\n' \
+        "apt/pano-scrobbler/${POOL_PATH}" "${APT_FNAME}" \
+        "${GITHUB_RELEASE_BASE}" "${ASSET}" >> "${REDIRECTS}"
+done
+
+# Generate Release file
+RELEASE_FILE="${REPO_DIR}/dists/${DIST}/Release"
+DATE=$(date -u "+%a, %d %b %Y %H:%M:%S UTC")
+
+cat > "${RELEASE_FILE}" <<EOF
+Origin: ${PKG_NAME}
+Label: ${PKG_NAME}
+Suite: ${DIST}
+Codename: ${DIST}
+Date: ${DATE}
+Architectures: amd64 arm64
+Components: ${COMPONENT}
+Description: ${PKG_NAME} APT repository
+EOF
+
+# Helper: append a hash section
+append_hashes() {
+    local header="$1" hash_cmd="$2"
+    echo "${header}:" >> "${RELEASE_FILE}"
+    for ARCH in amd64 arm64; do
+        # for FNAME in Packages Packages.gz; do
+            local FNAME="Packages"
+            local FILE="${REPO_DIR}/dists/${DIST}/${COMPONENT}/binary-${ARCH}/${FNAME}"
+            local HASH SIZE
+            HASH=$( ${hash_cmd} "${FILE}" | awk '{print $1}' )
+            SIZE=$(stat -c%s "${FILE}")
+            printf ' %s %s %s\n' "${HASH}" "${SIZE}" \
+                "${COMPONENT}/binary-${ARCH}/${FNAME}" >> "${RELEASE_FILE}"
+        # done
+    done
+}
+
+append_hashes "SHA256" "sha256sum"
+
+# Clear-signed (preferred by modern apt)
+gpg --yes --default-key "${GPG_KEY_ID}" \
+    --armor --clearsign \
+    --output "${REPO_DIR}/dists/${DIST}/InRelease" \
+    "${RELEASE_FILE}"
+
+rm "${RELEASE_FILE}"

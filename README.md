@@ -2,10 +2,10 @@
 
 [\[repository\]](https://github.com/kawaiiDango/pano-scrobbler)
 
-[<img src="desktop-screenshots/1-scrobbles-desktop.jpg" alt="scrobbles screen on desktop" height="220"/>](desktop-screenshots/1-scrobbles-desktop.jpg)
-[<img src="desktop-screenshots/2-charts-desktop.jpg" alt="charts screen on desktop" height="220"/>](desktop-screenshots/2-charts-desktop.jpg)
-[<img src="fastlane/metadata/android/en-US/images/phoneScreenshots/3-friends-mobile.jpg" alt="friends screen on mobile" height="220"/>](fastlane/metadata/android/en-US/images/phoneScreenshots/3-friends-mobile.jpg)
-[<img src="fastlane/metadata/android/en-US/images/phoneScreenshots/4-details-mobile.jpg" alt="details screen on mobile" height="220"/>](fastlane/metadata/android/en-US/images/phoneScreenshots/4-details-mobile.jpg)
+[<img src="desktop-screenshots/1-scrobbles-desktop.jpg" alt="scrobbles screen on desktop" height="175"/>](desktop-screenshots/1-scrobbles-desktop.jpg)
+[<img src="desktop-screenshots/2-charts-desktop.jpg" alt="charts screen on desktop" height="175"/>](desktop-screenshots/2-charts-desktop.jpg)
+[<img src="fastlane/metadata/android/en-US/images/phoneScreenshots/3-friends-mobile.jpg" alt="friends screen on mobile" height="175"/>](fastlane/metadata/android/en-US/images/phoneScreenshots/3-friends-mobile.jpg)
+[<img src="fastlane/metadata/android/en-US/images/phoneScreenshots/4-details-mobile.jpg" alt="details screen on mobile" height="175"/>](fastlane/metadata/android/en-US/images/phoneScreenshots/4-details-mobile.jpg)
 
 ## Downloads
 

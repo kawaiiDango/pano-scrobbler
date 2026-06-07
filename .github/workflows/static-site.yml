@@ -51,6 +51,10 @@ jobs:
       - name: Generate sitemap
         run: bash static-site/generate_sitemap.sh > static-site/sitemap.xml
 
+      - name: Put Screenshot JSON-LD array in $GITHUB_OUTPUT
+        id: screenshot_jsonld_arr
+        run: echo "screenshot_jsonld_arr=$(bash static-site/generate_screenshot_jsonld.sh)" >> $GITHUB_OUTPUT
+
       - name: Remove unneeded files and secrets
         run: |
           rm -r \
@@ -91,9 +95,7 @@ jobs:
 
       - name: Patch JSON-LD in index.html
         run: |
-          SCREENSHOTS_ARR_STR=$(bash static-site/generate_screenshot_jsonld.sh)
-          sed -i 's|}</script>|,"sameAs":["https://github.com/kawaiiDango/pano-scrobbler/"],"operatingSystem":"Windows, Linux, Android","applicationCategory":"MultimediaApplication","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"screenshot":'"$SCREENSHOTS_ARR_STR"'}</script>|' static-site/index.html
-          rm static-site/generate_screenshot_jsonld.sh
+          sed -i 's|}</script>|,"sameAs":["https://github.com/kawaiiDango/pano-scrobbler/"],"operatingSystem":"Windows, Linux, Android","applicationCategory":"MultimediaApplication","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"screenshot": ${{ steps.screenshot_jsonld_arr.outputs.screenshot_jsonld_arr }} }</script>|' static-site/index.html
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v5

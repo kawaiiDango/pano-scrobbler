@@ -5,7 +5,7 @@ pkgbuildDir="$scriptDir/../pano-scrobbler-bin"
 flakeDir="$scriptDir/../pano-scrobbler-flake"
 netlifyDir="$scriptDir/../pano-scrobbler-flake/netlify-root"
 
-if [[ ! -v NO_CONTAINER ]]; then
+if [[ ! -v NO_CONTAINER && -z "${IN_CONTAINER:-}" ]]; then
   exec podman run --rm \
     -e IN_CONTAINER=1 \
     -e GITHUB_TOKEN="${GITHUB_TOKEN:-}" \
@@ -218,7 +218,7 @@ for ARCH in amd64 arm64; do
 
     # Write _redirects
     printf '/%s/%s  %s/%s  302\n' \
-        "apt/pano-scrobbler/${POOL_PATH}" "${APT_FNAME}" \
+        "apt/${POOL_PATH}" "${APT_FNAME}" \
         "${GITHUB_RELEASE_BASE}" "${ASSET}" >> "${REDIRECTS}"
 done
 

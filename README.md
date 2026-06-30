@@ -48,7 +48,7 @@ yay -S pano-scrobbler-bin
 curl -sL "https://keyserver.ubuntu.com/pks/lookup?op=get&search=0x5CB896FA8DAF303AEB5FCE4DDB06725ACB6921A0" \
   | gpg --dearmor \
   | sudo tee /etc/apt/keyrings/kawaiiDango.gpg > /dev/null
-echo "deb [signed-by=/etc/apt/keyrings/kawaiiDango.gpg] https://kawaiidango.netlify.app/apt/pano-scrobbler all main" | sudo tee /etc/apt/sources.list.d/pano-scrobbler.list
+echo "deb [signed-by=/etc/apt/keyrings/kawaiiDango.gpg] https://kawaiidango.netlify.app/apt all main" | sudo tee /etc/apt/sources.list.d/pano-scrobbler.list
 sudo apt update
 sudo apt install pano-scrobbler
 ```

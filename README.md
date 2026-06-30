@@ -27,7 +27,7 @@ The installer also has an "extract only, no install" mode for portable use.
 ### Linux:
 
 [![Install from AUR](img/aur.svg)](https://aur.archlinux.org/packages/pano-scrobbler-bin)
-[![Install from APT repo](img/apt-repo.svg)](https://kawaiidango.netlify.app/apt/pano-scrobbler)
+[![Install from APT repo](img/apt-repo.svg)](https://kawaiidango.netlify.app/apt)
 [![Install from COPR](img/copr.svg)](https://copr.fedorainfracloud.org/coprs/kawaiidango/pano-scrobbler/)
 [![Install via Nix flake](img/nix-flake.svg)](https://github.com/kawaiiDango/pano-scrobbler-flake)
 [![Download AppImage for x64 from GitHub](img/github-appimage-x64.svg)](https://github.com/kawaiiDango/pano-scrobbler/releases/latest/download/pano-scrobbler-linux-x64.AppImage)

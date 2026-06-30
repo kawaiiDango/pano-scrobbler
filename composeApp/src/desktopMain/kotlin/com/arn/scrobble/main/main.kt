@@ -77,6 +77,7 @@ import org.jetbrains.compose.resources.InternalResourceApi
 import org.jetbrains.compose.resources.LanguageQualifier
 import org.jetbrains.compose.resources.RegionQualifier
 import org.jetbrains.compose.resources.ResourceEnvironment
+import org.jetbrains.compose.resources.ScriptQualifier
 import org.jetbrains.compose.resources.ThemeQualifier
 import org.jetbrains.compose.resources.getString
 import org.jetbrains.compose.resources.painterResource
@@ -114,6 +115,7 @@ private fun initHeadlessResourceEnvironment() {
     val constructor: Constructor<ResourceEnvironment> = ResourceEnvironment::class.java
         .getDeclaredConstructor(
             LanguageQualifier::class.java,
+            ScriptQualifier::class.java,
             RegionQualifier::class.java,
             ThemeQualifier::class.java,
             DensityQualifier::class.java
@@ -129,6 +131,7 @@ private fun initHeadlessResourceEnvironment() {
             lastLocale = locale
             lastResourceEnvironment = constructor.newInstance(
                 LanguageQualifier(locale.language),
+                ScriptQualifier(locale.script),
                 RegionQualifier(locale.country),
                 ThemeQualifier.LIGHT, // safe default, no Skiko needed
                 DensityQualifier.MDPI  // safe default, no Swing needed

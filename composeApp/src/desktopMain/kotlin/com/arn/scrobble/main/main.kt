@@ -747,7 +747,8 @@ private fun TrayWindow(
     val xScaled = location.x / graphicsConfig.defaultTransform.scaleX.toFloat()
     val yScaled = location.y / graphicsConfig.defaultTransform.scaleY.toFloat()
 
-    var visible by remember { mutableStateOf(false) }
+    // Show first so the window is laid out and has a real size
+    var visible by remember { mutableStateOf(true) }
     val state = rememberWindowState(
         position = WindowPosition.Absolute(0.dp, 0.dp),
         size = DpSize.Unspecified,
@@ -780,6 +781,11 @@ private fun TrayWindow(
             val usableHeight =
                 screenBounds.height - screenInsets.top - screenInsets.bottom
 
+            // Wait until the window has been laid out (size is non-zero)
+            while (window.size.width == 0 || window.size.height == 0) {
+                delay(10.milliseconds)
+            }
+
             val winSize = window.size
             var newX = xScaled.toInt()
             var newY = yScaled.toInt()
@@ -801,7 +807,6 @@ private fun TrayWindow(
             }
 
             state.position = WindowPosition.Absolute(newX.dp, newY.dp)
-            visible = true
         }
 
         LifecycleResumeEffect(Unit) {

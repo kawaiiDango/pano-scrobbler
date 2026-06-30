@@ -428,6 +428,15 @@
     <string name="artist_splitting_exceptions" comment="exceptions for the use first artist feature">Atlikėjo padalijimo išimtys</string>
     <string name="add_exception" comment="as in adding an exception to a rule or setting">Įtraukti išimtį</string>
     <string name="upto_n" formatted="true">Iki %1$d</string>
+    <string name="add_to_app_launcher">Pridėti trumpinį prie programų paleidyklės</string>
+    <string name="persistent_noti_fgs">Išlaikyti skroboklį veikiantį fone</string>
+    <string name="empty_apps_list">Programos čia pasirodys, kai jose ką nors paleisite.</string>
+    <string name="supports_ambient_apps" formatted="true" comment="%1 = comma-separated list of music recognition apps">Taip pat palaiko muzikos atpažinimo programas, pvz., „%1$s“.</string>
+    <string name="persistent_noti_desc" formatted="true" comment="%1 = some names of phone manufacturers">Būtina OEM gamintojams, kurie aktyviai išjungia fonines programas, pvz., „%1$s“ ir pan.</string>
+    <string name="cache" comment="as a noun">Podėlis</string>
+    <string name="random_on_start" comment="currently used as a toggle in the themes screen to pick a random theme when the app starts">Atsitiktiniai proceso paleidimo metu</string>
+    <string name="edit_continue_simple" comment="a toggle in the normal edits screen">Jei rasta, toliau redaguoti su reguliariųjų reiškinių taisyklėmis ir išankstiniais nustatymais</string>
+    <string name="edit_continue_regex" comment="a toggle in the regex edits screen">Jei rasta, toliau redaguoti su kitomis reguliariųjų reiškinių taisyklėmis ir nustatymais</string>
     <string name="get_pro">Paremti šią programą</string>
     <string name="one_time_purchase">Vienkartinis</string>
     <string name="help">Pagalba</string>

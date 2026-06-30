@@ -404,6 +404,13 @@
     <string name="artist_splitting_exceptions" comment="exceptions for the use first artist feature">Sanatçı Ayırma İstisnaları</string>
     <string name="add_exception" comment="as in adding an exception to a rule or setting">Bir istisna ekle</string>
     <string name="upto_n" formatted="true">%1$d'a kadar</string>
+    <string name="add_to_app_launcher">Uygulamayı başlatmak için kısayol oluştur</string>
+    <string name="persistent_noti_fgs">Müzik tanımlamayı arka planda açık tut</string>
+    <string name="empty_apps_list">Bir şey çaldığın uygulamalar burada gözükecek</string>
+    <string name="supports_ambient_apps" formatted="true" comment="%1 = comma-separated list of music recognition apps">Ayrıca %1$s gibi müzik tanımlama uygulamalarını destekler</string>
+    <string name="persistent_noti_desc" formatted="true" comment="%1 = some names of phone manufacturers">%1$s ve benzerleri gibi agresif bir şekilde arka plan uygulamalarını kapatan üreticilerin cihazları için gerekli</string>
+    <string name="cache" comment="as a noun">Önbellek</string>
+    <string name="random_on_start" comment="currently used as a toggle in the themes screen to pick a random theme when the app starts">Uygulama başladığında rastgele seç</string>
     <string name="get_pro">Uygulamayı destekle</string>
     <string name="one_time_purchase">Bir kez</string>
     <string name="help">Yardım</string>

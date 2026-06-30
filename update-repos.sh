@@ -5,8 +5,7 @@ pkgbuildDir="$scriptDir/../pano-scrobbler-bin"
 flakeDir="$scriptDir/../pano-scrobbler-flake"
 netlifyDir="$scriptDir/../pano-scrobbler-flake/netlify-root"
 
-# --- Re-launch inside Arch container if not Arch ---
-if [[ -z "$(command -v makepkg)" ]]; then
+if [[ ! -v NO_CONTAINER ]]; then
   exec podman run --rm \
     -e IN_CONTAINER=1 \
     -e GITHUB_TOKEN="${GITHUB_TOKEN:-}" \
@@ -139,7 +138,7 @@ else
 fi
 
 # Update .spec file (_pkgver, Version, %changelog)
-specFile="$scriptDir/pano-scrobbler.spec"
+specFile="$flakeDir/pano-scrobbler.spec"
 if [ -f "$specFile" ]; then
     if [[ -z "${tag:-}" || -z "${verName:-}" || -z "${published_at:-}" ]]; then
       echo "Error: release metadata not available, skipping .spec update" >&2

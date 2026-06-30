@@ -8,7 +8,6 @@ import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -103,7 +102,6 @@ private enum class TrackMenuLevel {
     Block
 }
 
-@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 private fun TrackDropdownMenu(
     track: Track,
@@ -698,6 +696,7 @@ fun LazyListScope.scrobblesListItems(
                         editDialogArgs = if (canEdit) {
                             {
                                 val sd: ScrobbleData
+                                val osd: ScrobbleData
                                 val hash: Int?
 
                                 if (!track.isNowPlaying && track.date != null) {
@@ -712,11 +711,13 @@ fun LazyListScope.scrobblesListItems(
                                         appId = null
                                     )
                                     hash = null
+                                    osd = sd
                                 } else {
-                                    val sdToHash = getNowPlayingFromMainProcess()
-                                    if (sdToHash != null) {
-                                        sd = sdToHash.first
-                                        hash = sdToHash.second
+                                    val trackPlaying = getNowPlayingFromMainProcess()
+                                    if (trackPlaying != null) {
+                                        osd = trackPlaying.origScrobbleData
+                                        sd = trackPlaying.scrobbleData
+                                        hash = trackPlaying.hash
                                     } else {
 
                                         return@TrackDropdownMenu null
@@ -724,7 +725,8 @@ fun LazyListScope.scrobblesListItems(
                                 }
 
                                 PanoRoute.Modal.EditScrobble(
-                                    origScrobbleData = sd,
+                                    origScrobbleData = osd,
+                                    scrobbleData = sd,
                                     msid = track.msid,
                                     key = key,
                                     hash = hash

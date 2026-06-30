@@ -1,4 +1,6 @@
 import com.android.build.gradle.internal.cxx.configure.gradleLocalProperties
+import com.google.firebase.crashlytics.buildtools.gradle.CrashlyticsExtension
+import com.google.gms.googleservices.GoogleServicesPlugin
 import com.mikepenz.aboutlibraries.plugin.DuplicateMode
 import com.mikepenz.aboutlibraries.plugin.StrictMode
 
@@ -6,14 +8,11 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.aboutlibraries)
     alias(libs.plugins.baselineprofile)
+    alias(libs.plugins.google.services)
+    alias(libs.plugins.crashlytics)
 }
 
 val requestedTasks = gradle.startParameter.taskNames.map { it.lowercase() }
-
-if (requestedTasks.none { it.contains("releasegithub") }) {
-    apply(plugin = libs.plugins.google.services.get().pluginId)
-    apply(plugin = libs.plugins.crashlytics.get().pluginId)
-}
 
 val aboutLibrariesVariant = when {
     requestedTasks.any { it.contains("releasegithub") } -> "releaseGithub"
@@ -21,11 +20,11 @@ val aboutLibrariesVariant = when {
     else -> null
 }
 
-val APP_ID: String by rootProject.extra
-val VER_CODE: Int by rootProject.extra
-val VER_NAME: String by rootProject.extra
-val APP_NAME: String by rootProject.extra
-val APP_NAME_NO_SPACES: String by rootProject.extra
+val APP_ID = rootProject.extra["APP_ID"] as String
+val VER_CODE = rootProject.extra["VER_CODE"] as Int
+val VER_NAME = rootProject.extra["VER_NAME"] as String
+val APP_NAME = rootProject.extra["APP_NAME"] as String
+val APP_NAME_NO_SPACES = rootProject.extra["APP_NAME_NO_SPACES"] as String
 
 val localProperties = gradleLocalProperties(rootDir, project.providers)
     .map { it.key to it.value.toString() }
@@ -58,6 +57,12 @@ android {
     }
 
     buildTypes {
+        all {
+            configure<CrashlyticsExtension> {
+                mappingFileUploadEnabled = (name == "release")
+            }
+        }
+
         getByName("release") {
             isShrinkResources = true
             isMinifyEnabled = true
@@ -173,6 +178,11 @@ dependencies {
 
 baselineProfile {
     dexLayoutOptimization = true
+}
+
+googleServices {
+    // 'releaseGithub' variant does not need a google-services.json
+    missingGoogleServicesStrategy = GoogleServicesPlugin.MissingGoogleServicesStrategy.WARN
 }
 
 aboutLibraries {

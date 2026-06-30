@@ -3,12 +3,12 @@ package com.arn.scrobble.graphics
 expect class PlatformCanvas(bitmap: PlatformBitmap) {
     fun drawBitmap(bitmap: PlatformBitmap, left: Int, top: Int)
     fun drawColor(color: Int)
-    fun drawText(text: String, x: Int, y: Int)
-    fun translate(x: Int, y: Int)
-    fun measureText(text: String): Int
+    fun drawText(text: String, x: Float, y: Float)
+    fun translate(x: Float, y: Float)
+    fun measureText(text: String): Float
     fun setColor(color: Int)
     var textSize: Float
-    val fontHeight: Int
-    val descent: Int
-    val leading: Int
+    val fontHeight: Float
+    val descent: Float
+    val leading: Float
 }

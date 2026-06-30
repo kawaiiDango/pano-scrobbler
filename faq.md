@@ -9,6 +9,7 @@ the background by default.
 
 - Settings > Apps > Background Autostart
 - App Info > Battery Saver > No restrictions
+- Lock the app in the background by opening the app switcher and tapping the lock icon
 - App Info > Force stop
 - Start the app again
 
@@ -142,13 +143,13 @@ old versions of Android Go.
 - Run the following command in your terminal:
 - On Android 8.1 or higher:
 
-```
+```sh
 adb shell cmd notification allow_listener com.arn.scrobble/com.arn.scrobble.media.NLService
 ```
 
 - On Android 8.0 and lower:
 
-```
+```sh
 adb shell 'settings put secure enabled_notification_listeners $(settings get secure enabled_notification_listeners):com.arn.scrobble/com.arn.scrobble.media.NLService'
 ```
 
@@ -184,19 +185,19 @@ Check if you have the required dependencies installed
 
 - Arch:
 
-```
+```sh
 sudo pacman -S webkitgtk-6.0
 ```
 
 - Debian:
 
-```
+```sh
 sudo apt install libwebkitgtk-6.0-4
 ```
 
 - Fedora:
 
-```
+```sh
 sudo dnf install webkitgtk6.0
 ```
 

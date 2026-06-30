@@ -37,6 +37,7 @@ import pano_scrobbler.composeapp.generated.resources.port
 import pano_scrobbler.composeapp.generated.resources.proxy_socks5
 import pano_scrobbler.composeapp.generated.resources.system
 import pano_scrobbler.composeapp.generated.resources.username
+import kotlin.time.Duration.Companion.milliseconds
 
 @Composable
 fun ProxyPrefDialog(modifier: Modifier = Modifier) {
@@ -72,7 +73,7 @@ fun ProxyPrefDialog(modifier: Modifier = Modifier) {
         }
 
         LaunchedEffect(hostEditable, portEditable, userEditable, passEditable) {
-            delay(500) // debounce
+            delay(500.milliseconds) // debounce
             isValid = hostEditable.isNotBlank() && validate()
         }
 

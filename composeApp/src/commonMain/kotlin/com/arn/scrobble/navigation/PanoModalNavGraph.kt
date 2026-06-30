@@ -158,10 +158,10 @@ fun EntryProviderScope<PanoRoute>.panoModalNavGraph(
 
         SimpleEditsAddScreen(
             simpleEdit = SimpleEdit(
-                track = route.origScrobbleData.track,
-                artist = route.origScrobbleData.artist,
-                album = route.origScrobbleData.album.orEmpty(),
-                albumArtist = route.origScrobbleData.albumArtist.orEmpty(),
+                track = route.scrobbleData.track,
+                artist = route.scrobbleData.artist,
+                album = route.scrobbleData.album.orEmpty(),
+                albumArtist = route.scrobbleData.albumArtist.orEmpty(),
                 origTrack = route.origScrobbleData.track,
                 origArtist = route.origScrobbleData.artist,
                 origAlbum = route.origScrobbleData.album.orEmpty(),

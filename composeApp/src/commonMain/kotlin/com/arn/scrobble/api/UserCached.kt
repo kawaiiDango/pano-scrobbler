@@ -40,6 +40,7 @@ data class UserAccountSerializable(
     val user: UserCached,
     val authKey: String,
     val apiRoot: String? = null,
+    val tlsTrustAll: Boolean = false,
 )
 
 @Serializable
@@ -47,4 +48,5 @@ data class UserAccountTemp(
     val type: AccountType,
     val authKey: String,
     val apiRoot: String? = null,
+    val tlsTrustAll: Boolean = false,
 )

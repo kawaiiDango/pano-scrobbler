@@ -30,6 +30,7 @@ import pano_scrobbler.composeapp.generated.resources.failed_encode_url
 import pano_scrobbler.composeapp.generated.resources.required_fields_empty
 import java.io.IOException
 import java.net.UnknownHostException
+import kotlin.time.Duration.Companion.seconds
 
 class LoginViewModel : ViewModel() {
     private val _result = MutableSharedFlow<Result<Unit>>()
@@ -114,9 +115,19 @@ class LoginViewModel : ViewModel() {
     }
 
     fun listenBrainzLogin(
-        apiRoot: String = Stuff.LISTENBRAINZ_API_ROOT,
         token: String,
+        customServerSlot: Int?,
+        apiRoot: String = Stuff.LISTENBRAINZ_API_ROOT,
+        tlsTrustAll: Boolean = false,
     ) {
+        val accountType = when (customServerSlot) {
+            1 -> AccountType.CUSTOM_LISTENBRAINZ
+            2 -> AccountType.CUSTOM_LISTENBRAINZ_2
+            3 -> AccountType.CUSTOM_LISTENBRAINZ_3
+            null -> AccountType.LISTENBRAINZ
+            else -> throw IllegalArgumentException("Invalid account type")
+        }
+
         viewModelScope.launch {
             val result = if (apiRoot.isNotBlank() && token.isNotBlank()) {
                 if (Stuff.isValidUrl(apiRoot)) {
@@ -125,13 +136,10 @@ class LoginViewModel : ViewModel() {
                         apiRoot = "$apiRoot/"
 
                     val userAccount = UserAccountTemp(
-                        if (apiRoot == Stuff.LISTENBRAINZ_API_ROOT) {
-                            AccountType.LISTENBRAINZ
-                        } else {
-                            AccountType.CUSTOM_LISTENBRAINZ
-                        },
+                        accountType,
                         token,
                         apiRoot,
+                        tlsTrustAll,
                     )
                     ListenBrainz.authAndGetSession(userAccount)
                 } else {
@@ -200,7 +208,7 @@ class LoginViewModel : ViewModel() {
                     result.isFailure && ((result.exceptionOrNull() as? ApiException)?.code == 14 ||
                             (result.exceptionOrNull() is UnknownHostException))
                 ) {
-                    delay(5000)
+                    delay(5.seconds)
                     val hasTimeLeft = tryAgainTimeout - System.currentTimeMillis() > 0
 
                     if (!hasTimeLeft) {

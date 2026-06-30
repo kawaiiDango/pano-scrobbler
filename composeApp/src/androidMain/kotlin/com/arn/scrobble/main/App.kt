@@ -2,6 +2,7 @@ package com.arn.scrobble.main
 
 import android.app.ActivityManager
 import android.app.Application
+import android.content.Context
 import android.os.Build
 import android.os.StrictMode
 import co.touchlab.kermit.Logger
@@ -15,6 +16,11 @@ import org.jetbrains.compose.resources.setResourceReaderAndroidContext
 
 
 class App : Application() {
+
+    override fun attachBaseContext(base: Context) {
+        super.attachBaseContext(base)
+        AndroidStuff.applicationContext = base
+    }
 
     @OptIn(ExperimentalResourceApi::class)
     override fun onCreate() {

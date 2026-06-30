@@ -88,32 +88,6 @@ Root: HKA; Subkey: "{#NSIS_LOCALSERVER32_KEY}\{#APP_GUID}"; Flags: deletekey; Ch
 
 [Code]
 
-function NextButtonClick(CurPageID: Integer): Boolean;
-var
-  Dir: String;
-  I: Integer;
-begin
-  Result := True;
-  if CurPageID = wpSelectDir then
-  begin
-    Dir := WizardDirValue;
-    for I := 1 to Length(Dir) do
-    begin
-      if Ord(Dir[I]) > 127 then
-      begin
-        MsgBox(
-          '{#APP_NAME} cannot be installed in a path containing non-ASCII characters.' + #13#10 +
-          'Please choose a path with ASCII characters only (A-Z, 0-9, etc.).',
-          mbError,
-          MB_OK
-        );
-        Result := False;
-        Exit;
-      end;
-    end;
-  end;
-end;
-
 procedure CurUninstallStepChanged(CurUninstallStep: TUninstallStep);
 var
   AppDataPath: String;

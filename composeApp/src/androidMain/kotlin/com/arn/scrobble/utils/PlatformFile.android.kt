@@ -31,10 +31,14 @@ actual class PlatformFile actual constructor(fileUri: String) {
         )
         cursor?.use {
             if (it.moveToFirst()) {
-                val flags =
-                    it.getInt(it.getColumnIndexOrThrow(DocumentsContract.Document.COLUMN_FLAGS))
-                val canWrite = (flags and DocumentsContract.Document.FLAG_SUPPORTS_WRITE) != 0
-                canWrite
+                val colIdx = it.getColumnIndex(DocumentsContract.Document.COLUMN_FLAGS)
+                if (colIdx != -1) {
+                    val flags = it.getInt(colIdx)
+                    val canWrite = (flags and DocumentsContract.Document.FLAG_SUPPORTS_WRITE) != 0
+                    canWrite
+                } else {
+                    false
+                }
             } else {
                 false
             }

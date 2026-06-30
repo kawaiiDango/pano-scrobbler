@@ -1,6 +1,7 @@
 package com.arn.scrobble.media
 
 import android.media.MediaMetadata
+import com.arn.scrobble.utils.MetadataUtils
 import com.arn.scrobble.utils.Stuff
 
 actual typealias PlatformMediaMetadata = MediaMetadata
@@ -116,6 +117,16 @@ actual fun transformMediaMetadata(
          */
     }
 
+    var ignoreScrobble = metadata.getLong(METADATA_KEY_ADVERTISEMENT) != 0L
+
+    if (trackInfo.notiKey.contains("|TelegramMediaSession") &&
+        MetadataUtils.isTgVoiceMessage(artist) &&
+        artist == albumArtist &&
+        album.isEmpty()
+    ) {
+        ignoreScrobble = true
+    }
+
 //    if (trackInfo.appId in Stuff.IGNORE_ARTIST_META)
 //        trackInfo.artist = trackInfo.artist.substringBeforeLast(" - Topic")
 
@@ -135,8 +146,6 @@ actual fun transformMediaMetadata(
         artUrl = null,
         normalizedUrlHost = null,
     )
-
-    val ignoreScrobble = metadata.getLong(METADATA_KEY_ADVERTISEMENT) != 0L
 
     return metadataInfo to ignoreScrobble
 }

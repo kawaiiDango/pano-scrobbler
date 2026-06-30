@@ -13,17 +13,17 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ windows-2025-vs2026, ubuntu-latest, ubuntu-24.04-arm ]
+        os: [ windows-2025-vs2026, ubuntu-24.04, ubuntu-24.04-arm ]
         include:
           - os: windows-2025-vs2026
             resources-dir: windows-x64
-          - os: ubuntu-latest
+          - os: ubuntu-24.04
             resources-dir: linux-x64
           - os: ubuntu-24.04-arm
             resources-dir: linux-arm64
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
 
       - name: Fix permissions
         if: matrix.resources-dir != 'windows-x64'
@@ -53,7 +53,7 @@ jobs:
 
       - if: matrix.resources-dir == 'linux-x64'
         name: Upload Android binary
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
           name: pano-scrobbler-android-universal
           path: dist/pano-scrobbler-android-universal*
@@ -62,7 +62,7 @@ jobs:
         uses: graalvm/setup-graalvm@v1
         with:
           java-version: '25'
-          distribution: 'liberica'
+          distribution: 'graalvm-community'
           github-token: ${{ github.token }}
 
       - name: Download native libraries
@@ -92,7 +92,7 @@ jobs:
           ./gradlew composeApp:exportLibraryDefinitions composeApp:packageUberJarForCurrentOS -PaboutLibraries.exportVariant=desktop --no-daemon
 
       - name: Upload desktop binary
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
           name: pano-scrobbler-${{ matrix.resources-dir }}
           path: dist/pano-scrobbler-${{ matrix.resources-dir }}*
@@ -137,7 +137,13 @@ jobs:
           target_commitish: ${{ github.sha }}
           name: ${{ steps.release_metadata.outputs.verName }}
           body: ${{ steps.release_metadata.outputs.changelog }}
-          files: dist/**
+          preserve_order: true
+          files: |
+            dist/*.exe
+            dist/*.apk
+            dist/*.AppImage
+            dist/*.deb
+            dist/*.tar.gz
 
       - name: Dispatch static site build
         env:

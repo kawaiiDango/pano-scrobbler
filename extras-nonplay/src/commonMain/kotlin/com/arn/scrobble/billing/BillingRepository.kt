@@ -7,9 +7,8 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
 import kotlin.time.Duration.Companion.days
+import kotlin.time.Duration.Companion.seconds
 
-private const val PUBLIC_KEY_BASE64 =
-    "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAnElQD+PNdex6IZ1nq58KDJPz40GBgOIbUs3GrbaPsONcEy8+AEhZmpPDcVB/e931pExsGPdRrjd2cplJ8pUXvxBG5knyJv7EPO3VUnppbipqYhaSe9bH4nK5kuNROB/J3mggVMxZmgoDe2QHacrNbnfjS96pFc58MAjQPPCn6TAXA1H3WajvNcRnplBYK7N0ap/YT1dbMato4fl/0iT1J57bDz+J+w/DcewOOg7YPWxVN+p9WZyLKwgQ8y/1QybEi9IYfIw3INqVS11vx5f+79ZkY+xGAM9JHm7T71dDZc4rJPibUnnQ+R5J2jFz564wdio6i1zpKwUpNQgYbfpkPQIDAQAB"
 
 class BillingRepository(
     override val scope: CoroutineScope,
@@ -95,7 +94,7 @@ class BillingRepository(
                 }
             }
         } else {
-            delay(2000)
+            delay(2.seconds)
             _licenseError.emit(LicenseError.REJECTED)
             setReceipt(null, null)
         }
@@ -105,8 +104,7 @@ class BillingRepository(
     override fun verifyPurchase(data: String, signature: String?) =
         LicenseChecker.validateJwt(
             data,
-            productId,
-            PUBLIC_KEY_BASE64
+            productId
         )
 
     override fun launchBillingFlow(purchaseMethod: PurchaseMethod, activity: Any?) {

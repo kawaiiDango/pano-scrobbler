@@ -1,7 +1,6 @@
 package com.arn.scrobble.ui
 
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.background
@@ -9,7 +8,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -103,15 +101,20 @@ import com.arn.scrobble.navigation.LocalNavigationType
 import com.arn.scrobble.navigation.PanoNavigationType
 import com.arn.scrobble.pref.AppItem
 import com.arn.scrobble.themes.LocalThemeAttributes
+import com.arn.scrobble.utils.LocalNetworkHandshakeExceptionWrapper
+import com.arn.scrobble.utils.LocalNetworkPermissionNeededException
+import com.arn.scrobble.utils.LocalNetworkPermissionsRequest
 import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff.collectAsStateWithInitialValue
 import com.arn.scrobble.utils.redactedMessage
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.isActive
 import kotlinx.serialization.SerializationException
 import okhttp3.HttpUrl.Companion.toHttpUrl
 import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringResource
 import pano_scrobbler.composeapp.generated.resources.Res
+import pano_scrobbler.composeapp.generated.resources.add_exception
 import pano_scrobbler.composeapp.generated.resources.delete
 import pano_scrobbler.composeapp.generated.resources.disable
 import pano_scrobbler.composeapp.generated.resources.enable
@@ -121,6 +124,7 @@ import pano_scrobbler.composeapp.generated.resources.librefm
 import pano_scrobbler.composeapp.generated.resources.like_instance
 import pano_scrobbler.composeapp.generated.resources.listenbrainz
 import pano_scrobbler.composeapp.generated.resources.login_submit
+import pano_scrobbler.composeapp.generated.resources.missing_local_network_permission
 import pano_scrobbler.composeapp.generated.resources.no
 import pano_scrobbler.composeapp.generated.resources.ok
 import pano_scrobbler.composeapp.generated.resources.pleroma
@@ -134,6 +138,7 @@ import pano_scrobbler.composeapp.generated.resources.yes
 import java.util.Calendar
 import java.util.Locale
 import kotlin.math.abs
+import kotlin.time.Duration.Companion.milliseconds
 
 @Composable
 fun AlertDialogOk(
@@ -421,7 +426,6 @@ fun PanoOutlinedTextField(
     )
 }
 
-@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun <T> ButtonWithSpinner(
     prefixText: String?,
@@ -645,28 +649,44 @@ fun SimpleHeaderItem(
     }
 }
 
-@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun VerifyButton(
     doStuff: () -> Unit,
     result: Result<*>?,
     onDone: () -> Unit,
     modifier: Modifier = Modifier,
-    buttonText: String = stringResource(Res.string.login_submit),
-    extraContent: @Composable RowScope.() -> Unit = {},
+    onTrustAll: (() -> Unit)? = null,
 ) {
     var verifying by rememberSaveable { mutableStateOf(false) }
     var errorText by rememberSaveable { mutableStateOf<String?>(null) }
+
+    var gotTlsErrOnLocal by rememberSaveable { mutableStateOf(false) }
+    var localNetworkPermissionMissing by rememberSaveable { mutableStateOf(false) }
+    val missingPermText = stringResource(Res.string.missing_local_network_permission)
 
     LaunchedEffect(result) {
         result?.onFailure {
             verifying = false
             errorText = it.redactedMessage
+
+            if (it is LocalNetworkHandshakeExceptionWrapper && onTrustAll != null && !gotTlsErrOnLocal) {
+                gotTlsErrOnLocal = true
+            } else if (it is LocalNetworkPermissionNeededException) {
+                localNetworkPermissionMissing = true
+            }
         }?.onSuccess {
             verifying = false
             errorText = null
             onDone()
         }
+    }
+
+    if (localNetworkPermissionMissing) {
+        LocalNetworkPermissionsRequest(onGranted = {
+            doStuff()
+        }, onDenied = {
+            errorText = missingPermText
+        })
     }
 
     Column(
@@ -677,7 +697,6 @@ fun VerifyButton(
             horizontalArrangement = Arrangement.spacedBy(16.dp),
             modifier = Modifier.align(Alignment.End)
         ) {
-            extraContent()
             Box(
                 modifier = Modifier
                     .height(60.dp)
@@ -689,11 +708,18 @@ fun VerifyButton(
                         onClick = {
                             verifying = true
                             errorText = null
-                            doStuff()
+                            if (gotTlsErrOnLocal && onTrustAll != null) {
+                                onTrustAll()
+                            } else
+                                doStuff()
                         },
                         modifier = Modifier.align(Alignment.CenterEnd).testTag("button_verify")
                     ) {
-                        Text(buttonText, maxLines = 1)
+                        if (gotTlsErrOnLocal) {
+                            Text(stringResource(Res.string.add_exception))
+                        } else {
+                            Text(stringResource(Res.string.login_submit), maxLines = 1)
+                        }
                     }
                 }
             }
@@ -757,10 +783,9 @@ fun ListLoadError(
 ) {
     val accountType by PlatformStuff.mainPrefs.data.collectAsStateWithInitialValue { it.currentAccountType }
     val profileLink by PlatformStuff.mainPrefs.data.collectAsStateWithInitialValue { it.currentAccount?.user?.url }
-    val displayProfileLink =
-        (accountType == AccountType.CUSTOM_LISTENBRAINZ || accountType == AccountType.GNUFM) &&
-                (throwable is ApiException || throwable is SerializationException) &&
-                profileLink != null
+    val displayProfileLink = (accountType.isCustom) &&
+            (throwable is ApiException || throwable is SerializationException) &&
+            profileLink != null
 
     val errorText = if (displayProfileLink) {
         stringResource(Res.string.unsupported_api)
@@ -823,26 +848,25 @@ fun customFpsInfiniteAnimation(
     targetValue: Float,
     durationMillis: Int,
     enabled: Boolean = true,
-    frameDelay: Long = 1000L / 24
+    fps: Int = 15, // 12-15 is plenty for a slow ambient breathing gradient
 ): State<Float> {
-    val animatable = remember { Animatable(initialValue) }
-    var direction by remember { mutableFloatStateOf(1f) } // 1f: forward, -1f: reverse
-    var playhead by remember { mutableFloatStateOf(0f) } // 0f=start, 1f=end
+    val state = remember { mutableFloatStateOf(initialValue) }
+    val frameDelayMs = remember(fps) { 1000L / fps }
 
-    LaunchedEffect(enabled) {
-        while (enabled) {
-            val totalFrames = (durationMillis / frameDelay).toInt()
-            val nextFrame = playhead + direction / totalFrames
-            playhead = nextFrame.coerceIn(0f, 1f)
-            val value = initialValue + (targetValue - initialValue) * playhead
-            animatable.snapTo(value)
-            if (playhead >= 1f) direction = -1f
-            if (playhead <= 0f) direction = 1f
-            delay(frameDelay)
+    LaunchedEffect(enabled, initialValue, targetValue, durationMillis) {
+        if (!enabled) return@LaunchedEffect
+        val startNanos = System.nanoTime()
+        while (isActive) {
+            val elapsedMs = (System.nanoTime() - startNanos) / 1_000_000
+            // Ping-pong from elapsed wall-clock time, not a frame counter —
+            // stays correct even if a delay() occasionally overruns under load.
+            val raw = (elapsedMs % (2 * durationMillis)).toFloat() / durationMillis
+            val t = if (raw < 1f) raw else 2f - raw
+            state.floatValue = initialValue + (targetValue - initialValue) * t
+            delay(frameDelayMs.milliseconds)
         }
     }
-
-    return animatable.asState()
+    return state
 }
 
 @Composable
@@ -1019,14 +1043,22 @@ fun accountTypeStringRes(accountType: AccountType): Pair<StringResource, StringR
         AccountType.LIBREFM -> Res.string.librefm
         AccountType.GNUFM -> Res.string.like_instance
         AccountType.LISTENBRAINZ -> Res.string.listenbrainz
-        AccountType.CUSTOM_LISTENBRAINZ -> Res.string.like_instance
+        AccountType.CUSTOM_LISTENBRAINZ,
+        AccountType.CUSTOM_LISTENBRAINZ_2,
+        AccountType.CUSTOM_LISTENBRAINZ_3
+            -> Res.string.like_instance
+
         AccountType.PLEROMA -> Res.string.pleroma
         AccountType.FILE -> Res.string.scrobble_to_file
     }
 
     val formatRes = when (accountType) {
         AccountType.GNUFM -> Res.string.lastfm
-        AccountType.CUSTOM_LISTENBRAINZ -> Res.string.listenbrainz
+        AccountType.CUSTOM_LISTENBRAINZ,
+        AccountType.CUSTOM_LISTENBRAINZ_2,
+        AccountType.CUSTOM_LISTENBRAINZ_3
+            -> Res.string.listenbrainz
+
         else -> null
     }
 
@@ -1039,7 +1071,15 @@ fun accountTypeLabel(accountType: AccountType): String {
     return if (formatRes == null)
         stringResource(strRes)
     else {
-        stringResource(strRes, stringResource(formatRes))
+        val slot = when (accountType) {
+            AccountType.CUSTOM_LISTENBRAINZ -> 1
+            AccountType.CUSTOM_LISTENBRAINZ_2 -> 2
+            AccountType.CUSTOM_LISTENBRAINZ_3 -> 3
+            else -> null
+        }
+
+        stringResource(strRes, stringResource(formatRes)) +
+                if (slot != null) " $slot" else ""
     }
 }
 

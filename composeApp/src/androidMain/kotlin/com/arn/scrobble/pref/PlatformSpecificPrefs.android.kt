@@ -135,7 +135,7 @@ actual object PlatformSpecificPrefs {
     }
 
     actual fun prefPersistentNotification(filteredItem: FilteredItem, notiPersistent: Boolean) {
-        if (AndroidStuff.canShowPersistentNotiIfEnabled && !PlatformStuff.isTv) {
+        if (!PlatformStuff.isTv) {
             filteredItem(
                 MainPrefs::notiPersistent.name,
                 Res.string.persistent_noti_fgs,

@@ -40,6 +40,7 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.util.Calendar
+import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.Duration.Companion.seconds
 
 
@@ -154,7 +155,7 @@ class ScrobblesVM(
                 .combine(editsAndDeletes) { pagingData, editsAndDeletesMap ->
                     if (!_loadedCachedVersion.value) {
                         viewModelScope.launch {
-                            delay(50)
+                            delay(50.milliseconds)
                             _loadedCachedVersion.value = true
                         }
                     }

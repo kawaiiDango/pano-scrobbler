@@ -2,11 +2,11 @@ package com.arn.scrobble.db
 
 import androidx.annotation.Keep
 import androidx.room3.ColumnInfo
+import androidx.room3.ColumnTypeConverters
 import androidx.room3.Embedded
 import androidx.room3.Entity
 import androidx.room3.Index
 import androidx.room3.PrimaryKey
-import androidx.room3.TypeConverters
 import kotlinx.serialization.Serializable
 
 @Entity(
@@ -28,7 +28,7 @@ data class RegexEdit(
     @Embedded
     val replacement: ReplacementPatterns? = null,
 
-    @field:TypeConverters(Converters::class)
+    @field:ColumnTypeConverters(Converters::class)
     val appIds: Set<String> = emptySet(),
     val caseSensitive: Boolean = false,
     val blockPlayerAction: BlockPlayerAction? = null,

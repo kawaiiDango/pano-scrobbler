@@ -1,7 +1,12 @@
 package com.arn.scrobble.utils
 
+import android.os.Build
 import android.text.format.DateUtils
 import com.arn.scrobble.utils.AndroidStuff.applicationContext
+import java.time.Instant
+import java.time.ZoneId
+import java.time.format.DateTimeFormatter
+import java.time.temporal.ChronoUnit
 import java.util.Calendar
 import java.util.TimeZone
 
@@ -51,14 +56,18 @@ actual object PanoTimeFormatter {
     }
 
     actual fun short(millis: Long): String {
-        return DateUtils.formatDateTime(
-            applicationContext,
-            millis,
-            DateUtils.FORMAT_SHOW_DATE or
-                    DateUtils.FORMAT_SHOW_TIME or
-                    DateUtils.FORMAT_SHOW_YEAR or
-                    DateUtils.FORMAT_ABBREV_ALL
-        )
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
+            return full(millis)
+        }
+
+        val dateTime = Instant.ofEpochMilli(millis)
+            .atZone(ZoneId.systemDefault())
+            .toLocalDateTime()
+            .truncatedTo(ChronoUnit.SECONDS)
+
+        val formatter = DateTimeFormatter.ISO_DATE_TIME
+
+        return dateTime.format(formatter)
     }
 
     actual fun day(millis: Long): String {

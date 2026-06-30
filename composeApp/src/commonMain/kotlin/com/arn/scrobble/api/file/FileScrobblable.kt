@@ -404,6 +404,7 @@ class FileScrobblable(userAccount: UserAccountSerializable) : Scrobblable(userAc
                 )
 
                 Scrobblables.add(account)
+                
                 account
             }
         }

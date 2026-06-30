@@ -14,6 +14,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withTimeout
 import kotlin.coroutines.cancellation.CancellationException
+import kotlin.time.Duration.Companion.milliseconds
 
 data class WorkState(
     val id: String,
@@ -41,7 +42,7 @@ object DesktopWorkManager {
 
         workMap[uniqueName]?.cancel()
         val job = scope.launch {
-            delay(delayMillis)
+            delay(delayMillis.milliseconds)
             executeWork(uniqueName, worker, retryPolicy)
         }
         workMap[uniqueName] = job
@@ -88,7 +89,7 @@ object DesktopWorkManager {
 
             updateState(id, WorkState(id, result))
             attempt++
-            delay(backoffDelay)
+            delay(backoffDelay.milliseconds)
             backoffDelay = (backoffDelay * retryPolicy.backoffFactor).toLong()
         }
     }

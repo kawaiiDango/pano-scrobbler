@@ -1,11 +1,13 @@
 package com.arn.scrobble.utils
 
+import java.time.Instant
 import java.time.LocalDateTime
 import java.time.ZoneId
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
 import java.time.format.DateTimeFormatterBuilder
 import java.time.format.FormatStyle
+import java.time.temporal.ChronoUnit
 import java.util.Locale
 
 actual object PanoTimeFormatter {
@@ -29,7 +31,7 @@ actual object PanoTimeFormatter {
 
 
         val dateTime = LocalDateTime.ofInstant(
-            java.time.Instant.ofEpochMilli(millis),
+            Instant.ofEpochMilli(millis),
             ZoneId.systemDefault()
         )
         val formatter = when {
@@ -53,34 +55,32 @@ actual object PanoTimeFormatter {
 
     actual fun full(millis: Long): String {
         val dateTime = ZonedDateTime.ofInstant(
-            java.time.Instant.ofEpochMilli(millis),
+            Instant.ofEpochMilli(millis),
             ZoneId.systemDefault()
         )
-        val formatter = DateTimeFormatter.ofLocalizedDateTime(
-            FormatStyle.LONG,
-            FormatStyle.LONG
-        )
+        val formatter = DateTimeFormatterBuilder()
+            .appendLocalized(FormatStyle.LONG, FormatStyle.MEDIUM) // MEDIUM time has no zone letter
+            .appendLiteral(' ')
+            .appendOffset("+HH:MM", "Z")   // numeric offset, no resource bundle needed
+            .toFormatter(Locale.getDefault())
 
         return dateTime.format(formatter)
     }
 
     actual fun short(millis: Long): String {
-        val dateTime = ZonedDateTime.ofInstant(
-            java.time.Instant.ofEpochMilli(millis),
-            ZoneId.systemDefault()
-        )
-        val formatter = DateTimeFormatter.ofLocalizedDateTime(
-            FormatStyle.SHORT,
-            FormatStyle.SHORT
-        )
-            .withLocale(Locale.UK)  // uses 24-hour time format
+        val dateTime = Instant.ofEpochMilli(millis)
+            .atZone(ZoneId.systemDefault())
+            .toLocalDateTime()
+            .truncatedTo(ChronoUnit.SECONDS)
+
+        val formatter = DateTimeFormatter.ISO_DATE_TIME
 
         return dateTime.format(formatter)
     }
 
     actual fun day(millis: Long): String {
         val dateTime = LocalDateTime.ofInstant(
-            java.time.Instant.ofEpochMilli(millis),
+            Instant.ofEpochMilli(millis),
             ZoneId.systemDefault()
         )
         val currentYear = LocalDateTime.now().year
@@ -101,7 +101,7 @@ actual object PanoTimeFormatter {
         val currentYear = LocalDateTime.now().year
 
         val dateTime = LocalDateTime.ofInstant(
-            java.time.Instant.ofEpochMilli(millis),
+            Instant.ofEpochMilli(millis),
             ZoneId.systemDefault()
         )
         val dateFormatter = DateTimeFormatterBuilder()
@@ -117,11 +117,11 @@ actual object PanoTimeFormatter {
 
     actual fun monthRange(startMillis: Long, endMillis: Long): String {
         val startDateTime = LocalDateTime.ofInstant(
-            java.time.Instant.ofEpochMilli(startMillis),
+            Instant.ofEpochMilli(startMillis),
             ZoneId.systemDefault()
         )
         val endDateTime = LocalDateTime.ofInstant(
-            java.time.Instant.ofEpochMilli(endMillis - 1),
+            Instant.ofEpochMilli(endMillis - 1),
             ZoneId.systemDefault()
         )
         val currentYear = LocalDateTime.now().year
@@ -141,11 +141,11 @@ actual object PanoTimeFormatter {
 
     actual fun dateRange(startMillis: Long, endMillis: Long): String {
         val startDateTime = LocalDateTime.ofInstant(
-            java.time.Instant.ofEpochMilli(startMillis),
+            Instant.ofEpochMilli(startMillis),
             ZoneId.systemDefault()
         )
         val endDateTime = LocalDateTime.ofInstant(
-            java.time.Instant.ofEpochMilli(endMillis - 1),
+            Instant.ofEpochMilli(endMillis - 1),
             ZoneId.systemDefault()
         )
         val currentYear = LocalDateTime.now().year
@@ -165,7 +165,7 @@ actual object PanoTimeFormatter {
 
     actual fun year(millis: Long): String {
         val dateTime = LocalDateTime.ofInstant(
-            java.time.Instant.ofEpochMilli(millis),
+            Instant.ofEpochMilli(millis),
             ZoneId.systemDefault()
         )
         val formatter = DateTimeFormatter.ofPattern("yyyy")

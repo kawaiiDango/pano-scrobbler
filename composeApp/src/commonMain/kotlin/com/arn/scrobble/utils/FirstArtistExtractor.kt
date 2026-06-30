@@ -85,7 +85,7 @@ object FirstArtistExtractor {
         " 및 ",
     )
 
-    fun initFromAssetAndUserList(
+    private fun initFromAssetAndUserList(
         assetBytes: ByteArray,
         userList: List<ArtistWithDelimiters>,
     ) {
@@ -149,7 +149,7 @@ object FirstArtistExtractor {
         sortedHashes = merged
     }
 
-    fun contains(hash: Long) = sortedHashes!!.binarySearch(hash.toULong()) >= 0
+    private fun contains(hash: Long) = sortedHashes!!.binarySearch(hash.toULong()) >= 0
 
     suspend fun extract(
         artistString: String,
@@ -184,8 +184,20 @@ object FirstArtistExtractor {
             }
         }
 
+        // trying "&" -> "and" substitution but not "and" -> "&"
+        fun matchesAllowlist(candidate: String): Boolean {
+            if (contains(candidate.x())) return true
+
+            if (" & " in candidate) {
+                val andVariant = candidate.replaceFirst(" & ", " and ")
+                if (contains(andVariant.x())) return true
+            }
+
+            return false
+        }
+
         // Quick check: if entire string is known
-        if (contains(trimmed.x())) {
+        if (matchesAllowlist(trimmed)) {
             return trimmed
         }
 
@@ -221,7 +233,7 @@ object FirstArtistExtractor {
             sb.append(trimmed[i])
             val candidate = sb.toString()
 
-            if (contains(candidate.x())) {
+            if (matchesAllowlist(candidate)) {
                 // Verify this ends appropriately
                 val nextPos = i + 1
                 if (nextPos >= trimmed.length ||

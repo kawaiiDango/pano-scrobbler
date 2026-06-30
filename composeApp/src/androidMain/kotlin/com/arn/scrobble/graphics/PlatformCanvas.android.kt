@@ -6,9 +6,9 @@ import android.graphics.Paint
 actual class PlatformCanvas actual constructor(bitmap: PlatformBitmap) {
     private val canvas = Canvas(bitmap.bitmap)
 
-    actual val descent get() = paint.fontMetrics.descent.toInt()
-    actual val leading get() = paint.fontMetrics.leading.toInt()
-    actual val fontHeight get() = paint.fontSpacing.toInt()
+    actual val descent get() = paint.fontMetrics.descent
+    actual val leading get() = paint.fontMetrics.leading
+    actual val fontHeight get() = paint.fontSpacing
     actual var textSize: Float
         get() = paint.textSize
         set(value) {
@@ -29,15 +29,15 @@ actual class PlatformCanvas actual constructor(bitmap: PlatformBitmap) {
         canvas.drawColor(color)
     }
 
-    actual fun drawText(text: String, x: Int, y: Int) {
-        canvas.drawText(text, x.toFloat(), y.toFloat(), paint)
+    actual fun drawText(text: String, x: Float, y: Float) {
+        canvas.drawText(text, x, y, paint)
     }
 
-    actual fun translate(x: Int, y: Int) {
-        canvas.translate(x.toFloat(), y.toFloat())
+    actual fun translate(x: Float, y: Float) {
+        canvas.translate(x, y)
     }
 
-    actual fun measureText(text: String) = paint.measureText(text).toInt()
+    actual fun measureText(text: String) = paint.measureText(text)
 
     actual fun setColor(color: Int) {
         paint.color = color

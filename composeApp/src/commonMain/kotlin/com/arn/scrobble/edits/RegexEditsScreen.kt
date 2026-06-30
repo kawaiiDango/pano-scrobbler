@@ -154,7 +154,6 @@ fun RegexEditsScreen(
 }
 
 
-@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 private fun RegexEditsList(
     presetsWithState: List<Pair<RegexPreset, Boolean>>,

@@ -30,6 +30,7 @@ import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.stateIn
 import kotlin.math.log10
 import kotlin.math.pow
+import kotlin.time.Duration.Companion.milliseconds
 
 class ChartsVM(
     user: UserCached,
@@ -221,7 +222,7 @@ class ChartsVM(
             val t2 = System.currentTimeMillis()
 
             if (t2 - t1 > 50) { // probably not from cache
-                delay(400)
+                delay(400.milliseconds)
             }
 //            _tagCloudProgress.value = (++currentIndex).toFloat() / min(nArtists, artists.size)
         }

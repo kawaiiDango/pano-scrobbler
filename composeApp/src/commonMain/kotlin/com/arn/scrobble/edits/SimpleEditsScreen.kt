@@ -128,7 +128,6 @@ fun SimpleEditsScreen(
     }
 }
 
-@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 private fun SimpleEditItem(
     edit: SimpleEdit,

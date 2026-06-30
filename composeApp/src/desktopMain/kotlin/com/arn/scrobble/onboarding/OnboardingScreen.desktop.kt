@@ -8,6 +8,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.listSaver
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
@@ -22,10 +23,15 @@ import com.arn.scrobble.navigation.enumSaver
 import com.arn.scrobble.utils.DesktopStuff
 import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff.collectAsStateWithInitialValue
+import kotlinx.coroutines.launch
+import org.jetbrains.compose.resources.stringResource
 import pano_scrobbler.composeapp.generated.resources.Res
 import pano_scrobbler.composeapp.generated.resources.add_to_app_launcher
+import pano_scrobbler.composeapp.generated.resources.discord_rich_presence
+import pano_scrobbler.composeapp.generated.resources.enable
 import pano_scrobbler.composeapp.generated.resources.pref_login
 import pano_scrobbler.composeapp.generated.resources.run_on_start
+import pano_scrobbler.composeapp.generated.resources.yes
 
 
 @Composable
@@ -40,6 +46,7 @@ actual fun OnboardingScreen(
     val steps = rememberSaveable {
         listOfNotNull(
             OnboardingStepType.LOGIN,
+            OnboardingStepType.DISCORD_RICH_PRESENCE,
             if (DesktopStuff.os == DesktopStuff.Os.Linux)
                 OnboardingStepType.AUTOSTART
             else null,
@@ -57,6 +64,8 @@ actual fun OnboardingScreen(
     ) {
         mutableStateListOf(*steps.map { false }.toTypedArray())
     }
+
+    val scope = rememberCoroutineScope()
 
     fun markAsDone(step: OnboardingStepType) {
         doneStatus[steps.indexOf(step)] = true
@@ -110,10 +119,32 @@ actual fun OnboardingScreen(
                     )
                 }
 
+                OnboardingStepType.DISCORD_RICH_PRESENCE -> {
+                    VerticalStepperItem(
+                        titleRes = Res.string.discord_rich_presence,
+                        description = null,
+                        openButtonText = stringResource(Res.string.enable),
+                        openAction = {
+                            scope.launch {
+                                PlatformStuff.mainPrefs.updateData { p ->
+                                    p.copy(discordRpc = p.discordRpc.copy(enabled = true))
+                                }
+                            }
+                            markAsDone(OnboardingStepType.DISCORD_RICH_PRESENCE)
+                        },
+                        isDone = isDone,
+                        onSkip = {
+                            markAsDone(OnboardingStepType.DISCORD_RICH_PRESENCE)
+                        },
+                        isExpanded = step == currentStep
+                    )
+                }
+
                 OnboardingStepType.AUTOSTART -> {
                     VerticalStepperItem(
                         titleRes = Res.string.run_on_start,
                         description = null,
+                        openButtonText = stringResource(Res.string.yes),
                         openAction = {
                             PanoNativeComponents.autoStartLinux(true)
                             markAsDone(OnboardingStepType.AUTOSTART)
@@ -130,6 +161,7 @@ actual fun OnboardingScreen(
                     VerticalStepperItem(
                         titleRes = Res.string.add_to_app_launcher,
                         description = null,
+                        openButtonText = stringResource(Res.string.yes),
                         openAction = {
                             DesktopStuff.addAppImageToAppLauncher()
                             markAsDone(OnboardingStepType.APP_LAUNCHER)

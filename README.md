@@ -27,6 +27,7 @@ The installer also has an "extract only, no install" mode for portable use.
 ### Linux:
 
 [![Install from AUR](img/aur.svg)](https://aur.archlinux.org/packages/pano-scrobbler-bin)
+[![Install from APT repo](img/apt-repo.svg)](https://kawaiidango.netlify.app/apt/pano-scrobbler)
 [![Install from COPR](img/copr.svg)](https://copr.fedorainfracloud.org/coprs/kawaiidango/pano-scrobbler/)
 [![Install via Nix flake](img/nix-flake.svg)](https://github.com/kawaiiDango/pano-scrobbler-flake)
 [![Download AppImage for x64 from GitHub](img/github-appimage-x64.svg)](https://github.com/kawaiiDango/pano-scrobbler/releases/latest/download/pano-scrobbler-linux-x64.AppImage)
@@ -39,6 +40,17 @@ The installer also has an "extract only, no install" mode for portable use.
 
 ```sh
 yay -S pano-scrobbler-bin
+```
+
+#### Debian/Ubuntu:
+
+```sh
+curl -sL "https://keyserver.ubuntu.com/pks/lookup?op=get&search=0x5CB896FA8DAF303AEB5FCE4DDB06725ACB6921A0" \
+  | gpg --dearmor \
+  | sudo tee /etc/apt/keyrings/kawaiiDango.gpg > /dev/null
+echo "deb [signed-by=/etc/apt/keyrings/kawaiiDango.gpg] https://kawaiidango.netlify.app/apt/pano-scrobbler all main" | sudo tee /etc/apt/sources.list.d/pano-scrobbler.list
+sudo apt update
+sudo apt install pano-scrobbler
 ```
 
 #### Fedora (COPR):

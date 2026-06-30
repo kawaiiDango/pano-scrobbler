@@ -7,54 +7,46 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
 import java.io.File
-import java.util.Locale
 
 
 object LocaleUtils {
 
     // localesSet start
-    val localesSet = arrayOf(
-        "ar",
-        "ca",
-        "cs",
-        "de",
-        "el",
-        "en",
-        "es",
-        "fa",
-        "fi",
-        "fr",
-        "hi",
-        "hr",
-        "id",
-        "it",
-        "ja",
-        "ko",
-        "lt",
-        "ms",
-        "ne",
-        "nl",
-        "pl",
-        "pt",
-        "pt-BR",
-        "ro",
-        "ru",
-        "sv",
-        "tl",
-        "tr",
-        "uk",
-        "vi",
-        "zh-Hans",
+    val localesMap = mapOf(
+        "ca" to "català",
+        "de" to "Deutsch",
+        "en" to "English",
+        "es" to "español",
+        "fr" to "français",
+        "hr" to "hrvatski",
+        "id" to "Indonesia",
+        "it" to "italiano",
+        "lt" to "lietuvių",
+        "ms" to "Melayu",
+        "nl" to "Nederlands",
+        "pl" to "polski",
+        "pt" to "português",
+        "pt-BR" to "português Brasil",
+        "ro" to "română",
+        "fi" to "suomi",
+        "sv" to "svenska",
+        "tl" to "Tagalog",
+        "vi" to "Tiếng Việt",
+        "tr" to "Türkçe",
+        "cs" to "čeština",
+        "el" to "Ελληνικά",
+        "ru" to "русский",
+        "uk" to "українська",
+        "he" to "עברית",
+        "ar" to "العربية",
+        "fa" to "فارسی",
+        "ne" to "नेपाली",
+        "hi" to "हिन्दी",
+        "zh-Hans" to "中文 简体",
+        "ja" to "日本語",
+        "ko" to "한국어"
     )
     // localesSet end
-
-    val showScriptSet = setOf(
-        "zh",
-    )
-
-    val showCountrySet = setOf(
-        "pt",
-    )
 
     private val localeFile = File(PlatformStuff.filesDir, "locale.txt")
     val setLocaleFlow = MutableSharedFlow<String?>(extraBufferCapacity = 2)
@@ -78,27 +70,6 @@ object LocaleUtils {
             else
                 null
         )
-
-
-    fun localesMap(): Map<String, String> {
-        return localesSet.map {
-            val localeObj = Locale.forLanguageTag(it)
-            val displayLanguage = localeObj.getDisplayLanguage(localeObj)
-
-            val suffix = when (localeObj.language) {
-                in showScriptSet -> " " + localeObj.getDisplayScript(localeObj)
-                in showCountrySet -> localeObj.getDisplayCountry(localeObj)
-                    .ifEmpty { null }
-                    ?.let { " $it" } ?: ""
-
-                else -> ""
-            }
-
-            it to displayLanguage + suffix
-        }.sortedWith { (k1, v1), (k2, v2) ->
-            v1.compareTo(v2, ignoreCase = true)
-        }.toMap()
-    }
 }
 
 expect fun LocaleUtils.setAppLocale(lang: String?, activityContext: Any?)

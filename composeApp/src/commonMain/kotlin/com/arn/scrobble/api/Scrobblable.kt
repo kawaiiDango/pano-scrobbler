@@ -4,6 +4,7 @@ import co.touchlab.kermit.Logger
 import com.arn.scrobble.api.cache.CacheStrategy
 import com.arn.scrobble.api.file.FileScrobblable
 import com.arn.scrobble.api.lastfm.Album
+import com.arn.scrobble.api.lastfm.ApiException
 import com.arn.scrobble.api.lastfm.Artist
 import com.arn.scrobble.api.lastfm.GnuFm
 import com.arn.scrobble.api.lastfm.LastFm
@@ -157,11 +158,15 @@ enum class AccountType(val id: Int) {
     LISTENBRAINZ(3),
     LIBREFM(1),
     CUSTOM_LISTENBRAINZ(4),
+    CUSTOM_LISTENBRAINZ_2(8),
+    CUSTOM_LISTENBRAINZ_3(9),
     GNUFM(2),
 
     //    MALOJA(5),
     PLEROMA(6),
-    FILE(7)
+    FILE(7);
+
+    val isCustom get() = this != LASTFM && this != LISTENBRAINZ && this != LIBREFM && this != FILE
 }
 
 object Scrobblables {
@@ -204,8 +209,11 @@ object Scrobblables {
                 // if current account type is not in the list, set it to the first one
                 currentAccountType = remainingAccounts.firstOrNull()?.type ?: AccountType.LASTFM
             }
+            val remainingDrawerData = it.drawerData.filterKeys { it != type }
+
             it.copy(
                 scrobbleAccounts = remainingAccounts,
+                drawerData = remainingDrawerData,
                 currentAccountType = currentAccountType,
                 cookies = if (type == AccountType.LASTFM)
                     emptyMap()
@@ -217,11 +225,15 @@ object Scrobblables {
 
     suspend fun add(userAccount: UserAccountSerializable) {
         PlatformStuff.mainPrefs.updateData {
-            // if already exists, remove it first
-            val newAccounts =
-                it.scrobbleAccounts.filterNot { it.type == userAccount.type } + userAccount
+            // if same type already exists, remove it first
+            val filteredAccounts = it.scrobbleAccounts.filterNot { it.type == userAccount.type }
+
+            if (filteredAccounts.any { it.apiRoot == userAccount.apiRoot }) {
+                throw ApiException(-1, "Account already exists")
+            }
+
             it.copy(
-                scrobbleAccounts = newAccounts,
+                scrobbleAccounts = filteredAccounts + userAccount,
                 currentAccountType = userAccount.type
             )
         }
@@ -236,6 +248,8 @@ object Scrobblables {
 
             AccountType.LISTENBRAINZ,
             AccountType.CUSTOM_LISTENBRAINZ,
+            AccountType.CUSTOM_LISTENBRAINZ_2,
+            AccountType.CUSTOM_LISTENBRAINZ_3,
                 -> ListenBrainz(userAccount)
 
             AccountType.PLEROMA -> Pleroma(userAccount)

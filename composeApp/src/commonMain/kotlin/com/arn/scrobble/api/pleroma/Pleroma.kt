@@ -35,6 +35,7 @@ import io.ktor.http.encodedPath
 import io.ktor.http.parameters
 import kotlinx.coroutines.delay
 import kotlinx.serialization.Serializable
+import kotlin.time.Duration.Companion.seconds
 import kotlin.time.Instant
 
 class Pleroma(userAccount: UserAccountSerializable) : Scrobblable(userAccount) {
@@ -73,7 +74,7 @@ class Pleroma(userAccount: UserAccountSerializable) : Scrobblable(userAccount) {
             if (result.isFailure)
                 return result
 
-            delay(1000L)
+            delay(1.seconds)
         }
 
         return Result.success(ScrobbleResult(false))
@@ -188,18 +189,15 @@ class Pleroma(userAccount: UserAccountSerializable) : Scrobblable(userAccount) {
             userAccountTemp: UserAccountTemp,
             oauthClientCreds: PleromaOauthClientCreds,
         ): Result<Unit> {
-            val tokenResponse =
-                Requesters.genericKtorClient.postResult<TokenResponse>("${userAccountTemp.apiRoot!!}oauth/token") {
-                    parameters {
-                        parameter("client_id", oauthClientCreds.client_id)
-                        parameter("client_secret", oauthClientCreds.client_secret)
-                        parameter("grant_type", "authorization_code")
-                        parameter("redirect_uri", oauthClientCreds.redirect_uri)
-                        parameter("code", userAccountTemp.authKey)
-                    }.let { setBody(FormDataContent(it)) }
-                }
-
-            tokenResponse.onSuccess {
+            return Requesters.genericKtorClient.postResult<TokenResponse>("${userAccountTemp.apiRoot!!}oauth/token") {
+                parameters {
+                    parameter("client_id", oauthClientCreds.client_id)
+                    parameter("client_secret", oauthClientCreds.client_secret)
+                    parameter("grant_type", "authorization_code")
+                    parameter("redirect_uri", oauthClientCreds.redirect_uri)
+                    parameter("code", userAccountTemp.authKey)
+                }.let { setBody(FormDataContent(it)) }
+            }.mapCatching {
                 // it.me is profile url
                 val username = it.me.substringAfterLast("/")
 
@@ -218,9 +216,6 @@ class Pleroma(userAccount: UserAccountSerializable) : Scrobblable(userAccount) {
 
                 Scrobblables.add(account)
             }
-                .onFailure { it.printStackTrace() }
-
-            return tokenResponse.map { }
         }
     }
 }

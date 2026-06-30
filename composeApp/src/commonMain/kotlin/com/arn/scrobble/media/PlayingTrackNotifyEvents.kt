@@ -162,7 +162,7 @@ suspend fun listenForPlayingTrackEvents(
                     mediaListener.mute(hash)
                 }
 
-                trackInfo.cancelled()
+                tracker.ignoreScrobble()
 
                 if (scrobbleQueue.has(hash)) {
                     scrobbleQueue.remove(hash)
@@ -283,6 +283,6 @@ suspend fun listenForPlayingTrackEvents(
 
 expect fun notifyPlayingTrackEvent(event: PlayingTrackNotifyEvent)
 
-expect fun getNowPlayingFromMainProcess(): Pair<ScrobbleData, Int>?
+expect fun getNowPlayingFromMainProcess(): PlayingTrackNotifyEvent.TrackPlaying?
 
 expect fun shouldFetchNpArtUrl(): Flow<Boolean>

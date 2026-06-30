@@ -38,6 +38,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.LifecycleStartEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import co.touchlab.kermit.Logger
+import com.arn.scrobble.BuildKonfig
 import com.arn.scrobble.icons.Icons
 import com.arn.scrobble.icons.Warning
 import com.arn.scrobble.main.MainViewModel
@@ -50,6 +51,7 @@ import com.arn.scrobble.pref.AppListSaveType
 import com.arn.scrobble.ui.AlertDialogOk
 import com.arn.scrobble.ui.testTagsAsResId
 import com.arn.scrobble.utils.AndroidStuff
+import com.arn.scrobble.utils.AndroidStuff.toast
 import com.arn.scrobble.utils.PanoNotifications
 import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff
@@ -59,6 +61,8 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.jetbrains.compose.resources.stringResource
 import pano_scrobbler.composeapp.generated.resources.Res
+import pano_scrobbler.composeapp.generated.resources.add_exception
+import pano_scrobbler.composeapp.generated.resources.check_nls
 import pano_scrobbler.composeapp.generated.resources.choose_apps
 import pano_scrobbler.composeapp.generated.resources.fix_it_battery_title
 import pano_scrobbler.composeapp.generated.resources.fix_it_startup_title
@@ -165,48 +169,46 @@ private fun NotificationListenerStep(
         isDone = isDone,
         isExpanded = isExpanded,
         onSkip = { warningShown = true },
-        additionalContent = if (AndroidStuff.canShowPersistentNotiIfEnabled) {
-            {
-                Row(
-                    modifier = Modifier.fillMaxWidth()
-                        .clip(MaterialTheme.shapes.medium)
-                        .toggleable(
-                            value = notiPersistent,
-                            onValueChange = {
-                                scope.launch {
-                                    PlatformStuff.mainPrefs.updateData {
-                                        it.copy(notiPersistent = !it.notiPersistent)
-                                    }
+        additionalContent = {
+            Row(
+                modifier = Modifier.fillMaxWidth()
+                    .clip(MaterialTheme.shapes.medium)
+                    .toggleable(
+                        value = notiPersistent,
+                        onValueChange = {
+                            scope.launch {
+                                PlatformStuff.mainPrefs.updateData {
+                                    it.copy(notiPersistent = !it.notiPersistent)
                                 }
-                            },
-                            role = Role.Checkbox
-                        ),
-                    verticalAlignment = Alignment.CenterVertically,
-                ) {
-                    Checkbox(
-                        checked = notiPersistent,
-                        onCheckedChange = null // null recommended for accessibility with screenreaders
-                    )
+                            }
+                        },
+                        role = Role.Checkbox
+                    ),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Checkbox(
+                    checked = notiPersistent,
+                    onCheckedChange = null // null recommended for accessibility with screenreaders
+                )
 
-                    Column(
-                        modifier = Modifier.padding(start = 16.dp)
-                    ) {
-                        Text(
-                            text = stringResource(Res.string.persistent_noti_fgs),
-                            style = MaterialTheme.typography.titleSmall,
-                            color = MaterialTheme.colorScheme.primary,
-                        )
-                        Text(
-                            text = stringResource(
-                                Res.string.persistent_noti_desc,
-                                stringResource(Res.string.persistent_noti_oems)
-                            ),
-                            style = MaterialTheme.typography.bodyMedium
-                        )
-                    }
+                Column(
+                    modifier = Modifier.padding(start = 16.dp)
+                ) {
+                    Text(
+                        text = stringResource(Res.string.persistent_noti_fgs),
+                        style = MaterialTheme.typography.titleSmall,
+                        color = MaterialTheme.colorScheme.primary,
+                    )
+                    Text(
+                        text = stringResource(
+                            Res.string.persistent_noti_desc,
+                            stringResource(Res.string.persistent_noti_oems)
+                        ),
+                        style = MaterialTheme.typography.bodyMedium
+                    )
                 }
             }
-        } else null
+        }
     )
 
     if (warningShown) {
@@ -230,6 +232,19 @@ actual fun OnboardingScreen(
     modifier: Modifier,
 ) {
     val scrobblerState by mainViewModel.scrobblerStateFlow.collectAsStateWithLifecycle()
+    val context = LocalContext.current
+
+    val startupMgrIntentPkg by
+    rememberSaveable { mutableStateOf(AndroidStuff.findStartupMgrIntentPkg(context)) }
+
+    val needsBatteryOptimizationIgnore = remember {
+        if (!PlatformStuff.isTv && startupMgrIntentPkg != null)
+            Build.MANUFACTURER.lowercase() in arrayOf(
+                Stuff.MANUFACTURER_XIAOMI,
+            )
+        else
+            false
+    }
 
     // make these lists and not maps otherwise the order gets messed up
     val steps = rememberSaveable {
@@ -239,10 +254,10 @@ actual fun OnboardingScreen(
 //            if (!PlatformStuff.isTv && AndroidStuff.isDkmaNeeded() && scrobblerState == ScrobblerState.NLSDisabled)
 //                OnboardingStepType.DKMA
 //            else null,
-            if (Build.MANUFACTURER.lowercase() == Stuff.MANUFACTURER_XIAOMI && !PlatformStuff.isTv)
+            if (startupMgrIntentPkg != null && !PlatformStuff.isTv)
                 OnboardingStepType.AUTOSTART
             else null,
-            if (Build.MANUFACTURER.lowercase() == Stuff.MANUFACTURER_XIAOMI && !PlatformStuff.isTv)
+            if (needsBatteryOptimizationIgnore)
                 OnboardingStepType.BATTERY_OPTIMIZATIONS_IGNORE
             else null,
             OnboardingStepType.CHOOSE_APPS,
@@ -265,12 +280,12 @@ actual fun OnboardingScreen(
         doneStatus[steps.indexOf(step)] = true
     }
 
-    val context = LocalContext.current
     var currentStep by rememberSaveable(saver = enumSaver()) { mutableStateOf(steps.first()) }
 
     val isLoggedIn by PlatformStuff.mainPrefs.data.collectAsStateWithInitialValue { it.scrobbleAccounts.isNotEmpty() }
     val appListWasRun by PlatformStuff.mainPrefs.data.collectAsStateWithInitialValue { it.appListWasRun }
     val showProxySettings = remember { WebViewProxyOverride.isWebViewProxyOverrideSupported() }
+    val checkAppString = stringResource(Res.string.check_nls, BuildKonfig.APP_NAME)
 
     LaunchedEffect(isLoggedIn) {
         if (isLoggedIn) {
@@ -365,23 +380,33 @@ actual fun OnboardingScreen(
                     )
                 }
 
+                // their own app does this https://www.mi.com/global/support/faq/details/KA-517222/
+
                 OnboardingStepType.AUTOSTART -> {
                     VerticalStepperItem(
                         titleRes = Res.string.fix_it_startup_title,
                         description = stringResource(Res.string.persistent_noti_fgs),
+                        openButtonText = stringResource(Res.string.add_exception),
                         openAction = {
-                            val intent = Intent()
-                                .setComponent(
-                                    ComponentName.unflattenFromString(Stuff.XIAOMI_AUTOSTART_ACTIVITY)
-                                )
-                                .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                            if (startupMgrIntentPkg != null) {
+                                val launched =
+                                    AndroidStuff.getStartupMgrIntents(startupMgrIntentPkg!!)
+                                        .any { intent ->
+                                            try {
+                                                context.startActivity(intent)
+                                                true
+                                            } catch (e: Exception) {
+                                                Logger.e("Failed to open autostart intent", e)
+                                                false
+                                            }
+                                        }
 
-                            try {
-                                context.startActivity(intent)
-                            } catch (e: Exception) {
-                                Logger.e("Failed to open MIUI autostart settings", e)
+                                if (!launched) {
+                                    PlatformStuff.openInBrowser("https://dontkillmyapp.com/" + Build.MANUFACTURER.lowercase())
+                                } else {
+                                    context.toast(checkAppString)
+                                }
                             }
-
                             markAsDone(OnboardingStepType.AUTOSTART)
                         },
                         isDone = isDone,
@@ -393,6 +418,7 @@ actual fun OnboardingScreen(
                     VerticalStepperItem(
                         titleRes = Res.string.fix_it_battery_title,
                         description = stringResource(Res.string.persistent_noti_fgs),
+                        openButtonText = stringResource(Res.string.add_exception),
                         openAction = {
                             val intent =
                                 Intent(Settings.ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS)
@@ -400,10 +426,12 @@ actual fun OnboardingScreen(
 
                             try {
                                 context.startActivity(intent)
+                                context.toast(checkAppString)
                             } catch (e: Exception) {
                                 Logger.e("Failed to open battery optimization settings", e)
                                 markAsDone(OnboardingStepType.BATTERY_OPTIMIZATIONS_IGNORE)
                             }
+
                         },
                         isDone = isDone,
                         isExpanded = step == currentStep,

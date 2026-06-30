@@ -11,6 +11,7 @@ import fi.iki.elonen.NanoHTTPD.Response.Status
 import kotlinx.coroutines.delay
 import java.io.File
 import java.io.IOException
+import kotlin.time.Duration.Companion.seconds
 
 actual object SteelSeriesReceiverServer {
     private var lastGameEvent: SteelSeriesGameEvent? = null
@@ -96,11 +97,11 @@ actual object SteelSeriesReceiverServer {
             startServer()
 
             // wait for data to be available
-            delay(2000)
+            delay(2.seconds)
         }
 
         // wait for data to be available
-        delay(2000)
+        delay(2.seconds)
 
         val lastGameEvent = lastGameEvent
         if (

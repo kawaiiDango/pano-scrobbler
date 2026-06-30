@@ -50,6 +50,7 @@ import pano_scrobbler.composeapp.generated.resources.tap_to_edit
 import pano_scrobbler.composeapp.generated.resources.unlove
 import pano_scrobbler.composeapp.generated.resources.update_available
 import pano_scrobbler.composeapp.generated.resources.yes
+import kotlin.time.Duration.Companion.milliseconds
 
 actual object PanoNotifications {
     private val context
@@ -58,7 +59,7 @@ actual object PanoNotifications {
         AndroidStuff.applicationContext.getSystemService(NotificationManager::class.java)!!
     }
     private val notiColor by lazy { context.getColor(R.color.pinkNoti) }
-    private val nowPlayingScrobbleDataToHash = mutableMapOf<String, Pair<ScrobbleData, Int>>()
+    private val nowPlayingData = mutableMapOf<String, PlayingTrackNotifyEvent.TrackPlaying>()
     private val activeScrobbleNotifications = linkedMapOf<String, Notification.Builder>()
     private var channelsCreated = false
     var fgNotiShown = false
@@ -75,7 +76,9 @@ actual object PanoNotifications {
             Stuff.MANUFACTURER_MOTOROLA,
             Stuff.MANUFACTURER_OPPO,
             Stuff.MANUFACTURER_ONEPLUS,
+            Stuff.MANUFACTURER_REALME,
             Stuff.MANUFACTURER_TRANSSION,
+            Stuff.MANUFACTURER_INFINIX,
         )
                 || PlatformStuff.isTv
     }
@@ -128,10 +131,9 @@ actual object PanoNotifications {
 
     actual suspend fun notifyScrobble(event: PlayingTrackNotifyEvent.TrackPlaying) {
         if (event.nowPlaying)
-            nowPlayingScrobbleDataToHash[event.notiKey] =
-                event.origScrobbleData to event.hash
+            nowPlayingData[event.notiKey] = event
         else
-            nowPlayingScrobbleDataToHash.remove(event.notiKey)
+            nowPlayingData.remove(event.notiKey)
 
 //        if (!isNotiChannelEnabled(Stuff.CHANNEL_NOTI_SCROBBLING))
 //            return
@@ -221,6 +223,7 @@ actual object PanoNotifications {
         if (event.nowPlaying) {
             val editDialogArgs = PanoRoute.Modal.EditScrobble(
                 origScrobbleData = event.origScrobbleData,
+                scrobbleData = event.scrobbleData,
                 hash = event.hash
             )
 
@@ -431,7 +434,7 @@ actual object PanoNotifications {
         postScrobbleNotification(notiKey, nb)
 
         Stuff.appScope.launch {
-            delay(delayTime)
+            delay(delayTime.milliseconds)
             removeNotificationByKey(notiKey)
         }
     }
@@ -561,7 +564,7 @@ actual object PanoNotifications {
     }
 
     actual fun removeNotificationByKey(key: String) {
-        nowPlayingScrobbleDataToHash.remove(key)
+        nowPlayingData.remove(key)
 
         val wasFirst = activeScrobbleNotifications.keys.firstOrNull() == key
         activeScrobbleNotifications.remove(key)
@@ -585,8 +588,8 @@ actual object PanoNotifications {
         }
     }
 
-    fun getNowPlayingFromBackgroundProcess(): Pair<ScrobbleData, Int>? {
-        return nowPlayingScrobbleDataToHash.values.firstOrNull()
+    fun getNowPlayingFromBackgroundProcess(): PlayingTrackNotifyEvent.TrackPlaying? {
+        return nowPlayingData.values.firstOrNull()
     }
 
     fun createForegroundInfo(title: String): ForegroundInfo {
@@ -657,7 +660,7 @@ actual object PanoNotifications {
     }
 
     fun startFgs(service: Service) {
-        if (fgNotiShown || !AndroidStuff.canShowPersistentNotiIfEnabled) return
+        if (fgNotiShown) return
 
         try {
             service.startForeground(NOTI_ID, persistentNotification())
@@ -669,7 +672,7 @@ actual object PanoNotifications {
     }
 
     fun stopFgs(service: Service) {
-        if (!fgNotiShown || !AndroidStuff.canShowPersistentNotiIfEnabled) return
+        if (!fgNotiShown) return
 
         fgNotiShown = false
         try {

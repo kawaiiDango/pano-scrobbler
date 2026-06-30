@@ -32,6 +32,7 @@ import com.arn.scrobble.ui.FilePickerMode
 import com.arn.scrobble.ui.FileType
 import com.arn.scrobble.ui.LabeledCheckbox
 import com.arn.scrobble.ui.PanoSnackbarVisuals
+import com.arn.scrobble.utils.LocalNetworkPermissionsRequest
 import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff
 import com.arn.scrobble.utils.redactedMessage
@@ -119,7 +120,7 @@ fun ImportScreen(
                 var canStartServer by rememberSaveable { mutableStateOf(false) }
 
                 if (!canStartServer) {
-                    ImportScreenPermissionsRequest(onGranted = {
+                    LocalNetworkPermissionsRequest(onGranted = {
                         canStartServer = true
                     }, onDenied = {
                         errorText = missingPermText
@@ -300,9 +301,3 @@ fun ImportScreen(
         viewModel.setPlatformFile(it)
     }
 }
-
-@Composable
-expect fun ImportScreenPermissionsRequest(
-    onGranted: () -> Unit,
-    onDenied: () -> Unit,
-)

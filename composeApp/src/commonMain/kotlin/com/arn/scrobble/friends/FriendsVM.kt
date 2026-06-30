@@ -32,6 +32,7 @@ import org.jetbrains.compose.resources.getString
 import pano_scrobbler.composeapp.generated.resources.Res
 import pano_scrobbler.composeapp.generated.resources.no_scrobbles
 import pano_scrobbler.composeapp.generated.resources.pin_limit_reached
+import kotlin.time.Duration.Companion.milliseconds
 
 
 class FriendsVM(user: UserCached, private val showPinned: Boolean) : ViewModel() {
@@ -101,7 +102,7 @@ class FriendsVM(user: UserCached, private val showPinned: Boolean) : ViewModel()
     suspend fun loadFriendsRecents(username: String) {
         if (friendsExtraDataMap.value[username]?.errorMessage != null) return
 
-        delay(Stuff.FRIENDS_RECENTS_DELAY)
+        delay(Stuff.FRIENDS_RECENTS_DELAY.milliseconds)
 
         _friendsExtraDataMap.value += username to friendsRecentsMutex.withLock {
             Scrobblables.current!!.getRecents(

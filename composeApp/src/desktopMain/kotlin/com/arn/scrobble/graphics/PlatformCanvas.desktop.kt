@@ -1,19 +1,26 @@
 package com.arn.scrobble.graphics
 
-import java.awt.Color
-import java.awt.RenderingHints
+import org.jetbrains.skia.Canvas
+import org.jetbrains.skia.Font
+import org.jetbrains.skia.FontMgr
+import org.jetbrains.skia.FontStyle
+import org.jetbrains.skia.Image
+import org.jetbrains.skia.Paint
 
 actual class PlatformCanvas actual constructor(bitmap: PlatformBitmap) {
-    private val canvas = bitmap.bitmap.createGraphics()
-    private val fontMetrics get() = canvas.fontMetrics
-    private val width = bitmap.width
-    private val height = bitmap.height
-    private var _textSize = canvas.font.size.toFloat()
+    private val canvas = Canvas(bitmap.bitmap)
+    private val typeface = FontMgr.default.legacyMakeTypeface(
+        "",
+        FontStyle.NORMAL
+    )
+    private var font = Font(typeface)
+    private val fontMetrics get() = font.metrics
+    private var _textSize = font.size
     actual var textSize: Float
         get() = _textSize
         set(value) {
             if (value != _textSize) {
-                canvas.font = canvas.font.deriveFont(value)
+                font = font.makeWithSize(value)
                 _textSize = value
             }
         }
@@ -23,43 +30,29 @@ actual class PlatformCanvas actual constructor(bitmap: PlatformBitmap) {
 
     actual val leading get() = fontMetrics.leading
 
-    init {
-        canvas.setRenderingHints(getRenderingHints())
-    }
-
     actual fun drawBitmap(bitmap: PlatformBitmap, left: Int, top: Int) {
-        canvas.drawImage(bitmap.bitmap, left, top, null)
+        canvas.drawImage(Image.makeFromBitmap(bitmap.bitmap), left.toFloat(), top.toFloat())
     }
 
     actual fun drawColor(color: Int) {
-        setColor(color)
-        canvas.fillRect(0, 0, width, height)
+        canvas.clear(color)
     }
 
-    actual fun drawText(text: String, x: Int, y: Int) {
-        canvas.drawString(text, x, y)
+    actual fun drawText(text: String, x: Float, y: Float) {
+        canvas.drawString(text, x, y, font, paint)
     }
 
-    actual fun translate(x: Int, y: Int) {
+    actual fun translate(x: Float, y: Float) {
         canvas.translate(x, y)
     }
 
-    actual fun measureText(text: String) = fontMetrics.stringWidth(text)
+    actual fun measureText(text: String) = font.measureTextWidth(text)
 
     actual fun setColor(color: Int) {
-        canvas.color = Color(color, true)
+        paint.color = color
     }
 
-    private fun getRenderingHints(): RenderingHints {
-        val hints: MutableMap<RenderingHints.Key, Any?> = HashMap()
-        hints[RenderingHints.KEY_ALPHA_INTERPOLATION] =
-            RenderingHints.VALUE_ALPHA_INTERPOLATION_QUALITY
-        hints[RenderingHints.KEY_ANTIALIASING] = RenderingHints.VALUE_ANTIALIAS_ON
-        hints[RenderingHints.KEY_COLOR_RENDERING] = RenderingHints.VALUE_COLOR_RENDER_QUALITY
-        hints[RenderingHints.KEY_FRACTIONALMETRICS] = RenderingHints.VALUE_FRACTIONALMETRICS_ON
-        hints[RenderingHints.KEY_INTERPOLATION] = RenderingHints.VALUE_INTERPOLATION_BICUBIC
-        hints[RenderingHints.KEY_TEXT_ANTIALIASING] = RenderingHints.VALUE_TEXT_ANTIALIAS_LCD_HRGB
-
-        return RenderingHints(hints)
+    companion object {
+        private val paint = Paint().apply { isAntiAlias = true }
     }
 }

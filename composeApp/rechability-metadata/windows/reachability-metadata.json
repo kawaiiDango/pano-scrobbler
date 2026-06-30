@@ -12,6 +12,9 @@
       ]
     },
     {
+      "type": "android.os.Build$VERSION"
+    },
+    {
       "type": "androidx.compose.ui.awt.ComposeWindow"
     },
     {
@@ -24,7 +27,7 @@
       "type": "androidx.compose.ui.scene.ComposeSceneMediator$InvisibleComponent"
     },
     {
-      "type": "androidx.compose.ui.scene.skia.WindowSkiaLayerComponent$contentComponent$1"
+      "type": "androidx.compose.ui.scene.skia.SurfaceSkiaLayerComponent$hierarchyRoot$1"
     },
     {
       "type": "androidx.sqlite.driver.bundled.BundledSQLiteConnectionKt",
@@ -39,12 +42,6 @@
       "jniAccessible": true
     },
     {
-      "type": "byte[]"
-    },
-    {
-      "type": "char[]"
-    },
-    {
       "type": "coil3.RealImageLoader"
     },
     {
@@ -52,6 +49,66 @@
     },
     {
       "type": "coil3.network.ktor3.internal.KtorNetworkFetcherServiceLoaderTarget"
+    },
+    {
+      "type": "androidx.compose.ui.window.WindowExceptionHandlerFactory_desktopKt$showErrorDialog$pane$1"
+    },
+    {
+      "type": "javax.swing.plaf.basic.BasicOptionPaneUI",
+      "methods": [
+        {
+          "name": "createUI",
+          "parameterTypes": [
+            "javax.swing.JComponent"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "java.util.logging.XMLFormatter",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "type": "java.lang.StackTraceElement",
+      "jniAccessible": true,
+      "allDeclaredMethods": true
+    },
+    {
+      "type": "java.lang.NoSuchMethodError",
+      "jniAccessible": true,
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "type": "javax.swing.plaf.metal.MetalLabelUI",
+      "methods": [
+        {
+          "name": "createUI",
+          "parameterTypes": [
+            "javax.swing.JComponent"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "javax.swing.plaf.metal.MetalButtonUI",
+      "methods": [
+        {
+          "name": "createUI",
+          "parameterTypes": [
+            "javax.swing.JComponent"
+          ]
+        }
+      ]
     },
     {
       "type": "com.arn.scrobble.DesktopWebView",
@@ -62,6 +119,15 @@
       "type": "com.arn.scrobble.PanoNativeComponents",
       "jniAccessible": true,
       "allDeclaredMethods": true
+    },
+    {
+      "type": "sun.net.www.protocol.http.Handler",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
     },
     {
       "type": "com.arn.scrobble.db.PanoDb_Impl",
@@ -83,9 +149,6 @@
           ]
         }
       ]
-    },
-    {
-      "type": "com.arn.scrobble.ui.FilePicker_desktopKt$FilePicker$2$1$1"
     },
     {
       "type": "com.sun.crypto.provider.AESCipher$General",
@@ -441,24 +504,6 @@
       ]
     },
     {
-      "type": "java.awt.FileDialog",
-      "jniAccessible": true,
-      "fields": [
-        {
-          "name": "dir"
-        },
-        {
-          "name": "file"
-        },
-        {
-          "name": "filter"
-        },
-        {
-          "name": "mode"
-        }
-      ]
-    },
-    {
       "type": "java.awt.Font",
       "jniAccessible": true,
       "fields": [
@@ -489,21 +534,6 @@
       ]
     },
     {
-      "type": "java.awt.FontMetrics",
-      "jniAccessible": true,
-      "fields": [
-        {
-          "name": "font"
-        }
-      ],
-      "methods": [
-        {
-          "name": "getHeight",
-          "parameterTypes": []
-        }
-      ]
-    },
-    {
       "type": "java.awt.Frame",
       "jniAccessible": true,
       "fields": [
@@ -511,9 +541,6 @@
           "name": "undecorated"
         }
       ]
-    },
-    {
-      "type": "java.awt.Image"
     },
     {
       "type": "java.awt.Insets",
@@ -630,89 +657,6 @@
       ]
     },
     {
-      "type": "java.awt.SystemColor",
-      "fields": [
-        {
-          "name": "activeCaption"
-        },
-        {
-          "name": "activeCaptionBorder"
-        },
-        {
-          "name": "activeCaptionText"
-        },
-        {
-          "name": "control"
-        },
-        {
-          "name": "controlDkShadow"
-        },
-        {
-          "name": "controlHighlight"
-        },
-        {
-          "name": "controlLtHighlight"
-        },
-        {
-          "name": "controlShadow"
-        },
-        {
-          "name": "controlText"
-        },
-        {
-          "name": "desktop"
-        },
-        {
-          "name": "inactiveCaption"
-        },
-        {
-          "name": "inactiveCaptionBorder"
-        },
-        {
-          "name": "inactiveCaptionText"
-        },
-        {
-          "name": "info"
-        },
-        {
-          "name": "infoText"
-        },
-        {
-          "name": "menu"
-        },
-        {
-          "name": "menuText"
-        },
-        {
-          "name": "scrollbar"
-        },
-        {
-          "name": "text"
-        },
-        {
-          "name": "textHighlight"
-        },
-        {
-          "name": "textHighlightText"
-        },
-        {
-          "name": "textInactiveText"
-        },
-        {
-          "name": "textText"
-        },
-        {
-          "name": "window"
-        },
-        {
-          "name": "windowBorder"
-        },
-        {
-          "name": "windowText"
-        }
-      ]
-    },
-    {
       "type": "java.awt.Toolkit",
       "jniAccessible": true,
       "methods": [
@@ -771,6 +715,22 @@
         },
         {
           "name": "UNSPECIFIED"
+        }
+      ]
+    },
+    {
+      "type": "java.awt.event.ActionEvent",
+      "jniAccessible": true,
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": [
+            "java.lang.Object",
+            "int",
+            "java.lang.String",
+            "long",
+            "int"
+          ]
         }
       ]
     },
@@ -1240,9 +1200,6 @@
       ]
     },
     {
-      "type": "java.io.InputStream"
-    },
-    {
       "type": "java.io.OutputStream",
       "jniAccessible": true,
       "methods": [
@@ -1261,9 +1218,6 @@
       ]
     },
     {
-      "type": "java.io.Reader"
-    },
-    {
       "type": "java.lang.Boolean",
       "jniAccessible": true,
       "methods": [
@@ -1275,6 +1229,29 @@
           "name": "getBoolean",
           "parameterTypes": [
             "java.lang.String"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "java.lang.CharSequence",
+      "jniAccessible": true,
+      "methods": [
+        {
+          "name": "charAt",
+          "parameterTypes": [
+            "int"
+          ]
+        },
+        {
+          "name": "length",
+          "parameterTypes": []
+        },
+        {
+          "name": "subSequence",
+          "parameterTypes": [
+            "int",
+            "int"
           ]
         }
       ]
@@ -1304,32 +1281,6 @@
         {
           "name": "getName",
           "parameterTypes": []
-        }
-      ]
-    },
-    {
-      "type": "java.lang.ClassValue"
-    },
-    {
-      "type": "java.lang.CharSequence",
-      "jniAccessible": true,
-      "methods": [
-        {
-          "name": "charAt",
-          "parameterTypes": [
-            "int"
-          ]
-        },
-        {
-          "name": "length",
-          "parameterTypes": []
-        },
-        {
-          "name": "subSequence",
-          "parameterTypes": [
-            "int",
-            "int"
-          ]
         }
       ]
     },
@@ -1437,12 +1388,7 @@
     {
       "type": "java.lang.Throwable",
       "jniAccessible": true,
-      "methods": [
-        {
-          "name": "printStackTrace",
-          "parameterTypes": []
-        }
-      ]
+      "allDeclaredMethods": true
     },
     {
       "type": "java.lang.module.ModuleDescriptor"
@@ -1654,6 +1600,9 @@
     },
     {
       "type": "okhttp3.internal.connection.RealConnectionPool"
+    },
+    {
+      "type": "okhttp3.internal.connection.RealCall"
     },
     {
       "type": "org.jetbrains.compose.resources.ResourceEnvironment",
@@ -2627,25 +2576,6 @@
       ]
     },
     {
-      "type": "sun.awt.shell.Win32ShellFolderManager2",
-      "methods": [
-        {
-          "name": "<init>",
-          "parameterTypes": []
-        }
-      ]
-    },
-    {
-      "type": "sun.awt.windows.TranslucentWindowPainter$VIOptWindowPainter$1",
-      "jniAccessible": true,
-      "methods": [
-        {
-          "name": "run",
-          "parameterTypes": []
-        }
-      ]
-    },
-    {
       "type": "sun.awt.windows.WCanvasPeer"
     },
     {
@@ -2782,46 +2712,6 @@
       ]
     },
     {
-      "type": "sun.awt.windows.WFileDialogPeer",
-      "jniAccessible": true,
-      "fields": [
-        {
-          "name": "fileFilter"
-        },
-        {
-          "name": "parent"
-        }
-      ],
-      "methods": [
-        {
-          "name": "checkFilenameFilter",
-          "parameterTypes": [
-            "java.lang.String"
-          ]
-        },
-        {
-          "name": "handleCancel",
-          "parameterTypes": []
-        },
-        {
-          "name": "handleSelected",
-          "parameterTypes": [
-            "char[]"
-          ]
-        },
-        {
-          "name": "isMultipleMode",
-          "parameterTypes": []
-        },
-        {
-          "name": "setHWnd",
-          "parameterTypes": [
-            "long"
-          ]
-        }
-      ]
-    },
-    {
       "type": "sun.awt.windows.WFontPeer",
       "jniAccessible": true,
       "fields": [
@@ -2833,6 +2723,11 @@
     {
       "type": "sun.awt.windows.WFramePeer",
       "jniAccessible": true,
+      "fields": [
+        {
+          "name": "keepOnMinimize"
+        }
+      ],
       "methods": [
         {
           "name": "getExtendedState",
@@ -3050,26 +2945,6 @@
           "parameterTypes": [
             "int"
           ]
-        }
-      ]
-    },
-    {
-      "type": "sun.font.FontUtilities",
-      "jniAccessible": true,
-      "methods": [
-        {
-          "name": "debugFonts",
-          "parameterTypes": []
-        }
-      ]
-    },
-    {
-      "type": "sun.font.FreetypeFontScaler",
-      "jniAccessible": true,
-      "methods": [
-        {
-          "name": "invalidateScaler",
-          "parameterTypes": []
         }
       ]
     },
@@ -4096,18 +3971,6 @@
       ]
     },
     {
-      "type": "sun.security.x509.OCSPNoCheckExtension",
-      "methods": [
-        {
-          "name": "<init>",
-          "parameterTypes": [
-            "java.lang.Boolean",
-            "java.lang.Object"
-          ]
-        }
-      ]
-    },
-    {
       "type": "sun.security.x509.PrivateKeyUsageExtension",
       "methods": [
         {
@@ -4212,43 +4075,23 @@
     },
     {
       "module": "java.desktop",
-      "glob": "com/sun/swing/internal/plaf/basic/resources/basic_en.properties"
+      "glob": "com/sun/swing/internal/plaf/basic/resources/*.properties"
     },
     {
       "module": "java.desktop",
-      "glob": "com/sun/swing/internal/plaf/basic/resources/basic_en_US.properties"
+      "glob": "com/sun/swing/internal/plaf/metal/resources/*.properties"
     },
     {
       "module": "java.desktop",
-      "glob": "com/sun/swing/internal/plaf/metal/resources/metal_en.properties"
+      "glob": "sun/awt/resources/*.properties"
     },
     {
       "module": "java.desktop",
-      "glob": "com/sun/swing/internal/plaf/metal/resources/metal_en_US.properties"
-    },
-    {
-      "module": "java.desktop",
-      "glob": "sun/awt/resources/awt_en.properties"
-    },
-    {
-      "module": "java.desktop",
-      "glob": "sun/awt/resources/awt_en_US.properties"
-    },
-    {
-      "module": "java.desktop",
-      "glob": "sun/awt/windows/awtLocalization_en.properties"
-    },
-    {
-      "module": "java.desktop",
-      "glob": "sun/awt/windows/awtLocalization_en_US.properties"
+      "glob": "sun/awt/windows/*.properties"
     },
     {
       "module": "java.logging",
-      "glob": "sun/util/logging/resources/logging_en.properties"
-    },
-    {
-      "module": "java.logging",
-      "glob": "sun/util/logging/resources/logging_en_US.properties"
+      "glob": "sun/util/logging/resources/*.properties"
     },
     {
       "bundle": "com.sun.swing.internal.plaf.basic.resources.basic"
@@ -4263,7 +4106,16 @@
       "bundle": "sun.awt.windows.awtLocalization"
     },
     {
-      "bundle": "sun.util.logging.resources.logging"
+      "bundle": "sun.text.resources.FormatData"
+    },
+    {
+      "bundle": "sun.text.resources.cldr.FormatData"
+    },
+    {
+      "bundle": "sun.text.resources.ext.FormatData"
+    },
+    {
+      "bundle": "sun.text.resources.cldr.ext.FormatData"
     }
   ]
 }

@@ -10,6 +10,7 @@
     <locale android:name="fa" />
     <locale android:name="fi" />
     <locale android:name="fr" />
+    <locale android:name="he" />
     <locale android:name="hi" />
     <locale android:name="hr" />
     <locale android:name="id" />

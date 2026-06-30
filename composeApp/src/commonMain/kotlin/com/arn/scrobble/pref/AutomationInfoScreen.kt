@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -36,7 +35,6 @@ import pano_scrobbler.composeapp.generated.resources.automation_cp_info
 import pano_scrobbler.composeapp.generated.resources.automation_replace_app_id
 import pano_scrobbler.composeapp.generated.resources.choose_apps
 
-@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun AutomationInfoScreen(
     onNavigate: (PanoRoute) -> Unit,

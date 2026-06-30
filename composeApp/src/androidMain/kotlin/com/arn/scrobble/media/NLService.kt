@@ -179,8 +179,7 @@ class NLService : NotificationListenerService() {
     }
 
     override fun onDestroy() {
-        if (AndroidStuff.canShowPersistentNotiIfEnabled)
-            PanoNotifications.stopFgs(this)
+        PanoNotifications.stopFgs(this)
         if (BuildKonfig.DEBUG)
             toast(R.string.scrobbler_off)
 
@@ -333,10 +332,10 @@ class NLService : NotificationListenerService() {
             title = scrobbleData.track,
             album = scrobbleData.album.orEmpty(),
             albumArtist = scrobbleData.albumArtist.orEmpty(),
+            trackNumber = 0,
             durationMillis = scrobbleData.duration ?: 0L,
             normalizedUrlHost = null,
             artUrl = null,
-            extraData = emptyMap()
         )
 
         val metadataChanged = !needsDelayAndCooldown ||

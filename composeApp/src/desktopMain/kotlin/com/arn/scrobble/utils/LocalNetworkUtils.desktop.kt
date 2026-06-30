@@ -1,10 +1,12 @@
-package com.arn.scrobble.pref
+package com.arn.scrobble.utils
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 
+actual suspend fun determineLocalNetworkPermissionException(url: String?): Throwable? = null
+
 @Composable
-actual fun ImportScreenPermissionsRequest(
+actual fun LocalNetworkPermissionsRequest(
     onGranted: () -> Unit,
     onDenied: () -> Unit,
 ) {

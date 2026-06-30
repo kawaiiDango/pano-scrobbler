@@ -21,17 +21,23 @@ import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.Duration.Companion.seconds
 
 private sealed interface DiscordActivity {
+    // https://discord.com/developers/docs/social-sdk/classdiscordpp_1_1ActivityAssets.html
     data class Activity(
         val discordClientId: String,
         val appId: String,
         val hash: Int,
         val name: String,
+        // If specified, must be a string between 2 and 128 characters.
         val state: String,
+        // If specified, must be a string between 2 and 128 characters.
         val details: String,
+        // If specified, must be a string between 2 and 128 characters.
         val largeText: String,
         val startTimeMillis: Long,
         val durationMillis: Long?,
+        // If specified, must be a string between 1 and 300 characters.
         val artUrl: String,
+        // If specified, must be a string between 2 and 256 characters.
         val detailsUrl: String,
         val statusLine: Int,
     ) : DiscordActivity
@@ -123,7 +129,7 @@ object DiscordRpc {
                             } else {
 
                                 if (!isPlaying) {
-                                    delay(keepTill - now)
+                                    delay((keepTill - now).milliseconds)
                                     discordActivity.emit(DiscordActivity.Clear)
                                 }
                             }
@@ -192,14 +198,14 @@ object DiscordRpc {
             discordClientId = Stuff.DISCORD_CLIENT_ID,
             appId = appId,
             hash = hash,
-            name = name,
-            state = state,
-            details = details,
-            largeText = largeText,
+            name = name.clamp(2, 128),
+            state = state.clamp(2, 128),
+            details = details.clamp(2, 128),
+            largeText = largeText.clamp(2, 128),
             startTimeMillis = startTimeMillis,
             durationMillis = durationMillis,
-            artUrl = artUrl,
-            detailsUrl = detailsUrl,
+            artUrl = artUrl.takeIf { it.length in 1..300 }.orEmpty(),
+            detailsUrl = detailsUrl.takeIf { it.length in 2..256 }.orEmpty(),
             statusLine = statusLine,
         )
     }
@@ -213,6 +219,15 @@ object DiscordRpc {
         val activity = discordActivity.value as? DiscordActivity.Activity
         if (activity != null && (hash == null || hash == activity.hash)) {
             discordActivity.value = DiscordActivity.Clear
+        }
+    }
+
+    private fun String.clamp(min: Int, max: Int): String {
+        require(min <= max) { "min ($min) must be <= max ($max)" }
+        return when {
+            length < min -> padEnd(min)
+            length > max -> take(max)
+            else -> this
         }
     }
 

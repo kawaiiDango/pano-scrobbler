@@ -48,6 +48,9 @@ import java.net.Authenticator
 import java.net.InetSocketAddress
 import java.net.PasswordAuthentication
 import java.net.Proxy
+import java.security.cert.X509Certificate
+import javax.net.ssl.SSLContext
+import javax.net.ssl.X509TrustManager
 import kotlin.coroutines.cancellation.CancellationException
 
 
@@ -85,7 +88,7 @@ object Requesters {
 
     val lastfmUnauthedRequester by lazy { LastFmUnauthedRequester() }
 
-    private val _baseKtorClient = invalidatableLazy {
+    private fun createBaseKtorClient(trustAll: Boolean) = invalidatableLazy {
         HttpClient(OkHttp) {
 
             val proxySettings = proxy.value.takeIf { it.enabled }
@@ -111,6 +114,30 @@ object Requesters {
             engine {
                 dispatcher = Dispatchers.IO
                 proxy = proxyJvm
+
+                if (trustAll) {
+                    config {
+                        val localNetworkTlsTrustManager = object : X509TrustManager {
+                            override fun checkClientTrusted(
+                                chain: Array<out X509Certificate>?,
+                                authType: String?
+                            ) = Unit
+
+                            override fun checkServerTrusted(
+                                chain: Array<out X509Certificate>?,
+                                authType: String?
+                            ) = Unit
+
+                            override fun getAcceptedIssuers(): Array<X509Certificate> = emptyArray()
+                        }
+
+                        val sslContext = SSLContext.getInstance("TLS")
+                        sslContext.init(null, arrayOf(localNetworkTlsTrustManager), null)
+                        sslSocketFactory(sslContext.socketFactory, localNetworkTlsTrustManager)
+                        // Self-signed certs may not carry a matching CN/SAN.
+                        hostnameVerifier { _, _ -> true }
+                    }
+                }
             }
 
             install(HttpTimeout) {
@@ -122,10 +149,18 @@ object Requesters {
             }
         }
     }
+
+    private val _baseKtorClient = createBaseKtorClient(false)
     val baseKtorClient by _baseKtorClient
 
-    private val _genericKtorClient = invalidatableLazy {
-        baseKtorClient.config {
+    private fun createGenericKtorClient(trustAll: Boolean) = invalidatableLazy {
+        val baseClient = if (trustAll) {
+            val c by createBaseKtorClient(true)
+            c
+        } else
+            baseKtorClient
+
+        baseClient.config {
             install(ContentNegotiation) {
                 json(Stuff.myJson)
             }
@@ -163,11 +198,16 @@ object Requesters {
         }
     }
 
+    private val _genericKtorClient = createGenericKtorClient(false)
     val genericKtorClient by _genericKtorClient
+
+    private val _genericKtorTrustAllClient = createGenericKtorClient(true)
+    val genericKtorTrustAllClient by _genericKtorTrustAllClient
 
     private fun invalidateAll() {
         _baseKtorClient.invalidate()
         _genericKtorClient.invalidate()
+        _genericKtorTrustAllClient.invalidate()
         spotifyRequester.invalidateClient()
         LastFm.LastfmUnscrobbler.invalidateClient()
         PanoImageLoader.invalidate()

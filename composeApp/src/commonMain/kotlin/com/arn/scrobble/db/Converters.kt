@@ -1,22 +1,22 @@
 package com.arn.scrobble.db
 
-import androidx.room3.TypeConverter
+import androidx.room3.ColumnTypeConverter
 
 object Converters {
-    @TypeConverter
+    @ColumnTypeConverter
     fun fromCommaSeperatedString(value: String) =
         value.split(", ")
             .filter { it.isNotEmpty() }
             .toSet()
 
-    @TypeConverter
+    @ColumnTypeConverter
     fun toCommaSeperatedString(value: Set<String>) = value.joinToString()
 
-    @TypeConverter
+    @ColumnTypeConverter
     fun regexEditFieldsToCommaSeperatedString(value: Set<RegexEdit.Field>) =
         value.joinToString { it.name }
 
-    @TypeConverter
+    @ColumnTypeConverter
     fun commaSeperatedStringToRegexEditFields(value: String) =
         value.split(", ")
             .filter { it.isNotEmpty() }

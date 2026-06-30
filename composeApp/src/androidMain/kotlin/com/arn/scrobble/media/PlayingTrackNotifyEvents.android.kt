@@ -3,7 +3,6 @@ package com.arn.scrobble.media
 import android.os.CancellationSignal
 import android.os.OperationCanceledException
 import androidx.core.net.toUri
-import com.arn.scrobble.api.lastfm.ScrobbleData
 import com.arn.scrobble.automation.Automation
 import com.arn.scrobble.utils.AndroidStuff
 import com.arn.scrobble.utils.Stuff
@@ -11,6 +10,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.launch
+import kotlin.time.Duration.Companion.milliseconds
 
 
 actual fun notifyPlayingTrackEvent(event: PlayingTrackNotifyEvent) {
@@ -27,7 +27,7 @@ actual fun notifyPlayingTrackEvent(event: PlayingTrackNotifyEvent) {
     }
 }
 
-actual fun getNowPlayingFromMainProcess(): Pair<ScrobbleData, Int>? {
+actual fun getNowPlayingFromMainProcess(): PlayingTrackNotifyEvent.TrackPlaying? {
     if (!AndroidStuff.isMainProcess)
         return null
 
@@ -36,7 +36,7 @@ actual fun getNowPlayingFromMainProcess(): Pair<ScrobbleData, Int>? {
 
     // wait for 500ms max to prevent ANR
     val cancelJob = Stuff.appScope.launch {
-        delay(500)
+        delay(500.milliseconds)
         cancellationSignal.cancel()
     }
 
@@ -56,16 +56,13 @@ actual fun getNowPlayingFromMainProcess(): Pair<ScrobbleData, Int>? {
     } ?: return null
 
     while (cursor.moveToNext()) {
-        val sdColIdx =
-            cursor.getColumnIndex(PlayingTrackNotifyEvent.TrackPlaying::origScrobbleData.name)
-        val hashColIdx = cursor.getColumnIndex(PlayingTrackNotifyEvent.TrackPlaying::hash.name)
+        val trackPlayingIdx = cursor.getColumnIndex("result")
 
-        if (sdColIdx != -1 && hashColIdx != -1) {
-            val sd = cursor.getString(sdColIdx)
-            val hash = cursor.getString(hashColIdx)
-            if (sd != null && hash != null) {
+        if (trackPlayingIdx != -1) {
+            val event = cursor.getString(trackPlayingIdx)
+            if (event != null) {
                 cursor.close()
-                return Stuff.myJson.decodeFromString<ScrobbleData>(sd) to hash.toInt()
+                return Stuff.myJson.decodeFromString<PlayingTrackNotifyEvent.TrackPlaying>(event)
             }
         }
     }

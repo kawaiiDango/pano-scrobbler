@@ -1,6 +1,5 @@
 package com.arn.scrobble.friends
 
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -41,7 +40,6 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
@@ -107,6 +105,7 @@ import pano_scrobbler.composeapp.generated.resources.since_time
 import pano_scrobbler.composeapp.generated.resources.sort
 import pano_scrobbler.composeapp.generated.resources.track
 import pano_scrobbler.composeapp.generated.resources.unpin
+import kotlin.time.Duration.Companion.seconds
 
 private const val PINNED_PREFIX = "pinned_"
 private const val UNPINNED_PREFIX = "unpinned_"
@@ -200,7 +199,7 @@ fun FriendsScreen(
                     .forEach { username ->
                         val cachedData = friendsExtraDataMapState[username]
                         if (cachedData == null ||
-                            (System.currentTimeMillis() - cachedData.lastUpdated > Stuff.FRIENDS_REFRESH_INTERVAL)
+                            (System.currentTimeMillis() - cachedData.lastUpdated > Stuff.FRIENDS_REFRESH_INTERVAL_S.seconds.inWholeMilliseconds)
                         ) {
                             Logger.d { "Loading extra data for friend: $username" }
                             viewModel.loadFriendsRecents(username)
@@ -237,7 +236,7 @@ fun FriendsScreen(
 
     AutoRefreshEffect(
         firstPageLoadedTime = lastFriendsRecentsRefreshTime,
-        interval = Stuff.FRIENDS_REFRESH_INTERVAL,
+        interval = Stuff.FRIENDS_REFRESH_INTERVAL_S.seconds,
         doRefresh = {
             if (sortedFriends == null && listState.firstVisibleItemIndex < 4) {
                 viewModel.markExtraDataAsStale()
@@ -450,10 +449,6 @@ private fun FriendItemShimmer(
     )
 }
 
-@OptIn(
-    ExperimentalMaterial3ExpressiveApi::class, ExperimentalComposeUiApi::class,
-    ExperimentalFoundationApi::class
-)
 @Composable
 private fun FriendItem(
     friend: UserCached,

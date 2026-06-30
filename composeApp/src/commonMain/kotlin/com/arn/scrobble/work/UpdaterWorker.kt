@@ -17,6 +17,7 @@ import pano_scrobbler.composeapp.generated.resources.downloading
 import pano_scrobbler.composeapp.generated.resources.loading
 import pano_scrobbler.composeapp.generated.resources.no_updates
 import pano_scrobbler.composeapp.generated.resources.update_available
+import kotlin.time.Duration.Companion.seconds
 
 class UpdaterWorker(
     override val setProgress: suspend (CommonWorkProgress) -> Unit
@@ -39,7 +40,7 @@ class UpdaterWorker(
                 )
             )
 
-            delay(1000)
+            delay(1.seconds)
 
             return CommonWorkerResult.Failure("Update available, but not installed yet")
         }
@@ -84,7 +85,7 @@ class UpdaterWorker(
             setProgress(CommonWorkProgress(e.redactedMessage, 1f))
         }
 
-        delay(1000)
+        delay(1.seconds)
 
         // do not schedule another update if already updated, but not restarted yet
         if (Stuff.globalUpdateAction.value == null)

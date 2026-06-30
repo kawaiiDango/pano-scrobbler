@@ -55,7 +55,6 @@ import pano_scrobbler.composeapp.generated.resources.num_matches
 import pano_scrobbler.composeapp.generated.resources.required_fields_empty
 import pano_scrobbler.composeapp.generated.resources.track
 
-@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun RegexEditsTestScreen(
     mainViewModel: MainViewModel,

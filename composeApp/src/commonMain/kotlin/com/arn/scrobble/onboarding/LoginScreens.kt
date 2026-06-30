@@ -47,7 +47,7 @@ import pano_scrobbler.composeapp.generated.resources.username
 
 @Composable
 fun ListenBrainzLoginScreen(
-    hasCustomApiRoot: Boolean,
+    customServerSlot: Int?,
     onDone: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel: LoginViewModel = viewModel { LoginViewModel() },
@@ -56,10 +56,10 @@ fun ListenBrainzLoginScreen(
     var apiRoot by rememberSaveable { mutableStateOf("https://") }
     val result by viewModel.result.collectAsStateWithLifecycle(null)
     val doLogin = {
-        if (hasCustomApiRoot) {
-            viewModel.listenBrainzLogin(apiRoot, token)
+        if (customServerSlot != null) {
+            viewModel.listenBrainzLogin(token, customServerSlot, apiRoot)
         } else {
-            viewModel.listenBrainzLogin(token = token)
+            viewModel.listenBrainzLogin(token, customServerSlot)
         }
     }
 
@@ -68,7 +68,7 @@ fun ListenBrainzLoginScreen(
         modifier = modifier
     ) {
 
-        if (hasCustomApiRoot) {
+        if (customServerSlot != null) {
             PanoOutlinedTextField(
                 modifier = Modifier.fillMaxWidth(),
                 value = apiRoot,
@@ -123,6 +123,9 @@ fun ListenBrainzLoginScreen(
         VerifyButton(
             onDone = onDone,
             doStuff = doLogin,
+            onTrustAll = if (customServerSlot != null) {
+                { viewModel.listenBrainzLogin(token, customServerSlot, apiRoot, true) }
+            } else null,
             result = result
         )
     }

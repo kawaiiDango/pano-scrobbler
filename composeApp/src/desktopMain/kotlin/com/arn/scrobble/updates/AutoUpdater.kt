@@ -51,7 +51,7 @@ object AutoUpdater {
             return null
         }
 
-        delay(5000)
+        delay(5.seconds)
 
         if (!verify(tempFile, sha256Hex)) {
             tempFile.delete()
@@ -109,7 +109,7 @@ object AutoUpdater {
             return null
         }
 
-        delay(5000)
+        delay(5.seconds)
 
         if (!verify(targetFile, sha256Hex)) {
             targetFile.delete()

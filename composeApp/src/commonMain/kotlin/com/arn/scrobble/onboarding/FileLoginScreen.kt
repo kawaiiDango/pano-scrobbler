@@ -33,6 +33,7 @@ import pano_scrobbler.composeapp.generated.resources.Res
 import pano_scrobbler.composeapp.generated.resources.convert_file
 import pano_scrobbler.composeapp.generated.resources.create
 import pano_scrobbler.composeapp.generated.resources.open_existing
+import kotlin.time.Duration.Companion.seconds
 
 @Composable
 fun FileLoginScreen(
@@ -73,7 +74,7 @@ fun FileLoginScreen(
                     getString(Res.string.create) + " ." + type.name
                 )
             )
-            delay(1000)
+            delay(1.seconds)
 
             val fileNameWithoutExtension =
                 fromFile.name().substringBeforeLast('.')

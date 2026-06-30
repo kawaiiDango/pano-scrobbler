@@ -52,6 +52,7 @@ import pano_scrobbler.composeapp.generated.resources.done
 import pano_scrobbler.composeapp.generated.resources.file_exists_confirm_overwrite
 import pano_scrobbler.composeapp.generated.resources.show_all
 import java.io.File
+import kotlin.time.Duration.Companion.seconds
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
@@ -94,7 +95,7 @@ fun FilePickerScreen(
     LaunchedEffect(canOverwrite) {
         if (canOverwrite) {
             errorMessage = getString(Res.string.file_exists_confirm_overwrite)
-            delay(2000)
+            delay(2.seconds)
             canOverwrite = false
             errorMessage = null
         }
@@ -313,7 +314,6 @@ fun FilePickerScreen(
 }
 
 
-@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 private fun FileItem(
     file: File,

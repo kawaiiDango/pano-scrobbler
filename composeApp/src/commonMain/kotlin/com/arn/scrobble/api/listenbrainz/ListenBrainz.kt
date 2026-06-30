@@ -36,6 +36,8 @@ import com.arn.scrobble.db.PanoDb
 import com.arn.scrobble.db.SeenTrackAlbumAssociation
 import com.arn.scrobble.utils.Stuff
 import com.arn.scrobble.utils.Stuff.cacheStrategy
+import com.arn.scrobble.utils.determineLocalNetworkPermissionException
+import com.arn.scrobble.utils.wrapLocalNetworkHandshakeException
 import io.ktor.client.request.HttpRequestBuilder
 import io.ktor.client.request.header
 import io.ktor.client.request.parameter
@@ -54,8 +56,13 @@ import kotlin.math.min
 
 
 class ListenBrainz(userAccount: UserAccountSerializable) : Scrobblable(userAccount) {
+    private val client
+        get() =
+            if (userAccount.apiRoot != null && userAccount.tlsTrustAll)
+                Requesters.genericKtorTrustAllClient
+            else
+                Requesters.genericKtorClient
 
-    private val client get() = Requesters.genericKtorClient
     private val outerScope = Stuff.appScope
 
     private fun HttpRequestBuilder.commonReq() {
@@ -590,17 +597,23 @@ class ListenBrainz(userAccount: UserAccountSerializable) : Scrobblable(userAccou
     companion object {
 
         suspend fun authAndGetSession(userAccountTemp: UserAccountTemp): Result<Session> {
-            val client = Requesters.genericKtorClient
+            val client = if (userAccountTemp.apiRoot != null && userAccountTemp.tlsTrustAll)
+                Requesters.genericKtorTrustAllClient
+            else
+                Requesters.genericKtorClient
 
-            val result =
-                client.getResult<ValidateToken>("${userAccountTemp.apiRoot}1/validate-token") {
-                    contentType(ContentType.Application.Json)
-                    header("Authorization", "token ${userAccountTemp.authKey}")
-                }
+            determineLocalNetworkPermissionException(userAccountTemp.apiRoot)?.let {
+                return Result.failure(it)
+            }
 
-            result.onSuccess { validateToken ->
-                validateToken.user_name ?: return Result.failure(ApiException(-1, "Invalid token"))
-                val profileUrl = guessProfileUrl(userAccountTemp.apiRoot, validateToken.user_name)
+            return client.getResult<ValidateToken>("${userAccountTemp.apiRoot}1/validate-token") {
+                contentType(ContentType.Application.Json)
+                header("Authorization", "token ${userAccountTemp.authKey}")
+            }.mapCatching { validateToken ->
+                validateToken.user_name ?: throw ApiException(-1, "Invalid token")
+
+                val profileUrl =
+                    guessProfileUrl(userAccountTemp.apiRoot, validateToken.user_name)
 
                 val account = UserAccountSerializable(
                     userAccountTemp.type,
@@ -613,12 +626,18 @@ class ListenBrainz(userAccount: UserAccountSerializable) : Scrobblable(userAccou
                     ),
                     userAccountTemp.authKey,
                     userAccountTemp.apiRoot,
+                    userAccountTemp.tlsTrustAll,
                 )
 
                 Scrobblables.add(account)
-            }
 
-            return result.map { Session(it.user_name, userAccountTemp.authKey) }
+                Session(validateToken.user_name, userAccountTemp.authKey)
+            }.recoverCatching {
+                throw wrapLocalNetworkHandshakeException(
+                    it,
+                    userAccountTemp.apiRoot
+                ) ?: it
+            }
         }
 
         private fun guessProfileUrl(apiRoot: String?, userName: String): String {

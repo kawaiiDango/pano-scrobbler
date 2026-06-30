@@ -8,12 +8,15 @@ import androidx.paging.compose.LazyPagingItems
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
+import kotlin.time.Duration
+import kotlin.time.Duration.Companion.milliseconds
+import kotlin.time.Duration.Companion.seconds
 
 
 @Composable
 fun AutoRefreshEffect(
     firstPageLoadedTime: Long?,
-    interval: Long,
+    interval: Duration,
     doRefresh: () -> Boolean,
     lazyPagingItems: LazyPagingItems<*>,
 ) {
@@ -24,12 +27,13 @@ fun AutoRefreshEffect(
         val job = autoRefreshScope.launch {
             var tryAgain = true
             while (isActive && tryAgain && firstPageLoadedTime != null) {
-                val delayMs = if (System.currentTimeMillis() - firstPageLoadedTime > interval)
-                    1000L
-                else
-                    interval
+                val delay =
+                    if ((System.currentTimeMillis() - firstPageLoadedTime).milliseconds > interval)
+                        1.seconds
+                    else
+                        interval
 
-                delay(delayMs)
+                delay(delay)
 
                 if (lazyPagingItems.loadState.refresh is LoadState.NotLoading &&
                     !lazyPagingItems.loadState.hasError

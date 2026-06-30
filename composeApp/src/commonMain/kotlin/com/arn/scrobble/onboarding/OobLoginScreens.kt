@@ -40,7 +40,6 @@ import pano_scrobbler.composeapp.generated.resources.pref_imexport_code
 import pano_scrobbler.composeapp.generated.resources.retry
 
 
-@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun OobLastfmLibrefmLoginScreen(
     userAccountTemp: UserAccountTemp,

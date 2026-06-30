@@ -11,6 +11,7 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import kotlin.time.Duration.Companion.milliseconds
 
 class AppListVM(
     preSelectedPackages: Set<String>,
@@ -27,7 +28,7 @@ class AppListVM(
             if (searchTerm.isBlank()) {
                 appList
             } else {
-                delay(500) // debounce
+                delay(500.milliseconds) // debounce
                 AppList(
                     musicPlayers = filterFn(searchTerm, appList.musicPlayers),
                     otherApps = filterFn(searchTerm, appList.otherApps)

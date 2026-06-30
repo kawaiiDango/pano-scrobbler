@@ -73,8 +73,7 @@ fun RandomScreen(
     val musicEntry by viewModel.musicEntry.collectAsStateWithLifecycle()
     val hasLoaded by viewModel.hasLoaded.collectAsStateWithLifecycle()
     val error by viewModel.error.collectAsStateWithLifecycle()
-    val type by PlatformStuff.mainPrefs.data
-        .collectAsStateWithInitialValue { it.randomType }
+    val type by PlatformStuff.mainPrefs.data.collectAsStateWithInitialValue { it.randomType }
     var timePeriod by rememberSaveable(saver = jsonSerializableSaver<TimePeriod?>()) {
         mutableStateOf(null)
     }

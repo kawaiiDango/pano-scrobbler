@@ -265,7 +265,7 @@
     <string name="pref_spotify_artist_search_approximate" comment="This feature actually grabs the first result from Spotify artist search regardless of what that result is">Use approximate search for artist images</string>
     <string name="pref_link_heart_button_rating">Use the heart button in the notification to also favorite it on the media player</string>
     <string name="pref_prevent_duplicate_ambient_scrobbles">Disable scrobbling from music recognition apps if the device is already playing music</string>
-    <string name="pref_delay">Scrobble delay (whichever is earlier)</string>
+    <string name="pref_delay">Scrobble delay</string>
     <string name="pref_delay_mins" comment="(Scrobble delay in minutes)">Minutes</string>
     <string name="pref_delay_per" comment="(Scrobble delay in percent)">Percent</string>
     <string name="pref_logout">Logout</string>

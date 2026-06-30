@@ -51,7 +51,7 @@ Currently, the builds skip this step.
 - Compile the native lib https://github.com/kawaiiDango/pano-native-components
 
 - If you intend to package a build for desktop,
-  use [Bellsoft's GraalVM based on OpenJDK 25](https://bell-sw.com/pages/downloads/native-image-kit/)
+  use [GraalVM CE 25](https://github.com/graalvm/graalvm-ce-builds)
   as your JAVA_HOME and GRAALVM_HOME (both should be set). Also
   have [Inno Setup](https://jrsoftware.org/isdl.php) installed in Program Files on Windows.
 

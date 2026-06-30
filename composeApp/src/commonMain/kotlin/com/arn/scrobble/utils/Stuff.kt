@@ -62,7 +62,6 @@ object Stuff {
     const val MAX_PATTERNS = 50
     const val MAX_PATTERNS_HIGH = 300
     const val MAX_PINNED_FRIENDS = 10
-    const val MAX_INDEXED_ITEMS = 10000
     const val PINNED_FRIENDS_CACHE_TIME = 60L * 60 * 24 * 1 * 1000
     const val MIN_ITEMS_TO_SHOW_SEARCH = 7
     const val TIME_2002 = 1009823400000L // Jan 1 2002
@@ -77,10 +76,9 @@ object Stuff {
 
     const val EXTRA_PINNED = "pinned"
 
-    const val RECENTS_REFRESH_INTERVAL = 30 * 1000L
-    const val FRIENDS_REFRESH_INTERVAL = 60 * 1000L
+    const val RECENTS_REFRESH_INTERVAL_S = 30
+    const val FRIENDS_REFRESH_INTERVAL_S = 60
     const val LASTFM_MAX_PAST_SCROBBLE = 14 * 24 * 60 * 60 * 1000L
-    const val FULL_INDEX_ALLOWED_INTERVAL = 24 * 60 * 60 * 1000L
     const val CHARTS_WIDGET_REFRESH_INTERVAL_HOURS = 4
     const val META_WAIT = 1000L
     const val MAX_HISTORY_ITEMS = 20
@@ -99,12 +97,9 @@ object Stuff {
     const val MANUFACTURER_MOTOROLA = "motorola"
     const val MANUFACTURER_ONEPLUS = "oneplus"
     const val MANUFACTURER_OPPO = "oppo"
+    const val MANUFACTURER_REALME = "realme"
     const val MANUFACTURER_TRANSSION = "transsion"
-    const val MANUFACTURER_MEIZU = "meizu"
-    const val MANUFACTURER_VIVO = "vivo"
-
-    const val XIAOMI_AUTOSTART_ACTIVITY =
-        "com.miui.securitycenter/com.miui.permcenter.autostart.AutoStartManagementActivity"
+    const val MANUFACTURER_INFINIX = "infinix"
 
     const val PACKAGE_TV_SETTINGS = "com.android.tv.settings"
     const val ACTIVITY_TV_SETTINGS = "com.android.tv.settings.device.apps.AppsActivity"
@@ -134,6 +129,8 @@ object Stuff {
     const val PACKAGE_PODCAST_ADDICT = "com.bambuna.podcastaddict"
     const val PACKAGE_HUAWEI_MUSIC = "com.android.mediacenter"
     const val PACKAGE_SPOTIFY = "com.spotify.music"
+    const val PACKAGE_SPOTIFY_WIN_EXE = "Spotify.exe"
+    const val PACKAGE_SPOTIFY_WIN_STORE = "SpotifyAB.SpotifyMusic_zpdnekdrzrea0!Spotify"
     const val PACKAGE_DEEZER = "deezer.android.app"
     const val PACKAGE_DEEZER_TV = "deezer.android.tv"
     const val PACKAGE_YOUTUBE_TV = "com.google.android.youtube.tv"

@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
@@ -57,6 +56,7 @@ enum class OnboardingStepType {
     NOTIFICATION_LISTENER,
     CHOOSE_APPS,
     SEND_NOTIFICATIONS,
+    DISCORD_RICH_PRESENCE,
     AUTOSTART,
     BATTERY_OPTIMIZATIONS_IGNORE,
     APP_LAUNCHER,
@@ -65,6 +65,7 @@ enum class OnboardingStepType {
 @Composable
 fun ButtonsStepper(
     onOpenClick: () -> Unit,
+    openButtonText: String,
     onSkipClick: (() -> Unit)?,
     modifier: Modifier = Modifier,
 ) {
@@ -82,12 +83,11 @@ fun ButtonsStepper(
             modifier = Modifier
                 .testTag("button_stepper_open")
         ) {
-            Text(text = stringResource(Res.string.fix_it_action))
+            Text(text = openButtonText)
         }
     }
 }
 
-@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun ButtonStepperForLogin(
     navigate: (PanoRoute) -> Unit,
@@ -95,7 +95,9 @@ fun ButtonStepperForLogin(
 ) {
     val accountTypesToStrings =
         AccountType.entries.filterNot {
-            PlatformStuff.isTv && it == AccountType.FILE
+            PlatformStuff.isTv && it == AccountType.FILE ||
+                    it == AccountType.CUSTOM_LISTENBRAINZ_2 ||
+                    it == AccountType.CUSTOM_LISTENBRAINZ_3
         }.associateWith {
             accountTypeLabel(it)
         }
@@ -147,10 +149,12 @@ fun VerticalStepperItem(
     isDone: Boolean,
     isExpanded: Boolean,
     modifier: Modifier = Modifier,
+    openButtonText: String = stringResource(Res.string.fix_it_action),
     onSkip: (() -> Unit)? = null,
     buttonsContent: @Composable () -> Unit = {
         ButtonsStepper(
             onOpenClick = openAction,
+            openButtonText = openButtonText,
             onSkipClick = onSkip,
             modifier = Modifier.fillMaxWidth()
         )

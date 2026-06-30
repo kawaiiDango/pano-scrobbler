@@ -412,17 +412,22 @@ object PanoNavGraph {
             onSetTitleRes(route, Res.string.listenbrainz)
             ListenBrainzLoginScreen(
                 onDone = goBack,
-                hasCustomApiRoot = false,
+                customServerSlot = null,
                 modifier = modifier().addColumnPadding()
             )
         }
 
         entry<PanoRoute.LoginCustomListenBrainz> { route ->
-
-            onSetTitleString(route, accountTypeLabel(AccountType.CUSTOM_LISTENBRAINZ))
+            val accountType = when (route.slot) {
+                1 -> AccountType.CUSTOM_LISTENBRAINZ
+                2 -> AccountType.CUSTOM_LISTENBRAINZ_2
+                3 -> AccountType.CUSTOM_LISTENBRAINZ_3
+                else -> throw IllegalArgumentException("Invalid slot: ${route.slot}")
+            }
+            onSetTitleString(route, accountTypeLabel(accountType))
             ListenBrainzLoginScreen(
                 onDone = goBack,
-                hasCustomApiRoot = true,
+                customServerSlot = route.slot,
                 modifier = modifier().addColumnPadding()
             )
         }

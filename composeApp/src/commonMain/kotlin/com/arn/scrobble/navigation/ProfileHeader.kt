@@ -19,7 +19,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -75,7 +74,6 @@ import pano_scrobbler.composeapp.generated.resources.profile
 import pano_scrobbler.composeapp.generated.resources.reports
 
 
-@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun ProfileHeader(
     user: UserCached?,
@@ -93,9 +91,7 @@ fun ProfileHeader(
     val displayText = when {
         Stuff.isInDemoMode -> "nobody"
         currentAccountType == AccountType.LASTFM -> userName
-        currentAccountType == AccountType.CUSTOM_LISTENBRAINZ || currentAccountType == AccountType.GNUFM ->
-            stringResource(Res.string.charts_custom) + ": " + userName
-
+        currentAccountType.isCustom -> stringResource(Res.string.charts_custom) + ": " + userName
         else -> accountTypeLabel(currentAccountType) + ": " + userName
     }
 
@@ -308,7 +304,7 @@ fun ProfileHeaderDropdown(
             if (currentUser.isSelf) {
                 otherAccounts.forEach { account ->
                     val accountTypeLabel =
-                        if (account.type == AccountType.CUSTOM_LISTENBRAINZ || account.type == AccountType.GNUFM)
+                        if (account.type.isCustom)
                             stringResource(Res.string.charts_custom)
                         else
                             accountTypeLabel(account.type)

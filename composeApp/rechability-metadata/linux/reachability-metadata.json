@@ -27,7 +27,7 @@
       "type": "androidx.compose.ui.scene.ComposeSceneMediator$InvisibleComponent"
     },
     {
-      "type": "androidx.compose.ui.scene.skia.WindowSkiaLayerComponent$contentComponent$1"
+      "type": "androidx.compose.ui.scene.skia.SurfaceSkiaLayerComponent$hierarchyRoot$1"
     },
     {
       "type": "androidx.sqlite.driver.bundled.BundledSQLiteConnectionKt",
@@ -57,6 +57,34 @@
       "type": "coil3.network.ktor3.internal.KtorNetworkFetcherServiceLoaderTarget"
     },
     {
+      "type": "java.util.logging.XMLFormatter",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "type": "androidx.compose.ui.window.WindowExceptionHandlerFactory_desktopKt$showErrorDialog$pane$1"
+    },
+    {
+      "type": "javax.swing.plaf.basic.BasicOptionPaneUI",
+      "methods": [
+        {
+          "name": "createUI",
+          "parameterTypes": [
+            "javax.swing.JComponent"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "java.lang.StackTraceElement",
+      "jniAccessible": true,
+      "allDeclaredMethods": true
+    },
+    {
       "type": "com.arn.scrobble.DesktopWebView",
       "jniAccessible": true,
       "allDeclaredMethods": true
@@ -65,6 +93,15 @@
       "type": "com.arn.scrobble.PanoNativeComponents",
       "jniAccessible": true,
       "allDeclaredMethods": true
+    },
+    {
+      "type": "sun.net.www.protocol.http.Handler",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
     },
     {
       "type": "com.arn.scrobble.db.PanoDb_Impl",
@@ -449,60 +486,6 @@
       ]
     },
     {
-      "type": "java.awt.geom.Point2D$Float",
-      "jniAccessible": true,
-      "fields": [
-        {
-          "name": "x"
-        },
-        {
-          "name": "y"
-        }
-      ],
-      "methods": [
-        {
-          "name": "<init>",
-          "parameterTypes": [
-            "float",
-            "float"
-          ]
-        }
-      ]
-    },
-    {
-      "type": "java.awt.geom.Rectangle2D$Float",
-      "jniAccessible": true,
-      "fields": [
-        {
-          "name": "height"
-        },
-        {
-          "name": "width"
-        },
-        {
-          "name": "x"
-        },
-        {
-          "name": "y"
-        }
-      ],
-      "methods": [
-        {
-          "name": "<init>",
-          "parameterTypes": []
-        },
-        {
-          "name": "<init>",
-          "parameterTypes": [
-            "float",
-            "float",
-            "float",
-            "float"
-          ]
-        }
-      ]
-    },
-    {
       "type": "java.awt.image.BufferedImage",
       "jniAccessible": true,
       "fields": [
@@ -819,6 +802,15 @@
       ]
     },
     {
+      "type": "java.lang.Module",
+      "methods": [
+        {
+          "name": "getDescriptor",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
       "type": "java.lang.Integer",
       "jniAccessible": true,
       "methods": [
@@ -909,12 +901,10 @@
     {
       "type": "java.lang.Throwable",
       "jniAccessible": true,
-      "methods": [
-        {
-          "name": "printStackTrace",
-          "parameterTypes": []
-        }
-      ]
+      "allDeclaredMethods": true
+    },
+    {
+      "type": "java.lang.module.ModuleDescriptor"
     },
     {
       "type": "java.nio.ByteBuffer"
@@ -924,6 +914,12 @@
     },
     {
       "type": "java.nio.file.Files"
+    },
+    {
+      "type": "java.rmi.MarshalledObject"
+    },
+    {
+      "type": "java.rmi.Remote"
     },
     {
       "type": "java.security.AlgorithmParametersSpi"
@@ -1109,6 +1105,9 @@
     },
     {
       "type": "kotlinx.coroutines.sync.SemaphoreAndMutexImpl"
+    },
+    {
+      "type": "okhttp3.internal.connection.RealCall"
     },
     {
       "type": "kotlinx.io.RefCountingCopyTracker"
@@ -1964,6 +1963,16 @@
       "type": "sun.awt.X11.XFramePeer"
     },
     {
+      "type": "sun.awt.X11.XRootWindow",
+      "jniAccessible": true,
+      "methods": [
+        {
+          "name": "getXRootWindow",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
       "type": "sun.awt.X11.XToolkit",
       "jniAccessible": true,
       "fields": [
@@ -2074,247 +2083,6 @@
             "java.lang.String",
             "java.lang.String",
             "int[]"
-          ]
-        }
-      ]
-    },
-    {
-      "type": "sun.font.CharToGlyphMapper",
-      "jniAccessible": true,
-      "methods": [
-        {
-          "name": "charToGlyph",
-          "parameterTypes": [
-            "int"
-          ]
-        }
-      ]
-    },
-    {
-      "type": "sun.font.Font2D",
-      "jniAccessible": true,
-      "methods": [
-        {
-          "name": "canDisplay",
-          "parameterTypes": [
-            "char"
-          ]
-        },
-        {
-          "name": "charToGlyphRaw",
-          "parameterTypes": [
-            "int"
-          ]
-        },
-        {
-          "name": "charToVariationGlyphRaw",
-          "parameterTypes": [
-            "int",
-            "int"
-          ]
-        },
-        {
-          "name": "getMapper",
-          "parameterTypes": []
-        },
-        {
-          "name": "getTableBytes",
-          "parameterTypes": [
-            "int"
-          ]
-        }
-      ]
-    },
-    {
-      "type": "sun.font.FontConfigManager$FcCompFont",
-      "jniAccessible": true,
-      "fields": [
-        {
-          "name": "allFonts"
-        },
-        {
-          "name": "fcName"
-        },
-        {
-          "name": "firstFont"
-        }
-      ]
-    },
-    {
-      "type": "sun.font.FontConfigManager$FontConfigFont",
-      "jniAccessible": true,
-      "fields": [
-        {
-          "name": "familyName"
-        },
-        {
-          "name": "fontFile"
-        },
-        {
-          "name": "fullName"
-        },
-        {
-          "name": "styleStr"
-        }
-      ],
-      "methods": [
-        {
-          "name": "<init>",
-          "parameterTypes": []
-        }
-      ]
-    },
-    {
-      "type": "sun.font.FontConfigManager$FontConfigFont[]"
-    },
-    {
-      "type": "sun.font.FontConfigManager$FontConfigInfo",
-      "jniAccessible": true,
-      "fields": [
-        {
-          "name": "cacheDirs"
-        },
-        {
-          "name": "fcVersion"
-        }
-      ]
-    },
-    {
-      "type": "sun.font.FontStrike",
-      "jniAccessible": true,
-      "methods": [
-        {
-          "name": "getGlyphMetrics",
-          "parameterTypes": [
-            "int"
-          ]
-        }
-      ]
-    },
-    {
-      "type": "sun.font.FontUtilities",
-      "jniAccessible": true,
-      "methods": [
-        {
-          "name": "debugFonts",
-          "parameterTypes": []
-        }
-      ]
-    },
-    {
-      "type": "sun.font.FreetypeFontScaler",
-      "jniAccessible": true,
-      "methods": [
-        {
-          "name": "invalidateScaler",
-          "parameterTypes": []
-        }
-      ]
-    },
-    {
-      "type": "sun.font.GlyphList",
-      "jniAccessible": true,
-      "fields": [
-        {
-          "name": "gposx"
-        },
-        {
-          "name": "gposy"
-        },
-        {
-          "name": "images"
-        },
-        {
-          "name": "lcdRGBOrder"
-        },
-        {
-          "name": "lcdSubPixPos"
-        },
-        {
-          "name": "len"
-        },
-        {
-          "name": "positions"
-        },
-        {
-          "name": "usePositions"
-        }
-      ]
-    },
-    {
-      "type": "sun.font.PhysicalStrike",
-      "jniAccessible": true,
-      "fields": [
-        {
-          "name": "pScalerContext"
-        }
-      ],
-      "methods": [
-        {
-          "name": "adjustPoint",
-          "parameterTypes": [
-            "java.awt.geom.Point2D$Float"
-          ]
-        },
-        {
-          "name": "getGlyphPoint",
-          "parameterTypes": [
-            "int",
-            "int"
-          ]
-        }
-      ]
-    },
-    {
-      "type": "sun.font.StrikeMetrics",
-      "jniAccessible": true,
-      "methods": [
-        {
-          "name": "<init>",
-          "parameterTypes": [
-            "float",
-            "float",
-            "float",
-            "float",
-            "float",
-            "float",
-            "float",
-            "float",
-            "float",
-            "float"
-          ]
-        }
-      ]
-    },
-    {
-      "type": "sun.font.TrueTypeFont",
-      "jniAccessible": true,
-      "methods": [
-        {
-          "name": "readBlock",
-          "parameterTypes": [
-            "java.nio.ByteBuffer",
-            "int",
-            "int"
-          ]
-        },
-        {
-          "name": "readBytes",
-          "parameterTypes": [
-            "int",
-            "int"
-          ]
-        }
-      ]
-    },
-    {
-      "type": "sun.font.Type1Font",
-      "jniAccessible": true,
-      "methods": [
-        {
-          "name": "readFile",
-          "parameterTypes": [
-            "java.nio.ByteBuffer"
           ]
         }
       ]
@@ -3298,35 +3066,19 @@
     },
     {
       "module": "java.desktop",
-      "glob": "com/sun/swing/internal/plaf/basic/resources/basic_en.properties"
+      "glob": "com/sun/swing/internal/plaf/basic/resources/*.properties"
     },
     {
       "module": "java.desktop",
-      "glob": "com/sun/swing/internal/plaf/basic/resources/basic_en_US.properties"
+      "glob": "com/sun/swing/internal/plaf/metal/resources/*.properties"
     },
     {
       "module": "java.desktop",
-      "glob": "com/sun/swing/internal/plaf/metal/resources/metal_en.properties"
-    },
-    {
-      "module": "java.desktop",
-      "glob": "com/sun/swing/internal/plaf/metal/resources/metal_en_US.properties"
-    },
-    {
-      "module": "java.desktop",
-      "glob": "sun/awt/resources/awt_en.properties"
-    },
-    {
-      "module": "java.desktop",
-      "glob": "sun/awt/resources/awt_en_US.properties"
+      "glob": "sun/awt/resources/*.properties"
     },
     {
       "module": "java.logging",
-      "glob": "sun/util/logging/resources/logging_en.properties"
-    },
-    {
-      "module": "java.logging",
-      "glob": "sun/util/logging/resources/logging_en_US.properties"
+      "glob": "sun/util/logging/resources/*.properties"
     },
     {
       "bundle": "com.sun.swing.internal.plaf.basic.resources.basic"
@@ -3339,6 +3091,18 @@
     },
     {
       "bundle": "sun.util.logging.resources.logging"
+    },
+    {
+      "bundle": "sun.text.resources.FormatData"
+    },
+    {
+      "bundle": "sun.text.resources.cldr.FormatData"
+    },
+    {
+      "bundle": "sun.text.resources.ext.FormatData"
+    },
+    {
+      "bundle": "sun.text.resources.cldr.ext.FormatData"
     }
   ]
 }

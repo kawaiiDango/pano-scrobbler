@@ -13,6 +13,7 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.launch
+import kotlin.time.Duration.Companion.seconds
 
 
 class DesktopMediaListener(
@@ -29,7 +30,7 @@ class DesktopMediaListener(
 
     fun start() {
         scope.launch {
-            delay(1500)
+            delay(1.seconds)
 
             combine(scrobblerEnabled, allowedPackages) { scrobblerEnabled, allowedPackages ->
                 if (!scrobblerEnabled) {
@@ -148,6 +149,15 @@ class DesktopMediaListener(
 
     fun platformPlaybackStateChanged(uniqueAppId: String, playbackInfo: PlaybackInfo) {
         val sessionTracker = sessionTrackers[uniqueAppId] ?: return
+
+        if (sessionTracker.lastDuration <= 0 &&
+            sessionTracker.trackInfo.isPlaying &&
+            playbackInfo.state == CommonPlaybackState.Playing &&
+            playbackInfo.position == 0L
+        ) {
+            Logger.i { "ignoring duration<=0, position=0" }
+            return
+        }
 
         val options = TransformMetadataOptions()
         val (commonPlaybackInfo, ignoreScrobble) =

@@ -104,6 +104,7 @@ import java.awt.event.MouseListener
 import java.lang.reflect.Constructor
 import java.util.Locale
 import kotlin.system.exitProcess
+import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.Duration.Companion.minutes
 import kotlin.time.Duration.Companion.seconds
 
@@ -151,7 +152,7 @@ private fun init() {
     Logger.setLogWriters(
         JavaUtilFileLogger(
             isEnabled = true,
-            redirectStderr = !BuildKonfig.DEBUG,
+            redirectStderr = !BuildKonfig.DEBUG || System.getenv("PANO_KEEP_STDERR") == null,
             printToStd = true
         )
     )
@@ -178,6 +179,7 @@ private fun preventMultipleInstances() {
     }
 }
 
+@OptIn(ExperimentalComposeUiApi::class)
 fun main(args: Array<String>) {
     val cmdlineArgs = DesktopStuff.parseCmdlineArgs(args)
     DesktopStuff.setSystemProperties()
@@ -538,7 +540,7 @@ fun main(args: Array<String>) {
                                     when (e?.button) {
                                         MouseEvent.BUTTON1 if e.clickCount == 1 -> {
                                             trayMenuDelayJob = Stuff.appScope.launch {
-                                                delay(100)
+                                                delay(100.milliseconds)
                                                 trayMenuPos = e.locationOnScreen
                                             }
                                         }
@@ -604,6 +606,10 @@ fun main(args: Array<String>) {
                 icon = painterResource(Res.drawable.ic_launcher_with_bg)
             ) {
                 val density = LocalDensity.current
+
+                LaunchedEffect(Unit) {
+                    window.exceptionHandler = null
+                }
 
                 LaunchedEffect(Unit) {
                     if (DesktopStuff.os == DesktopStuff.Os.Windows)

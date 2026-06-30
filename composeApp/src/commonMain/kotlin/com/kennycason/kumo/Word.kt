@@ -40,7 +40,7 @@ class Word(
         // get the height of a line of text in this font and render context
         val height = fontMetricsCanvas.fontHeight
 
-        val rendered = PlatformBitmap(width, height)
+        val rendered = PlatformBitmap(width.toInt(), height.toInt())
 
         val gOfRendered = PlatformCanvas(rendered)
 
@@ -49,7 +49,7 @@ class Word(
         gOfRendered.setColor(fontColor)
 
         gOfRendered.drawText(
-            text, 0, height - fontMetricsCanvas.descent - fontMetricsCanvas.leading
+            text, 0f, height - fontMetricsCanvas.descent - fontMetricsCanvas.leading
         )
         return rendered
     }
@@ -65,39 +65,5 @@ class Word(
     override fun collide(collidable: Collidable): Boolean {
         return collisionChecker.collide(this, collidable)
     }
-
-//    fun draw(collisionRaster: CollisionRaster) {
-//        collisionRaster.mask(collisionRaster, position)
-//    }
-
-    //    public static RenderingHints getRenderingHints() {
-    //        Map<RenderingHints.Key, Object> hints = new HashMap<>();
-    //        hints.put(
-    //                RenderingHints.KEY_ALPHA_INTERPOLATION,
-    //                RenderingHints.VALUE_ALPHA_INTERPOLATION_QUALITY
-    //        );
-    //        hints.put(
-    //                RenderingHints.KEY_ANTIALIASING,
-    //                RenderingHints.VALUE_ANTIALIAS_ON
-    //        );
-    //        hints.put(
-    //                RenderingHints.KEY_COLOR_RENDERING,
-    //                RenderingHints.VALUE_COLOR_RENDER_QUALITY
-    //        );
-    //        hints.put(
-    //                RenderingHints.KEY_FRACTIONALMETRICS,
-    //                RenderingHints.VALUE_FRACTIONALMETRICS_ON
-    //        );
-    //        hints.put(
-    //                RenderingHints.KEY_INTERPOLATION,
-    //                RenderingHints.VALUE_INTERPOLATION_BICUBIC
-    //        );
-    //        hints.put(
-    //                RenderingHints.KEY_TEXT_ANTIALIASING,
-    //                RenderingHints.VALUE_TEXT_ANTIALIAS_LCD_HRGB
-    //        );
-    //
-    //        return new RenderingHints(hints);
-    //    }
 
 }

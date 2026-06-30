@@ -50,7 +50,9 @@ object LoginDestinations {
 
         AccountType.GNUFM -> PanoRoute.LoginGnufm
         AccountType.LISTENBRAINZ -> PanoRoute.LoginListenBrainz
-        AccountType.CUSTOM_LISTENBRAINZ -> PanoRoute.LoginCustomListenBrainz
+        AccountType.CUSTOM_LISTENBRAINZ -> PanoRoute.LoginCustomListenBrainz(1)
+        AccountType.CUSTOM_LISTENBRAINZ_2 -> PanoRoute.LoginCustomListenBrainz(2)
+        AccountType.CUSTOM_LISTENBRAINZ_3 -> PanoRoute.LoginCustomListenBrainz(3)
         AccountType.PLEROMA -> PanoRoute.LoginPleroma
         AccountType.FILE -> PanoRoute.LoginFile
     }

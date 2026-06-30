@@ -147,7 +147,6 @@ enum class GridMode {
     HERO, LIST, GRID
 }
 
-@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun MusicEntryListItem(
     entry: MusicEntry,
@@ -604,7 +603,6 @@ private fun NowPlayingSurface(
     }
 }
 
-@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun MusicEntryGridItem(
     entry: MusicEntry,

@@ -11,7 +11,6 @@ import co.touchlab.kermit.Logger
 import com.arn.scrobble.BuildKonfig
 import com.arn.scrobble.MasterSwitchQS
 import com.arn.scrobble.media.NLService
-import com.arn.scrobble.media.PlayingTrackNotifyEvent
 import com.arn.scrobble.utils.AndroidStuff.toast
 import com.arn.scrobble.utils.PanoNotifications
 import com.arn.scrobble.utils.Stuff
@@ -94,18 +93,12 @@ class AutomationProvider : ContentProvider() {
 
     private fun nowPlayingDataCursor(): Cursor {
         val data = PanoNotifications.getNowPlayingFromBackgroundProcess()
-        val cursor = MatrixCursor(
-            arrayOf(
-                PlayingTrackNotifyEvent.TrackPlaying::origScrobbleData.name,
-                PlayingTrackNotifyEvent.TrackPlaying::hash.name,
-            )
-        )
+        val cursor = MatrixCursor(arrayOf("result"))
 
         if (data != null) {
             cursor.addRow(
                 arrayOf(
-                    Stuff.myJson.encodeToString(data.first),
-                    data.second.toString(),
+                    Stuff.myJson.encodeToString(data),
                 )
             )
         }

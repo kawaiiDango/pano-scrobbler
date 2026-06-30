@@ -22,7 +22,6 @@ import kotlin.random.Random
 
 private val randomNumberForProcess = abs(Random.nextInt())
 
-@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun AppTheme(
     onInitDone: () -> Unit = {},

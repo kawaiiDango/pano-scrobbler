@@ -56,6 +56,7 @@ import pano_scrobbler.composeapp.generated.resources.no_apps_enabled
 import pano_scrobbler.composeapp.generated.resources.pref_logout
 import pano_scrobbler.composeapp.generated.resources.sure_tap_again
 import kotlin.math.roundToInt
+import kotlin.time.Duration.Companion.seconds
 
 private val mainPrefs get() = PlatformStuff.mainPrefs
 
@@ -401,7 +402,6 @@ fun AccountPref(
     val logoutString = stringResource(Res.string.pref_logout)
     val scope = rememberCoroutineScope()
     var canLogoutNow by remember { mutableStateOf(false) }
-    val confirmTime = 3000L
 
     TextPref(
         text = title,
@@ -421,7 +421,7 @@ fun AccountPref(
             } else {
                 scope.launch {
                     canLogoutNow = true
-                    delay(confirmTime)
+                    delay(3.seconds)
                     canLogoutNow = false
                 }
             }

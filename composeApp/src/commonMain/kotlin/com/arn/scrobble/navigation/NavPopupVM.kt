@@ -12,6 +12,7 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
+import kotlin.time.Duration.Companion.seconds
 
 class NavPopupVM(
     user: UserCached,
@@ -25,7 +26,7 @@ class NavPopupVM(
                 }.first()?.let { emit(it) }
             }
 
-            delay(1000)
+            delay(1.seconds)
 
             val scrobblable = Scrobblables.current
             scrobblable

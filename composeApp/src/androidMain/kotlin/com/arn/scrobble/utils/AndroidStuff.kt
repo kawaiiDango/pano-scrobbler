@@ -4,8 +4,11 @@ import android.app.ActivityManager
 import android.app.Application
 import android.app.ApplicationExitInfo
 import android.app.PendingIntent
+import android.content.ComponentName
 import android.content.ContentResolver
 import android.content.Context
+import android.content.Intent
+import android.content.pm.PackageManager
 import android.media.MediaMetadata
 import android.os.Build
 import android.os.Bundle
@@ -26,6 +29,25 @@ import com.arn.scrobble.pref.WidgetPrefsSerializer
 import java.io.File
 
 object AndroidStuff {
+    private val STARTUPMGR_INTENTS = listOf(
+        // https://stackoverflow.com/questions/48166206/how-to-start-power-manager-of-all-android-manufactures-to-enable-background-and/48166241#48166241
+        //pkg, class
+        "com.miui.securitycenter" to "com.miui.permcenter.autostart.AutoStartManagementActivity",
+        "com.huawei.systemmanager" to "com.huawei.systemmanager.startupmgr.ui.StartupNormalAppListActivity",
+        "com.huawei.systemmanager" to "com.huawei.systemmanager.optimize.process.ProtectActivity",
+        "com.huawei.systemmanager" to "com.huawei.systemmanager.appcontrol.activity.StartupAppControlActivity",
+        "com.coloros.safecenter" to "com.coloros.safecenter.permission.startup.StartupAppListActivity",
+        "com.coloros.safecenter" to "com.coloros.safecenter.startupapp.StartupAppListActivity",
+        "com.vivo.permissionmanager" to "com.vivo.permissionmanager.activity.PurviewTabActivity",
+        "com.vivo.permissionmanager" to "com.vivo.permissionmanager.activity.BgStartUpManagerActivity",
+        "com.asus.mobilemanager" to "com.asus.mobilemanager.entry.FunctionActivity",
+        "com.asus.mobilemanager" to "com.asus.mobilemanager.autostart.AutoStartActivity",
+        "com.samsung.android.lool" to "com.samsung.android.sm.battery.ui.BatteryActivity",
+        "com.transsion.phonemaster" to "com.cyin.himgr.autostart.AutoStartActivity",
+        "com.transsion.phonemanager" to "com.itel.autobootmanager.activity.AutoBootMgrActivity",
+        "com.evenwell.powersaving.g3" to "com.evenwell.powersaving.g3.exception.PowerSaverExceptionActivity",
+    )
+
     lateinit var applicationContext: Context
 
     val isMainProcess by lazy {
@@ -50,8 +72,6 @@ object AndroidStuff {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S)
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_MUTABLE
         else PendingIntent.FLAG_UPDATE_CURRENT
-
-    const val canShowPersistentNotiIfEnabled = true
 
 //    @RequiresApi(Build.VERSION_CODES.Q)
 //    @Throws(IOException::class)
@@ -166,6 +186,30 @@ object AndroidStuff {
         return applicationContext.getSystemService(PowerManager::class.java)
             ?.isIgnoringBatteryOptimizations(applicationContext.packageName)
             ?: false
+    }
+
+    fun getStartupMgrIntents(pkg: String): List<Intent> {
+        if (PlatformStuff.isTv)
+            return emptyList()
+
+        return STARTUPMGR_INTENTS.filter { it.first == pkg }.map { (_, klass) ->
+            Intent().setComponent(ComponentName(pkg, klass)).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        }
+    }
+
+    fun findStartupMgrIntentPkg(context: Context): String? {
+        if (PlatformStuff.isTv)
+            return null
+
+        val packages = STARTUPMGR_INTENTS.map { it.first }.toSet()
+        return packages.firstOrNull {
+            try {
+                context.packageManager.getApplicationInfo(it, 0)
+                true
+            } catch (e: PackageManager.NameNotFoundException) {
+                false
+            }
+        }
     }
 
     fun MediaMetadata.dump() {

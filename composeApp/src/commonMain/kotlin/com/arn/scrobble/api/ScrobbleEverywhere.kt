@@ -28,6 +28,7 @@ import com.arn.scrobble.work.PendingScrobblesWork
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
+import kotlin.time.Duration.Companion.seconds
 
 
 data class PreprocessResult(
@@ -264,7 +265,7 @@ object ScrobbleEverywhere {
 
                 type == AdditionalMetadataType.ART_URL && !scrobbleData.album.isNullOrEmpty()
                     -> {
-                    return fetchNowPlaying(scrobbleData, onNetworkRequestMade)
+                    return fetchNowPlayingAlbumArt(scrobbleData, onNetworkRequestMade)
                 }
 
                 type == AdditionalMetadataType.MISSING_METADATA &&
@@ -507,7 +508,7 @@ object ScrobbleEverywhere {
         )
     }
 
-    private suspend fun fetchNowPlaying(
+    private suspend fun fetchNowPlayingAlbumArt(
         scrobbleData: ScrobbleData,
         onNetworkRequestMade: suspend () -> Unit,
     ): AdditionalMetadataResult {
@@ -530,11 +531,27 @@ object ScrobbleEverywhere {
             )
         }
 
+        // check db cache
+        val dao = PanoDb.db.getSeenEntitiesDao()
+
+        val bestAlbum = dao.getBestAlbumsForTrack(
+            scrobbleData.albumArtist ?: scrobbleData.artist,
+            scrobbleData.track
+        ).firstOrNull { it.artUpdatedAt != null }
+
+        if (bestAlbum?.artUrl != null) {
+            return AdditionalMetadataResult(
+                scrobbleData = null,
+                artUrl = bestAlbum.artUrl,
+            )
+        }
+
+        // look up online
         if (PlatformStuff.mainPrefs.data.map { it.submitNowPlaying }.first()) {
             Scrobblables.all.firstOrNull { it.userAccount.type == AccountType.LASTFM }
                 ?.also {
                     onNetworkRequestMade()
-                    delay(1000) // wait a bit to let lastfm update now playing
+                    delay(1.seconds) // wait a bit to let lastfm update now playing
                 }
                 ?.getRecents(1, includeNowPlaying = true, limit = 1)
                 ?.onSuccess {

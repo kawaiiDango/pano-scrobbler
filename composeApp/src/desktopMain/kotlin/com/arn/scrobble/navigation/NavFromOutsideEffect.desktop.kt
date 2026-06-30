@@ -64,6 +64,7 @@ actual fun NavFromOutsideEffect(
                 PanoTrayUtils.ItemId.Edit -> {
                     val dialog = PanoRoute.Modal.EditScrobble(
                         origScrobbleData = scrobblingEvent.origScrobbleData,
+                        scrobbleData = scrobbleData,
                         hash = scrobblingEvent.hash
                     )
                     onNavigate(dialog)

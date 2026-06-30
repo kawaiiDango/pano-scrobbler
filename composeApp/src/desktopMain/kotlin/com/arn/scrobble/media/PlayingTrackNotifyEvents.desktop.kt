@@ -1,6 +1,5 @@
 package com.arn.scrobble.media
 
-import com.arn.scrobble.api.lastfm.ScrobbleData
 import com.arn.scrobble.discordrpc.DiscordRpc
 import com.arn.scrobble.utils.PanoNotifications
 import com.arn.scrobble.utils.PlatformStuff
@@ -18,13 +17,11 @@ actual fun notifyPlayingTrackEvent(event: PlayingTrackNotifyEvent) {
 }
 
 
-actual fun getNowPlayingFromMainProcess(): Pair<ScrobbleData, Int>? {
+actual fun getNowPlayingFromMainProcess(): PlayingTrackNotifyEvent.TrackPlaying? {
     val playingEvent = PanoNotifications.playingTrackTrayInfo.value.values
         .filterIsInstance<PlayingTrackNotifyEvent.TrackPlaying>()
         .firstOrNull { it.nowPlaying }
-    return playingEvent?.let {
-        it.origScrobbleData to it.hash
-    }
+    return playingEvent
 }
 
 actual fun shouldFetchNpArtUrl(): Flow<Boolean> {

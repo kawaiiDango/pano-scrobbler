@@ -7,7 +7,6 @@ import android.content.res.Resources
 import android.os.Build
 import android.os.LocaleList
 import androidx.annotation.StringRes
-import com.arn.scrobble.utils.LocaleUtils.localesSet
 import java.lang.ref.WeakReference
 import java.util.Locale
 
@@ -23,7 +22,7 @@ fun Context.applyAndroidLocaleLegacy(): Context {
     if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
         val langPref = LocaleUtils.locale.value
 
-        val lang = if (langPref != null && langPref !in localesSet) {
+        val lang = if (langPref != null && langPref !in LocaleUtils.localesMap) {
             null
         } else
             langPref
@@ -58,7 +57,7 @@ actual fun LocaleUtils.setAppLocale(lang: String?, activityContext: Any?) {
             AndroidStuff.applicationContext.getSystemService(LocaleManager::class.java)
 
         if (localeManager != null) {
-            val newLang = if (lang != null && lang !in localesSet) {
+            val newLang = if (lang != null && lang !in localesMap) {
                 null
             } else
                 lang
@@ -99,9 +98,9 @@ actual fun LocaleUtils.getCurrentLocale(): String? {
             .takeIf { it.size() == 1 }
             ?.get(0)
             ?.let {
-                if (it.toLanguageTag() in localesSet)
+                if (it.toLanguageTag() in localesMap)
                     it.toLanguageTag()
-                else if (it.language in localesSet)
+                else if (it.language in localesMap)
                     it.language
                 else
                     null

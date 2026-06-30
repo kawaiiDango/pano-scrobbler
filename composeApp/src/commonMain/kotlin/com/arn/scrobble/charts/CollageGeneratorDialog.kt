@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.CircularWavyProgressIndicator
-import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
@@ -72,6 +71,7 @@ import pano_scrobbler.composeapp.generated.resources.skip_missing_images
 import pano_scrobbler.composeapp.generated.resources.tracks
 import pano_scrobbler.composeapp.generated.resources.username
 import pano_scrobbler.composeapp.generated.resources.vd_launcher_fg_for_collage
+import kotlin.time.Duration.Companion.seconds
 
 data class IconPaintersForCollage(
     val app: Painter,
@@ -82,7 +82,6 @@ data class IconPaintersForCollage(
     val colors: List<Color>
 )
 
-@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun CollageGeneratorDialog(
     collageType: Int,
@@ -160,11 +159,11 @@ fun CollageGeneratorDialog(
     fun launchedShowSavedMessage() {
         showSavedMessage = true
         scope.launch {
-            delay(1000)
+            delay(1.seconds)
 
             onAskForReview()
 
-            delay(2000)
+            delay(2.seconds)
             showSavedMessage = false
         }
     }

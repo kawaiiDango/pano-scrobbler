@@ -85,7 +85,7 @@ interface PendingScrobblesDao {
 
     @Query("SELECT 1 FROM $tableName WHERE canForceRetry = 1 OR lastFailedTimestamp <= :retryAfterTimestamp")
     suspend fun canForceRetry(
-        retryAfterTimestamp: Long = System.currentTimeMillis() - 30 * 60 * 1000L
+        retryAfterTimestamp: Long = System.currentTimeMillis() - 60 * 60 * 1000L
     ): Boolean
 
     @Delete

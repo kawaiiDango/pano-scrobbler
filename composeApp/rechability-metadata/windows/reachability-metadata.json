@@ -2576,6 +2576,16 @@
       ]
     },
     {
+      "type": "sun.awt.windows.TranslucentWindowPainter$VIOptWindowPainter$1",
+      "jniAccessible": true,
+      "methods": [
+        {
+          "name": "run",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
       "type": "sun.awt.windows.WCanvasPeer"
     },
     {

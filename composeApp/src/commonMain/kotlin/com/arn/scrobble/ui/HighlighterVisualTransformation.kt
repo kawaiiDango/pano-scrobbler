@@ -12,10 +12,11 @@ class HighlighterVisualTransformation(
     private val stringsToHighlight: List<String>,
     private val highlightColor: Color
 ) : VisualTransformation {
-    override fun filter(text: AnnotatedString): TransformedText {
-        val annotatedString = AnnotatedString.Builder(text.text)
+
+    fun highlight(text: String): AnnotatedString {
+        val annotatedString = AnnotatedString.Builder(text)
         stringsToHighlight.forEach { strToHighlight ->
-            var startIndex = text.text.indexOf(strToHighlight, 0)
+            var startIndex = text.indexOf(strToHighlight, 0)
             while (startIndex >= 0) {
                 val endIndex = startIndex + strToHighlight.length
                 annotatedString.addStyle(
@@ -23,9 +24,12 @@ class HighlighterVisualTransformation(
                     start = startIndex,
                     end = endIndex
                 )
-                startIndex = text.text.indexOf(strToHighlight, endIndex)
+                startIndex = text.indexOf(strToHighlight, endIndex)
             }
         }
-        return TransformedText(annotatedString.toAnnotatedString(), OffsetMapping.Identity)
+        return annotatedString.toAnnotatedString()
     }
+
+    override fun filter(text: AnnotatedString) =
+        TransformedText(highlight(text.text), OffsetMapping.Identity)
 }

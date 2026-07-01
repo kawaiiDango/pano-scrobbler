@@ -747,8 +747,7 @@ private fun TrayWindow(
     val xScaled = location.x / graphicsConfig.defaultTransform.scaleX.toFloat()
     val yScaled = location.y / graphicsConfig.defaultTransform.scaleY.toFloat()
 
-    // Show first so the window is laid out and has a real size
-    var visible by remember { mutableStateOf(true) }
+    var visible by remember { mutableStateOf(false) }
     val state = rememberWindowState(
         position = WindowPosition.Absolute(0.dp, 0.dp),
         size = DpSize.Unspecified,
@@ -807,6 +806,7 @@ private fun TrayWindow(
             }
 
             state.position = WindowPosition.Absolute(newX.dp, newY.dp)
+            visible = true
         }
 
         LifecycleResumeEffect(Unit) {

@@ -130,7 +130,7 @@ jobs:
           echo "verCode=$verCode" >> "$GITHUB_OUTPUT"
           echo "verName=$verName" >> "$GITHUB_OUTPUT"
           
-          changelogFooter="\n\n---\n\n#### Prefer getting the Linux and Android builds from an OS-specific repository listed on [README.md](https://github.com/kawaiiDango/pano-scrobbler/blob/main/README.md)"
+          changelogFooter=$'\n\n---\n\n#### Prefer getting the Linux and Android builds from an OS-specific repository listed on [README.md](https://github.com/kawaiiDango/pano-scrobbler/blob/main/README.md)'
           
           changelog="$(gh api -H "Accept: application/vnd.github.raw" "/repos/${GITHUB_REPOSITORY}/contents/changelog.md?ref=${GITHUB_SHA}")"
           {

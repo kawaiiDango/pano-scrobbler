@@ -4,7 +4,6 @@ import com.arn.scrobble.BuildKonfig
 import com.arn.scrobble.api.Scrobblables
 import com.arn.scrobble.api.lastfm.LastfmPeriod
 import com.arn.scrobble.charts.TimePeriod
-import com.arn.scrobble.charts.TimePeriodsGenerator.Companion.toTimePeriod
 import com.arn.scrobble.utils.PanoNotifications
 import com.arn.scrobble.utils.PanoTimeFormatter
 import com.arn.scrobble.utils.PlatformStuff
@@ -25,6 +24,7 @@ import pano_scrobbler.composeapp.generated.resources.top_artists
 import pano_scrobbler.composeapp.generated.resources.top_tracks
 import pano_scrobbler.composeapp.generated.resources.weekly
 import java.util.Calendar
+import kotlin.time.Duration.Companion.days
 
 enum class DigestType {
     DIGEST_DAILY,
@@ -138,20 +138,20 @@ class DigestWorker(
                 }
             }
 
-            val periodString = lastfmPeriod.toTimePeriod().let {
-                when (lastfmPeriod) {
-                    LastfmPeriod.WEEK ->
-                        getString(Res.string.weekly)
+            val fiveDaysBack = System.currentTimeMillis() - 5.days.inWholeMilliseconds
+
+            val periodString = when (lastfmPeriod) {
+                LastfmPeriod.WEEK ->
+                    getString(Res.string.weekly)
 //                        PanoTimeFormatter.dateRange(it.start, it.end)
 
-                    LastfmPeriod.MONTH ->
-                        PanoTimeFormatter.month(it.start, short = false)
+                LastfmPeriod.MONTH ->
+                    PanoTimeFormatter.month(fiveDaysBack, short = false)
 
-                    LastfmPeriod.YEAR ->
-                        PanoTimeFormatter.year(it.start)
+                LastfmPeriod.YEAR ->
+                    PanoTimeFormatter.year(fiveDaysBack)
 
-                    else -> throw IllegalArgumentException("Invalid period")
-                }
+                else -> throw IllegalArgumentException("Invalid period")
             }
 
             val notificationTitle = getString(Res.string.s_top_scrobbles, periodString)

@@ -168,6 +168,7 @@ fun DiscordRpcScreen(
             isError = line1Format.trim().isEmpty(),
             trailingIcon = {
                 IconButton(
+                    enabled = line1Format != defaultSettings.line1Format,
                     onClick = {
                         line1Format = defaultSettings.line1Format
                     }
@@ -194,6 +195,7 @@ fun DiscordRpcScreen(
             isError = line2Format.trim().isEmpty(),
             trailingIcon = {
                 IconButton(
+                    enabled = line2Format != defaultSettings.line2Format,
                     onClick = {
                         line2Format = defaultSettings.line2Format
                     }
@@ -219,6 +221,7 @@ fun DiscordRpcScreen(
             visualTransformation = visualTransformation,
             trailingIcon = {
                 IconButton(
+                    enabled = line3Format != defaultSettings.line3Format,
                     onClick = {
                         line3Format = defaultSettings.line3Format
                     }
@@ -244,6 +247,7 @@ fun DiscordRpcScreen(
             visualTransformation = visualTransformation,
             trailingIcon = {
                 IconButton(
+                    enabled = nameFormat != defaultSettings.nameFormat,
                     onClick = {
                         nameFormat = defaultSettings.nameFormat
                     }
@@ -295,6 +299,7 @@ fun DiscordRpcScreen(
             enabled = settings.enabled,
             min = 0,
             max = 600,
+            default = defaultSettings.showPausedForSecs,
             increments = 10,
             stringRepresentation = { Stuff.humanReadableDuration(it * 1000L) },
             copyToSave = {

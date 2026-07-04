@@ -2,5 +2,13 @@
     <string name="settings">Configurați</string>
     <string name="album_art">Copertă album</string>
     <string name="artists">Artiști</string>
+    <string name="albums">Album-uri</string>
+    <string name="tracks">Piste</string>
+    <string name="state_scrobbling">Acum scrobblează…</string>
     <string name="search">Caută</string>
+    <string comment="(%1 = App name) detected (shown in notification, when a new music player is detected)" formatted="true" name="new_player">%1$s a fost detectat</string>
+    <string comment="Its a noun" name="channel_err">Erori scrobble</string>
+    <string name="new_app">Aplicație nouă</string>
+    <string comment="User's top artists, albums, tracks, line chart of daily scrobble counts and tag cloud" name="charts">Topuri</string>
+    <string name="scrobbles">Scrobbluri</string>
 </resources>

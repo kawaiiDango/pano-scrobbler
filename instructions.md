@@ -3,6 +3,7 @@
 Welcome to my spaghetti
 
 Put these in local.properties
+
 ```
 # // https://www.last.fm/api/account/create
 lastfm.key=
@@ -55,6 +56,7 @@ Currently, the builds skip this step.
   as your JAVA_HOME and GRAALVM_HOME (both should be set). Also
   have [Inno Setup](https://jrsoftware.org/isdl.php) installed in Program Files on Windows.
 
-- Run `./gradlew composeApp:exportLibraryDefinitions composeApp:packageUberJarForCurrentOS -PaboutLibraries.exportVariant=desktop`
+- Run
+  `./gradlew composeApp:exportLibraryDefinitions composeApp:packageUberJarForCurrentOS -PaboutLibraries.exportVariant=desktop`
 
 - **Info**: the desktop build includes no non-free dependencies.

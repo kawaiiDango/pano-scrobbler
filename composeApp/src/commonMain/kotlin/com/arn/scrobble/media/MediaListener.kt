@@ -10,7 +10,6 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlin.math.min
-import kotlin.time.Duration.Companion.minutes
 import kotlin.time.Duration.Companion.seconds
 
 abstract class MediaListener(
@@ -184,18 +183,16 @@ abstract class MediaListener(
             // if self was muted, clear the muted hash too
             unmute(clearMutedHash = isMuted)
 
-            // calc delay
-            val delayMillis = 4.minutes.inWholeMilliseconds
-            val delayFraction = scrobbleTimingPrefs.value.delayPercent / 100.0
-            val delayMillisFraction = if (trackInfo.durationMillis > 0)
-                (trackInfo.durationMillis * delayFraction).toLong()
-            else // Assume 2 min track if duration is unknown. This happens mostly with radio apps
-                (120_000 * delayFraction).toLong()
-
             // don't scrobble < n seconds
             // -subtract some to round off. Sometimes 30 second tracks are reported as 29988ms
-            var finalDelay = min(delayMillisFraction, delayMillis)
-                .coerceAtLeast(scrobbleTimingPrefs.value.minDurationSecs * 1000L - 600L)
+            var finalDelay = if (trackInfo.durationMillis > 0) {
+                min(
+                    trackInfo.durationMillis * scrobbleTimingPrefs.value.delayPercent / 100,
+                    scrobbleTimingPrefs.value.delaySecs.seconds.inWholeMilliseconds
+                ).coerceAtLeast(scrobbleTimingPrefs.value.minDurationSecs * 1000L - 600L)
+            } else {
+                30.seconds.inWholeMilliseconds
+            }
 
             finalDelay = (finalDelay - trackInfo.timePlayed)
                 .coerceAtLeast(2000)// deal with negative or 0 delay

@@ -14,6 +14,7 @@ import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Slider
 import androidx.compose.material3.SplitButtonDefaults
@@ -39,6 +40,7 @@ import com.arn.scrobble.api.Scrobblables
 import com.arn.scrobble.icons.Icons
 import com.arn.scrobble.icons.KeyboardArrowDown
 import com.arn.scrobble.icons.Lock
+import com.arn.scrobble.icons.ResetSettings
 import com.arn.scrobble.icons.automirrored.KeyboardArrowLeft
 import com.arn.scrobble.icons.automirrored.KeyboardArrowRight
 import com.arn.scrobble.navigation.PanoRoute
@@ -54,6 +56,7 @@ import pano_scrobbler.composeapp.generated.resources.move_left
 import pano_scrobbler.composeapp.generated.resources.move_right
 import pano_scrobbler.composeapp.generated.resources.no_apps_enabled
 import pano_scrobbler.composeapp.generated.resources.pref_logout
+import pano_scrobbler.composeapp.generated.resources.reset
 import pano_scrobbler.composeapp.generated.resources.sure_tap_again
 import kotlin.math.roundToInt
 import kotlin.time.Duration.Companion.seconds
@@ -312,11 +315,14 @@ fun SliderPref(
     text: String,
     value: Float,
     copyToSave: MainPrefs.(Int) -> MainPrefs,
+    default: Int,
     min: Int,
     max: Int,
     increments: Int,
     stringRepresentation: (Int) -> String,
     modifier: Modifier = Modifier,
+    threshold: Int? = null,
+    thresholdText: String? = null,
     enabled: Boolean = true,
 ) {
     val scope = rememberCoroutineScope()
@@ -387,6 +393,27 @@ fun SliderPref(
                 modifier = Modifier.padding(start = 16.dp)
             )
 
+            IconButton(
+                enabled = enabled && internalValue.roundToInt() != default,
+                onClick = {
+                    scope.launch { mainPrefs.updateData { it.copyToSave(default) } }
+                }
+            ) {
+                Icon(
+                    imageVector = Icons.ResetSettings,
+                    contentDescription = stringResource(Res.string.reset)
+                )
+            }
+        }
+
+        if (threshold != null && thresholdText != null && value <= threshold) {
+            Text(
+                text = thresholdText,
+                color = MaterialTheme.colorScheme.error,
+                style = MaterialTheme.typography.titleSmall,
+                modifier = Modifier
+                    .padding(top = 4.dp)
+            )
         }
     }
 }

@@ -55,7 +55,7 @@ class PendingScrobblesWorker(
     }
 
     private suspend fun submitScrobbles() {
-        val entries = dao.allScrobbles(HARD_LIMIT)
+        val entries = dao.allScrobblesForSubmission(HARD_LIMIT)
 
         for (chunk in entries.chunked(BATCH_SIZE)) {
             submitScrobbleBatch(chunk)
@@ -134,7 +134,7 @@ class PendingScrobblesWorker(
     }
 
     private suspend fun submitLoves() {
-        val entries = dao.allLoves(100)
+        val entries = dao.allLovesForSubmission(100)
         val total = entries.size
         for ((submitted, entry) in entries.withIndex()) {
             setProgress(

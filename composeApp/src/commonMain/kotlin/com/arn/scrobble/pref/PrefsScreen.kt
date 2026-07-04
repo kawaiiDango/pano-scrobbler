@@ -126,6 +126,7 @@ import pano_scrobbler.composeapp.generated.resources.pref_translate
 import pano_scrobbler.composeapp.generated.resources.pref_translate_credits
 import pano_scrobbler.composeapp.generated.resources.pref_tray_icon_theme
 import pano_scrobbler.composeapp.generated.resources.proxy
+import pano_scrobbler.composeapp.generated.resources.rate_limit_warn
 import pano_scrobbler.composeapp.generated.resources.regex_rules
 import pano_scrobbler.composeapp.generated.resources.scrobble_services
 import pano_scrobbler.composeapp.generated.resources.scrobbles
@@ -442,6 +443,7 @@ fun PrefsScreen(
                 copyToSave = { copy(minDurationSecs = it) },
                 min = MainPrefs.PREF_MIN_DURATON_SECS_MIN,
                 max = MainPrefs.PREF_MIN_DURATON_SECS_MAX,
+                default = MainPrefs.PREF_MIN_DURATON_SECS_DEFAULT,
                 increments = 5,
                 stringRepresentation = { Stuff.humanReadableDuration(it * 1000L) }
             )
@@ -460,6 +462,7 @@ fun PrefsScreen(
                 copyToSave = { copy(delayPercent = it) },
                 min = MainPrefs.PREF_DELAY_PER_MIN,
                 max = MainPrefs.PREF_DELAY_PER_MAX,
+                default = MainPrefs.PREF_DELAY_PER_DEFAULT,
                 increments = 1,
                 stringRepresentation = { "${it}%" }
             )
@@ -472,8 +475,11 @@ fun PrefsScreen(
                 copyToSave = { copy(delaySecs = it) },
                 min = MainPrefs.PREF_DELAY_SECS_MIN,
                 max = MainPrefs.PREF_DELAY_SECS_MAX,
+                default = MainPrefs.PREF_DELAY_SECS_DEFAULT,
                 increments = 5,
-                stringRepresentation = { Stuff.humanReadableDuration(it * 1000L) }
+                stringRepresentation = { Stuff.humanReadableDuration(it * 1000L) },
+                threshold = 59,
+                thresholdText = "⚠️ " + stringResource(Res.string.rate_limit_warn)
             )
         }
 

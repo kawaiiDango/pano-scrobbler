@@ -1,1 +1,42 @@
-<?xml version="1.0" encoding="UTF-8"?><resources tools:ignore="MissingTranslation" xmlns:tools="http://schemas.android.com/tools"/>
+<?xml version="1.0" encoding="UTF-8"?><resources tools:ignore="MissingTranslation" xmlns:tools="http://schemas.android.com/tools">
+    <string name="settings">להגדיר</string>
+    <string name="album_art">תמונת אלבום</string>
+    <string name="artists">אמנים</string>
+    <string name="albums">אלבומים</string>
+    <string name="tracks">שירים</string>
+    <string name="state_scrobbling">עכשיו מנגן…</string>
+    <string name="search">חפש</string>
+    <string comment="(%1 = App name) detected (shown in notification, when a new music player is detected)" formatted="true" name="new_player">%1$s זוהה</string>
+    <string comment="Its a noun" name="channel_err">שגיאות סקרובל</string>
+    <string name="new_app">אפליקציה חדשה</string>
+    <string comment="User's top artists, albums, tracks, line chart of daily scrobble counts and tag cloud" name="charts">מצעדים</string>
+    <string name="scrobbles">סקרובלים</string>
+    <string name="weekly">שבועי</string>
+    <string name="monthly">חודשי</string>
+    <string name="charts_overall">סך הכל</string>
+    <string name="charts_no_data">אין נתונים עבור תקופה זו</string>
+    <string comment="%1= the word weekly or monthly" formatted="true" name="s_top_scrobbles">הסקרובלים המובילים ב-%1$s</string>
+    <string name="appwidget_loading">טוען…</string>
+    <string name="show_persistent_noti">הצגת התראה קבועה</string>
+    <string name="scrobbler_off">הסקרובלר מושבת</string>
+    <string name="scrobbler_on">הסקרובלר פעיל</string>
+    <string name="pref_noti">התראות</string>
+    <plurals name="num_weeks">
+        <item quantity="one">שבוע %1$s</item>
+        <item quantity="two">%1$s שבועות</item>
+        <item quantity="many">%1$s שבועות</item>
+        <item quantity="other">%1$s שבועות</item>
+    </plurals>
+    <plurals name="num_months">
+        <item quantity="one">חודש %1$s</item>
+        <item quantity="two">%1$s חודשים</item>
+        <item quantity="many">%1$s חודשים</item>
+        <item quantity="other">%1$s חודשים</item>
+    </plurals>
+    <plurals name="num_years">
+        <item quantity="one">שנה %1$s</item>
+        <item quantity="two">%1$s שנים</item>
+        <item quantity="many">%1$s שנים</item>
+        <item quantity="other">%1$s שנים</item>
+    </plurals>
+</resources>

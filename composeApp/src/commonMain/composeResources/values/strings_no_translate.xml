@@ -42,6 +42,7 @@
 
     <!--  strings for unfinalized stuff  -->
 
+    <string name="rate_limit_warn">Submitting too many scrobbles in a day may cause the scrobbling service to reject them, increasing your backlog.</string>
     <string name="unsupported_api">This API may not be supported by the server. View on web.</string>
     <string name="exit_reasons">Exit reasons</string>
     <string name="scrobble_sources">Scrobble sources</string>

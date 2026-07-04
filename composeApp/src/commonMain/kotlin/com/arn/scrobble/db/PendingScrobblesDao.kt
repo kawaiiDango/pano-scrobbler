@@ -23,11 +23,11 @@ interface PendingScrobblesDao {
     @Query("SELECT * FROM $tableName ORDER BY timestamp DESC LIMIT :limit")
     fun allFlow(limit: Int): Flow<List<PendingScrobble>>
 
-    @Query("SELECT * FROM $tableName WHERE event = 'scrobble' ORDER BY timestamp DESC LIMIT :limit")
-    suspend fun allScrobbles(limit: Int): List<PendingScrobble>
+    @Query("SELECT * FROM $tableName WHERE event = 'scrobble' ORDER BY timestamp ASC LIMIT :limit")
+    suspend fun allScrobblesForSubmission(limit: Int): List<PendingScrobble>
 
-    @Query("SELECT * FROM $tableName WHERE event != 'scrobble' ORDER BY timestamp DESC LIMIT :limit")
-    suspend fun allLoves(limit: Int): List<PendingScrobble>
+    @Query("SELECT * FROM $tableName WHERE event != 'scrobble' ORDER BY timestamp ASC LIMIT :limit")
+    suspend fun allLovesForSubmission(limit: Int): List<PendingScrobble>
 
     @Query("SELECT count(1) FROM $tableName")
     suspend fun count(): Int

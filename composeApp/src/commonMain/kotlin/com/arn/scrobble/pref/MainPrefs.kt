@@ -337,11 +337,11 @@ data class MainPrefs(
         const val FILE_NAME = "main-prefs.json"
         const val PREF_DELAY_SECS_MIN = 30
         const val PREF_DELAY_SECS_MAX = 360
-        private const val PREF_DELAY_SECS_DEFAULT = 180
-        private const val PREF_DELAY_PER_DEFAULT = 50
+        const val PREF_DELAY_SECS_DEFAULT = 240
+        const val PREF_DELAY_PER_DEFAULT = 50
         const val PREF_DELAY_PER_MIN = 30
         const val PREF_DELAY_PER_MAX = 95
-        private const val PREF_MIN_DURATON_SECS_DEFAULT = 30
+        const val PREF_MIN_DURATON_SECS_DEFAULT = 30
         const val PREF_MIN_DURATON_SECS_MIN = 10
         const val PREF_MIN_DURATON_SECS_MAX = 60
 

@@ -17,13 +17,13 @@ jobs:
         include:
           - os: windows-2025-vs2026
             resources-dir: windows-x64
-            graalvm-url: https://github.com/graalvm/graalvm-ce-builds/releases/download/graal-25.1.3/graalvm-community-jdk-25i1-25.0.3_windows-x64_bin.zip
+          #            graalvm-url: https://github.com/graalvm/graalvm-ce-builds/releases/download/graal-25.1.3/graalvm-community-jdk-25i1-25.0.3_windows-x64_bin.zip
           - os: ubuntu-24.04
             resources-dir: linux-x64
-            graalvm-url: https://github.com/graalvm/graalvm-ce-builds/releases/download/graal-25.1.3/graalvm-community-jdk-25i1-25.0.3_linux-x64_bin.tar.gz
+          #            graalvm-url: https://github.com/graalvm/graalvm-ce-builds/releases/download/graal-25.1.3/graalvm-community-jdk-25i1-25.0.3_linux-x64_bin.tar.gz
           - os: ubuntu-24.04-arm
             resources-dir: linux-arm64
-            graalvm-url: https://github.com/graalvm/graalvm-ce-builds/releases/download/graal-25.1.3/graalvm-community-jdk-25i1-25.0.3_linux-aarch64_bin.tar.gz
+    #            graalvm-url: https://github.com/graalvm/graalvm-ce-builds/releases/download/graal-25.1.3/graalvm-community-jdk-25i1-25.0.3_linux-aarch64_bin.tar.gz
     steps:
       - name: Checkout repository
         uses: actions/checkout@v7
@@ -61,25 +61,25 @@ jobs:
           name: pano-scrobbler-android-universal
           path: dist/pano-scrobbler-android-universal*
 
-      #      - name: Install GraalVM CE
-      #        uses: graalvm/setup-graalvm@v1
-      #        with:
-      #          java-version: '25i1-25.0.3'
-      #          distribution: 'graalvm-community'
-      #          github-token: ${{ github.token }}
+      - name: Install GraalVM CE
+        uses: graalvm/setup-graalvm@v1
+        with:
+          java-version: '25.1'
+          distribution: 'graalvm-community'
+          github-token: ${{ github.token }}
 
-      - name: Install GraalVM CE manually
-        shell: bash
-        run: |
-          curl -fL -o graalvm-archive "${{ matrix.graalvm-url }}"
-          if [[ "${{ matrix.graalvm-url }}" == *.zip ]]; then
-            unzip -q graalvm-archive
-          else
-            tar -xzf graalvm-archive
-          fi
-          echo "JAVA_HOME=$PWD/graalvm-community-25.1.3+9.1" >> $GITHUB_ENV
-          echo "GRAALVM_HOME=$PWD/graalvm-community-25.1.3+9.1" >> $GITHUB_ENV
-          echo "$PWD/graalvm-community-25.1.3+9.1/bin" >> $GITHUB_PATH
+      #      - name: Install GraalVM CE manually
+      #        shell: bash
+      #        run: |
+      #          curl -fL -o graalvm-archive "${{ matrix.graalvm-url }}"
+      #          if [[ "${{ matrix.graalvm-url }}" == *.zip ]]; then
+      #            unzip -q graalvm-archive
+      #          else
+      #            tar -xzf graalvm-archive
+      #          fi
+      #          echo "JAVA_HOME=$PWD/graalvm-community-25.1.3+9.1" >> $GITHUB_ENV
+      #          echo "GRAALVM_HOME=$PWD/graalvm-community-25.1.3+9.1" >> $GITHUB_ENV
+      #          echo "$PWD/graalvm-community-25.1.3+9.1/bin" >> $GITHUB_PATH
 
       - name: Download native libraries
         shell: bash

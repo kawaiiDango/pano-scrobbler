@@ -393,9 +393,34 @@
     <string name="when_using" formatted="true" comment="%1$s is the web service or media player name">Kada se koristi %1$s</string>
     <string name="when_not_using" formatted="true" comment="%1$s is the web service or media player name">Kada se ne koristi %1$s</string>
     <string name="as_text" comment="Like copy as text, but in short">Kao tekst</string>
+    <string name="automation_cli">Argumentni naredbenog retka</string>
+    <string name="automation_cli_info">Pokrenite izvršnu datoteku pano-scrobbler s nekim od ovih argumenata naredbenog retka kada je već pokrenuta jedna instanca.</string>
     <string name="album_art_now_playing_desc">Zahtijeva prijavu na last.fm</string>
     <string name="spotify_consent">Dohvatiti slike izvođača sa Spotifya?</string>
+    <string name="search_in_media_player" comment="This launches and searches in the media player app directly instead of opening a browser">Pretraži izravno u medijskom reproduktoru</string>
+    <string name="forget_unchecked_apps" comment="Shown in the 'Scrobble From' apps list on desktop">Zaboravi neoznačene aplikacije</string>
     <string name="discord_app_name" comment="usually the media player app name, shown in discord rich presence">Naziv aplikacije</string>
+    <string name="convert_file" formatted="true" comment="%1$s is the file extension, used in the context of converting from one file format to another">Konvertiraj iz %1$s</string>
+    <string name="move_up" comment="Screen reader text for drag and drop reordering">Pomakni gore</string>
+    <string name="move_down" comment="Screen reader text for drag and drop reordering">Pomakni dolje</string>
+    <string name="at_least" formatted="true" comment="%1$s=some number">Barem %1$s</string>
+    <string name="code_will_be_sent" formatted="true" comment="%1$s is either Ko-Fi or BuyMeACoffee, %2$s is the donation amount">Kod će biti poslan na Vašu adresu e-pošte povezanu s Vašim računom za %1$s, ako ste donirali %2$s</string>
+    <string name="proxy" comment="network proxy">Proxy</string>
+    <string name="system" comment="system default settings">Sustav</string>
+    <string name="host" comment="proxy host">Poslužitelj</string>
+    <string name="port" comment="proxy port">Priključak</string>
+    <string name="scanning" comment="finds other instances of Pano Scrobbler import server on the local network">Skeniranje</string>
+    <string name="missing_local_network_permission">Ova značajka zahtijeva dozvolu za spajanje na lokalnu mrežu</string>
+    <string name="artist_splitting_exceptions" comment="exceptions for the use first artist feature">Iznimke razdvajanja izvođača</string>
+    <string name="add_exception" comment="as in adding an exception to a rule or setting">Dodaj iznimku</string>
+    <string name="upto_n" formatted="true">Do %1$d</string>
+    <string name="add_to_app_launcher">Dodaj prečac u pokretač aplikacija</string>
+    <string name="persistent_noti_fgs">Održavaj scrobbler živim u pozadini</string>
+    <string name="empty_apps_list">Aplikacije će se ovdje pojaviti nakon što pustite neku pjesmu u njima</string>
+    <string name="supports_ambient_apps" formatted="true" comment="%1 = comma-separated list of music recognition apps">Podržava i aplikacije za prepoznavanje glazbe, poput %1$s</string>
+    <string name="persistent_noti_desc" formatted="true" comment="%1 = some names of phone manufacturers">Potrebno kod OEM-ova koji agresivno zaustavljaju pozadinske procese, poput %1$s itd.</string>
+    <string name="cache" comment="as a noun">Predmemorija</string>
+    <string name="random_on_start" comment="currently used as a toggle in the themes screen to pick a random theme when the app starts">Nasumična pri pokretanju procesa</string>
     <string name="get_pro">Podrži ovu aplikaciju</string>
     <string name="one_time_purchase">Jednom</string>
     <string name="help">Pomoć</string>

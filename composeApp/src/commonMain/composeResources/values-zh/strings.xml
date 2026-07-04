@@ -373,7 +373,7 @@
     <string name="automation_cli_info">当一个实例正在运行时，用这些命令行参数运行 pano-scrobbler 可执行档。</string>
     <string name="album_art_now_playing_desc">需要 last.fm 登录</string>
     <string name="spotify_consent">从 Spotify 获取艺术家图像吗？</string>
-    <string name="show_track_url">曲目网址</string>
+    <string name="show_track_url" comment="Toggle to put the URL of the currently playing track, used for Discord Rich Presence">曲目网址</string>
     <string name="edit_extract_track_example" formatted="true" comment="%1$s is the regex pattern">例如：要从曲目字段中提取元数据，如果曲目包含"艺人 - 曲目"，请将曲目正则表达式设置为 %1$s</string>
     <string name="search_in_media_player" comment="This launches and searches in the media player app directly instead of opening a browser">直接在该媒体播放器中搜索</string>
     <string name="forget_unchecked_apps" comment="Shown in the 'Scrobble From' apps list on desktop">忘记检查过的应用</string>

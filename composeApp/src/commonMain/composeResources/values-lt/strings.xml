@@ -409,7 +409,7 @@
     <string name="automation_cli_info">Vykdykite pano-scrobbler vykdomąjį su vienu iš šių komandinės eilutės argumentų, kai procesas jau paleistas.</string>
     <string name="album_art_now_playing_desc">Reikia „last.fm“ prisijungimo</string>
     <string name="spotify_consent">Gauti atlikėjų vaizdus iš „Spotify“?</string>
-    <string name="show_track_url">Takelio URL</string>
+    <string name="show_track_url" comment="Toggle to put the URL of the currently playing track, used for Discord Rich Presence">Takelio URL</string>
     <string name="edit_extract_track_example" formatted="true" comment="%1$s is the regex pattern">pvz., kad ištrauktumėte metaduomenis iš takelio lauko, jei takelis turi „Atlikėją – takelį“, nustatykite takelio reguliarųjį reiškinį į %1$s.</string>
     <string name="search_in_media_player" comment="This launches and searches in the media player app directly instead of opening a browser">Ieškoti tiesiogiai medijos leistuvėje</string>
     <string name="forget_unchecked_apps" comment="Shown in the 'Scrobble From' apps list on desktop">Pamiršti nepatikrintas programas</string>

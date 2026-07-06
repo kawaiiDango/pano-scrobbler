@@ -18,6 +18,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.awt.SwingWindow
@@ -25,6 +26,7 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.painter.BitmapPainter
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.DpSize
+import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Tray
 import androidx.compose.ui.window.Window
@@ -732,30 +734,48 @@ private fun TrayWindow(
     menuItemTexts: List<String>,
     onDismiss: () -> Unit,
 ) {
+    // Screen (monitor) that the click happened on.
     val graphicsConfig = remember(location) {
-        // defaultScreenDevice changes on a multi-monitor setup, LocalDensity.current does not seem to update
-
-        // Get the screen device that contains the mouse pointer
         val genv = GraphicsEnvironment.getLocalGraphicsEnvironment()
         val screenDevice = genv.screenDevices.firstOrNull { device ->
             device.defaultConfiguration.bounds.contains(location)
         } ?: genv.defaultScreenDevice
-
         screenDevice.defaultConfiguration
     }
 
-    val xScaled = location.x / graphicsConfig.defaultTransform.scaleX.toFloat()
-    val yScaled = location.y / graphicsConfig.defaultTransform.scaleY.toFloat()
+    val relativeOffset = remember(location, graphicsConfig) {
+        val screenBounds = graphicsConfig.bounds
+        val insets = Toolkit.getDefaultToolkit().getScreenInsets(graphicsConfig)
+        val scaleX = graphicsConfig.defaultTransform.scaleX.toFloat()
+        val scaleY = graphicsConfig.defaultTransform.scaleY.toFloat()
 
-    var visible by remember { mutableStateOf(false) }
+        val usableXScaled = (screenBounds.x + insets.left) / scaleX
+        val usableYScaled = (screenBounds.y + insets.top) / scaleY
+        val xScaled = location.x / scaleX
+        val yScaled = location.y / scaleY
+
+        // in the same Dp-scaled units WindowPosition works in.
+        IntOffset((xScaled - usableXScaled).toInt(), (yScaled - usableYScaled).toInt())
+    }
+
+    // Anchor the window's top-left corner to the cursor
+    // Alignment seems to take care of screen insets internally
+    val cursorAlignment = remember(relativeOffset) {
+        Alignment { size, space, _ ->
+            IntOffset(
+                relativeOffset.x.coerceIn(0, (space.width - size.width).coerceAtLeast(0)),
+                relativeOffset.y.coerceIn(0, (space.height - size.height).coerceAtLeast(0)),
+            )
+        }
+    }
+
     val state = rememberWindowState(
-        position = WindowPosition.Absolute(0.dp, 0.dp),
+        position = WindowPosition(cursorAlignment),
         size = DpSize.Unspecified,
-        placement = WindowPlacement.Floating
+        placement = WindowPlacement.Floating,
     )
 
     SwingWindow(
-        visible = visible,
         onCloseRequest = onDismiss,
         decoration = WindowDecoration.Undecorated(),
         transparent = true,
@@ -763,52 +783,11 @@ private fun TrayWindow(
         alwaysOnTop = true,
         state = state,
         init = { window ->
-            // hide it from the taskbar
             window.type = Window.Type.UTILITY
+            // put it on the same monitor as the cursor
+            window.setLocation(graphicsConfig.bounds.x, graphicsConfig.bounds.y)
         }
     ) {
-        LaunchedEffect(Unit) {
-            val screenBounds = graphicsConfig.bounds
-            val screenInsets =
-                Toolkit.getDefaultToolkit().getScreenInsets(graphicsConfig)
-
-            // Calculate usable screen area (absolute coordinates)
-            val usableX = screenBounds.x + screenInsets.left
-            val usableY = screenBounds.y + screenInsets.top
-            val usableWidth =
-                screenBounds.width - screenInsets.left - screenInsets.right
-            val usableHeight =
-                screenBounds.height - screenInsets.top - screenInsets.bottom
-
-            // Wait until the window has been laid out (size is non-zero)
-            while (window.size.width == 0 || window.size.height == 0) {
-                delay(10.milliseconds)
-            }
-
-            val winSize = window.size
-            var newX = xScaled.toInt()
-            var newY = yScaled.toInt()
-
-            // Adjust X if out of bounds
-            if (newX + winSize.width > usableX + usableWidth) {
-                newX = usableX + usableWidth - winSize.width
-            }
-            if (newX < usableX) {
-                newX = usableX
-            }
-
-            // Adjust Y if out of bounds
-            if (newY + winSize.height > usableY + usableHeight) {
-                newY = usableY + usableHeight - winSize.height
-            }
-            if (newY < usableY) {
-                newY = usableY
-            }
-
-            state.position = WindowPosition.Absolute(newX.dp, newY.dp)
-            visible = true
-        }
-
         LifecycleResumeEffect(Unit) {
             onPauseOrDispose {
                 onDismiss()

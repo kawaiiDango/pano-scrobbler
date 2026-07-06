@@ -321,8 +321,6 @@ fun SliderPref(
     increments: Int,
     stringRepresentation: (Int) -> String,
     modifier: Modifier = Modifier,
-    threshold: Int? = null,
-    thresholdText: String? = null,
     enabled: Boolean = true,
 ) {
     val scope = rememberCoroutineScope()
@@ -404,16 +402,6 @@ fun SliderPref(
                     contentDescription = stringResource(Res.string.reset)
                 )
             }
-        }
-
-        if (threshold != null && thresholdText != null && value <= threshold) {
-            Text(
-                text = thresholdText,
-                color = MaterialTheme.colorScheme.error,
-                style = MaterialTheme.typography.titleSmall,
-                modifier = Modifier
-                    .padding(top = 4.dp)
-            )
         }
     }
 }

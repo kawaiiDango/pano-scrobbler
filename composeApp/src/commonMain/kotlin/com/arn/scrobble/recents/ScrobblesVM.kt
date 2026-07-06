@@ -87,6 +87,14 @@ class ScrobblesVM(
             emptyList<PendingScrobble>() to 0
         )
 
+    val pendingScrobbleLastErrored = PanoDb.db.getPendingScrobblesDao()
+        .lastErrored()
+        .stateIn(
+            viewModelScope,
+            SharingStarted.Lazily,
+            null
+        )
+
     private val editsAndDeletes = MutableStateFlow<Map<String, Track?>>(emptyMap())
     val deletedTracksCount = editsAndDeletes
         .map { it.count { (k, v) -> v == null } }
@@ -178,7 +186,7 @@ class ScrobblesVM(
                         }
                         .let {
                             if (track == null && !input.loadLoved) {
-                                it.insertSeparators { before, after ->
+                                it.insertSeparators<TrackWrapper.TrackItem, TrackWrapper> { before, after ->
                                     if (before?.track?.date == null ||
                                         after?.track?.date == null
                                     )

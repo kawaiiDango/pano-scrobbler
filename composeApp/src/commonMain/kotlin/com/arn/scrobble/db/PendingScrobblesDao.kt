@@ -29,6 +29,9 @@ interface PendingScrobblesDao {
     @Query("SELECT * FROM $tableName WHERE event != 'scrobble' ORDER BY timestamp ASC LIMIT :limit")
     suspend fun allLovesForSubmission(limit: Int): List<PendingScrobble>
 
+    @Query("SELECT * FROM $tableName WHERE lastFailedTimestamp IS NOT NULL ORDER BY lastFailedTimestamp DESC LIMIT 1")
+    fun lastErrored(): Flow<PendingScrobble?>
+
     @Query("SELECT count(1) FROM $tableName")
     suspend fun count(): Int
 

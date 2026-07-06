@@ -369,12 +369,11 @@ fun PrefsScreen(
                     }
                 )
                 Text(
-                    text = stringResource(Res.string.pref_enabled_apps_summary),
+                    text = "ⓘ " + stringResource(Res.string.pref_enabled_apps_summary),
                     style = MaterialTheme.typography.bodyMedium,
                     modifier = Modifier.padding(
-                        vertical = 16.dp,
                         horizontal = horizontalOverscanPadding()
-                    )
+                    ).padding(bottom = 16.dp)
                 )
             }
         }
@@ -469,18 +468,29 @@ fun PrefsScreen(
         }
 
         filteredItem(MainPrefs::delaySecsP.name, Res.string.pref_delay_mins) { title ->
-            SliderPref(
-                text = title,
-                value = delaySecs.toFloat(),
-                copyToSave = { copy(delaySecs = it) },
-                min = MainPrefs.PREF_DELAY_SECS_MIN,
-                max = MainPrefs.PREF_DELAY_SECS_MAX,
-                default = MainPrefs.PREF_DELAY_SECS_DEFAULT,
-                increments = 5,
-                stringRepresentation = { Stuff.humanReadableDuration(it * 1000L) },
-                threshold = 59,
-                thresholdText = "⚠️ " + stringResource(Res.string.rate_limit_warn)
-            )
+            Column(Modifier.fillMaxWidth()) {
+                SliderPref(
+                    text = title,
+                    value = delaySecs.toFloat(),
+                    copyToSave = { copy(delaySecs = it) },
+                    min = MainPrefs.PREF_DELAY_SECS_MIN,
+                    max = MainPrefs.PREF_DELAY_SECS_MAX,
+                    default = MainPrefs.PREF_DELAY_SECS_DEFAULT,
+                    increments = 5,
+                    stringRepresentation = { Stuff.humanReadableDuration(it * 1000L) },
+                )
+
+                if (delaySecs <= 59) {
+                    Text(
+                        text = "ⓘ " + stringResource(Res.string.rate_limit_warn),
+                        color = MaterialTheme.colorScheme.error,
+                        style = MaterialTheme.typography.titleSmall,
+                        modifier = Modifier.padding(
+                            horizontal = horizontalOverscanPadding()
+                        ).padding(bottom = 16.dp)
+                    )
+                }
+            }
         }
 
         filteredHeader("personalization", Res.string.pref_personalization, Icons.Person)

@@ -24,6 +24,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.coerceAtLeast
 import androidx.compose.ui.unit.dp
@@ -85,6 +86,7 @@ import pano_scrobbler.composeapp.generated.resources.copy
 import pano_scrobbler.composeapp.generated.resources.delete
 import pano_scrobbler.composeapp.generated.resources.edit
 import pano_scrobbler.composeapp.generated.resources.hate
+import pano_scrobbler.composeapp.generated.resources.last_error
 import pano_scrobbler.composeapp.generated.resources.love
 import pano_scrobbler.composeapp.generated.resources.more
 import pano_scrobbler.composeapp.generated.resources.network_error
@@ -802,6 +804,7 @@ fun LazyListScope.pendingScrobblesListItems(
     headerText: String,
     headerIcon: ImageVector,
     items: List<PendingScrobble>,
+    lastErrored: PendingScrobble?,
     showScrobbleSources: Boolean,
     expanded: Boolean?, // null == not enough items to expand
     onToggle: (Boolean) -> Unit,
@@ -820,6 +823,22 @@ fun LazyListScope.pendingScrobblesListItems(
             onToggle = onToggle,
             modifier = Modifier.animateItem(),
         )
+    }
+
+    if (lastErrored != null && !lastErrored.lastFailedReason.isNullOrEmpty()) {
+        item(key = "pending_scrobble_last_errored") {
+            Text(
+                "ⓘ " + stringResource(Res.string.last_error) + ": " +
+                        lastErrored.lastFailedReason,
+                maxLines = 2,
+                overflow = TextOverflow.MiddleEllipsis,
+                style = MaterialTheme.typography.bodyMediumEmphasized,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp)
+                    .animateItem()
+            )
+        }
     }
 
     items(

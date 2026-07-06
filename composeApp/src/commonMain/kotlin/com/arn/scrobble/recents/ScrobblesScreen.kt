@@ -131,6 +131,10 @@ fun ScrobblesScreen(
     else
         remember { mutableStateOf(emptyList<PendingScrobble>() to 0) }
     val (pendingScrobbles, pendingScrobblesCount) = pendingScrobblesWithCount
+    val pendingScrobbleLastErrored by if (user.isSelf)
+        viewModel.pendingScrobbleLastErrored.collectAsStateWithLifecycle()
+    else
+        remember { mutableStateOf(null) }
     val total by viewModel.total.collectAsStateWithLifecycle()
     val pkgMap by viewModel.pkgMap.collectAsStateWithLifecycle()
     val scrobblerState by scrobblerStateFlow.collectAsStateWithLifecycle()
@@ -431,6 +435,7 @@ fun ScrobblesScreen(
                         headerText = pendingScrobblesHeader,
                         headerIcon = Icons.HourglassEmpty,
                         items = pendingScrobbles,
+                        lastErrored = pendingScrobbleLastErrored,
                         expanded = if (pendingScrobblesCount <= viewModel.pendingScrobblesPreviewCount)
                             null
                         else

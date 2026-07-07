@@ -106,6 +106,25 @@ object RegexPresets {
 
     }
 
+    private fun removeEdgeSymbol(input: String, symbol: String): String? {
+        val first = input.indexOf(symbol)
+        val last = input.lastIndexOf(symbol)
+
+        return when {
+            first == -1 || first != last -> null // none, or more than one
+
+            first == 0 && input.length > symbol.length &&
+                    input[symbol.length].isWhitespace() ->
+                input.removeRange(0, symbol.length)
+
+            first == input.length - symbol.length && first > 0 &&
+                    input[first - 1].isWhitespace() ->
+                input.removeRange(first, input.length)
+
+            else -> null
+        }
+    }
+
     private fun applyPreset(
         scrobbleData: ScrobbleData,
         normalizedUrlHost: String?,
@@ -303,6 +322,20 @@ object RegexPresets {
 
         if (regexEdits.isNotEmpty()) {
             newScrobbleData = performRegexReplace(scrobbleData, regexEdits).scrobbleData
+        }
+
+        if (regexPreset == RegexPreset.explicit) {
+            val sd = newScrobbleData ?: scrobbleData
+
+            val track = removeEdgeSymbol(sd.track, "🅴")
+            val album = sd.album?.let { removeEdgeSymbol(it, "🅴") }
+
+            if (track != null || album != null) {
+                newScrobbleData = sd.copy(
+                    track = track ?: sd.track,
+                    album = album ?: sd.album,
+                )
+            }
         }
 
         return newScrobbleData

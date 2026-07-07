@@ -20,7 +20,7 @@
     <string name="genius" translatable="false">Genius</string>
 
     <string name="preset_remastered" translatable="false">Remastered</string>
-    <string name="preset_explicit" translatable="false">Explicit / Clean</string>
+    <string name="preset_explicit" translatable="false">Explicit / Clean / 🅴</string>
     <string name="preset_album_version" translatable="false">Album version</string>
     <string name="preset_single_ep" translatable="false">Single / EP (Apple Music)</string>
     <string name="preset_album_artist_as_artist" translatable="false">Album artist as artist with fallback (Spotify)</string>

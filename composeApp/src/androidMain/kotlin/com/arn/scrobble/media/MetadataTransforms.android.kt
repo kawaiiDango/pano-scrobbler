@@ -47,11 +47,20 @@ actual fun transformMediaMetadata(
                 artist = artist.take(idx)
         }
 
-        Stuff.PACKAGE_SONOS,
-        Stuff.PACKAGE_SONOS2,
-            -> {
+        Stuff.PACKAGE_SONOS -> {
             metadata.getString(MediaMetadata.METADATA_KEY_COMPOSER)?.let {
                 artist = it
+                albumArtist = ""
+            }
+        }
+
+        Stuff.PACKAGE_SONOS2 -> {
+            // https://github.com/kawaiiDango/pano-scrobbler/issues/909
+
+            val parts = artist.split(" • ")
+            if (parts.size >= 2) {
+                artist = parts[0]
+                album = parts[1]
                 albumArtist = ""
             }
         }

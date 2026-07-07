@@ -57,6 +57,6 @@ Currently, the builds skip this step.
   have [Inno Setup](https://jrsoftware.org/isdl.php) installed in Program Files on Windows.
 
 - Run
-  `./gradlew composeApp:exportLibraryDefinitions composeApp:packageUberJarForCurrentOS -PaboutLibraries.exportVariant=desktop`
+  `./gradlew composeApp:exportLibraryDefinitions composeApp:packageUberJarForCurrentOS -PaboutLibraries.exportVariant=jvm`
 
 - **Info**: the desktop build includes no non-free dependencies.

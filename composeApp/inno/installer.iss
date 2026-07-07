@@ -73,7 +73,7 @@ Filename: "https://learn.microsoft.com/en-us/cpp/windows/latest-supported-vc-red
 
 [UninstallRun]
 ; Kill the main application during uninstallation
-Filename: "{app}\{#EXE_NAME}"; Parameters: "--quit"; Flags: skipifdoesntexist
+Filename: "{app}\{#EXE_NAME}"; Parameters: "--quit"; Flags: skipifdoesntexist; RunOnceId: "KillApp"
 
 [InstallDelete]
 ; leftover from nsis

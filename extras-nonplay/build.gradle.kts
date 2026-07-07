@@ -5,7 +5,7 @@ plugins {
 }
 
 kotlin {
-    jvm("desktop")
+    jvm()
 
     // Target declarations - add or remove as needed below. These define
     // which platforms this KMP module supports.
@@ -26,8 +26,6 @@ kotlin {
     // common to share sources between related targets.
     // See: https://kotlinlang.org/docs/multiplatform-hierarchy.html
     sourceSets {
-        val desktopMain by getting
-
         commonMain {
             dependencies {
                 implementation(libs.kotlin.stdlib)
@@ -43,7 +41,7 @@ kotlin {
             }
         }
 
-        desktopMain.dependencies {
+        jvmMain.dependencies {
         }
     }
 

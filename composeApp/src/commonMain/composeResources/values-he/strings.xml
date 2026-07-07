@@ -410,7 +410,7 @@
     <string name="automation_cli_info">הרצת קובץ ההפעלה של Pano Scrobbler עם אחד מהארגומנטים הללו של שורת הפקודה, בזמן שעותק של האפליקציה כבר פועל.</string>
     <string name="album_art_now_playing_desc">תכונה זו מחייבת התחברות ל-Last.fm</string>
     <string name="spotify_consent">האם למשוך תמונות אמנים מספוטיפיי?</string>
-    <string name="show_track_url">כתובת הרצועה (URL)</string>
+    <string name="show_track_url" comment="Toggle to put the URL of the currently playing track, used for Discord Rich Presence">כתובת הרצועה (URL)</string>
     <string name="edit_extract_track_example" formatted="true" comment="%1$s is the regex pattern">לדוגמה: כדי לחלץ מטא-דאטה משדה הרצועה, אם הרצועה מכילה את המבנה "אמן - רצועה", יש להגדיר את ה-regex של הרצועה כ-%1$s</string>
     <string name="search_in_media_player" comment="This launches and searches in the media player app directly instead of opening a browser">חיפוש ישיר בנגן המדיה</string>
     <string name="forget_unchecked_apps" comment="Shown in the 'Scrobble From' apps list on desktop">סרת אפליקציות שלא סומנו</string>

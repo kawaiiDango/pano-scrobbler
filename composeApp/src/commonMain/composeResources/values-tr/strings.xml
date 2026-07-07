@@ -385,7 +385,7 @@
     <string name="automation_cli_info">Bir örnek zaten çalışırken, pano-scrobbler yürütülebilir dosyasını bu komut satırı bağımsız değişkenlerinden biriyle çalıştırın.</string>
     <string name="album_art_now_playing_desc">Last.fm girişi gerekiyor</string>
     <string name="spotify_consent">Sanatçı görselleri Spotify'dan getirilsin mi?</string>
-    <string name="show_track_url">Parça Bağlantısı (URL)</string>
+    <string name="show_track_url" comment="Toggle to put the URL of the currently playing track, used for Discord Rich Presence">Parça Bağlantısı (URL)</string>
     <string name="edit_extract_track_example" formatted="true" comment="%1$s is the regex pattern">Örn. Parça alanı "Sanatçı - Parça" içeriyorsa meta verileri ayıklamak için parça regex'ini %1$s olarak ayarlayın.</string>
     <string name="search_in_media_player" comment="This launches and searches in the media player app directly instead of opening a browser">Doğrudan medya oynatıcıda ara</string>
     <string name="forget_unchecked_apps" comment="Shown in the 'Scrobble From' apps list on desktop">Seçili olmayan uygulamaları unut</string>

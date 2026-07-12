@@ -394,6 +394,7 @@
     <string name="move_up" comment="Screen reader text for drag and drop reordering">Remonter</string>
     <string name="move_down" comment="Screen reader text for drag and drop reordering">Descendre</string>
     <string name="at_least" formatted="true" comment="%1$s=some number">au moins %1$s</string>
+    <string name="code_will_be_sent" formatted="true" comment="%1$s is either Ko-Fi or BuyMeACoffee, %2$s is the donation amount">Le code sera envoyé à l'adresse e-mail associée à votre compte %1$s, si vous avez fait un don de %2$s</string>
     <string name="proxy" comment="network proxy">Proxy</string>
     <string name="system" comment="system default settings">Paramètres</string>
     <string name="host" comment="proxy host">Hôte</string>
@@ -407,6 +408,8 @@
     <string name="supports_ambient_apps" formatted="true" comment="%1 = comma-separated list of music recognition apps">Prend également en charge les applications de reconnaissance musicale telles que %1$s</string>
     <string name="persistent_noti_desc" formatted="true" comment="%1 = some names of phone manufacturers">Requis sur les appareils dont les fabricants ferment de manière agressive les applications en arrière-plan, comme %1$s, etc</string>
     <string name="cache" comment="as a noun">Cache</string>
+    <string name="edit_continue_simple" comment="a toggle in the normal edits screen">Si trouvé, poursuivre la modification à l'aide des règles d'expressions régulières &amp; des préréglages</string>
+    <string name="edit_continue_regex" comment="a toggle in the regex edits screen">Si trouvé, poursuivre la modification à l'aide d'autres règles d'expressions régulières &amp; des préréglages</string>
     <string name="get_pro">Soutenir cette application</string>
     <string name="one_time_purchase">Achat unique</string>
     <string name="help">Aide</string>

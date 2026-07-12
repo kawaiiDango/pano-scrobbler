@@ -44,6 +44,10 @@
         <item quantity="one">%1$d corrispondenza</item>
         <item quantity="other">%1$d corrispondenze</item>
     </plurals>
+    <plurals name="num_hours">
+        <item quantity="one">%1$d ora</item>
+        <item quantity="other">%1$d ore</item>
+    </plurals>
     <string name="yes">Sì</string>
     <string name="no">No</string>
     <string name="reset">Ripristina</string>
@@ -125,6 +129,7 @@
     <string name="unlove" comment="Undo a love/like and make it neutral. This is not the same as Dislike">Rimuovi preferito</string>
     <string name="pending_scrobbles">Scrobbling in attesa</string>
     <string name="following" comment="accounts you are following on lastfm">Seguiti</string>
+    <string name="since_time" formatted="true" comment="%1= date of joining lastfm">Da %1$s</string>
     <string name="grant_notification_access">Consenti accesso alle notifiche</string>
     <string name="grant_notification_access_desc">Necessario per individuare i metadati della musica. Non sarà letta alcuna notifica non-musicale</string>
     <string name="send_notifications">Consenti le notifiche</string>
@@ -268,6 +273,7 @@
     <string name="server_url" comment="For self hosted scrobbling services">URL del server</string>
     <string name="listenbrainz_info" formatted="true" comment="%1 = the link to page containing the token">Puoi trovare il tuo token di autenticazione su: %1$s</string>
     <string name="pref_now_playing">Invia scrobbling in corso</string>
+    <string name="pref_fetch_missing_album" formatted="true" comment="%1= the name of a service like last.fm, Deezer etc">Recupera l'album mancante da %1$s</string>
     <string name="pref_locale">Lingua</string>
     <string name="pref_crashlytics_enabled">Invia errori automaticamente</string>
     <string name="pref_misc">Varie</string>
@@ -314,6 +320,7 @@
     <string name="import_settings">Importa le configurazioni</string>
     <string name="copied">Copiato!</string>
     <string name="lastfm_reauth">Devi accedere di nuovo per modificare o eliminare gli scrobbling</string>
+    <string name="like_instance" comment="%1= the scrobbling service name, such as last.fm, ListenBrainz">Istanza simile a %1$s</string>
     <string name="failed_encode_url">Codificazione dell'URL fallita</string>
     <string name="check_nls" formatted="true" comment="%1= the name Pano Scrobbler. Asks the user to check the app in notification access settings">Seleziona %1$s</string>
     <string name="no_browser">Nessun browser installato</string>
@@ -364,6 +371,17 @@
     <string name="also_available_on" formatted="true" comment="%1$s is the platform name, like Android, PC">Scarica quest'app su %1$s</string>
     <string name="first_artist">Usa solo il primo artista</string>
     <string name="external_metadata">Fonti esterni di metadata</string>
+    <string name="line_n" formatted="true" comment="%1$s is the line number, currently used in the context of Discord Rich Presence">Riga %1$s</string>
+    <string name="album_art_now_playing">Se necessario, recuperare la copertina dell'album dalla sezione "In riproduzione"</string>
+    <string name="is_turned_off" formatted="true" comment="%1$s= the name of a web service, e.g. Spotify, %2$s=the section name in settings screen where this setting can be found">%1$s è disattivato in %2$s</string>
+    <string name="discord_compact_view_line">Mostra come "in riproduzione":</string>
+    <string name="available_placeholders" formatted="true" comment="%1 = placeholder strings, e.g. $artist, $title etc.">Segnaposto disponibili: %1$s</string>
+    <string name="show_paused_for">Mostra il media in pausa per</string>
+    <string name="when_using" formatted="true" comment="%1$s is the web service or media player name">Quando si utilizza %1$s</string>
+    <string name="when_not_using" formatted="true" comment="%1$s is the web service or media player name">Quando non si utilizza %1$s</string>
+    <string name="as_text" comment="Like copy as text, but in short">Come testo</string>
+    <string name="automation_cli">Argomenti della riga di comando</string>
+    <string name="spotify_consent">Recuperare le immagini degli artisti da Spotify?</string>
     <string name="get_pro">Sostieni questa app</string>
     <string name="one_time_purchase">Solo una volta</string>
     <string name="help">Aiuto</string>
@@ -378,7 +396,8 @@ I tuoi acquisti sono gestiti da Google Play. Sono collegati all’account Google
 • Disinstalla questa app.
 • Apri il sito di Google Play dal tuo computer.
 • Accedi con l’account che ha effettuato l’acquisto.
-• Installa questa app direttamente dal sito di Google Play.</string>
+• Installa questa app direttamente dal sito di Google Play.
+</string>
     <string name="billing_block">Blocca artisti/brani e salta o silenzia automaticamente</string>
     <string name="billing_pin_friends" formatted="true" comment="%1= number of pins, always 10 or more">Fissa in primo piano e riordina gli amici (fino a %1$d)</string>
     <string name="billing_sharing">Rimuovi il nome dell’app nella condivisione</string>

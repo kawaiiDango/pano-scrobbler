@@ -4,6 +4,25 @@ import com.arn.scrobble.utils.Stuff
 
 actual typealias PlatformMediaMetadata = MetadataInfo
 
+// from web-scrobbler connectors.ts
+// grep -oP "\*://\*\.[a-zA-Z0-9\-\.]+/" connectors.ts | sort -u
+private val WILDCARD_DOMAINS = setOf(
+    "afrocharts.com", "anghami.com", "bagelradio.com", "bandcamp.com",
+    "basspistol.com", "bbc.co.uk", "blocsonic.com",
+    "burntable.com", "calm.com", "edbangerrecords.com", "epicmusictime.com",
+    "epidemicsound.com", "filmmusic.io", "fmspins.com", "freegalmusic.com",
+    "freemusicarchive.org", "frisky.fm", "fungjai.com", "getworkdonemusic.com",
+    "grrif.ch", "iheart.com", "imago.fm", "invidio.us", "iramanusantara.org",
+    "jazzandrain.com", "keakie.com", "kexp.org", "live365.com", "liveone.com",
+    "melodia.com.br", "mixcloud.com", "musicme.com", "musify.club",
+    "musiqueapproximative.net", "mystreamplayer.com", "naxosmusiclibrary.com",
+    "playirish.ie", "pretzel.rocks", "provoda.ch", "qobuz.com", "radio-mb.com",
+    "radiobob.de", "relaxingbeats.com", "simulatorradio.com", "stingray.com",
+    "subvert.fm", "supla.fi", "truckers.fm", "tunegenie.com",
+    "vagalume.com.br", "vk-save.com", "weibo.com",
+    "xray.fm"
+)
+
 actual fun transformMediaMetadata(
     trackInfo: PlayingTrackInfo,
     metadata: PlatformMediaMetadata,
@@ -15,6 +34,16 @@ actual fun transformMediaMetadata(
     val trackNumber = metadata.trackNumber
     // a -1 value on my windows implementation means, a timeline info event hasn't been received yet
     val durationMillis = metadata.duration
+    var normalizedUrlHost = metadata.normalizedUrlHost?.removePrefix("www.")
+
+    if (normalizedUrlHost != null) {
+        for (wildcardDomain in WILDCARD_DOMAINS) {
+            if (normalizedUrlHost?.endsWith(wildcardDomain) == true) {
+                normalizedUrlHost = wildcardDomain
+                break
+            }
+        }
+    }
 
     when (trackInfo.appId.lowercase()) {
         Stuff.PACKAGE_APPLE_MUSIC_WIN_EXE.lowercase(),
@@ -38,7 +67,7 @@ actual fun transformMediaMetadata(
         trackNumber = trackNumber,
         duration = durationMillis,
         artUrl = metadata.artUrl,
-        normalizedUrlHost = metadata.normalizedUrlHost,
+        normalizedUrlHost = normalizedUrlHost,
     )
 
     var ignoreScrobble = false

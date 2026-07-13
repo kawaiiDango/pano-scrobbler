@@ -2,10 +2,12 @@ package com.arn.scrobble.media
 
 import co.touchlab.kermit.Logger
 import com.arn.scrobble.PanoNativeComponents
+import com.arn.scrobble.api.steelseries.SteelSeriesReceiverServer
 import com.arn.scrobble.discordrpc.DiscordRpc
 import com.arn.scrobble.utils.DesktopStuff
 import com.arn.scrobble.utils.PanoNotifications
 import com.arn.scrobble.utils.PlatformStuff
+import com.arn.scrobble.utils.Stuff
 import com.arn.scrobble.utils.Stuff.stateInWithCache
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
@@ -27,6 +29,12 @@ class DesktopMediaListener(
 
     private val seenApps =
         PlatformStuff.mainPrefs.data.stateInWithCache(scope) { it.seenApps }
+
+    private val blockedHostnames =
+        PlatformStuff.mainPrefs.data.stateInWithCache(scope) { it.blockedHostnames }
+
+    private val seenHostnames =
+        PlatformStuff.mainPrefs.data.stateInWithCache(scope) { it.seenHostnames }
 
     fun start() {
         scope.launch {
@@ -80,23 +88,25 @@ class DesktopMediaListener(
         val shouldScrobbleSessions = sessions.filter { shouldScrobble(it.rawAppId) }
         val newSessions = shouldScrobbleSessions.filter { it.rawAppId !in sessionTrackers }
 
-//        val tokens = mutableSetOf<MediaSession.Token>()
         for (session in newSessions) {
-//            if (shouldScrobble(controller.packageName)) {
-//                tokens.add(controller.sessionToken) // Only add tokens that we don't already have.
-//                if (controller.sessionToken !in controllersMap) {
-
             val normalizedAppId = DesktopStuff.normalizeAppId(session.rawAppId)
             val playingTrackInfo = createTrackInfo(normalizedAppId, session.rawAppId)
 
-            sessionTrackers[playingTrackInfo.notiKey] = DesktopSessionTracker(playingTrackInfo)
+            sessionTrackers[playingTrackInfo.notiKey] =
+                DesktopSessionTracker(playingTrackInfo.notiKey, playingTrackInfo)
         }
-//            }
-        // Now remove old sessions that are no longer active.
-        removeSessions(
-            shouldScrobbleSessions.map { it.rawAppId }.toSet(),
-        )
 
+        // Now remove old sessions that are no longer active.
+        val shouldScrobbleSessionsAppIds = shouldScrobbleSessions.map { it.rawAppId }.toSet()
+
+        // stop server when tidal stops
+        if (!(Stuff.PACKAGE_TIDAL_WIN in shouldScrobbleSessionsAppIds ||
+                    Stuff.PACKAGE_TIDAL_WIN_EXE in shouldScrobbleSessionsAppIds ||
+                    Stuff.PACKAGE_TIDAL_WIN_STORE in shouldScrobbleSessionsAppIds)
+        )
+            SteelSeriesReceiverServer.stopServer()
+
+        removeSessions(shouldScrobbleSessionsAppIds)
     }
 
     override fun isMediaPlaying() =
@@ -139,10 +149,14 @@ class DesktopMediaListener(
 
         val sessionTracker = sessionTrackers[uniqueAppId] ?: return
 
-        val (metadata, ignoreScrobble) = transformMediaMetadata(
+        var (metadata, ignoreScrobble) = transformMediaMetadata(
             sessionTracker.trackInfo,
             metadata
         )
+
+        if (!metadata.normalizedUrlHost.isNullOrEmpty() && metadata.normalizedUrlHost in blockedHostnames.value) {
+            ignoreScrobble = true
+        }
 
         sessionTracker.metadataChanged(metadata, ignoreScrobble)
     }
@@ -166,8 +180,9 @@ class DesktopMediaListener(
     }
 
     inner class DesktopSessionTracker(
+        key: MediaTrackerKey,
         trackInfo: PlayingTrackInfo,
-    ) : SessionTracker(trackInfo) {
+    ) : SessionTracker(key, trackInfo) {
         override fun love() {
         }
 
@@ -181,6 +196,16 @@ class DesktopMediaListener(
         override fun stop() {
             pause()
             DiscordRpc.clearDiscordActivity(trackInfo.appId)
+        }
+
+        override fun onBeforeScrobble() {
+            val normalizedUrlHost = trackInfo.normalizedUrlHost
+
+            if (!normalizedUrlHost.isNullOrEmpty() && normalizedUrlHost !in seenHostnames.value) {
+                scope.launch {
+                    PlatformStuff.mainPrefs.updateData { it.copy(seenHostnames = it.seenHostnames + normalizedUrlHost) }
+                }
+            }
         }
     }
 }

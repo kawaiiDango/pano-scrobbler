@@ -1,0 +1,10 @@
+- Per-website toggles in settings > choose apps. They accumulate from all enabled apps on Linux
+- Fixed parsing Tidal's SteelSeries data to get the album name
+- Added HTTP proxy support
+- The "explicit" regex preset now also removes 🅴
+- Shows the last pending scrobble error message in the UI
+- Added a reset button next to all time sliders, to reset them to the recommended values
+- Shows a warning if the scrobble delay is too low
+- Added a parsing rule for changes in newer versions of Sonos 2
+- Bug fixes
+- Translation updates by the translators on Crowdin

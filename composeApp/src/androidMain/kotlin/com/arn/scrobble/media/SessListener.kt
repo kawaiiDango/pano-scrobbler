@@ -193,9 +193,9 @@ class SessListener(
         ) && !metadata?.getString(MediaMetadata.METADATA_KEY_TITLE).isNullOrEmpty()
 
     inner class AndroidSessionTracker(
-        val controller: MediaController,
+        private val controller: MediaController,
         trackInfo: PlayingTrackInfo,
-    ) : SessionTracker(trackInfo) {
+    ) : SessionTracker(controller.sessionToken, trackInfo) {
 
         override fun skip() {
             controller.transportControls.skipToNext()
@@ -216,6 +216,17 @@ class SessListener(
         override fun stop() {
             pause()
             controller.unregisterCallback(callback)
+        }
+
+        override fun onBeforeScrobble() {
+            if (trackInfo.appId !in allowedPackages.value) {
+                scope.launch {
+                    PanoNotifications.notifyAppDetected(
+                        trackInfo.appId,
+                        PlatformStuff.loadApplicationLabel(trackInfo.appId)
+                    )
+                }
+            }
         }
 
         val callback = object : MediaController.Callback() {

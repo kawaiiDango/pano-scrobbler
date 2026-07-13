@@ -34,7 +34,6 @@ import androidx.compose.foundation.shape.ZeroCornerSize
 import androidx.compose.material3.ButtonGroupDefaults
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -827,7 +826,7 @@ fun GoToDetailsHeaderItem(
 ) {
     Surface(
         shape = MaterialTheme.shapes.medium,
-        shadowElevation = 4.dp,
+        tonalElevation = 4.dp,
         modifier = modifier
             .fillMaxWidth()
             .clip(MaterialTheme.shapes.medium)
@@ -1019,7 +1018,6 @@ fun LazyListScope.expandableSublist(
     stickyHeader(key = headerText) {
         Surface(
             shape = MaterialTheme.shapes.large,
-            shadowElevation = 4.dp,
             tonalElevation = 4.dp,
         ) {
             ExpandableHeaderItem(
@@ -1159,7 +1157,6 @@ fun EntriesRow(
     }
 }
 
-@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun GridOrListSelector(
     gridMode: GridMode,

@@ -26,6 +26,7 @@ import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -42,6 +43,7 @@ import com.arn.scrobble.icons.Icons
 import com.arn.scrobble.icons.Info
 import com.arn.scrobble.icons.OpenInBrowser
 import com.arn.scrobble.icons.PlayCircle
+import com.arn.scrobble.icons.Public
 import com.arn.scrobble.icons.Settings
 import com.arn.scrobble.navigation.PanoRoute
 import com.arn.scrobble.ui.AppIcon
@@ -66,11 +68,14 @@ import pano_scrobbler.composeapp.generated.resources.ambient_apps
 import pano_scrobbler.composeapp.generated.resources.artist_splitting_exceptions
 import pano_scrobbler.composeapp.generated.resources.empty_apps_list
 import pano_scrobbler.composeapp.generated.resources.first_artist
+import pano_scrobbler.composeapp.generated.resources.forget_checked_websites
 import pano_scrobbler.composeapp.generated.resources.forget_unchecked_apps
 import pano_scrobbler.composeapp.generated.resources.music_players
 import pano_scrobbler.composeapp.generated.resources.needs_plugin
 import pano_scrobbler.composeapp.generated.resources.other_apps
 import pano_scrobbler.composeapp.generated.resources.supports_ambient_apps
+import pano_scrobbler.composeapp.generated.resources.websites
+import pano_scrobbler.composeapp.generated.resources.websites_desc
 
 
 @Composable
@@ -92,8 +97,21 @@ fun AppListScreen(
         !it.appListWasRun && it.allowedPackages.isEmpty() && it.blockedPackages.isEmpty()
     }
     var pluginsNeededExpanded by rememberSaveable { mutableStateOf(false) }
+    var websitesExpanded by rememberSaveable { mutableStateOf(false) }
     var searchTerm by rememberSaveable { mutableStateOf("") }
     var useFirstArtistChecked by rememberSaveable { mutableStateOf(firstRun) }
+
+    val hostnamesFiltered by if (saveType == AppListSaveType.Scrobbling) {
+        viewModel.hostnamesFiltered.collectAsStateWithLifecycle()
+    } else {
+        remember { mutableStateOf(emptyList()) }
+    }
+
+    val blockedHostnames by if (saveType == AppListSaveType.Scrobbling) {
+        viewModel.blockedHostnames.collectAsStateWithLifecycle()
+    } else {
+        remember { mutableStateOf(emptySet()) }
+    }
 
     LaunchedEffect(searchTerm) {
         viewModel.setFilter(searchTerm)
@@ -110,6 +128,13 @@ fun AppListScreen(
                 val checkedAppIdsSet = checked.map { it.appId }.toSet()
                 val uncheckedAppIdsSet = unchecked.map { it.appId }.toSet()
 
+                val blockedHostNames = if (
+                    viewModel.pluginsNeeded.isEmpty() && PlatformStuff.isDesktop
+                )
+                    blockedHostnames
+                else
+                    null
+
                 when (saveType) {
                     AppListSaveType.Scrobbling -> {
                         Stuff.appScope.launch {
@@ -123,6 +148,7 @@ fun AppListScreen(
                                         checkedAppIdsSet - pref.getRegexPresetApps(RegexPreset.parse_title)
                                     else
                                         pref.extractFirstArtistPackages,
+                                    blockedHostnames = blockedHostNames ?: pref.blockedHostnames,
                                     appListWasRun = true,
                                 )
                             }
@@ -183,7 +209,7 @@ fun AppListScreen(
 
     Column(modifier = modifier) {
         if ((appList.musicPlayers.size + appList.otherApps.size) >
-            Stuff.MIN_ITEMS_TO_SHOW_SEARCH
+            Stuff.MIN_ITEMS_TO_SHOW_SEARCH || websitesExpanded
         ) {
             SearchField(
                 searchTerm = searchTerm,
@@ -226,9 +252,9 @@ fun AppListScreen(
                         showAppId = showAppId,
                         onToggle = { selected ->
                             if (isSingleSelect) {
-                                viewModel.setSingleSelection(appItem.appId)
+                                viewModel.setSingleSelectionAppId(appItem.appId)
                             } else {
-                                viewModel.setMultiSelection(appItem.appId, selected)
+                                viewModel.setMultiSelectionAppId(appItem.appId, selected)
                             }
                         },
                         modifier = Modifier.animateItem(),
@@ -287,7 +313,6 @@ fun AppListScreen(
                             stickyHeader("header_primary") {
                                 Surface(
                                     tonalElevation = 4.dp,
-                                    shadowElevation = 4.dp,
                                     shape = MaterialTheme.shapes.large,
                                     modifier = modifier
                                         .fillMaxWidth()
@@ -356,7 +381,7 @@ fun AppListScreen(
                 }
 
                 if (saveType == AppListSaveType.Scrobbling && PlatformStuff.isDesktop) {
-                    if (viewModel.pluginsNeeded.isNotEmpty()) {
+                    if (viewModel.pluginsNeeded.isNotEmpty()) { // windows
                         item("header_plugins_needed") {
                             ExpandableHeaderItem(
                                 title = stringResource(Res.string.needs_plugin),
@@ -419,6 +444,92 @@ fun AppListScreen(
                                 Text(
                                     stringResource(Res.string.forget_unchecked_apps)
                                 )
+                            }
+                        }
+                    }
+
+                    if (hostnamesFiltered.isNotEmpty()) { // linux
+                        item("header_websites") {
+                            ExpandableHeaderItem(
+                                title = stringResource(Res.string.websites),
+                                icon = Icons.Public,
+                                expanded = websitesExpanded,
+                                onToggle = { websitesExpanded = it },
+                            )
+                        }
+
+                        if (websitesExpanded) {
+                            item("notice_websites") {
+                                Row(
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(
+                                            horizontal = horizontalOverscanPadding(),
+                                            vertical = 8.dp
+                                        )
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.Info,
+                                        contentDescription = null,
+                                        modifier = Modifier.padding(end = 16.dp)
+                                    )
+                                    Text(
+                                        style = MaterialTheme.typography.labelMedium,
+                                        text = stringResource(
+                                            Res.string.websites_desc,
+                                        ),
+                                    )
+                                }
+                            }
+
+                            items(
+                                items = hostnamesFiltered,
+                                key = { "hostname_$it" }
+                            ) { hostname ->
+                                val appItem = AppItem(
+                                    appId = hostname,
+                                    label = hostname,
+                                )
+
+                                AppListItem(
+                                    appItem = appItem,
+                                    isSelected = hostname !in blockedHostnames,
+                                    isSingleSelect = isSingleSelect,
+                                    showAppId = false,
+                                    onToggle = { selected ->
+                                        if (isSingleSelect) {
+                                            viewModel.setSingleSelectionHostname(hostname)
+                                        } else {
+                                            viewModel.setMultiSelectionHostname(
+                                                hostname,
+                                                selected
+                                            )
+                                        }
+                                    },
+                                    modifier = Modifier.animateItem(),
+                                )
+                            }
+
+                            item("forget_checked_websites") {
+                                OutlinedButton(
+                                    onClick = {
+                                        viewModel.forgetCheckedHostnames()
+                                    },
+                                    modifier = Modifier
+                                        .align(Alignment.CenterHorizontally)
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.Delete,
+                                        contentDescription = null,
+                                    )
+
+                                    Spacer(Modifier.size(ButtonDefaults.IconSpacing))
+
+                                    Text(
+                                        stringResource(Res.string.forget_checked_websites)
+                                    )
+                                }
                             }
                         }
                     }

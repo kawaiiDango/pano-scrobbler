@@ -1,6 +1,7 @@
 package com.arn.scrobble.main
 
 import android.content.Context
+import android.content.res.Resources
 import android.graphics.Color
 import android.os.Build
 import android.os.Bundle
@@ -10,6 +11,7 @@ import androidx.activity.enableEdgeToEdge
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.core.view.WindowInsetsControllerCompat
+import com.arn.scrobble.R
 import com.arn.scrobble.navigation.LocalActivityRestoredFlag
 import com.arn.scrobble.themes.AppTheme
 import com.arn.scrobble.themes.LocalThemeAttributes
@@ -17,6 +19,8 @@ import com.arn.scrobble.utils.AndroidStuff.prolongSplashScreen
 import com.arn.scrobble.utils.applyAndroidLocaleLegacy
 
 class MainActivity : ComponentActivity() {
+    private val isTranslucentMarkerFile by lazy { noBackupFilesDir.resolve("is_translucent") }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -32,6 +36,7 @@ class MainActivity : ComponentActivity() {
                 onInitDone = { initDone = true }
             ) {
                 val isDarkTheme = LocalThemeAttributes.current.isDark
+                val isTranslucent = LocalThemeAttributes.current.isTranslucent
 
                 LaunchedEffect(isDarkTheme) {
                     WindowInsetsControllerCompat(window, window.decorView).apply {
@@ -54,6 +59,18 @@ class MainActivity : ComponentActivity() {
                     }
                 }
 
+                LaunchedEffect(isTranslucent) {
+                    val markerFileExists = isTranslucentMarkerFile.exists()
+
+                    if (isTranslucent && !markerFileExists) {
+                        isTranslucentMarkerFile.createNewFile()
+                        recreate()
+                    } else if (!isTranslucent && markerFileExists) {
+                        isTranslucentMarkerFile.delete()
+                        recreate()
+                    }
+                }
+
                 CompositionLocalProvider(LocalActivityRestoredFlag provides (savedInstanceState != null)) {
                     PanoAppContent()
                 }
@@ -63,5 +80,12 @@ class MainActivity : ComponentActivity() {
 
     override fun attachBaseContext(newBase: Context?) {
         super.attachBaseContext(newBase?.applyAndroidLocaleLegacy() ?: return)
+    }
+
+    override fun onApplyThemeResource(theme: Resources.Theme, resid: Int, first: Boolean) {
+        super.onApplyThemeResource(theme, resid, first)
+
+        if (isTranslucentMarkerFile.exists())
+            theme.applyStyle(R.style.Patch_Wallpaper, true)
     }
 }

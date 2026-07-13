@@ -15,6 +15,7 @@ import com.arn.scrobble.api.lastfm.PageEntries
 import com.arn.scrobble.api.lastfm.PageResult
 import com.arn.scrobble.api.spotify.SpotifyRequester
 import com.arn.scrobble.imageloader.PanoImageLoader
+import com.arn.scrobble.pref.MainPrefs
 import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff
 import com.arn.scrobble.utils.Stuff.stateInWithCache
@@ -43,6 +44,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.SerializationException
 import kotlinx.serialization.json.decodeFromStream
+import okhttp3.Credentials
 import java.io.File
 import java.net.Authenticator
 import java.net.InetSocketAddress
@@ -59,7 +61,9 @@ object Requesters {
 
     private val proxyAuthenticator = object : Authenticator() {
         override fun getPasswordAuthentication(): PasswordAuthentication? {
-            val p = proxy.value.takeIf { it.enabled && it.hasAuth } ?: return null
+            val p = proxy.value
+                .takeIf { it.type == MainPrefs.ProxySettings.Type.SOCKS5 && it.hasAuth }
+                ?: return null
 
             if (requestingProtocol.equals("SOCKS5", ignoreCase = true) &&
                 requestingPort == p.port &&
@@ -90,33 +94,54 @@ object Requesters {
 
     private fun createBaseKtorClient(trustAll: Boolean) = invalidatableLazy {
         HttpClient(OkHttp) {
+            val proxyVal = proxy.value
 
-            val proxySettings = proxy.value.takeIf { it.enabled }
-            val proxyJvm: Proxy?
-
-            if (proxySettings != null) {
-                proxyJvm = Proxy(
-                    Proxy.Type.SOCKS, InetSocketAddress.createUnresolved(
-                        proxySettings.host,
-                        proxySettings.port
-                    )
-                )
-
-                if (!proxyAuthenticatorSet) {
-                    proxyAuthenticatorSet = true
-                    Authenticator.setDefault(proxyAuthenticator)
+            val proxyJvm = when (proxyVal.type) {
+                MainPrefs.ProxySettings.Type.SYSTEM -> {
+                    PlatformStuff.getSystemSocksProxy()
                 }
-            } else {
-                // fix to tunnel dns through socks5 proxy if set at system level
-                proxyJvm = PlatformStuff.getSystemSocksProxy()
+
+                MainPrefs.ProxySettings.Type.HTTP -> {
+                    Proxy(
+                        Proxy.Type.HTTP, InetSocketAddress.createUnresolved(
+                            proxyVal.host,
+                            proxyVal.port
+                        )
+                    )
+                }
+
+                MainPrefs.ProxySettings.Type.SOCKS5 -> {
+                    if (!proxyAuthenticatorSet && proxyVal.hasAuth) {
+                        proxyAuthenticatorSet = true
+                        Authenticator.setDefault(proxyAuthenticator)
+                    }
+
+                    Proxy(
+                        Proxy.Type.SOCKS, InetSocketAddress.createUnresolved(
+                            proxyVal.host,
+                            proxyVal.port
+                        )
+                    )
+                }
             }
 
             engine {
                 dispatcher = Dispatchers.IO
                 proxy = proxyJvm
 
-                if (trustAll) {
-                    config {
+                config {
+                    if (proxyVal.type == MainPrefs.ProxySettings.Type.HTTP && proxyVal.hasAuth) {
+                        proxyAuthenticator { _, response ->
+                            val credential =
+                                Credentials.basic(proxyVal.user, proxyVal.pass)
+
+                            response.request.newBuilder()
+                                .header("Proxy-Authorization", credential)
+                                .build()
+                        }
+                    }
+
+                    if (trustAll) {
                         val localNetworkTlsTrustManager = object : X509TrustManager {
                             override fun checkClientTrusted(
                                 chain: Array<out X509Certificate>?,

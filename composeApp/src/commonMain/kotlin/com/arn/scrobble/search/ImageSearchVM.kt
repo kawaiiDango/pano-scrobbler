@@ -64,7 +64,6 @@ class ImageSearchVM : ViewModel() {
                                 term,
                                 SpotifySearchType.album,
                                 market = country,
-                                limit = LIMIT
                             )
 
                         Stuff.TYPE_ARTISTS ->
@@ -72,7 +71,6 @@ class ImageSearchVM : ViewModel() {
                                 term,
                                 SpotifySearchType.artist,
                                 market = country,
-                                limit = LIMIT
                             )
 
                         else -> throw IllegalArgumentException("Invalid search type: $searchType")
@@ -217,9 +215,5 @@ class ImageSearchVM : ViewModel() {
                 Stuff.globalExceptionFlow.emit(e)
             }
         }
-    }
-
-    companion object {
-        private const val LIMIT = 40
     }
 }

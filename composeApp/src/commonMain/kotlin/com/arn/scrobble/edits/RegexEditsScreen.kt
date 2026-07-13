@@ -13,7 +13,6 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -360,7 +359,6 @@ private fun PresetItem(
     }
 }
 
-@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 private fun RegexEditItem(
     regexEdit: RegexEdit,
@@ -537,8 +535,10 @@ private fun RegexEditItem(
 private fun getModifierIcons(regexEdit: RegexEdit): List<ImageVector> {
     val m = mutableListOf<ImageVector>()
 
-    m += if (regexEdit.continueMatching) Icons.KeyboardArrowDown
-    else Icons.Stop
+    m += if (regexEdit.continueMatching && regexEdit.blockPlayerAction == null)
+        Icons.KeyboardArrowDown
+    else
+        Icons.Stop
 
     if (!regexEdit.enabled) m += Icons.ToggleOff
 

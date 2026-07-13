@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.arn.scrobble.utils.PlatformStuff
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
@@ -37,9 +38,35 @@ class AppListVM(
         }
     val appListFiltered = _appListFiltered.stateIn(
         viewModelScope,
-        kotlinx.coroutines.flow.SharingStarted.Lazily,
+        SharingStarted.Lazily,
         AppList()
     )
+
+    private val _hostnames = MutableStateFlow(emptyList<String>())
+
+    val hostnamesFiltered = _searchTerm
+        .combine(_hostnames) { searchTerm, hostnames ->
+            searchTerm to hostnames
+        }.map { (searchTerm, hostnames) ->
+            if (searchTerm.isBlank()) {
+                hostnames
+            } else {
+                delay(500.milliseconds) // debounce
+                hostnames.filter {
+                    it.split('.').any { part ->
+                        part.startsWith(searchTerm, ignoreCase = true)
+                    }
+                }
+            }
+        }.stateIn(
+            viewModelScope,
+            SharingStarted.Lazily,
+            emptyList()
+        )
+
+    private val _blockedHostnames = MutableStateFlow(emptySet<String>())
+    val blockedHostnames = _blockedHostnames.asStateFlow()
+
     private val _selectedPackages = MutableStateFlow(preSelectedPackages)
     val selectedPackages = _selectedPackages.asStateFlow()
     private val _hasLoaded = MutableStateFlow(false)
@@ -50,20 +77,34 @@ class AppListVM(
             load(
                 packagesOverride = packageListOverride,
                 onSetAppList = { _appList.value = it },
+                onSetHostnames = { _hostnames.value = it },
+                onSetBlockedHostnames = { _blockedHostnames.value = it },
                 onSetHasLoaded = { _hasLoaded.value = true },
             )
         }
     }
 
-    fun setSingleSelection(pkg: String) {
+    fun setSingleSelectionAppId(pkg: String) {
         _selectedPackages.value = setOf(pkg)
     }
 
-    fun setMultiSelection(packageName: String, add: Boolean) {
+    fun setMultiSelectionAppId(packageName: String, add: Boolean) {
         _selectedPackages.value = if (add) {
             _selectedPackages.value + packageName
         } else {
             _selectedPackages.value - packageName
+        }
+    }
+
+    fun setSingleSelectionHostname(hostname: String) {
+        _blockedHostnames.value = setOf(hostname)
+    }
+
+    fun setMultiSelectionHostname(hostname: String, add: Boolean) {
+        _blockedHostnames.value = if (add) {
+            _blockedHostnames.value - hostname
+        } else {
+            _blockedHostnames.value + hostname
         }
     }
 
@@ -101,11 +142,32 @@ class AppListVM(
             )
         }
     }
+
+    fun forgetCheckedHostnames() {
+        viewModelScope.launch {
+            val newSeenHostnames = PlatformStuff.mainPrefs.data.map { it.seenHostnames }
+                .first()
+                .filter { it in _blockedHostnames.value }
+                .toSet()
+
+            _hostnames.value = newSeenHostnames.toList()
+            _blockedHostnames.value = newSeenHostnames
+
+            PlatformStuff.mainPrefs.updateData { prefs ->
+                prefs.copy(
+                    seenHostnames = newSeenHostnames,
+                    blockedHostnames = newSeenHostnames
+                )
+            }
+        }
+    }
 }
 
 expect suspend fun AppListVM.load(
     packagesOverride: Set<String>?,
     onSetAppList: (AppList) -> Unit,
+    onSetHostnames: (List<String>) -> Unit,
+    onSetBlockedHostnames: (Set<String>) -> Unit,
     onSetHasLoaded: () -> Unit,
 )
 

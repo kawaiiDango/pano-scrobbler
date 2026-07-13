@@ -80,7 +80,7 @@ class SpotifyRequester {
         query: String,
         type: SpotifySearchType,
         market: String = "US",
-        limit: Int
+        limit: Int = 10, // 10 is the max now
     ) =
         client.getResult<SpotifySearchResponse>("https://api.spotify.com/v1/search") {
             parameter("q", query)

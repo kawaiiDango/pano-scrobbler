@@ -178,8 +178,6 @@ object Stuff {
     const val ARTIST_NINTENDO_MUSIC = "Nintendo Co., Ltd."
 
     const val CHANNEL_NOTI_SCROBBLING = "noti_scrobbling"
-
-    //    const val CHANNEL_NOTI_SCR_ERR = "noti_scrobble_errors"
     const val CHANNEL_NOTI_NEW_APP = "noti_new_app"
     const val CHANNEL_NOTI_DIGEST_WEEKLY = "noti_digest_weekly"
     const val CHANNEL_NOTI_DIGEST_MONTHLY = "noti_digest_monthly"
@@ -245,11 +243,6 @@ object Stuff {
         "https://www.last.fm/settings/lostpassword",
         "https://libre.fm/register.php",
         "https://libre.fm/reset.php",
-    )
-
-    val mprisUrlSubdomains = setOf(
-        HOST_APPLE_MUSIC,
-        HOST_YOUTUBE_MUSIC,
     )
 
     var isRunningInTest = false

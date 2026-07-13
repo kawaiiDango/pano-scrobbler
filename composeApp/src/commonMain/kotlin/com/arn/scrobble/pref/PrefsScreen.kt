@@ -1,10 +1,11 @@
 package com.arn.scrobble.pref
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -284,690 +285,694 @@ fun PrefsScreen(
         mainViewModel.updateScrobblerServiceState(scrobblerEnabled)
     }
 
-    PanoLazyColumn(modifier = modifier) {
-        fun filteredItem(
-            key: String,
-            titleRes: StringResource,
-            formatRes: StringResource? = null,
-            content: @Composable (title: String) -> Unit
-        ) {
-            keysToTitleRes.computeIfAbsent(key) {
-                TitleStringResource(titleRes, formatRes)
-            }
-
-            if (key in filteredKeys || !searchActive) {
-                item(key) {
-                    val titleStr = if (formatRes == null)
-                        stringResource(titleRes)
-                    else
-                        stringResource(titleRes, stringResource(formatRes))
-
-                    content(titleStr)
-                }
-            }
-        }
-
-        fun filteredHeader(
-            keySuffix: String,
-            titleRes: StringResource,
-            imageVector: ImageVector,
-        ) {
-            val key = "header_$keySuffix"
-
-            keysToTitleRes.computeIfAbsent(key) {
-                TitleStringResource(titleRes, null)
-            }
-
-            if (key in filteredKeys || !searchActive) {
-                item(key) {
-                    SimpleHeaderItem(
-                        text = stringResource(titleRes),
-                        icon = imageVector,
-                    )
-                }
-            }
-        }
-
-        stickyHeader("search_field") {
-            Surface {
-                SearchField(
-                    searchTerm,
-                    onSearchTermChange = { searchTerm = it },
-                    modifier = Modifier.padding(horizontal = horizontalOverscanPadding())
-                )
-            }
-        }
-
-        filteredHeader("scrobbling", Res.string.scrobbles, Icons.MusicNote)
-
-        PlatformSpecificPrefs.prefScrobbler(
-            ::filteredItem,
-            scrobblerEnabled,
-            scrobblerState != ScrobblerState.NLSDisabled,
-            onNavigate
+    Column(
+        verticalArrangement = Arrangement.spacedBy(8.dp),
+        modifier = modifier
+    ) {
+        SearchField(
+            searchTerm,
+            onSearchTermChange = { searchTerm = it },
+            modifier = Modifier.padding(horizontal = horizontalOverscanPadding())
         )
 
-        PlatformSpecificPrefs.prefQuickSettings(::filteredItem, scrobblerEnabled)
+        PanoLazyColumn(modifier = Modifier.fillMaxSize()) {
+            fun filteredItem(
+                key: String,
+                titleRes: StringResource,
+                formatRes: StringResource? = null,
+                content: @Composable (title: String) -> Unit
+            ) {
+                keysToTitleRes.computeIfAbsent(key) {
+                    TitleStringResource(titleRes, formatRes)
+                }
 
-        PlatformSpecificPrefs.prefAutostart(::filteredItem)
+                if (key in filteredKeys || !searchActive) {
+                    item(key) {
+                        val titleStr = if (formatRes == null)
+                            stringResource(titleRes)
+                        else
+                            stringResource(titleRes, stringResource(formatRes))
 
-        PlatformSpecificPrefs.prefAddToAppLauncher(::filteredItem)
+                        content(titleStr)
+                    }
+                }
+            }
 
-        filteredItem(MainPrefs::allowedPackages.name, Res.string.pref_scrobble_from) { title ->
-            Column(Modifier.fillMaxWidth()) {
-                AppIconsPref(
-                    packageNames = allowedPackages,
-                    title = title,
-                    onClick = {
-                        onNavigate(
-                            PanoRoute.AppList(
-                                saveType = AppListSaveType.Scrobbling,
-                                preSelectedPackages = allowedPackages.toList(),
-                                isSingleSelect = false,
-                            )
+            fun filteredHeader(
+                keySuffix: String,
+                titleRes: StringResource,
+                imageVector: ImageVector,
+            ) {
+                val key = "header_$keySuffix"
+
+                keysToTitleRes.computeIfAbsent(key) {
+                    TitleStringResource(titleRes, null)
+                }
+
+                if (key in filteredKeys || !searchActive) {
+                    item(key) {
+                        SimpleHeaderItem(
+                            text = stringResource(titleRes),
+                            icon = imageVector,
                         )
                     }
-                )
-                Text(
-                    text = "ⓘ " + stringResource(Res.string.pref_enabled_apps_summary),
-                    style = MaterialTheme.typography.bodyMedium,
-                    modifier = Modifier.padding(
-                        horizontal = horizontalOverscanPadding()
-                    ).padding(bottom = 16.dp)
-                )
-            }
-        }
-
-        if (!PlatformStuff.isTv && !PlatformStuff.isDesktop) {
-            filteredItem(MainPrefs::autoDetectApps.name, Res.string.pref_auto_detect) { title ->
-                val notiEnabled =
-                    remember { PanoNotifications.isNotiChannelEnabled(Stuff.CHANNEL_NOTI_NEW_APP) }
-
-                SwitchPref(
-                    text = title,
-                    summary = if (!notiEnabled) stringResource(Res.string.notification_channel_blocked) else null,
-                    value = notiEnabled && autoDetectApps,
-                    enabled = notiEnabled,
-                    copyToSave = { copy(autoDetectApps = it) },
-                )
-            }
-        }
-
-        if (!PlatformStuff.isDesktop && !PlatformStuff.isTv) {
-            filteredItem(
-                MainPrefs::scrobbleSpotifyRemoteP.name,
-                Res.string.pref_spotify_remote
-            ) { title ->
-                SwitchPref(
-                    text = title,
-                    value = scrobbleSpotifyRemoteP,
-                    copyToSave = { copy(scrobbleSpotifyRemote = it) }
-                )
-            }
-        }
-
-        filteredItem(
-            MainPrefs::extractFirstArtistPackages.name,
-            Res.string.first_artist
-        ) { title ->
-            AppIconsPref(
-                packageNames = extractFirstArtistPackages,
-                title = title,
-                enabled = (allowedPackages.size + extractFirstArtistPackages.size) > 0,
-                onClick = {
-                    onNavigate(
-                        PanoRoute.AppList(
-                            saveType = AppListSaveType.ExtractFirstArtist,
-                            packagesOverride = (allowedPackages union extractFirstArtistPackages).toList(),
-                            preSelectedPackages = extractFirstArtistPackages.toList(),
-                            isSingleSelect = false,
-                        )
-                    )
                 }
+            }
+
+            filteredHeader("scrobbling", Res.string.scrobbles, Icons.MusicNote)
+
+            PlatformSpecificPrefs.prefScrobbler(
+                ::filteredItem,
+                scrobblerEnabled,
+                scrobblerState != ScrobblerState.NLSDisabled,
+                onNavigate
             )
-        }
 
-        filteredItem(MainPrefs::submitNowPlaying.name, Res.string.pref_now_playing) { title ->
-            SwitchPref(
-                text = title,
-                value = submitNowPlaying,
-                copyToSave = { copy(submitNowPlaying = it) }
-            )
-        }
+            PlatformSpecificPrefs.prefQuickSettings(::filteredItem, scrobblerEnabled)
 
-        filteredItem(MainPrefs::minDurationSecsP.name, Res.string.min_track_duration) { title ->
-            SliderPref(
-                text = title,
-                value = minDurationSecs.toFloat(),
-                copyToSave = { copy(minDurationSecs = it) },
-                min = MainPrefs.PREF_MIN_DURATON_SECS_MIN,
-                max = MainPrefs.PREF_MIN_DURATON_SECS_MAX,
-                default = MainPrefs.PREF_MIN_DURATON_SECS_DEFAULT,
-                increments = 5,
-                stringRepresentation = { Stuff.humanReadableDuration(it * 1000L) }
-            )
-        }
+            PlatformSpecificPrefs.prefAutostart(::filteredItem)
 
-        PlatformSpecificPrefs.discordRpc(::filteredItem, onNavigate)
+            PlatformSpecificPrefs.prefAddToAppLauncher(::filteredItem)
 
-        PlatformSpecificPrefs.prefPersistentNotification(::filteredItem, notiPersistent)
-
-        filteredHeader("delay", Res.string.pref_delay, Icons.HourglassEmpty)
-
-        filteredItem(MainPrefs::delayPercentP.name, Res.string.pref_delay_per) { title ->
-            SliderPref(
-                text = title,
-                value = delayPercent.toFloat(),
-                copyToSave = { copy(delayPercent = it) },
-                min = MainPrefs.PREF_DELAY_PER_MIN,
-                max = MainPrefs.PREF_DELAY_PER_MAX,
-                default = MainPrefs.PREF_DELAY_PER_DEFAULT,
-                increments = 1,
-                stringRepresentation = { "${it}%" }
-            )
-        }
-
-        filteredItem(MainPrefs::delaySecsP.name, Res.string.pref_delay_mins) { title ->
-            Column(Modifier.fillMaxWidth()) {
-                SliderPref(
-                    text = title,
-                    value = delaySecs.toFloat(),
-                    copyToSave = { copy(delaySecs = it) },
-                    min = MainPrefs.PREF_DELAY_SECS_MIN,
-                    max = MainPrefs.PREF_DELAY_SECS_MAX,
-                    default = MainPrefs.PREF_DELAY_SECS_DEFAULT,
-                    increments = 5,
-                    stringRepresentation = { Stuff.humanReadableDuration(it * 1000L) },
-                )
-
-                if (delaySecs <= 59) {
+            filteredItem(MainPrefs::allowedPackages.name, Res.string.pref_scrobble_from) { title ->
+                Column(Modifier.fillMaxWidth()) {
+                    AppIconsPref(
+                        packageNames = allowedPackages,
+                        title = title,
+                        onClick = {
+                            onNavigate(
+                                PanoRoute.AppList(
+                                    saveType = AppListSaveType.Scrobbling,
+                                    preSelectedPackages = allowedPackages.toList(),
+                                    isSingleSelect = false,
+                                )
+                            )
+                        }
+                    )
                     Text(
-                        text = "ⓘ " + stringResource(Res.string.rate_limit_warn),
-                        color = MaterialTheme.colorScheme.error,
-                        style = MaterialTheme.typography.titleSmall,
+                        text = "ⓘ " + stringResource(Res.string.pref_enabled_apps_summary),
+                        style = MaterialTheme.typography.bodyMedium,
                         modifier = Modifier.padding(
                             horizontal = horizontalOverscanPadding()
                         ).padding(bottom = 16.dp)
                     )
                 }
             }
-        }
 
-        filteredHeader("personalization", Res.string.pref_personalization, Icons.Person)
+            if (!PlatformStuff.isTv && !PlatformStuff.isDesktop) {
+                filteredItem(MainPrefs::autoDetectApps.name, Res.string.pref_auto_detect) { title ->
+                    val notiEnabled =
+                        remember { PanoNotifications.isNotiChannelEnabled(Stuff.CHANNEL_NOTI_NEW_APP) }
 
-        filteredItem(MainPrefs::themeName.name, Res.string.pref_themes) { title ->
-            TextPref(
-                text = title,
-                locked = !isLicenseValid,
-                onClick = {
-                    onNavigate(PanoRoute.ThemeChooser)
-                }
-            )
-        }
-
-        if (PlatformStuff.isDesktop) {
-            filteredItem(
-                MainPrefs::trayIconTheme.name,
-                Res.string.pref_tray_icon_theme
-            ) { title ->
-                DropdownPref(
-                    text = title,
-                    selectedValue = trayIconTheme,
-                    values = DayNightMode.entries,
-                    toLabel = {
-                        stringResource(
-                            when (it) {
-                                DayNightMode.SYSTEM -> Res.string.auto
-                                DayNightMode.LIGHT -> Res.string.light
-                                DayNightMode.DARK -> Res.string.dark
-                            }
-                        )
-                    },
-                    copyToSave = { copy(trayIconTheme = it) }
-                )
-            }
-        }
-
-        PlatformSpecificPrefs.prefChartsWidget(::filteredItem)
-
-        filteredItem(
-            MainPrefs::showScrobbleSources.name,
-            Res.string.pref_show_scrobble_sources
-        ) { title ->
-            SwitchPref(
-                text = title,
-                summary = stringResource(Res.string.pref_show_scrobble_sources_desc),
-                value = showScrobbleSources,
-                onNavigateToBilling = onNavigateToBilling.takeIf { !isLicenseValid },
-                copyToSave = { copy(showScrobbleSources = it) }
-            )
-        }
-
-        if (!PlatformStuff.isDesktop) {
-            filteredItem(
-                MainPrefs::searchInSource.name,
-                Res.string.pref_search_in_source
-            ) { title ->
-                SwitchPref(
-                    text = title,
-                    summary = stringResource(Res.string.pref_search_in_source_desc),
-                    value = searchInSource,
-                    onNavigateToBilling = onNavigateToBilling.takeIf { !isLicenseValid },
-                    enabled = showScrobbleSources,
-                    copyToSave = { copy(searchInSource = it) }
-                )
-            }
-        }
-
-        if (!PlatformStuff.isTv) {
-            filteredItem(
-                MainPrefs::searchUrlTemplate.name,
-                Res.string.pref_search_url_template
-            ) { title ->
-                TextPref(
-                    text = title,
-                    summary = searchUrlTemplate,
-                    onClick = {
-                        onNavigate(PanoRoute.Modal.MediaSearchPref)
-                    }
-                )
-            }
-        }
-
-        if (!PlatformStuff.isTv && !PlatformStuff.isDesktop) {
-            filteredItem(
-                MainPrefs::linkHeartButtonToRating.name,
-                Res.string.pref_link_heart_button_rating
-            ) { title ->
-                SwitchPref(
-                    text = title,
-                    summary = stringResource(Res.string.pref_search_in_source_desc),
-                    value = linkHeartButtonToRating,
-                    onNavigateToBilling = onNavigateToBilling.takeIf { !isLicenseValid },
-                    copyToSave = { copy(linkHeartButtonToRating = it) }
-                )
-            }
-        }
-
-        filteredItem(
-            MainPrefs::firstDayOfWeek.name,
-            Res.string.pref_first_day_of_week
-        ) { title ->
-            val autoString = stringResource(Res.string.auto)
-
-            val valuesToDays = remember {
-                val cal = Calendar.getInstance()
-
-                var autoDayName = ""
-
-                val days = cal.getDisplayNames(
-                    Calendar.DAY_OF_WEEK,
-                    Calendar.LONG,
-                    Locale.getDefault()
-                )!!
-                    .map { (k, v) ->
-                        if (v == cal.firstDayOfWeek)
-                            autoDayName = k
-                        v to k
-                    }
-                    .toMap()
-
-                (days + (-1 to "$autoString: $autoDayName")).toSortedMap()
-            }
-
-            DropdownPref(
-                text = title,
-                selectedValue = firstDayOfWeek,
-                values = valuesToDays.keys,
-                toLabel = { valuesToDays[it] ?: autoString },
-                copyToSave = { copy(firstDayOfWeek = it) }
-            )
-        }
-
-        PlatformSpecificPrefs.prefNotifications(::filteredItem)
-
-        filteredHeader("lists", Res.string.simple_edits, Icons.EditNote)
-
-        filteredItem("simple_edits", Res.string.simple_edits) { title ->
-            TextPref(
-                text = title + ": " + numSimpleEdits.format(),
-                onClick = {
-                    onNavigate(PanoRoute.SimpleEdits)
-                }
-            )
-        }
-
-        filteredItem("regex_edits", Res.string.regex_rules) { title ->
-            TextPref(
-                text = title + ": " + numRegexEdits.format(),
-                onClick = {
-                    onNavigate(PanoRoute.RegexEdits)
-                }
-            )
-        }
-
-        filteredItem("blocked_metadata", Res.string.pref_blocked_metadata) { title ->
-            TextPref(
-                text = title + ": " + numBlockedMetadata.format(),
-                onClick = {
-                    onNavigate(PanoRoute.BlockedMetadatas)
-                },
-                locked = !isLicenseValid,
-            )
-        }
-
-        filteredHeader("additional_metatadata", Res.string.external_metadata, Icons.Api)
-
-        filteredItem(MainPrefs::lastfmApiAlways.name, Res.string.lastfm) { title ->
-            SwitchPref(
-                text = title,
-                value = lastfmApiAlways,
-                summary = stringResource(
-                    Res.string.when_not_using,
-                    stringResource(Res.string.lastfm)
-                ),
-                copyToSave = { copy(lastfmApiAlways = it) }
-            )
-        }
-
-        filteredItem(
-            MainPrefs::fetchAlbum.name,
-            Res.string.pref_fetch_missing_album,
-            Res.string.cache
-        ) { title ->
-            SwitchPref(
-                text = stringResource(
-                    Res.string.pref_fetch_missing_album,
-                    stringResource(Res.string.cache) + " & " +
-                            stringResource(Res.string.lastfm)
-                ),
-                value = fetchAlbum,
-                copyToSave = { copy(fetchAlbum = it) }
-            )
-        }
-
-        filteredItem(MainPrefs::spotifyApi.name, Res.string.spotify) { title ->
-            SwitchPref(
-                text = title,
-                summary = stringResource(Res.string.search) + ": " +
-                        stringResource(Res.string.artist_image) + ", " +
-                        stringResource(Res.string.album_art),
-                value = useSpotify,
-                copyToSave = { copy(spotifyApi = it) }
-            )
-        }
-
-        filteredItem(
-            MainPrefs::spotifyCountryP.name,
-            Res.string.country_for_api,
-            Res.string.spotify
-        ) { title ->
-            val countryCodes = remember { Locale.getISOCountries().toList() }
-
-            DropdownPref(
-                text = title,
-                selectedValue = spotifyCountryP,
-                values = countryCodes,
-                toLabel = { it },
-                copyToSave = { copy(spotifyCountry = it) },
-                enabled = useSpotify
-            )
-        }
-
-        filteredItem(
-            MainPrefs::spotifyArtistSearchApproximate.name,
-            Res.string.pref_spotify_artist_search_approximate
-        ) { title ->
-            SwitchPref(
-                text = title,
-                value = spotifyArtistSearchApproximate,
-                copyToSave = { copy(spotifyArtistSearchApproximate = it) },
-                enabled = useSpotify
-            )
-        }
-
-        PlatformSpecificPrefs.deezerApi(::filteredItem, deezerApi)
-
-        PlatformSpecificPrefs.tidalSteelSeries(::filteredItem, tidalSteelSeries)
-
-        filteredHeader("languages", Res.string.pref_locale, Icons.Translate)
-
-        filteredItem(LocaleUtils::locale.name, Res.string.pref_locale) { title ->
-            val autoString = stringResource(Res.string.auto)
-
-            val localesMap = remember(locale) {
-                val autoEntry = mapOf("auto" to autoString)
-                LocaleUtils.localesMap.let {
-                    autoEntry + it
-                }
-            }
-
-            DropdownPref(
-                text = title,
-                selectedValue = locale ?: "auto",
-                values = localesMap.keys,
-                toLabel = { localesMap[it] ?: autoString },
-                copyToSave = {
-                    val l = it.takeIf { it != "auto" }
-                    LocaleUtils.setAppLocale(lang = l, maybeActivity)
-                    localeChanged = true
-                    this
-                }
-            )
-        }
-
-        filteredItem("translate", Res.string.pref_translate) { title ->
-            TextPref(
-                text = title,
-                onClick = {
-                    PlatformStuff.openInBrowser(Stuff.CROWDIN_URL)
-                }
-            )
-        }
-
-        filteredItem("translate_credits", Res.string.pref_translate_credits) { title ->
-            TextPref(
-                text = title,
-                onClick = {
-                    onNavigate(PanoRoute.Translators)
-                }
-            )
-        }
-
-        filteredHeader("imexport", Res.string.pref_imexport, Icons.SwapVert)
-
-        filteredItem("export", Res.string.pref_export) { title ->
-            TextPref(
-                text = title,
-                summary = stringResource(Res.string.pref_export_desc),
-                onClick = {
-                    onNavigate(PanoRoute.Export)
-                }
-            )
-        }
-
-        filteredItem("import", Res.string.pref_import) { title ->
-            TextPref(
-                text = title,
-                onClick = {
-                    onNavigate(PanoRoute.Import)
-                }
-            )
-        }
-
-        filteredHeader("services", Res.string.scrobble_services, Icons.Dns)
-
-        AccountType.entries
-            .filterNot {
-                PlatformStuff.isTv && it == AccountType.FILE
-            }
-            .forEach { accountType ->
-                val (strRes, formatRes) = accountTypeStringRes(accountType)
-                filteredItem(
-                    accountType.name,
-                    strRes,
-                    formatRes
-                ) { title ->
-                    AccountPref(
-                        accountTypeLabel(accountType),
-                        type = accountType,
-                        usernamesMap = scrobblableLabels,
-                        onNavigate = onNavigate
+                    SwitchPref(
+                        text = title,
+                        summary = if (!notiEnabled) stringResource(Res.string.notification_channel_blocked) else null,
+                        value = notiEnabled && autoDetectApps,
+                        enabled = notiEnabled,
+                        copyToSave = { copy(autoDetectApps = it) },
                     )
                 }
             }
 
-        filteredItem(key = "delete_account", Res.string.delete_account) { title ->
-            TextPref(
-                text = title,
-                onClick = {
-                    onNavigate(PanoRoute.DeleteAccount)
+            if (!PlatformStuff.isDesktop && !PlatformStuff.isTv) {
+                filteredItem(
+                    MainPrefs::scrobbleSpotifyRemoteP.name,
+                    Res.string.pref_spotify_remote
+                ) { title ->
+                    SwitchPref(
+                        text = title,
+                        value = scrobbleSpotifyRemoteP,
+                        copyToSave = { copy(scrobbleSpotifyRemote = it) }
+                    )
                 }
-            )
-        }
+            }
 
-        filteredHeader("misc", Res.string.pref_misc, Icons.MoreHoriz)
-
-        if (!PlatformStuff.isDesktop && !PlatformStuff.isTv) {
             filteredItem(
-                MainPrefs::preventDuplicateAmbientScrobbles.name,
-                Res.string.pref_prevent_duplicate_ambient_scrobbles
+                MainPrefs::extractFirstArtistPackages.name,
+                Res.string.first_artist
+            ) { title ->
+                AppIconsPref(
+                    packageNames = extractFirstArtistPackages,
+                    title = title,
+                    enabled = (allowedPackages.size + extractFirstArtistPackages.size) > 0,
+                    onClick = {
+                        onNavigate(
+                            PanoRoute.AppList(
+                                saveType = AppListSaveType.ExtractFirstArtist,
+                                packagesOverride = (allowedPackages union extractFirstArtistPackages).toList(),
+                                preSelectedPackages = extractFirstArtistPackages.toList(),
+                                isSingleSelect = false,
+                            )
+                        )
+                    }
+                )
+            }
+
+            filteredItem(MainPrefs::submitNowPlaying.name, Res.string.pref_now_playing) { title ->
+                SwitchPref(
+                    text = title,
+                    value = submitNowPlaying,
+                    copyToSave = { copy(submitNowPlaying = it) }
+                )
+            }
+
+            filteredItem(MainPrefs::minDurationSecsP.name, Res.string.min_track_duration) { title ->
+                SliderPref(
+                    text = title,
+                    value = minDurationSecs.toFloat(),
+                    copyToSave = { copy(minDurationSecs = it) },
+                    min = MainPrefs.PREF_MIN_DURATON_SECS_MIN,
+                    max = MainPrefs.PREF_MIN_DURATON_SECS_MAX,
+                    default = MainPrefs.PREF_MIN_DURATON_SECS_DEFAULT,
+                    increments = 5,
+                    stringRepresentation = { Stuff.humanReadableDuration(it * 1000L) }
+                )
+            }
+
+            PlatformSpecificPrefs.discordRpc(::filteredItem, onNavigate)
+
+            PlatformSpecificPrefs.prefPersistentNotification(::filteredItem, notiPersistent)
+
+            filteredHeader("delay", Res.string.pref_delay, Icons.HourglassEmpty)
+
+            filteredItem(MainPrefs::delayPercentP.name, Res.string.pref_delay_per) { title ->
+                SliderPref(
+                    text = title,
+                    value = delayPercent.toFloat(),
+                    copyToSave = { copy(delayPercent = it) },
+                    min = MainPrefs.PREF_DELAY_PER_MIN,
+                    max = MainPrefs.PREF_DELAY_PER_MAX,
+                    default = MainPrefs.PREF_DELAY_PER_DEFAULT,
+                    increments = 1,
+                    stringRepresentation = { "${it}%" }
+                )
+            }
+
+            filteredItem(MainPrefs::delaySecsP.name, Res.string.pref_delay_mins) { title ->
+                Column(Modifier.fillMaxWidth()) {
+                    SliderPref(
+                        text = title,
+                        value = delaySecs.toFloat(),
+                        copyToSave = { copy(delaySecs = it) },
+                        min = MainPrefs.PREF_DELAY_SECS_MIN,
+                        max = MainPrefs.PREF_DELAY_SECS_MAX,
+                        default = MainPrefs.PREF_DELAY_SECS_DEFAULT,
+                        increments = 5,
+                        stringRepresentation = { Stuff.humanReadableDuration(it * 1000L) },
+                    )
+
+                    if (delaySecs <= 59) {
+                        Text(
+                            text = "ⓘ " + stringResource(Res.string.rate_limit_warn),
+                            color = MaterialTheme.colorScheme.error,
+                            style = MaterialTheme.typography.titleSmall,
+                            modifier = Modifier.padding(
+                                horizontal = horizontalOverscanPadding()
+                            ).padding(bottom = 16.dp)
+                        )
+                    }
+                }
+            }
+
+            filteredHeader("personalization", Res.string.pref_personalization, Icons.Person)
+
+            filteredItem(MainPrefs::themeName.name, Res.string.pref_themes) { title ->
+                TextPref(
+                    text = title,
+                    locked = !isLicenseValid,
+                    onClick = {
+                        onNavigate(PanoRoute.ThemeChooser)
+                    }
+                )
+            }
+
+            if (PlatformStuff.isDesktop) {
+                filteredItem(
+                    MainPrefs::trayIconTheme.name,
+                    Res.string.pref_tray_icon_theme
+                ) { title ->
+                    DropdownPref(
+                        text = title,
+                        selectedValue = trayIconTheme,
+                        values = DayNightMode.entries,
+                        toLabel = {
+                            stringResource(
+                                when (it) {
+                                    DayNightMode.SYSTEM -> Res.string.auto
+                                    DayNightMode.LIGHT -> Res.string.light
+                                    DayNightMode.DARK -> Res.string.dark
+                                }
+                            )
+                        },
+                        copyToSave = { copy(trayIconTheme = it) }
+                    )
+                }
+            }
+
+            PlatformSpecificPrefs.prefChartsWidget(::filteredItem)
+
+            filteredItem(
+                MainPrefs::showScrobbleSources.name,
+                Res.string.pref_show_scrobble_sources
             ) { title ->
                 SwitchPref(
                     text = title,
-                    value = preventDuplicateAmbientScrobbles,
-                    copyToSave = { copy(preventDuplicateAmbientScrobbles = it) }
+                    summary = stringResource(Res.string.pref_show_scrobble_sources_desc),
+                    value = showScrobbleSources,
+                    onNavigateToBilling = onNavigateToBilling.takeIf { !isLicenseValid },
+                    copyToSave = { copy(showScrobbleSources = it) }
                 )
             }
-        }
 
-        filteredItem(MainPrefs::proxy.name, Res.string.proxy) { title ->
-            TextPref(
-                text = title,
-                summary = if (proxy.enabled)
-                    proxy.host + ":" + proxy.port
-                else
-                    stringResource(Res.string.system),
-                onClick = {
-                    onNavigate(PanoRoute.Modal.ProxyPref)
+            if (!PlatformStuff.isDesktop) {
+                filteredItem(
+                    MainPrefs::searchInSource.name,
+                    Res.string.pref_search_in_source
+                ) { title ->
+                    SwitchPref(
+                        text = title,
+                        summary = stringResource(Res.string.pref_search_in_source_desc),
+                        value = searchInSource,
+                        onNavigateToBilling = onNavigateToBilling.takeIf { !isLicenseValid },
+                        enabled = showScrobbleSources,
+                        copyToSave = { copy(searchInSource = it) }
+                    )
                 }
-            )
-        }
+            }
 
-        PlatformSpecificPrefs.updateCheck(::filteredItem, checkForUpdates, updateProgress)
+            if (!PlatformStuff.isTv) {
+                filteredItem(
+                    MainPrefs::searchUrlTemplate.name,
+                    Res.string.pref_search_url_template
+                ) { title ->
+                    TextPref(
+                        text = title,
+                        summary = searchUrlTemplate,
+                        onClick = {
+                            onNavigate(PanoRoute.Modal.MediaSearchPref)
+                        }
+                    )
+                }
+            }
 
-        if (!PlatformStuff.isTv) {
-            filteredItem("automation", Res.string.automation) { title ->
-                TextPref(
+            if (!PlatformStuff.isTv && !PlatformStuff.isDesktop) {
+                filteredItem(
+                    MainPrefs::linkHeartButtonToRating.name,
+                    Res.string.pref_link_heart_button_rating
+                ) { title ->
+                    SwitchPref(
+                        text = title,
+                        summary = stringResource(Res.string.pref_search_in_source_desc),
+                        value = linkHeartButtonToRating,
+                        onNavigateToBilling = onNavigateToBilling.takeIf { !isLicenseValid },
+                        copyToSave = { copy(linkHeartButtonToRating = it) }
+                    )
+                }
+            }
+
+            filteredItem(
+                MainPrefs::firstDayOfWeek.name,
+                Res.string.pref_first_day_of_week
+            ) { title ->
+                val autoString = stringResource(Res.string.auto)
+
+                val valuesToDays = remember {
+                    val cal = Calendar.getInstance()
+
+                    var autoDayName = ""
+
+                    val days = cal.getDisplayNames(
+                        Calendar.DAY_OF_WEEK,
+                        Calendar.LONG,
+                        Locale.getDefault()
+                    )!!
+                        .map { (k, v) ->
+                            if (v == cal.firstDayOfWeek)
+                                autoDayName = k
+                            v to k
+                        }
+                        .toMap()
+
+                    (days + (-1 to "$autoString: $autoDayName")).toSortedMap()
+                }
+
+                DropdownPref(
                     text = title,
+                    selectedValue = firstDayOfWeek,
+                    values = valuesToDays.keys,
+                    toLabel = { valuesToDays[it] ?: autoString },
+                    copyToSave = { copy(firstDayOfWeek = it) }
+                )
+            }
+
+            PlatformSpecificPrefs.prefNotifications(::filteredItem)
+
+            filteredHeader("lists", Res.string.simple_edits, Icons.EditNote)
+
+            filteredItem("simple_edits", Res.string.simple_edits) { title ->
+                TextPref(
+                    text = title + ": " + numSimpleEdits.format(),
                     onClick = {
-                        onNavigate(PanoRoute.AutomationInfo)
+                        onNavigate(PanoRoute.SimpleEdits)
+                    }
+                )
+            }
+
+            filteredItem("regex_edits", Res.string.regex_rules) { title ->
+                TextPref(
+                    text = title + ": " + numRegexEdits.format(),
+                    onClick = {
+                        onNavigate(PanoRoute.RegexEdits)
+                    }
+                )
+            }
+
+            filteredItem("blocked_metadata", Res.string.pref_blocked_metadata) { title ->
+                TextPref(
+                    text = title + ": " + numBlockedMetadata.format(),
+                    onClick = {
+                        onNavigate(PanoRoute.BlockedMetadatas)
                     },
                     locked = !isLicenseValid,
                 )
             }
-        }
 
-        if (CrashReporterConfig.isAvailable) {
+            filteredHeader("additional_metatadata", Res.string.external_metadata, Icons.Api)
+
+            filteredItem(MainPrefs::lastfmApiAlways.name, Res.string.lastfm) { title ->
+                SwitchPref(
+                    text = title,
+                    value = lastfmApiAlways,
+                    summary = stringResource(
+                        Res.string.when_not_using,
+                        stringResource(Res.string.lastfm)
+                    ),
+                    copyToSave = { copy(lastfmApiAlways = it) }
+                )
+            }
+
             filteredItem(
-                "crash_reporter",
-                Res.string.pref_crashlytics_enabled
+                MainPrefs::fetchAlbum.name,
+                Res.string.pref_fetch_missing_album,
+                Res.string.cache
+            ) { title ->
+                SwitchPref(
+                    text = stringResource(
+                        Res.string.pref_fetch_missing_album,
+                        stringResource(Res.string.cache) + " & " +
+                                stringResource(Res.string.lastfm)
+                    ),
+                    value = fetchAlbum,
+                    copyToSave = { copy(fetchAlbum = it) }
+                )
+            }
+
+            filteredItem(MainPrefs::spotifyApi.name, Res.string.spotify) { title ->
+                SwitchPref(
+                    text = title,
+                    summary = stringResource(Res.string.search) + ": " +
+                            stringResource(Res.string.artist_image) + ", " +
+                            stringResource(Res.string.album_art),
+                    value = useSpotify,
+                    copyToSave = { copy(spotifyApi = it) }
+                )
+            }
+
+            filteredItem(
+                MainPrefs::spotifyCountryP.name,
+                Res.string.country_for_api,
+                Res.string.spotify
+            ) { title ->
+                val countryCodes = remember { Locale.getISOCountries().toList() }
+
+                DropdownPref(
+                    text = title,
+                    selectedValue = spotifyCountryP,
+                    values = countryCodes,
+                    toLabel = { it },
+                    copyToSave = { copy(spotifyCountry = it) },
+                    enabled = useSpotify
+                )
+            }
+
+            filteredItem(
+                MainPrefs::spotifyArtistSearchApproximate.name,
+                Res.string.pref_spotify_artist_search_approximate
             ) { title ->
                 SwitchPref(
                     text = title,
-                    value = crashReporterEnabled,
+                    value = spotifyArtistSearchApproximate,
+                    copyToSave = { copy(spotifyArtistSearchApproximate = it) },
+                    enabled = useSpotify
+                )
+            }
+
+            PlatformSpecificPrefs.deezerApi(::filteredItem, deezerApi)
+
+            PlatformSpecificPrefs.tidalSteelSeries(::filteredItem, tidalSteelSeries)
+
+            filteredHeader("languages", Res.string.pref_locale, Icons.Translate)
+
+            filteredItem(LocaleUtils::locale.name, Res.string.pref_locale) { title ->
+                val autoString = stringResource(Res.string.auto)
+
+                val localesMap = remember(locale) {
+                    val autoEntry = mapOf("auto" to autoString)
+                    LocaleUtils.localesMap.let {
+                        autoEntry + it
+                    }
+                }
+
+                DropdownPref(
+                    text = title,
+                    selectedValue = locale ?: "auto",
+                    values = localesMap.keys,
+                    toLabel = { localesMap[it] ?: autoString },
                     copyToSave = {
-                        crashReporterEnabled = it
-                        CrashReporterConfig.isEnabled = it
+                        val l = it.takeIf { it != "auto" }
+                        LocaleUtils.setAppLocale(lang = l, maybeActivity)
+                        localeChanged = true
                         this
                     }
                 )
             }
-        }
 
-        filteredHeader("about", Res.string.pref_about, Icons.Info)
-
-        filteredItem(key = "oss_credits", Res.string.pref_oss_credits) { title ->
-            TextPref(
-                text = title,
-                onClick = {
-                    onNavigate(PanoRoute.OssCredits)
-                }
-            )
-        }
-
-        filteredItem(key = "privacy_policy", Res.string.pref_privacy_policy) { title ->
-            TextPref(
-                text = title,
-                onClick = {
-                    onNavigate(PanoRoute.PrivacyPolicy)
-                }
-            )
-        }
-
-        filteredItem(
-            key = "github_link",
-            Res.string.also_available_on,
-            if (PlatformStuff.isDesktop)
-                Res.string.android
-            else
-                Res.string.desktop
-        ) { title ->
-            TextPref(
-                text = title,
-                summary = Stuff.HOMEPAGE_URL + "\n" +
-                        ("v" + BuildKonfig.VER_NAME + if (BuildKonfig.DEBUG) " (Debug)" else ""),
-                onClick = {
-                    onNavigate(PanoRoute.Modal.ShowLink(Stuff.HOMEPAGE_URL))
-                }
-            )
-        }
-
-        if (BuildKonfig.DEBUG) {
-            filteredHeader("debug", Res.string.debug_menu, Icons.BugReport)
-
-            filteredItem(MainPrefs::demoModeP.name, Res.string.demo_mode) { title ->
-                SwitchPref(
-                    text = title,
-                    value = demoMode,
-                    copyToSave = { copy(demoMode = it) }
-                )
-            }
-
-            filteredItem("copy_sk", Res.string.copy_sk) { title ->
-                val scope = rememberCoroutineScope()
-
+            filteredItem("translate", Res.string.pref_translate) { title ->
                 TextPref(
                     text = title,
                     onClick = {
-                        scope.launch {
-                            PlatformStuff.mainPrefs.data
-                                .map { p ->
-                                    p.scrobbleAccounts.firstOrNull {
-                                        it.type == AccountType.LASTFM
-                                    }?.authKey
-                                }.first()
-                                ?.let {
-                                    PlatformStuff.copyToClipboard(it)
-                                }
-                        }
+                        PlatformStuff.openInBrowser(Stuff.CROWDIN_URL)
                     }
                 )
             }
 
-            filteredItem("delete_receipt", Res.string.delete_receipt) { title ->
-                val scope = rememberCoroutineScope()
-
+            filteredItem("translate_credits", Res.string.pref_translate_credits) { title ->
                 TextPref(
                     text = title,
                     onClick = {
-                        scope.launch {
-                            mainPrefs.updateData {
-                                it.copy(receipt = null, receiptSignature = null)
+                        onNavigate(PanoRoute.Translators)
+                    }
+                )
+            }
+
+            filteredHeader("imexport", Res.string.pref_imexport, Icons.SwapVert)
+
+            filteredItem("export", Res.string.pref_export) { title ->
+                TextPref(
+                    text = title,
+                    summary = stringResource(Res.string.pref_export_desc),
+                    onClick = {
+                        onNavigate(PanoRoute.Export)
+                    }
+                )
+            }
+
+            filteredItem("import", Res.string.pref_import) { title ->
+                TextPref(
+                    text = title,
+                    onClick = {
+                        onNavigate(PanoRoute.Import)
+                    }
+                )
+            }
+
+            filteredHeader("services", Res.string.scrobble_services, Icons.Dns)
+
+            AccountType.entries
+                .filterNot {
+                    PlatformStuff.isTv && it == AccountType.FILE
+                }
+                .forEach { accountType ->
+                    val (strRes, formatRes) = accountTypeStringRes(accountType)
+                    filteredItem(
+                        accountType.name,
+                        strRes,
+                        formatRes
+                    ) { title ->
+                        AccountPref(
+                            accountTypeLabel(accountType),
+                            type = accountType,
+                            usernamesMap = scrobblableLabels,
+                            onNavigate = onNavigate
+                        )
+                    }
+                }
+
+            filteredItem(key = "delete_account", Res.string.delete_account) { title ->
+                TextPref(
+                    text = title,
+                    onClick = {
+                        onNavigate(PanoRoute.DeleteAccount)
+                    }
+                )
+            }
+
+            filteredHeader("misc", Res.string.pref_misc, Icons.MoreHoriz)
+
+            if (!PlatformStuff.isDesktop && !PlatformStuff.isTv) {
+                filteredItem(
+                    MainPrefs::preventDuplicateAmbientScrobbles.name,
+                    Res.string.pref_prevent_duplicate_ambient_scrobbles
+                ) { title ->
+                    SwitchPref(
+                        text = title,
+                        value = preventDuplicateAmbientScrobbles,
+                        copyToSave = { copy(preventDuplicateAmbientScrobbles = it) }
+                    )
+                }
+            }
+
+            filteredItem(MainPrefs::proxy.name, Res.string.proxy) { title ->
+                val proxyText = proxy.host + ":" + proxy.port
+
+                TextPref(
+                    text = title,
+                    summary = when (proxy.type) {
+                        MainPrefs.ProxySettings.Type.HTTP -> "http://$proxyText"
+                        MainPrefs.ProxySettings.Type.SOCKS5 -> "socks5://$proxyText"
+                        MainPrefs.ProxySettings.Type.SYSTEM -> stringResource(Res.string.system)
+                    },
+                    onClick = {
+                        onNavigate(PanoRoute.Modal.ProxyPref)
+                    }
+                )
+            }
+
+            PlatformSpecificPrefs.updateCheck(::filteredItem, checkForUpdates, updateProgress)
+
+            if (!PlatformStuff.isTv) {
+                filteredItem("automation", Res.string.automation) { title ->
+                    TextPref(
+                        text = title,
+                        onClick = {
+                            onNavigate(PanoRoute.AutomationInfo)
+                        },
+                        locked = !isLicenseValid,
+                    )
+                }
+            }
+
+            if (CrashReporterConfig.isAvailable) {
+                filteredItem(
+                    "crash_reporter",
+                    Res.string.pref_crashlytics_enabled
+                ) { title ->
+                    SwitchPref(
+                        text = title,
+                        value = crashReporterEnabled,
+                        copyToSave = {
+                            crashReporterEnabled = it
+                            CrashReporterConfig.isEnabled = it
+                            this
+                        }
+                    )
+                }
+            }
+
+            filteredHeader("about", Res.string.pref_about, Icons.Info)
+
+            filteredItem(key = "oss_credits", Res.string.pref_oss_credits) { title ->
+                TextPref(
+                    text = title,
+                    onClick = {
+                        onNavigate(PanoRoute.OssCredits)
+                    }
+                )
+            }
+
+            filteredItem(key = "privacy_policy", Res.string.pref_privacy_policy) { title ->
+                TextPref(
+                    text = title,
+                    onClick = {
+                        onNavigate(PanoRoute.PrivacyPolicy)
+                    }
+                )
+            }
+
+            filteredItem(
+                key = "github_link",
+                Res.string.also_available_on,
+                if (PlatformStuff.isDesktop)
+                    Res.string.android
+                else
+                    Res.string.desktop
+            ) { title ->
+                TextPref(
+                    text = title,
+                    summary = Stuff.HOMEPAGE_URL + "\n" +
+                            ("v" + BuildKonfig.VER_NAME + if (BuildKonfig.DEBUG) " (Debug)" else ""),
+                    onClick = {
+                        onNavigate(PanoRoute.Modal.ShowLink(Stuff.HOMEPAGE_URL))
+                    }
+                )
+            }
+
+            if (BuildKonfig.DEBUG) {
+                filteredHeader("debug", Res.string.debug_menu, Icons.BugReport)
+
+                filteredItem(MainPrefs::demoModeP.name, Res.string.demo_mode) { title ->
+                    SwitchPref(
+                        text = title,
+                        value = demoMode,
+                        copyToSave = { copy(demoMode = it) }
+                    )
+                }
+
+                filteredItem("copy_sk", Res.string.copy_sk) { title ->
+                    val scope = rememberCoroutineScope()
+
+                    TextPref(
+                        text = title,
+                        onClick = {
+                            scope.launch {
+                                PlatformStuff.mainPrefs.data
+                                    .map { p ->
+                                        p.scrobbleAccounts.firstOrNull {
+                                            it.type == AccountType.LASTFM
+                                        }?.authKey
+                                    }.first()
+                                    ?.let {
+                                        PlatformStuff.copyToClipboard(it)
+                                    }
                             }
                         }
-                    }
-                )
+                    )
+                }
+
+                filteredItem("delete_receipt", Res.string.delete_receipt) { title ->
+                    val scope = rememberCoroutineScope()
+
+                    TextPref(
+                        text = title,
+                        onClick = {
+                            scope.launch {
+                                mainPrefs.updateData {
+                                    it.copy(receipt = null, receiptSignature = null)
+                                }
+                            }
+                        }
+                    )
+                }
             }
         }
     }

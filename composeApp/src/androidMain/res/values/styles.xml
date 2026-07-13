@@ -2,6 +2,8 @@
 
     <style name="ParentTheme" parent="android:Theme.DeviceDefault.NoActionBar" />
 
+    <style name="Patch" />
+
     <!-- Base application theme. -->
     <style name="AppTheme" parent="ParentTheme">
         <item name="android:colorPrimary">@color/pinkPrimary</item>
@@ -24,9 +26,15 @@
         <!-- bug https://stackoverflow.com/a/48328471/1067596-->
     </style>
 
-    <style name="AppThemeWithWallpaper" parent="ParentTheme">
+    <style name="AppTheme.Wallpaper">
         <item name="android:windowBackground">@android:color/transparent</item>
-        <item name="android:windowContentOverlay">@null</item>
+        <!--        <item name="android:windowContentOverlay">@null</item>-->
+        <item name="android:windowShowWallpaper">true</item>
+    </style>
+
+    <style name="Patch.Wallpaper">
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <!--        <item name="android:windowContentOverlay">@null</item>-->
         <item name="android:windowShowWallpaper">true</item>
     </style>
 

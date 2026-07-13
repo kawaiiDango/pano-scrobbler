@@ -9,21 +9,26 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.window.WindowDraggableArea
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.awt.SwingWindow
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.painter.BitmapPainter
+import androidx.compose.ui.input.pointer.PointerIcon
+import androidx.compose.ui.input.pointer.pointerHoverIcon
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.IntOffset
@@ -67,6 +72,7 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.flow.filterNot
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
@@ -96,6 +102,7 @@ import pano_scrobbler.composeapp.generated.resources.quit
 import pano_scrobbler.composeapp.generated.resources.settings
 import pano_scrobbler.composeapp.generated.resources.unlove
 import pano_scrobbler.composeapp.generated.resources.update_downloaded
+import java.awt.Cursor
 import java.awt.Dimension
 import java.awt.GraphicsEnvironment
 import java.awt.Point
@@ -470,6 +477,9 @@ fun main(args: Array<String>) {
                 WindowPlacement.Floating
         )
 
+        val isTranslucent by PlatformStuff.mainPrefs.data.map { it.themeAlpha < 1f }
+            .collectAsState(initialPrefs.themeAlpha < 1f)
+
         LaunchedEffect(windowState.size, windowState.placement) {
             delay(5.seconds)
 
@@ -602,15 +612,55 @@ fun main(args: Array<String>) {
             }
         }
 
+        LaunchedEffect(Unit) {
+            snapshotFlow { isTranslucent }.drop(1).collect {
+                if (windowCreated) {
+                    val wasShown = windowShown
+                    windowCreated = false
+                    delay(100.milliseconds)
+                    if (wasShown)
+                        windowCreated = true
+                }
+            }
+        }
+
         if (windowCreated) {
+            val isTranslucent = isTranslucent &&
+                    VariantStuff.billingRepository.licenseState.value == LicenseState.VALID
+
             Window(
                 onCloseRequest = { windowShown = false },
                 state = windowState,
                 title = BuildKonfig.APP_NAME,
                 visible = windowShown,
+                transparent = isTranslucent,
+                decoration = if (isTranslucent)
+                    WindowDecoration.Undecorated()
+                else
+                    WindowDecoration.SystemDefault,
                 icon = painterResource(Res.drawable.ic_launcher_with_bg)
             ) {
                 val density = LocalDensity.current
+
+                val windowTitleActions = remember {
+                    object : WindowTitleActions {
+                        override fun minimize() {
+                            windowState.isMinimized = true
+                        }
+
+                        override fun maximizeRestore() {
+                            windowState.placement =
+                                if (windowState.placement == WindowPlacement.Maximized)
+                                    WindowPlacement.Floating
+                                else
+                                    WindowPlacement.Maximized
+                        }
+
+                        override fun close() {
+                            windowShown = false
+                        }
+                    }
+                }
 
                 LaunchedEffect(Unit) {
                     window.exceptionHandler = null
@@ -623,10 +673,11 @@ fun main(args: Array<String>) {
 
                 LaunchedEffect(Unit) {
                     if (!BuildKonfig.DEBUG) {
-                        val minDim = if (DesktopStuff.os == DesktopStuff.Os.Windows)
-                            with(density) { 480.dp.roundToPx() }
-                        else
-                            480
+                        val minDim =
+                            if (DesktopStuff.os == DesktopStuff.Os.Windows && !isTranslucent)
+                                with(density) { 480.dp.roundToPx() }
+                            else
+                                480
 
                         window.minimumSize = Dimension(minDim, minDim)
                     }
@@ -638,7 +689,19 @@ fun main(args: Array<String>) {
                 }
 
                 AppTheme {
-                    PanoAppContent()
+                    PanoAppContent(
+                        draggableWrapper = {
+                            if (isTranslucent) {
+                                WindowDraggableArea(
+                                    modifier = Modifier.pointerHoverIcon(PointerIcon(Cursor(Cursor.MOVE_CURSOR)))
+                                ) {
+                                    it(windowTitleActions)
+                                }
+                            } else {
+                                it(null)
+                            }
+                        }
+                    )
                 }
             }
         }
@@ -788,6 +851,10 @@ private fun TrayWindow(
             window.setLocation(graphicsConfig.bounds.x, graphicsConfig.bounds.y)
         }
     ) {
+        LaunchedEffect(Unit) {
+            window.exceptionHandler = null
+        }
+
         LifecycleResumeEffect(Unit) {
             onPauseOrDispose {
                 onDismiss()

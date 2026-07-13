@@ -5,6 +5,7 @@ import androidx.compose.ui.graphics.Color
 
 data class ThemeAttributes(
     val isDark: Boolean,
+    val isTranslucent: Boolean,
     val contrastMode: ContrastMode,
     val allOnSecondaryContainerColors: List<Color>,
     val allSecondaryContainerColors: List<Color>,

@@ -3,9 +3,12 @@ package com.arn.scrobble.discordrpc
 import co.touchlab.kermit.Logger
 import com.arn.scrobble.BuildKonfig
 import com.arn.scrobble.PanoNativeComponents
+import com.arn.scrobble.api.AccountType
+import com.arn.scrobble.api.Scrobblables
 import com.arn.scrobble.media.PlayingTrackNotifyEvent
 import com.arn.scrobble.pref.AppItem
 import com.arn.scrobble.pref.MainPrefs
+import com.arn.scrobble.ui.accountTypeStringRes
 import com.arn.scrobble.utils.PanoNotifications
 import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff
@@ -17,6 +20,9 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapLatest
+import org.jetbrains.compose.resources.getString
+import pano_scrobbler.composeapp.generated.resources.Res
+import pano_scrobbler.composeapp.generated.resources.profile
 import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.Duration.Companion.seconds
 
@@ -40,6 +46,8 @@ private sealed interface DiscordActivity {
         // If specified, must be a string between 2 and 256 characters.
         val detailsUrl: String,
         val statusLine: Int,
+        val buttonText: String,
+        val buttonUrl: String
     ) : DiscordActivity
 
     data object Clear : DiscordActivity
@@ -115,8 +123,8 @@ object DiscordRpc {
                                 detailsUrl = activity.detailsUrl,
                                 isPlaying = isPlaying,
                                 statusLine = activity.statusLine,
-                                buttonText = "via " + BuildKonfig.APP_NAME,
-                                buttonUrl = Stuff.REPO_URL,
+                                buttonText = activity.buttonText,
+                                buttonUrl = activity.buttonUrl,
                             )
 
                             _wasSuccessful.value = success
@@ -161,14 +169,59 @@ object DiscordRpc {
             } else {
                 discordActivityKeepTill.value = null
 
-                if (event is PlayingTrackNotifyEvent.TrackPlaying && event.preprocessed)
+                if (event is PlayingTrackNotifyEvent.TrackPlaying && event.preprocessed) {
+                    var buttonText = "via " + BuildKonfig.APP_NAME
+                    var buttonUrl = Stuff.REPO_URL
+
+                    suspend fun setProfileUrlAndText(accountType: AccountType) {
+                        val profileUrl = Scrobblables.all
+                            .find { it.userAccount.type == accountType }
+                            ?.userAccount?.user?.url
+
+                        if (profileUrl != null) {
+                            buttonUrl = profileUrl
+                            buttonText = getString(accountTypeStringRes(accountType).first) + " " +
+                                    getString(Res.string.profile)
+                        }
+                    }
+
+                    val buttonType =
+                        MainPrefs.DiscordRpcSettings.ButtonType.entries.find { it.name == settings.buttonType }
+                            ?: MainPrefs.DiscordRpcSettings.ButtonType.PANO_SCROBBLER
+
+
+                    when (buttonType) {
+                        MainPrefs.DiscordRpcSettings.ButtonType.NONE -> {
+                            buttonText = ""
+                            buttonUrl = ""
+                        }
+
+                        MainPrefs.DiscordRpcSettings.ButtonType.LASTFM_PROFILE -> {
+                            setProfileUrlAndText(AccountType.LASTFM)
+                        }
+
+                        MainPrefs.DiscordRpcSettings.ButtonType.LISTENBRAINZ_PROFILE -> {
+                            setProfileUrlAndText(AccountType.LISTENBRAINZ)
+                        }
+
+                        MainPrefs.DiscordRpcSettings.ButtonType.LIBREFM_PROFILE -> {
+                            setProfileUrlAndText(AccountType.LIBREFM)
+                        }
+
+                        MainPrefs.DiscordRpcSettings.ButtonType.PANO_SCROBBLER -> {
+                        }
+                    }
+
                     discordActivity.value =
                         transform(
                             appId = event.scrobbleData.appId.orEmpty(),
                             appName = PlatformStuff.loadApplicationLabel(event.scrobbleData.appId.orEmpty()),
                             trackPlaying = event,
+                            buttonUrl = buttonUrl,
+                            buttonText = buttonText,
                             settings = settings
                         )
+                }
             }
         }.launchIn(Stuff.appScope)
     }
@@ -177,6 +230,8 @@ object DiscordRpc {
         appId: String,
         appName: String,
         trackPlaying: PlayingTrackNotifyEvent.TrackPlaying,
+        buttonUrl: String,
+        buttonText: String,
         settings: MainPrefs.DiscordRpcSettings,
     ): DiscordActivity.Activity {
         val hash = trackPlaying.hash
@@ -207,6 +262,8 @@ object DiscordRpc {
             artUrl = artUrl.takeIf { it.length in 1..300 }.orEmpty(),
             detailsUrl = detailsUrl.takeIf { it.length in 2..256 }.orEmpty(),
             statusLine = statusLine,
+            buttonText = buttonText,
+            buttonUrl = buttonUrl,
         )
     }
 

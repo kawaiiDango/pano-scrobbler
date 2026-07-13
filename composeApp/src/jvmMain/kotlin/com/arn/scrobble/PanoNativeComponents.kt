@@ -90,15 +90,11 @@ object PanoNativeComponents {
         trackUrl: String,
     ) {
         val artUrl = artUrl.ifEmpty { null }
-            ?.takeIf { it.toHttpUrlOrNull()?.topPrivateDomain() != null }
+            ?.takeIf {
+                it.toHttpUrlOrNull()?.topPrivateDomain() != null
+            } // i.e. not localhost, IP address, etc
         val normalizedUrlHost = trackUrl.ifEmpty { null }
-            ?.toHttpUrlOrNull()
-            ?.let {
-                if (it.host in Stuff.mprisUrlSubdomains)
-                    it.host
-                else
-                    it.topPrivateDomain()
-            }
+            ?.toHttpUrlOrNull()?.host
 
         val metadataInfo = MetadataInfo(
             title = title,

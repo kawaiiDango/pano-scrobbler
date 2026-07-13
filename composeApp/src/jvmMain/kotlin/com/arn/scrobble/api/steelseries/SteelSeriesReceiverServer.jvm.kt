@@ -20,9 +20,9 @@ actual object SteelSeriesReceiverServer {
 
     private var server: ReceiverServer? = null
 
+    @Synchronized
     private fun startServer() {
         if (serverStartAttempted) {
-            Logger.w { "SteelSeriesReceiverServer already started or attempted to start." }
             return
         }
         serverStartAttempted = true
@@ -60,7 +60,10 @@ actual object SteelSeriesReceiverServer {
         }
     }
 
-    private fun stopServer() {
+    @Synchronized
+    fun stopServer() {
+        if (server == null) return
+
         server?.stop()
         server = null
         serverStartAttempted = false

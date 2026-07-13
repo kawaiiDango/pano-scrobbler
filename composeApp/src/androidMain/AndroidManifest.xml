@@ -129,7 +129,7 @@
             android:configChanges="screenSize|screenLayout|keyboardHidden|mnc|colorMode|density|fontScale|fontWeightAdjustment|keyboard|layoutDirection|locale|mcc|navigation|smallestScreenSize|touchscreen|uiMode"
             android:exported="false"
             android:permission="android.permission.BIND_APPWIDGET"
-            android:theme="@style/AppThemeWithWallpaper"
+            android:theme="@style/AppTheme.Wallpaper"
             android:windowSoftInputMode="adjustPan">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_CONFIGURE" />

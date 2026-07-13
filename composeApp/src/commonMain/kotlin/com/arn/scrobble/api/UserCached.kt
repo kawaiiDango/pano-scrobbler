@@ -22,6 +22,9 @@ data class UserCached(
     inline fun <reified T> key() =
         T::class.qualifiedName + "|" + "$name|" + Scrobblables.current?.userAccount?.type
 
+    override fun toString() =
+        "UserCached(hashcode=${hashCode()}, order=$order, lastUpdated=$lastUpdated)"
+
     companion object {
         fun User.toUserCached() = UserCached(
             name = name,

@@ -346,9 +346,17 @@ class NLService : NotificationListenerService() {
         if (metadataChanged) {
             scrobbleQueue.remove(trackInfo.hash)
 
+            if (sessListener?.isAppAllowListed(pkgName) == false){
+                coroutineScope.launch {
+                    PanoNotifications.notifyAppDetected(
+                        trackInfo.appId,
+                        PlatformStuff.loadApplicationLabel(trackInfo.appId)
+                    )
+                }
+            }
+
             scrobbleQueue.scrobble(
                 trackInfo = trackInfo,
-                appIsAllowListed = sessListener?.isAppAllowListed(pkgName) == true,
                 delay = if (needsDelayAndCooldown) delay else 0L,
                 timestampOverride = if (!needsDelayAndCooldown) scrobbleData.timestamp else null
             )

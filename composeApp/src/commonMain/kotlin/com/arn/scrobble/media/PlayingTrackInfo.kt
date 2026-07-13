@@ -2,6 +2,7 @@ package com.arn.scrobble.media
 
 import com.arn.scrobble.api.lastfm.ScrobbleData
 import com.arn.scrobble.utils.MetadataUtils
+import com.arn.scrobble.utils.PlatformStuff
 import java.util.Objects
 import kotlin.math.abs
 
@@ -69,8 +70,7 @@ class PlayingTrackInfo(
         private set
 
     // cached values
-    var timelineStartTime: Long = cachedTrackInfo?.timelineStartTime ?: 0L
-        private set
+    private var timelineStartTime: Long = cachedTrackInfo?.timelineStartTime ?: 0L
     var playStartTime: Long = cachedTrackInfo?.playStartTime ?: 0L
         private set
     var scrobbledState: ScrobbledState = cachedTrackInfo?.scrobbledState ?: ScrobbledState.NONE
@@ -79,6 +79,8 @@ class PlayingTrackInfo(
         private set
     var lastScrobbleHash: Int = cachedTrackInfo?.lastScrobbleHash ?: 0
         private set
+
+    val sessionStartTime = PlatformStuff.monotonicTimeMs()
 
     fun putOriginals(
         artist: String,
@@ -108,7 +110,7 @@ class PlayingTrackInfo(
 
         scrobbledState = ScrobbledState.NONE
         msid = null
-        playStartTime = 0L // new track identity - needs a fresh start time
+        playStartTime = if (isPlaying) System.currentTimeMillis() else 0L
     }
 
     fun setArtUrl(artUrl: String?) {
@@ -180,6 +182,8 @@ class PlayingTrackInfo(
 
     fun resumed() {
         isPlaying = true
+        if (playStartTime <= 0L)
+            playStartTime = System.currentTimeMillis()
     }
 
     fun toScrobbleData(useOriginals: Boolean) = ScrobbleData(

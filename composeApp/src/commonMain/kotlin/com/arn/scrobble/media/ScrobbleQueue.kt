@@ -8,7 +8,6 @@ import com.arn.scrobble.api.ScrobbleEverywhere
 import com.arn.scrobble.api.ScrobbleResult
 import com.arn.scrobble.api.lastfm.ScrobbleData
 import com.arn.scrobble.db.BlockedMetadata
-import com.arn.scrobble.utils.PanoNotifications
 import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff
 import com.arn.scrobble.utils.redactedMessage
@@ -90,7 +89,6 @@ class ScrobbleQueue(
 
     fun scrobble(
         trackInfo: PlayingTrackInfo,
-        appIsAllowListed: Boolean,
         delay: Long,
         timestampOverride: Long? = null,
     ) {
@@ -234,15 +232,6 @@ class ScrobbleQueue(
                 nowPlaying = true,
             )
         )
-
-        if (!appIsAllowListed) {
-            scope.launch {
-                PanoNotifications.notifyAppDetected(
-                    trackInfo.appId,
-                    PlatformStuff.loadApplicationLabel(trackInfo.appId)
-                )
-            }
-        }
 
         prune()
         scrobbleTasks[trackInfo.hash]?.cancel()

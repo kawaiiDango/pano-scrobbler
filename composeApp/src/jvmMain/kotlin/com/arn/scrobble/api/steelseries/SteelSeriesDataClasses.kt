@@ -27,7 +27,7 @@ data class SteelSeriesFrame(
 //    val duration: Int,
     val imageUrl: String? = null,
     val state: String,
-    val time: Int,
+//    val time: Float,
     val title: String,
 //    val url: String
 )

@@ -8,6 +8,8 @@ import kotlinx.coroutines.flow.map
 actual suspend fun AppListVM.load(
     packagesOverride: Set<String>?,
     onSetAppList: (AppList) -> Unit,
+    onSetHostnames: (List<String>) -> Unit,
+    onSetBlockedHostnames: (Set<String>) -> Unit,
     onSetHasLoaded: () -> Unit,
 ) {
     val seenApps = PlatformStuff.mainPrefs.data.map { it.seenApps }.first()
@@ -29,6 +31,21 @@ actual suspend fun AppListVM.load(
 
     val musicPlayers = selectedList + unselectedList
     onSetAppList(AppList(musicPlayers, emptyList()))
+
+    if (DesktopStuff.os == DesktopStuff.Os.Linux) {
+        val blockedHostnames = PlatformStuff.mainPrefs.data.map { it.blockedHostnames }.first()
+        val seenHostnames = PlatformStuff.mainPrefs.data.map { it.seenHostnames }.first()
+            // sort in alphabetical order, but put blocked hostnames at the end
+            .sortedBy { it.lowercase() }
+            .partition { it !in blockedHostnames }
+            .let { (unblocked, blocked) ->
+                unblocked + blocked
+            }
+
+        onSetHostnames(seenHostnames)
+        onSetBlockedHostnames(blockedHostnames)
+    }
+
     onSetHasLoaded()
 }
 

@@ -6,7 +6,6 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MenuDefaults
 import androidx.compose.material3.SplitButtonDefaults
@@ -35,7 +34,6 @@ import pano_scrobbler.composeapp.generated.resources.log_to_file
 import pano_scrobbler.composeapp.generated.resources.more
 import pano_scrobbler.composeapp.generated.resources.save_logs
 
-@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 actual fun HelpSaveLogsButton(
     showFilePicker: () -> Unit,

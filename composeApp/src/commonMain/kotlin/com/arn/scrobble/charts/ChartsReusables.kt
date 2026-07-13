@@ -1,6 +1,5 @@
 package com.arn.scrobble.charts
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
@@ -40,7 +39,6 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.layout.positionInParent
@@ -265,187 +263,188 @@ fun TimePeriodSelector(
         }
     }
 
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
-        modifier = modifier.background(
-            MaterialTheme.colorScheme.surfaceContainerHigh,
-            shape = MaterialTheme.shapes.large
-        ).clip(
-            shape = MaterialTheme.shapes.large
-        )
+    Surface(
+        tonalElevation = 6.dp,
+        shape = MaterialTheme.shapes.large,
+        modifier = modifier
     ) {
-        if (accountType != AccountType.LISTENBRAINZ) {
-            Box {
-                OutlinedToggleButton(
-                    checked = typeSelectorShown,
-                    onCheckedChange = {
-                        typeSelectorShown = it
-                    },
-                    modifier = Modifier
-                        .padding(horizontal = 8.dp)
-                ) {
-                    periodType?.let {
-                        Icon(
-                            combineImageVectors(
-                                getPeriodTypeIcon(it),
-                                Icons.ArrowDropDown
-                            ),
-                            contentDescription = stringResource(Res.string.item_options)
-                        )
-                    }
-                }
-
-                PeriodTypeSelector(
-                    expanded = typeSelectorShown,
-                    onDismissRequest = { typeSelectorShown = false },
-                    selectedPeriodType = periodType,
-                    onMenuItemClick = { viewModel.setPeriodType(it) },
-                    onRefresh = if (showRefreshButton) {
-                        {
-                            viewModel.refresh()
-                        }
-                    } else null
-                )
-            }
-        }
-
-        LazyRow(
-            state = listState,
-            horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterHorizontally),
-            contentPadding = PaddingValues(start = 24.dp, end = 24.dp),
-            modifier = Modifier.weight(1f),
+        Row(
+            verticalAlignment = Alignment.CenterVertically
         ) {
-            itemsIndexed(
-                timePeriodsList
-            ) { idx, timePeriod ->
-                FilterChip(
-                    onClick = {
-                        if (timePeriod == selectedPeriod) {
-                            dropdownTypeShown = periodType
-                        } else
-                            viewModel.setSelectedPeriod(timePeriod)
-                    },
-                    selected = timePeriod == selectedPeriod,
-                    trailingIcon = {
-                        if (timePeriod == selectedPeriod) {
+            if (accountType != AccountType.LISTENBRAINZ) {
+                Box {
+                    OutlinedToggleButton(
+                        checked = typeSelectorShown,
+                        onCheckedChange = {
+                            typeSelectorShown = it
+                        },
+                        modifier = Modifier
+                            .padding(horizontal = 8.dp)
+                    ) {
+                        periodType?.let {
                             Icon(
-                                imageVector = Icons.ArrowDropDownCircle,
-                                contentDescription = null,
-                                tint = MaterialTheme.colorScheme.onSecondaryContainer
-                            )
-                        } else if (timePeriodsList.getOrNull(idx + 1) == selectedPeriod) {
-                            Icon(
-                                imageVector = Icons.AutoMirrored.ArrowLeft,
-                                contentDescription = null,
-                                tint = MaterialTheme.colorScheme.secondary
+                                combineImageVectors(
+                                    getPeriodTypeIcon(it),
+                                    Icons.ArrowDropDown
+                                ),
+                                contentDescription = stringResource(Res.string.item_options)
                             )
                         }
-                    },
-                    leadingIcon = {
-                        if (timePeriodsList.getOrNull(idx - 1) == selectedPeriod) {
-                            Icon(
-                                imageVector = Icons.AutoMirrored.ArrowRight,
-                                contentDescription = null,
-                                tint = MaterialTheme.colorScheme.secondary
-                            )
-                        }
-                    },
-                    label = { Text(text = timePeriod.name) },
-                    modifier = Modifier
-                        .onGloballyPositioned { coordinates ->
-                            if (timePeriod == selectedPeriod) {
-                                selectedPeriodOffsetX = coordinates.positionInParent().round().x +
-                                        coordinates.size.width / 2
+                    }
+
+                    PeriodTypeSelector(
+                        expanded = typeSelectorShown,
+                        onDismissRequest = { typeSelectorShown = false },
+                        selectedPeriodType = periodType,
+                        onMenuItemClick = { viewModel.setPeriodType(it) },
+                        onRefresh = if (showRefreshButton) {
+                            {
+                                viewModel.refresh()
                             }
+                        } else null
+                    )
+                }
+            }
+
+            LazyRow(
+                state = listState,
+                horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterHorizontally),
+                contentPadding = PaddingValues(start = 24.dp, end = 24.dp),
+                modifier = Modifier.weight(1f),
+            ) {
+                itemsIndexed(
+                    timePeriodsList
+                ) { idx, timePeriod ->
+                    FilterChip(
+                        onClick = {
+                            if (timePeriod == selectedPeriod) {
+                                dropdownTypeShown = periodType
+                            } else
+                                viewModel.setSelectedPeriod(timePeriod)
+                        },
+                        selected = timePeriod == selectedPeriod,
+                        trailingIcon = {
+                            if (timePeriod == selectedPeriod) {
+                                Icon(
+                                    imageVector = Icons.ArrowDropDownCircle,
+                                    contentDescription = null,
+                                    tint = MaterialTheme.colorScheme.onSecondaryContainer
+                                )
+                            } else if (timePeriodsList.getOrNull(idx + 1) == selectedPeriod) {
+                                Icon(
+                                    imageVector = Icons.AutoMirrored.ArrowLeft,
+                                    contentDescription = null,
+                                    tint = MaterialTheme.colorScheme.secondary
+                                )
+                            }
+                        },
+                        leadingIcon = {
+                            if (timePeriodsList.getOrNull(idx - 1) == selectedPeriod) {
+                                Icon(
+                                    imageVector = Icons.AutoMirrored.ArrowRight,
+                                    contentDescription = null,
+                                    tint = MaterialTheme.colorScheme.secondary
+                                )
+                            }
+                        },
+                        label = { Text(text = timePeriod.name) },
+                        modifier = Modifier
+                            .onGloballyPositioned { coordinates ->
+                                if (timePeriod == selectedPeriod) {
+                                    selectedPeriodOffsetX =
+                                        coordinates.positionInParent().round().x +
+                                                coordinates.size.width / 2
+                                }
+                            }
+                    )
+                }
+            }
+        }
+
+        when (dropdownTypeShown) {
+            TimePeriodType.CUSTOM -> {
+                DateRangePickerModal(
+                    selectedDateRange = selectedPeriod?.start?.timeToUTC() to selectedPeriod?.end?.timeToUTC(),
+                    allowedRange = user.registeredTime to System.currentTimeMillis(),
+                    onDateRangeSelected = { (startUtc, endUtc) ->
+                        if (startUtc != null && endUtc != null) {
+                            val timePeriod =
+                                TimePeriod(startUtc.timeToLocal(), endUtc.timeToLocal())
+
+                            viewModel.setCustomPeriodInput(timePeriod)
                         }
+                    },
+                    onDismiss = { dropdownTypeShown = null }
                 )
             }
-        }
-    }
 
-    when (dropdownTypeShown) {
-        TimePeriodType.CUSTOM -> {
-            DateRangePickerModal(
-                selectedDateRange = selectedPeriod?.start?.timeToUTC() to selectedPeriod?.end?.timeToUTC(),
-                allowedRange = user.registeredTime to System.currentTimeMillis(),
-                onDateRangeSelected = { (startUtc, endUtc) ->
-                    if (startUtc != null && endUtc != null) {
-                        val timePeriod =
-                            TimePeriod(startUtc.timeToLocal(), endUtc.timeToLocal())
-
-                        viewModel.setCustomPeriodInput(timePeriod)
-                    }
-                },
-                onDismiss = { dropdownTypeShown = null }
-            )
-        }
-
-        TimePeriodType.WEEK -> {
-            val validTimes = remember(timePeriods) {
-                timePeriodsList.associateBy { it.start.timeToUTC() }
-            }
-
-            DatePickerModal(
-                selectedDate = selectedPeriod?.start,
-                allowedRange = user.registeredTime to System.currentTimeMillis(),
-                selectableDates = object : SelectableDates {
-                    override fun isSelectableDate(utcTimeMillis: Long) =
-                        utcTimeMillis in user.registeredTime..System.currentTimeMillis() && utcTimeMillis in validTimes
-                },
-                onDateSelected = {
-                    if (it != null && validTimes[it] != null)
-                        viewModel.setSelectedPeriod(validTimes[it]!!)
-                },
-                onDismiss = { dropdownTypeShown = null }
-            )
-        }
-
-        TimePeriodType.MONTH -> {
-            val validTimes = remember(timePeriods) { timePeriodsList.associateBy { it.start } }
-
-            MonthPickerPopup(
-                offset = IntOffset(selectedPeriodOffsetX, 0),
-                selectedMillis = selectedPeriod?.start ?: System.currentTimeMillis(),
-                onDismissRequest = { dropdownTypeShown = null },
-                allowedRange = user.registeredTime to System.currentTimeMillis(),
-                onMonthMillisSelected = {
-                    validTimes[it]?.let {
-                        viewModel.setSelectedPeriod(it)
-                    }
+            TimePeriodType.WEEK -> {
+                val validTimes = remember(timePeriods) {
+                    timePeriodsList.associateBy { it.start.timeToUTC() }
                 }
-            )
-        }
 
-        TimePeriodType.CONTINUOUS, TimePeriodType.YEAR, TimePeriodType.LISTENBRAINZ -> {
-            val selectedPeriodOffsetXDp = with(density) {
-                selectedPeriodOffsetX.toDp()
+                DatePickerModal(
+                    selectedDate = selectedPeriod?.start,
+                    allowedRange = user.registeredTime to System.currentTimeMillis(),
+                    selectableDates = object : SelectableDates {
+                        override fun isSelectableDate(utcTimeMillis: Long) =
+                            utcTimeMillis in user.registeredTime..System.currentTimeMillis() && utcTimeMillis in validTimes
+                    },
+                    onDateSelected = {
+                        if (it != null && validTimes[it] != null)
+                            viewModel.setSelectedPeriod(validTimes[it]!!)
+                    },
+                    onDismiss = { dropdownTypeShown = null }
+                )
             }
 
-            Box {
-                DropdownMenu(
-                    offset = DpOffset(selectedPeriodOffsetXDp, 0.dp),
-                    expanded = dropdownTypeShown != null,
-                    onDismissRequest = { dropdownTypeShown = null }
-                ) {
-                    timePeriodsList.forEach { timePeriod ->
-                        DropdownMenuItem(
-                            onClick = {
-                                viewModel.setSelectedPeriod(timePeriod)
-                                dropdownTypeShown = null
-                            },
-                            enabled = timePeriod != selectedPeriod,
-                            text = {
-                                Text(
-                                    text = timePeriod.name,
-                                )
-                            },
-                        )
+            TimePeriodType.MONTH -> {
+                val validTimes = remember(timePeriods) { timePeriodsList.associateBy { it.start } }
+
+                MonthPickerPopup(
+                    offset = IntOffset(selectedPeriodOffsetX, 0),
+                    selectedMillis = selectedPeriod?.start ?: System.currentTimeMillis(),
+                    onDismissRequest = { dropdownTypeShown = null },
+                    allowedRange = user.registeredTime to System.currentTimeMillis(),
+                    onMonthMillisSelected = {
+                        validTimes[it]?.let {
+                            viewModel.setSelectedPeriod(it)
+                        }
+                    }
+                )
+            }
+
+            TimePeriodType.CONTINUOUS, TimePeriodType.YEAR, TimePeriodType.LISTENBRAINZ -> {
+                val selectedPeriodOffsetXDp = with(density) {
+                    selectedPeriodOffsetX.toDp()
+                }
+
+                Box {
+                    DropdownMenu(
+                        offset = DpOffset(selectedPeriodOffsetXDp, 0.dp),
+                        expanded = dropdownTypeShown != null,
+                        onDismissRequest = { dropdownTypeShown = null }
+                    ) {
+                        timePeriodsList.forEach { timePeriod ->
+                            DropdownMenuItem(
+                                onClick = {
+                                    viewModel.setSelectedPeriod(timePeriod)
+                                    dropdownTypeShown = null
+                                },
+                                enabled = timePeriod != selectedPeriod,
+                                text = {
+                                    Text(
+                                        text = timePeriod.name,
+                                    )
+                                },
+                            )
+                        }
                     }
                 }
             }
-        }
 
-        else -> {}
+            else -> {}
+        }
     }
 }
 
@@ -605,13 +604,12 @@ private fun MonthPickerPopup(
         offset = offset,
         properties = PopupProperties(
             focusable = true,
-            usePlatformDefaultWidth = true
         ),
         onDismissRequest = onDismissRequest
     ) {
         Surface(
+            color = MaterialTheme.colorScheme.surfaceContainer,
             shape = MaterialTheme.shapes.large,
-            shadowElevation = 4.dp,
             tonalElevation = 4.dp,
             modifier = Modifier
                 .fillMaxHeight(0.6f)

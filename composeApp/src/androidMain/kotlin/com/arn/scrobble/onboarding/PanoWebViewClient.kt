@@ -1,10 +1,13 @@
 package com.arn.scrobble.onboarding
 
 import android.webkit.CookieManager
+import android.webkit.HttpAuthHandler
 import android.webkit.WebResourceError
 import android.webkit.WebResourceRequest
 import android.webkit.WebView
 import android.webkit.WebViewClient
+import com.arn.scrobble.api.Requesters
+import com.arn.scrobble.pref.MainPrefs
 import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff
 import io.ktor.http.Url
@@ -78,5 +81,26 @@ class PanoWebViewClient(
     override fun onPageFinished(webView: WebView, url: String?) {
         firstLoadFinished = true
         super.onPageFinished(webView, url)
+    }
+
+
+    override fun onReceivedHttpAuthRequest(
+        view: WebView?,
+        handler: HttpAuthHandler?,
+        host: String?,
+        realm: String?
+    ) {
+        val proxy = Requesters.proxy.value
+
+        if (
+            handler != null &&
+            proxy.type == MainPrefs.ProxySettings.Type.HTTP &&
+            proxy.hasAuth &&
+            host == proxy.host
+        ) {
+            handler.proceed(proxy.user, proxy.pass)
+        } else {
+            super.onReceivedHttpAuthRequest(view, handler, host, realm)
+        }
     }
 }

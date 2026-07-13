@@ -57,27 +57,30 @@ object WebViewProxyOverride {
     fun isWebViewProxyOverrideSupported(): Boolean =
         WebViewFeature.isFeatureSupported(WebViewFeature.PROXY_OVERRIDE)
 
-    fun setSocksProxy(
-        socksHost: String,
-        socksPort: Int,
+    fun setProxy(
+        isSocks: Boolean,
+        host: String,
+        port: Int,
         proxyConfigBuilder: ProxyConfig.Builder = ProxyConfig.Builder()
     ) {
-        proxyConfigBuilder
-            .addProxyRule("socks://${socksHost}:${socksPort}")
-            .build().let { proxyConfig ->
-                try {
-                    ProxyController.getInstance().setProxyOverride(
-                        proxyConfig,
-                        SynchronousExecutor()
-                    ) {
-                        _proxyOverrideStateFlow.value = ProxyOverrideState.ProxySet
-                    }
-                } catch (e: UnsupportedOperationException) {
-                    _proxyOverrideStateFlow.value = ProxyOverrideState.OverrideUnsupported
-                } catch (e: IllegalArgumentException) {
-                    _proxyOverrideStateFlow.value = ProxyOverrideState.InvalidConfig
-                }
+        val typeString = if (isSocks) "socks" else "http"
+
+        val proxyConfig = proxyConfigBuilder
+            .addProxyRule("${typeString}://${host}:${port}")
+            .build()
+        
+        try {
+            ProxyController.getInstance().setProxyOverride(
+                proxyConfig,
+                SynchronousExecutor()
+            ) {
+                _proxyOverrideStateFlow.value = ProxyOverrideState.ProxySet
             }
+        } catch (e: UnsupportedOperationException) {
+            _proxyOverrideStateFlow.value = ProxyOverrideState.OverrideUnsupported
+        } catch (e: IllegalArgumentException) {
+            _proxyOverrideStateFlow.value = ProxyOverrideState.InvalidConfig
+        }
     }
 
     fun clearProxy() {

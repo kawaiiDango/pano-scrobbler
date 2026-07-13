@@ -13,6 +13,8 @@ import kotlinx.coroutines.withContext
 actual suspend fun AppListVM.load(
     packagesOverride: Set<String>?,
     onSetAppList: (AppList) -> Unit,
+    onSetHostnames: (List<String>) -> Unit,
+    onSetBlockedHostnames: (Set<String>) -> Unit,
     onSetHasLoaded: () -> Unit,
 ) {
     val packageManager = AndroidStuff.applicationContext.packageManager

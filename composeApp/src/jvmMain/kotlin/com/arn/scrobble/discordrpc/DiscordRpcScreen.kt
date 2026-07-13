@@ -16,6 +16,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.arn.scrobble.BuildKonfig
 import com.arn.scrobble.icons.Icons
 import com.arn.scrobble.icons.ResetSettings
 import com.arn.scrobble.pref.DropdownPref
@@ -36,20 +37,21 @@ import pano_scrobbler.composeapp.generated.resources.album_art_now_playing
 import pano_scrobbler.composeapp.generated.resources.album_art_now_playing_desc
 import pano_scrobbler.composeapp.generated.resources.appwidget_show
 import pano_scrobbler.composeapp.generated.resources.available_placeholders
+import pano_scrobbler.composeapp.generated.resources.button_url
 import pano_scrobbler.composeapp.generated.resources.discord_app_name
 import pano_scrobbler.composeapp.generated.resources.discord_compact_view_line
 import pano_scrobbler.composeapp.generated.resources.enable
+import pano_scrobbler.composeapp.generated.resources.hide
+import pano_scrobbler.composeapp.generated.resources.lastfm
+import pano_scrobbler.composeapp.generated.resources.librefm
 import pano_scrobbler.composeapp.generated.resources.line_n
+import pano_scrobbler.composeapp.generated.resources.listenbrainz
 import pano_scrobbler.composeapp.generated.resources.loved
+import pano_scrobbler.composeapp.generated.resources.profile
 import pano_scrobbler.composeapp.generated.resources.reset
 import pano_scrobbler.composeapp.generated.resources.show_paused_for
 import pano_scrobbler.composeapp.generated.resources.show_track_url
 
-private enum class Line {
-    None,
-    Line1,
-    Line2,
-}
 
 @Composable
 fun DiscordRpcScreen(
@@ -61,6 +63,22 @@ fun DiscordRpcScreen(
     var line2Format by remember(settings.line2Format) { mutableStateOf(settings.line2Format) }
     var line3Format by remember(settings.line3Format) { mutableStateOf(settings.line3Format) }
     var nameFormat by remember(settings.nameFormat) { mutableStateOf(settings.nameFormat) }
+    val buttonType by remember(settings.buttonType) {
+        mutableStateOf(
+            MainPrefs.DiscordRpcSettings.ButtonType.entries.find { it.name == settings.buttonType }
+                ?: MainPrefs.DiscordRpcSettings.ButtonType.PANO_SCROBBLER
+        )
+    }
+    val line by remember(settings.statusLine) {
+        mutableStateOf(
+            when (settings.statusLine) {
+                1 -> MainPrefs.DiscordRpcSettings.Line.Line1
+                2 -> MainPrefs.DiscordRpcSettings.Line.Line2
+                else -> MainPrefs.DiscordRpcSettings.Line.None
+            }
+        )
+    }
+
     val tertiaryColor = MaterialTheme.colorScheme.tertiary
     val visualTransformation = remember {
         HighlighterVisualTransformation(
@@ -266,27 +284,49 @@ fun DiscordRpcScreen(
 
         DropdownPref(
             text = stringResource(Res.string.discord_compact_view_line),
-            selectedValue = when (settings.statusLine) {
-                1 -> Line.Line1
-                2 -> Line.Line2
-                else -> Line.None
-            },
-            values = Line.entries,
+            selectedValue = line,
+            values = MainPrefs.DiscordRpcSettings.Line.entries,
             toLabel = {
                 when (it) {
-                    Line.Line1 -> stringResource(Res.string.line_n, 1)
-                    Line.Line2 -> stringResource(Res.string.line_n, 2)
-                    Line.None -> stringResource(Res.string.discord_app_name)
+                    MainPrefs.DiscordRpcSettings.Line.Line1 -> stringResource(Res.string.line_n, 1)
+                    MainPrefs.DiscordRpcSettings.Line.Line2 -> stringResource(Res.string.line_n, 2)
+                    MainPrefs.DiscordRpcSettings.Line.None -> stringResource(Res.string.discord_app_name)
                 }
             },
             copyToSave = {
                 copy(
                     discordRpc = settings.copy(
-                        statusLine = when (it) {
-                            Line.Line1 -> 1
-                            Line.Line2 -> 2
-                            Line.None -> 0
-                        }
+                        statusLine = it.ordinal
+                    )
+                )
+            },
+            enabled = settings.enabled,
+        )
+
+        DropdownPref(
+            text = stringResource(Res.string.button_url),
+            selectedValue = buttonType,
+            values = MainPrefs.DiscordRpcSettings.ButtonType.entries,
+            toLabel = {
+                when (it) {
+                    MainPrefs.DiscordRpcSettings.ButtonType.PANO_SCROBBLER -> BuildKonfig.APP_NAME
+                    MainPrefs.DiscordRpcSettings.ButtonType.LASTFM_PROFILE ->
+                        stringResource(Res.string.lastfm) + " " + stringResource(Res.string.profile)
+
+                    MainPrefs.DiscordRpcSettings.ButtonType.LISTENBRAINZ_PROFILE ->
+                        stringResource(Res.string.listenbrainz) + " " + stringResource(Res.string.profile)
+
+                    MainPrefs.DiscordRpcSettings.ButtonType.LIBREFM_PROFILE ->
+                        stringResource(Res.string.librefm) + " " + stringResource(Res.string.profile)
+
+                    MainPrefs.DiscordRpcSettings.ButtonType.NONE ->
+                        stringResource(Res.string.hide)
+                }
+            },
+            copyToSave = {
+                copy(
+                    discordRpc = settings.copy(
+                        buttonType = it.name
                     )
                 )
             },

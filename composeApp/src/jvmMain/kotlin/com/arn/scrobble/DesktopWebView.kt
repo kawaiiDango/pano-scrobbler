@@ -65,6 +65,7 @@ object DesktopWebView {
         callbackPrefix: String,
         cookiesUrl: String,
         dataDir: String,
+        proxyType: Int,
         proxyHost: String,
         proxyPort: Int,
     )

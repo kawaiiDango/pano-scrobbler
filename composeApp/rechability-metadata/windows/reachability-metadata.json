@@ -24,6 +24,9 @@
       "type": "androidx.compose.ui.awt.JLayeredPaneWithTransparencyHack"
     },
     {
+      "type": "androidx.compose.ui.platform.GlobalSnapshotManager$Registration"
+    },
+    {
       "type": "androidx.compose.ui.scene.ComposeSceneMediator$InvisibleComponent"
     },
     {
@@ -119,15 +122,6 @@
       "type": "com.arn.scrobble.PanoNativeComponents",
       "jniAccessible": true,
       "allDeclaredMethods": true
-    },
-    {
-      "type": "sun.net.www.protocol.http.Handler",
-      "methods": [
-        {
-          "name": "<init>",
-          "parameterTypes": []
-        }
-      ]
     },
     {
       "type": "com.arn.scrobble.db.PanoDb_Impl",
@@ -482,6 +476,21 @@
         {
           "name": "<init>",
           "parameterTypes": [
+            "int",
+            "int"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "java.awt.DisplayMode",
+      "jniAccessible": true,
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": [
+            "int",
+            "int",
             "int",
             "int"
           ]
@@ -1279,6 +1288,10 @@
           "parameterTypes": []
         },
         {
+          "name": "getModule",
+          "parameterTypes": []
+        },
+        {
           "name": "getName",
           "parameterTypes": []
         }
@@ -1611,6 +1624,7 @@
           "name": "<init>",
           "parameterTypes": [
             "org.jetbrains.compose.resources.LanguageQualifier",
+            "org.jetbrains.compose.resources.ScriptQualifier",
             "org.jetbrains.compose.resources.RegionQualifier",
             "org.jetbrains.compose.resources.ThemeQualifier",
             "org.jetbrains.compose.resources.DensityQualifier"
@@ -2537,6 +2551,27 @@
       ]
     },
     {
+      "type": "sun.awt.image.ByteComponentRaster",
+      "jniAccessible": true,
+      "fields": [
+        {
+          "name": "data"
+        },
+        {
+          "name": "dataOffsets"
+        },
+        {
+          "name": "pixelStride"
+        },
+        {
+          "name": "scanlineStride"
+        },
+        {
+          "name": "type"
+        }
+      ]
+    },
+    {
       "type": "sun.awt.image.IntegerComponentRaster",
       "jniAccessible": true,
       "fields": [
@@ -2739,6 +2774,10 @@
         }
       ],
       "methods": [
+        {
+          "name": "dynamicallyLayoutContainer",
+          "parameterTypes": []
+        },
         {
           "name": "getExtendedState",
           "parameterTypes": []
@@ -3472,6 +3511,24 @@
       ]
     },
     {
+      "type": "sun.java2d.loops.OpaqueCopyAnyToArgb",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "type": "sun.java2d.loops.OpaqueCopyArgbToAny",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
       "type": "sun.java2d.loops.ScaledBlit",
       "jniAccessible": true,
       "methods": [
@@ -3483,6 +3540,69 @@
             "sun.java2d.loops.CompositeType",
             "sun.java2d.loops.SurfaceType"
           ]
+        }
+      ]
+    },
+    {
+      "type": "sun.java2d.loops.SetDrawLineANY",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "type": "sun.java2d.loops.SetDrawPathANY",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "type": "sun.java2d.loops.SetDrawPolygonsANY",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "type": "sun.java2d.loops.SetDrawRectANY",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "type": "sun.java2d.loops.SetFillPathANY",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "type": "sun.java2d.loops.SetFillRectANY",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "type": "sun.java2d.loops.SetFillSpansANY",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
         }
       ]
     },
@@ -3689,6 +3809,15 @@
       "methods": [
         {
           "name": "getApplicationClass",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "type": "sun.net.www.protocol.http.Handler",
+      "methods": [
+        {
+          "name": "<init>",
           "parameterTypes": []
         }
       ]

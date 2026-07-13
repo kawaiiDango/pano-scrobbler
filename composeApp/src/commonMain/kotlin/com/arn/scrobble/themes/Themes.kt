@@ -1,7 +1,6 @@
 package com.arn.scrobble.themes
 
 import androidx.compose.material3.ColorScheme
-import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.MaterialExpressiveTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
@@ -34,6 +33,13 @@ fun AppTheme(
     val random by PlatformStuff.mainPrefs.data.collectAsStateWithInitialValue { it.themeRandom }
     val dayNightMode by PlatformStuff.mainPrefs.data.collectAsStateWithInitialValue { it.themeDayNight }
     val contrastMode by PlatformStuff.mainPrefs.data.collectAsStateWithInitialValue { it.themeContrast }
+    val alpha by PlatformStuff.mainPrefs.data.collectAsStateWithInitialValue {
+        if (!PlatformStuff.isTv)
+            it.themeAlpha.coerceIn(0.5f, 1f)
+        else
+            1f
+    }
+
     val isSystemInDarkTheme by isSystemInDarkThemeNative()
 
     if (licenseState == LicenseState.UNKNOWN || prefsVersion == 0)
@@ -45,7 +51,12 @@ fun AppTheme(
 
     LaunchedEffect(licenseState) {
         if (licenseState != LicenseState.VALID) {
-            PlatformStuff.mainPrefs.updateData { it.copy(themeDayNight = DayNightMode.DARK) }
+            PlatformStuff.mainPrefs.updateData {
+                it.copy(
+                    themeDayNight = DayNightMode.DARK,
+                    themeAlpha = 1f
+                )
+            }
         }
     }
 
@@ -58,7 +69,7 @@ fun AppTheme(
         )
     }
 
-    val themeAttributes = remember(isDark, contrastMode, themeName) {
+    val themeAttributes = remember(isDark, contrastMode, themeName, alpha) {
         val otherColorSchemes = ThemeUtils.themesMap.values
             .filter { it.name != themeName }
             .map {
@@ -71,6 +82,7 @@ fun AppTheme(
 
         ThemeAttributes(
             isDark = isDark,
+            isTranslucent = alpha < 1f,
             contrastMode = contrastMode,
             allOnSecondaryContainerColors = otherColorSchemes.map { it.onSecondaryContainer },
             allSecondaryContainerColors = otherColorSchemes.map { it.secondaryContainer },
@@ -83,7 +95,7 @@ fun AppTheme(
         }
 
         dynamic && PlatformStuff.supportsDynamicColors -> {
-            getDynamicColorScheme(isDark)
+            getDynamicColorScheme(isDark).withAlpha(alpha)
         }
 
         else -> {
@@ -96,7 +108,7 @@ fun AppTheme(
                 theme = theme,
                 isDark = isDark,
                 contrastMode = contrastMode,
-            )
+            ).withAlpha(alpha)
         }
     }
 
@@ -132,7 +144,24 @@ private fun getColorScheme(
     }
 }
 
-@OptIn(ExperimentalMaterial3ExpressiveApi::class)
+// alpha should be between 0.5f and 1f
+private fun ColorScheme.withAlpha(alpha: Float): ColorScheme {
+    fun boostAlpha(alpha: Float, boost: Float) = alpha + (1f - alpha) * boost
+
+    if (alpha == 1f) return this
+
+    val highAlpha = boostAlpha(alpha, 0.75f)
+
+    return copy(
+        background = background.copy(alpha = alpha),
+        surface = surface.copy(alpha = alpha),
+        surfaceContainer = surfaceContainer.copy(alpha = highAlpha),
+        secondaryContainer = secondaryContainer.copy(alpha = highAlpha),
+        tertiaryContainer = tertiaryContainer.copy(alpha = highAlpha),
+        inverseSurface = inverseSurface.copy(alpha = highAlpha),
+    )
+}
+
 @Composable
 fun AppPreviewTheme(content: @Composable () -> Unit) {
     MaterialExpressiveTheme {

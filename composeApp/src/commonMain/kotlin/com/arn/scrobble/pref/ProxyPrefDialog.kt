@@ -21,6 +21,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
+import com.arn.scrobble.navigation.enumSaver
 import com.arn.scrobble.ui.OutlinedToggleButtons
 import com.arn.scrobble.ui.PanoOutlinedTextField
 import com.arn.scrobble.utils.PlatformStuff
@@ -34,6 +35,7 @@ import pano_scrobbler.composeapp.generated.resources.Res
 import pano_scrobbler.composeapp.generated.resources.host
 import pano_scrobbler.composeapp.generated.resources.password
 import pano_scrobbler.composeapp.generated.resources.port
+import pano_scrobbler.composeapp.generated.resources.proxy_http
 import pano_scrobbler.composeapp.generated.resources.proxy_socks5
 import pano_scrobbler.composeapp.generated.resources.system
 import pano_scrobbler.composeapp.generated.resources.username
@@ -47,13 +49,14 @@ fun ProxyPrefDialog(modifier: Modifier = Modifier) {
     ) {
         val proxy by PlatformStuff.mainPrefs.data.collectAsStateWithInitialValue { it.proxy }
 
-        var enabledEditable by rememberSaveable { mutableStateOf(proxy.enabled) }
+        var typeEditable by rememberSaveable(saver = enumSaver()) { mutableStateOf(proxy.type) }
         var hostEditable by rememberSaveable { mutableStateOf(proxy.host) }
         var portEditable by rememberSaveable { mutableStateOf(proxy.port.toString()) }
         var userEditable by rememberSaveable { mutableStateOf(proxy.user) }
         var passEditable by rememberSaveable { mutableStateOf(proxy.pass) }
 
         var isValid by remember { mutableStateOf(true) }
+        val isEnabled = typeEditable != MainPrefs.ProxySettings.Type.SYSTEM
 
         fun validate(): Boolean {
             val portInt = portEditable.toIntOrNull() ?: return false
@@ -84,7 +87,7 @@ fun ProxyPrefDialog(modifier: Modifier = Modifier) {
                         PlatformStuff.mainPrefs.updateData {
                             it.copy(
                                 proxy = MainPrefs.ProxySettings(
-                                    enabled = enabledEditable,
+                                    type = typeEditable,
                                     host = hostEditable,
                                     port = portEditable.toInt(),
                                     user = userEditable,
@@ -100,11 +103,16 @@ fun ProxyPrefDialog(modifier: Modifier = Modifier) {
         OutlinedToggleButtons(
             listOf(
                 stringResource(Res.string.system),
-                stringResource(Res.string.proxy_socks5)
+                stringResource(Res.string.proxy_http),
+                stringResource(Res.string.proxy_socks5),
             ),
-            selectedIndex = if (enabledEditable) 1 else 0,
+            selectedIndex = typeEditable.ordinal,
             onSelected = { index ->
-                enabledEditable = index == 1
+                typeEditable = when (index) {
+                    MainPrefs.ProxySettings.Type.SOCKS5.ordinal -> MainPrefs.ProxySettings.Type.SOCKS5
+                    MainPrefs.ProxySettings.Type.HTTP.ordinal -> MainPrefs.ProxySettings.Type.HTTP
+                    else -> MainPrefs.ProxySettings.Type.SYSTEM
+                }
             },
             modifier = Modifier
                 .align(Alignment.CenterHorizontally)
@@ -122,7 +130,7 @@ fun ProxyPrefDialog(modifier: Modifier = Modifier) {
                 label = {
                     Text(stringResource(Res.string.host))
                 },
-                enabled = enabledEditable,
+                enabled = isEnabled,
                 singleLine = true,
                 isError = !isValid,
                 modifier = Modifier
@@ -139,7 +147,7 @@ fun ProxyPrefDialog(modifier: Modifier = Modifier) {
                 keyboardOptions = KeyboardOptions.Default.copy(
                     keyboardType = KeyboardType.Number
                 ),
-                enabled = enabledEditable,
+                enabled = isEnabled,
                 singleLine = true,
                 isError = !isValid,
                 modifier = Modifier
@@ -158,7 +166,7 @@ fun ProxyPrefDialog(modifier: Modifier = Modifier) {
                 label = {
                     Text(stringResource(Res.string.username))
                 },
-                enabled = enabledEditable,
+                enabled = isEnabled,
                 singleLine = true,
                 isError = !isValid,
                 modifier = Modifier
@@ -173,7 +181,7 @@ fun ProxyPrefDialog(modifier: Modifier = Modifier) {
                     Text(stringResource(Res.string.password))
                 },
                 visualTransformation = PasswordVisualTransformation(),
-                enabled = enabledEditable,
+                enabled = isEnabled,
                 singleLine = true,
                 isError = !isValid,
                 modifier = Modifier

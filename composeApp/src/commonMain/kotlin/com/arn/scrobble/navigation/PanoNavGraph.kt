@@ -123,8 +123,10 @@ object PanoNavGraph {
 
         @Composable
         fun modifier() = Modifier
-            .fillMaxSize()
-            .background(MaterialTheme.colorScheme.surface)
+            .fillMaxSize() then
+                MaterialTheme.colorScheme.surface.let {
+                    if (it.alpha == 1f) Modifier.background(it) else Modifier
+                }
 
         @Composable
         fun getTabData(route: PanoRoute.HasTabs): List<PanoTab> {

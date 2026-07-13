@@ -204,7 +204,7 @@ class ChartsWidgetUpdaterWorker(appContext: Context, workerParams: WorkerParamet
                     } else
                         null
 
-                if (specificWidgetIds == null && widgetPrefs.chartsData[dataKey]?.canFetchAgain != false)
+                if (specificWidgetIds == null && widgetPrefs.chartsData[dataKey]?.canFetchAgain == false)
                     return@forEach
 
                 val scrobblable =

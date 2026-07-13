@@ -13,12 +13,12 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.FilledTonalIconToggleButton
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconToggleButtonShapes
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Slider
 import androidx.compose.material3.Text
 import androidx.compose.material3.ToggleButtonDefaults
 import androidx.compose.runtime.Composable
@@ -34,6 +34,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
+import com.arn.scrobble.BuildKonfig
 import com.arn.scrobble.billing.LocalLicenseValidState
 import com.arn.scrobble.icons.Check
 import com.arn.scrobble.icons.Icons
@@ -44,6 +45,7 @@ import com.arn.scrobble.utils.Stuff
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
 import pano_scrobbler.composeapp.generated.resources.Res
+import pano_scrobbler.composeapp.generated.resources.appwidget_alpha
 import pano_scrobbler.composeapp.generated.resources.auto
 import pano_scrobbler.composeapp.generated.resources.contrast
 import pano_scrobbler.composeapp.generated.resources.dark
@@ -65,11 +67,12 @@ fun ThemeChooserScreen(
     var dayNightMode: DayNightMode? by rememberSaveable { mutableStateOf(null) }
     var random: Boolean? by rememberSaveable { mutableStateOf(false) }
     var contrastMode: ContrastMode? by rememberSaveable { mutableStateOf(null) }
+    var alpha: Float? by rememberSaveable { mutableStateOf(null) }
     val isAppInNightMode = LocalThemeAttributes.current.isDark
 
     DisposableEffect(Unit) {
         onDispose {
-            if (themeName != null && dynamic != null && dayNightMode != null && contrastMode != null) {
+            if (themeName != null && dynamic != null && dayNightMode != null && contrastMode != null && alpha != null) {
                 if (isLicenseValid) {
                     Stuff.appScope.launch {
                         PlatformStuff.mainPrefs.updateData {
@@ -78,7 +81,8 @@ fun ThemeChooserScreen(
                                 themeDynamic = dynamic!!,
                                 themeDayNight = dayNightMode!!,
                                 themeRandom = random!!,
-                                themeContrast = contrastMode!!
+                                themeContrast = contrastMode!!,
+                                themeAlpha = alpha!!
                             )
                         }
                     }
@@ -96,6 +100,7 @@ fun ThemeChooserScreen(
                 dayNightMode = it.themeDayNight
                 random = it.themeRandom
                 contrastMode = it.themeContrast
+                alpha = it.themeAlpha
             }
     }
 
@@ -118,6 +123,26 @@ fun ThemeChooserScreen(
                     enabled = isLicenseValid && dynamic != true && random != true,
                 )
             }
+        }
+
+        if (BuildKonfig.DEBUG && !PlatformStuff.isTv) {
+            // looks ass right now
+            val alphaValue = alpha ?: 0.5f
+            Row {
+                Text(
+                    text = stringResource(Res.string.appwidget_alpha) +
+                            ": ${"%.0f".format(alphaValue * 100)}%",
+                    style = MaterialTheme.typography.titleMedium
+                )
+            }
+
+            Slider(
+                value = alphaValue,
+                onValueChange = { alpha = it },
+                valueRange = 0.5f..1f,
+                steps = 9,
+                enabled = isLicenseValid
+            )
         }
 
         Row(

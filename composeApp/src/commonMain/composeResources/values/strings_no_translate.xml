@@ -35,6 +35,7 @@
     <string name="log_to_file">Persist scrobble logs</string>
     <string name="affect_performance">Will affect performance</string>
     <string name="proxy_socks5" translatable="false">SOCKS5</string>
+    <string name="proxy_http" translatable="false">HTTP</string>
     <string name="desktop" translatable="false">Windows &amp; Linux</string>
     <string name="android" translatable="false">Android</string>
     <string name="persistent_noti_oems" translatable="false">Xiaomi, Samsung, Huawei</string>
@@ -42,6 +43,11 @@
 
     <!--  strings for unfinalized stuff  -->
 
+    <string name="button_url" comment="used for the button in discord rich presence">Button URL</string>
+    <string name="minimize">Minimize</string>
+    <string name="websites">Websites</string>
+    <string name="websites_desc">Applies to all enabled media players that report the page URL via MPRIS.</string>
+    <string name="forget_checked_websites">Forget checked websites</string>
     <string name="last_error">Last error</string>
     <string name="rate_limit_warn">Submitting too many scrobbles in a day may cause the scrobbling service to reject them, increasing your backlog.</string>
     <string name="unsupported_api">This API may not be supported by the server. View on web.</string>

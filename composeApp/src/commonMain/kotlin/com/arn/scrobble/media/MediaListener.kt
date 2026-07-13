@@ -46,9 +46,6 @@ abstract class MediaListener(
 
     private var scrobbleLockKey: MediaTrackerKey? = null
 
-    private fun keyOf(tracker: SessionTracker): MediaTrackerKey? =
-        sessionTrackers.entries.find { it.value === tracker }?.key
-
     private fun PlayingTrackInfo.isEligibleForScrobble() = isPlaying &&
             title.isNotEmpty() &&
             artist.isNotEmpty() &&
@@ -120,7 +117,7 @@ abstract class MediaListener(
             .filter {
                 it.trackInfo.isEligibleForScrobble() && !scrobbleQueue.has(it.trackInfo.hash)
             }
-            .minByOrNull { it.trackInfo.playStartTime }
+            .minByOrNull { it.trackInfo.sessionStartTime }
             ?.scrobble()
     }
 
@@ -166,6 +163,7 @@ abstract class MediaListener(
     abstract fun shouldScrobble(rawAppId: String): Boolean
 
     abstract inner class SessionTracker(
+        private val key: MediaTrackerKey,
         val trackInfo: PlayingTrackInfo,
     ) {
 
@@ -197,23 +195,22 @@ abstract class MediaListener(
             finalDelay = (finalDelay - trackInfo.timePlayed)
                 .coerceAtLeast(2000)// deal with negative or 0 delay
 
-            keyOf(this)?.let { key ->
-                claimScrobbleLock(
-                    requesterKey = key,
-                    onWon = {
-                        scrobbleQueue.scrobble(
-                            trackInfo = trackInfo,
-                            appIsAllowListed = trackInfo.appId in allowedPackages.value,
-                            delay = finalDelay,
-                        )
-                    },
-                    onLost = { winnerTrackInfo ->
-                        scrobbleQueue.remove(trackInfo.hash)
-                        if (winnerTrackInfo.notiKey != trackInfo.notiKey)
-                            PanoNotifications.removeNotificationByKey(trackInfo.notiKey)
-                    },
-                )
-            }
+            claimScrobbleLock(
+                requesterKey = key,
+                onWon = {
+                    onBeforeScrobble()
+
+                    scrobbleQueue.scrobble(
+                        trackInfo = trackInfo,
+                        delay = finalDelay,
+                    )
+                },
+                onLost = { winnerTrackInfo ->
+                    scrobbleQueue.remove(trackInfo.hash)
+                    if (winnerTrackInfo.notiKey != trackInfo.notiKey)
+                        PanoNotifications.removeNotificationByKey(trackInfo.notiKey)
+                },
+            )
         }
 
 
@@ -269,9 +266,7 @@ abstract class MediaListener(
             // do not scrobble again
             lastPlaybackState = CommonPlaybackState.None
 
-            keyOf(this)?.let {
-                releaseScrobbleLockIfHeldBy(it)
-            }
+            releaseScrobbleLockIfHeldBy(key)
         }
 
         fun playbackStateChanged(
@@ -296,7 +291,7 @@ abstract class MediaListener(
 
             if (!playbackStateChanged /* bandcamp does this */ &&
                 !(playbackInfo.state == CommonPlaybackState.Playing && isPossiblyAtStart) &&
-                !timelineChanged
+                (!notifyTimelineUpdates || !timelineChanged)
             )
                 return
 
@@ -320,7 +315,8 @@ abstract class MediaListener(
                         trackInfo.resumed()
 
                         if (trackInfo.hash != trackInfo.lastScrobbleHash ||
-                            (playbackInfo.position >= 0L && isPossiblyAtStart && timelineChanged)
+                            (playbackInfo.position >= 0L && isPossiblyAtStart &&
+                                    (!notifyTimelineUpdates || timelineChanged))
                         )
                             trackInfo.resetTimePlayed()
 
@@ -367,7 +363,7 @@ abstract class MediaListener(
             if (isMuted)
                 unmute(clearMutedHash = false)
 
-            keyOf(this)?.let { releaseScrobbleLockIfHeldBy(it) }
+            releaseScrobbleLockIfHeldBy(key)
         }
 
         abstract fun love()
@@ -375,6 +371,7 @@ abstract class MediaListener(
         abstract fun unlove()
         abstract fun skip()
         abstract fun stop()
+        abstract fun onBeforeScrobble()
     }
 
     companion object {

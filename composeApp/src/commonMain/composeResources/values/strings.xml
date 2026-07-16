@@ -380,6 +380,7 @@
     <string name="edit_no_save">This will not be saved for future scrobbles</string>
     <string name="also_available_on" formatted="true" comment="%1$s is the platform name, like Android, PC">Get this app on %1$s</string>
     <string name="first_artist">Use the first artist only</string>
+    <string name="require_album">Don't scrobble if the album metadata is missing</string>
     <string name="external_metadata">External metadata sources</string>
     <string name="line_n" formatted="true" comment="%1$s is the line number, currently used in the context of Discord Rich Presence">Line %1$s</string>
     <string name="album_art_now_playing">Fetch album art from Now Playing, if required</string>

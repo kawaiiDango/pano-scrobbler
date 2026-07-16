@@ -166,6 +166,17 @@ fun AppListScreen(
                         }
                     }
 
+                    AppListSaveType.RequireAlbum -> {
+                        Stuff.appScope.launch {
+                            PlatformStuff.mainPrefs.updateData { pref ->
+                                pref.copy(
+                                    requireAlbumPackages = pref.requireAlbumPackages +
+                                            checkedAppIdsSet - uncheckedAppIdsSet,
+                                )
+                            }
+                        }
+                    }
+
                     AppListSaveType.Automation -> {
                         Stuff.appScope.launch {
                             PlatformStuff.mainPrefs.updateData { pref ->
@@ -614,6 +625,9 @@ sealed interface AppListSaveType {
 
     @Serializable
     object ExtractFirstArtist : AppListSaveType
+
+    @Serializable
+    object RequireAlbum : AppListSaveType
 
     @Serializable
     object Automation : AppListSaveType

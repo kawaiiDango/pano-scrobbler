@@ -6,5 +6,6 @@
 - Added a reset button next to all time sliders, to reset them to the recommended values
 - Shows a warning if the scrobble delay is too low
 - Added a parsing rule for changes in newer versions of Sonos 2
+- An option to not scrobble from selected apps when the album metadata is missing
 - Bug fixes
 - Translation updates by the translators on Crowdin

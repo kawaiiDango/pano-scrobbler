@@ -26,6 +26,9 @@ abstract class MediaListener(
 
     protected val allowedPackages = mainPrefs.data.stateInWithCache(scope) { it.allowedPackages }
 
+    private val requireAlbumPackages =
+        mainPrefs.data.stateInWithCache(scope) { it.requireAlbumPackages }
+
     protected val scrobblerEnabled =
         mainPrefs.data.stateInWithCache(scope) { it.scrobblerEnabled && it.scrobbleAccounts.isNotEmpty() }
 
@@ -243,7 +246,9 @@ abstract class MediaListener(
                 if (mutedHash != null && trackInfo.hash != mutedHash && lastPlaybackState == CommonPlaybackState.Playing)
                     unmute(clearMutedHash = isMuted)
 
-                if (ignoreScrobble || metadata.artist.isEmpty() || metadata.title.isEmpty()) {
+                if (ignoreScrobble || metadata.artist.isEmpty() || metadata.title.isEmpty() ||
+                    (metadata.album.isEmpty() && trackInfo.appId in requireAlbumPackages.value)
+                ) {
                     ignoreScrobble()
                 } else if ((!scrobbleQueue.has(trackInfo.hash) || onlyDurationUpdated) &&
                     lastPlaybackState == CommonPlaybackState.Playing

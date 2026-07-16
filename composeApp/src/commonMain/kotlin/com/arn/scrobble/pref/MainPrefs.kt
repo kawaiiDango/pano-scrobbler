@@ -126,6 +126,7 @@ data class MainPrefs(
     private val logToFileOnAndroidSince: Long = -1,
     val lovesFetchedForCache: Boolean = false,
     val extractFirstArtistPackages: Set<String> = emptySet(),
+    val requireAlbumPackages: Set<String> = emptySet(),
     val discordRpc: DiscordRpcSettings = DiscordRpcSettings(),
     val proxy: ProxySettings = ProxySettings(),
 ) {
@@ -208,6 +209,7 @@ data class MainPrefs(
         val usePlayFromSearch: Boolean = defaultMainPrefs.usePlayFromSearch,
         val regexPresets: Set<String> = defaultMainPrefs.regexPresets,
         val extractFirstArtistPackages: Set<String> = defaultMainPrefs.extractFirstArtistPackages,
+        val requireAlbumPackages: Set<String> = defaultMainPrefs.requireAlbumPackages,
         @JsonNames("app_whitelist")
         val allowedPackages: Set<String> = defaultMainPrefs.allowedPackages,
         val regexPresetsApps: Map<String, Set<String>> = defaultMainPrefs.regexPresetsApps,
@@ -292,6 +294,7 @@ data class MainPrefs(
         allowedPackages = prefs.allowedPackages,
         regexPresets = prefs.regexPresets,
         extractFirstArtistPackages = prefs.extractFirstArtistPackages,
+        requireAlbumPackages = prefs.requireAlbumPackages,
         regexPresetsApps = prefs.regexPresetsApps,
         discordRpc = prefs.discordRpc,
         spotifyApi = prefs.spotifyApi,
@@ -325,6 +328,7 @@ data class MainPrefs(
         allowedPackages = allowedPackages,
         regexPresets = regexPresets,
         extractFirstArtistPackages = extractFirstArtistPackages,
+        requireAlbumPackages = requireAlbumPackages,
         regexPresetsApps = regexPresetsApps,
         discordRpc = discordRpc,
         spotifyApi = spotifyApi,

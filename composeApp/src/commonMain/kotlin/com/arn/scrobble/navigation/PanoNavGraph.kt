@@ -88,6 +88,7 @@ import pano_scrobbler.composeapp.generated.resources.pref_themes
 import pano_scrobbler.composeapp.generated.resources.pref_translate_credits
 import pano_scrobbler.composeapp.generated.resources.random_text
 import pano_scrobbler.composeapp.generated.resources.regex_rules
+import pano_scrobbler.composeapp.generated.resources.require_album
 import pano_scrobbler.composeapp.generated.resources.scan_qr
 import pano_scrobbler.composeapp.generated.resources.scrobble_to_file
 import pano_scrobbler.composeapp.generated.resources.search
@@ -213,6 +214,8 @@ object PanoNavGraph {
                 route,
                 if (route.saveType == AppListSaveType.ExtractFirstArtist)
                     Res.string.first_artist
+                else if (route.saveType == AppListSaveType.RequireAlbum)
+                    Res.string.require_album
                 else if (route.isSingleSelect)
                     Res.string.choose_an_app
                 else

@@ -129,6 +129,7 @@ import pano_scrobbler.composeapp.generated.resources.pref_tray_icon_theme
 import pano_scrobbler.composeapp.generated.resources.proxy
 import pano_scrobbler.composeapp.generated.resources.rate_limit_warn
 import pano_scrobbler.composeapp.generated.resources.regex_rules
+import pano_scrobbler.composeapp.generated.resources.require_album
 import pano_scrobbler.composeapp.generated.resources.scrobble_services
 import pano_scrobbler.composeapp.generated.resources.scrobbles
 import pano_scrobbler.composeapp.generated.resources.search
@@ -190,6 +191,8 @@ fun PrefsScreen(
     mainPrefs.data.collectAsStateWithInitialValue { it.deezerApi }
     val extractFirstArtistPackages by
     mainPrefs.data.collectAsStateWithInitialValue { it.extractFirstArtistPackages }
+    val requireAlbumPackages by
+    mainPrefs.data.collectAsStateWithInitialValue { it.requireAlbumPackages }
     val demoMode by mainPrefs.data.collectAsStateWithInitialValue { it.demoModeP }
     val proxy by Requesters.proxy.collectAsStateWithLifecycle()
     val scrobblableLabels by
@@ -421,6 +424,27 @@ fun PrefsScreen(
                                 saveType = AppListSaveType.ExtractFirstArtist,
                                 packagesOverride = (allowedPackages union extractFirstArtistPackages).toList(),
                                 preSelectedPackages = extractFirstArtistPackages.toList(),
+                                isSingleSelect = false,
+                            )
+                        )
+                    }
+                )
+            }
+
+            filteredItem(
+                MainPrefs::requireAlbumPackages.name,
+                Res.string.require_album
+            ) { title ->
+                AppIconsPref(
+                    packageNames = requireAlbumPackages,
+                    title = title,
+                    enabled = (allowedPackages.size + requireAlbumPackages.size) > 0,
+                    onClick = {
+                        onNavigate(
+                            PanoRoute.AppList(
+                                saveType = AppListSaveType.RequireAlbum,
+                                packagesOverride = (allowedPackages union requireAlbumPackages).toList(),
+                                preSelectedPackages = requireAlbumPackages.toList(),
                                 isSingleSelect = false,
                             )
                         )

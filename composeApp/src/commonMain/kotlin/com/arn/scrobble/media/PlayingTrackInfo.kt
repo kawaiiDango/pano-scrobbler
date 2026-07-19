@@ -73,6 +73,10 @@ class PlayingTrackInfo(
     private var timelineStartTime: Long = cachedTrackInfo?.timelineStartTime ?: 0L
     var playStartTime: Long = cachedTrackInfo?.playStartTime ?: 0L
         private set
+
+    // baseline for timePlayed; unlike playStartTime, advances on every resume,
+    // so pause gaps don't count as played time
+    private var segmentStartTime: Long = cachedTrackInfo?.segmentStartTime ?: 0L
     var scrobbledState: ScrobbledState = cachedTrackInfo?.scrobbledState ?: ScrobbledState.NONE
         private set
     var timePlayed: Long = cachedTrackInfo?.timePlayed ?: 0L
@@ -111,6 +115,7 @@ class PlayingTrackInfo(
         scrobbledState = ScrobbledState.NONE
         msid = null
         playStartTime = if (isPlaying) System.currentTimeMillis() else 0L
+        segmentStartTime = playStartTime
     }
 
     fun setArtUrl(artUrl: String?) {
@@ -157,6 +162,8 @@ class PlayingTrackInfo(
 
         if (playStartTime <= 0L)
             playStartTime = System.currentTimeMillis()
+        if (segmentStartTime <= 0L)
+            segmentStartTime = System.currentTimeMillis()
     }
 
     fun updateUserProps(
@@ -170,10 +177,13 @@ class PlayingTrackInfo(
     fun resetTimePlayed() {
         timePlayed = 0L
         playStartTime = System.currentTimeMillis()
+        segmentStartTime = playStartTime
     }
 
     fun addTimePlayed() {
-        timePlayed += System.currentTimeMillis() - playStartTime
+        if (segmentStartTime > 0L)
+            timePlayed += System.currentTimeMillis() - segmentStartTime
+        segmentStartTime = 0L
     }
 
     fun paused() {
@@ -184,6 +194,8 @@ class PlayingTrackInfo(
         isPlaying = true
         if (playStartTime <= 0L)
             playStartTime = System.currentTimeMillis()
+        if (segmentStartTime <= 0L)
+            segmentStartTime = System.currentTimeMillis()
     }
 
     fun toScrobbleData(useOriginals: Boolean) = ScrobbleData(

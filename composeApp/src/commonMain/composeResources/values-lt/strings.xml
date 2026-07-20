@@ -272,8 +272,8 @@
     <string name="captions" comment="Collage image captions such as artist names, play counts">Vaizdų antraštės</string>
     <string name="username" comment="last.fm Username">Naudotojo vardas</string>
     <string name="pref_master">Skrobolinti muziką</string>
-    <string name="pref_master_qs_add">Pridėti sparčiųjų nustatymų plytelę</string>
-    <string name="pref_master_qs_already_addded">Sparčiųjų nustatymų plytelė jau pridėta.</string>
+    <string name="pref_master_qs_add">Pridėti sparčiojo nustatymo plytelę</string>
+    <string name="pref_master_qs_already_addded">Sparčiojo nustatymo plytelė jau pridėta.</string>
     <string name="pref_noti">Pranešimai</string>
     <string name="pref_offline_info">ℹ️ Neprisijungus skroblai ir mėgstami bus išsaugoti, kad būtų išsiųsti vėliau.</string>
     <string name="pref_scrobble_from" comment="Scrobble from (these apps)">Skrobolinti iš</string>
@@ -451,7 +451,8 @@ Jūsų pirkinius tvarko „Google Play“. Jie susieti su „Google Play“ pask
 • Išdiegkite šią programą.
 • Atverkite „Google Play“ tinklalapį iš kompiuterio.
 • Prisijunkite su paskyra, kuriai priklauso pirkinys.
-• Diegkite šią programą tiesiogiai iš „Google Play“ tinklalapio.</string>
+• Diegkite šią programą tiesiogiai iš „Google Play“ tinklalapio.
+</string>
     <string name="billing_block">Blokuoti atlikėjus / takelius ir automatiškai praleisti arba nutildyti.</string>
     <string name="billing_pin_friends" formatted="true" comment="%1= number of pins, always 10 or more">Prisegti iki %1$d draugų ir pertvarkyti juos.</string>
     <string name="billing_sharing">Šalinti programos pavadinimą bendrinant.</string>

@@ -416,7 +416,8 @@ Twoje zakupy są zarządzane przez Google Play. Są one połączone z kontem Goo
 • Odinstaluj tę aplikację.
 • Otwórz stronę Google Play ze swojego komputera.
 • Zaloguj się przy użyciu konta posiadającego zakup.
-• Zainstaluj tę aplikację bezpośrednio ze strony Google Play.</string>
+• Zainstaluj tę aplikację bezpośrednio ze strony Google Play.
+</string>
     <string name="billing_block">Blokuj artystów/utwory i automatycznie pomiń lub wycisz</string>
     <string name="billing_pin_friends" formatted="true" comment="%1= number of pins, always 10 or more">Przypnij do %1$d znajomych i zmień kolejność</string>
     <string name="billing_sharing">Usuń nazwę aplikacji podczas udostępniania</string>

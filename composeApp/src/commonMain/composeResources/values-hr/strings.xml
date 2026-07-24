@@ -397,6 +397,7 @@
     <string name="automation_cli_info">Pokrenite izvršnu datoteku pano-scrobbler s nekim od ovih argumenata naredbenog retka kada je već pokrenuta jedna instanca.</string>
     <string name="album_art_now_playing_desc">Zahtijeva prijavu na last.fm</string>
     <string name="spotify_consent">Dohvatiti slike izvođača sa Spotifya?</string>
+    <string name="show_track_url" comment="Toggle to put the URL of the currently playing track, used for Discord Rich Presence">URL pjesme</string>
     <string name="search_in_media_player" comment="This launches and searches in the media player app directly instead of opening a browser">Pretraži izravno u medijskom reproduktoru</string>
     <string name="forget_unchecked_apps" comment="Shown in the 'Scrobble From' apps list on desktop">Zaboravi neoznačene aplikacije</string>
     <string name="discord_app_name" comment="usually the media player app name, shown in discord rich presence">Naziv aplikacije</string>
@@ -435,7 +436,8 @@ Vašim kupovinama upravlja Google Play. One su povezane s Google Play računom k
 • Deinstalirajte ovu aplikaciju.
 • Otvorite Google Play web-stranicu na Vašem računalu.
 • Prijaviti se s računom koji posjeduje kupovinu ove aplikacije.
-• Instalirajte aplikaciju s Google Play web-stranice.</string>
+• Instalirajte aplikaciju s Google Play web-stranice.
+</string>
     <string name="billing_block">Blokiranje izvođača/pjesama i automatsko preskakanje ili utišavanje</string>
     <string name="billing_pin_friends" formatted="true" comment="%1= number of pins, always 10 or more">Prikvačivanje do %1$d prijatelja i mijenjanje njihovog poretka</string>
     <string name="billing_sharing">Uklanjanje naziva aplikacija kod dijeljenja</string>

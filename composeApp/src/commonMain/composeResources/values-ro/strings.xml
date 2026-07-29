@@ -111,4 +111,41 @@
     <string name="from" formatted="true" comment="%1= country (displayed in friends popup)">De la %1$s</string>
     <string name="not_found" comment="Shown in search">Nu a fost găsit</string>
     <string name="save" comment="saves a file">Salvează</string>
+    <string name="reports" comment="Like last.week reports and stuff">Rapoarte</string>
+    <string name="weekly">Săptămânal</string>
+    <string name="weeks">Săptămâni</string>
+    <string name="monthly">Lunar</string>
+    <string name="months">Luni</string>
+    <string name="days">Zile</string>
+    <string name="years" comment="For the charts menu which displays year by year">Ani</string>
+    <string name="charts_overall">Per total</string>
+    <string name="listening_activity" comment="Shows a bar chart of the number of scrobbles each day/week/month/year">Activitatea de ascultare</string>
+    <string name="charts_no_data">Nu există date pentru această perioadă</string>
+    <string name="charts_custom" comment="Custom date range, but in short, used in the charts menu">Personalizat</string>
+    <string name="charts_continuous" comment="Continuous date ranges, but in short, like last 7 days, last 30 days, etc">Continuu</string>
+    <string name="based_on" formatted="true" comment="%1= the word 'artists', 'albums' or 'tracks'">Bazat pe %1$s</string>
+    <string name="not_enough_data" comment="(not enough data to draw a chart etc)">Nu sunt date suficiente</string>
+    <string name="random_text">Aleatoriu</string>
+    <string name="original" comment="Original metadata before editing">Original</string>
+    <string name="corrected" comment="Corrected metadata after editing">Corectat</string>
+    <string name="tag" comment="last.fm tag">Etichetă</string>
+    <string name="taggers" comment="(number of) people who have tagged">Urmăritori</string>
+    <string name="taggings" comment="(total count of) a particular tag">Etichetări</string>
+    <string name="my_tags" comment="Tags, the user has added">Etichetele mele</string>
+    <string name="close" comment="To close a dialog or something">Închide</string>
+    <string name="quit" comment="A stronger word than close, used to completely quit the app and stop scrobbling on desktop">Închide programul</string>
+    <string name="user_tags_hint" comment="To add a new tag">Etichetă nouă</string>
+    <string name="user_tags_empty">Nu ai adăugat nici o etichetă</string>
+    <string name="appwidget_loading">Se încarcă…</string>
+    <string name="appwidget_period" comment="1 week, 1 month, 1 year etc">Perioadă</string>
+    <string name="appwidget_shadow">Umbră</string>
+    <string name="appwidget_show">Arată</string>
+    <string name="light">Luminos</string>
+    <string name="dark">Întunecat</string>
+    <string name="system_colors">Culorile sistemului</string>
+    <string name="appwidget_alpha">Opacitatea fundalului</string>
+    <string name="use_channel" comment="(Use youtube channel name)">Folosește numele canalului</string>
+    <string name="regex_edits_suggestion" formatted="true" comment="%1= the preset name (e.g. Remastered)">Doriți să activați regula de editare a modelului: %1$s?</string>
+    <string name="show_persistent_noti">Arată o notificare persistentă</string>
+    <string name="fix_it_desc">Acestea pot face ca scrobbler-ul să ruleze în fundal pe unele dispozitive</string>
 </resources>

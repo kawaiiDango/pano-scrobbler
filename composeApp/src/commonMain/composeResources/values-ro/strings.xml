@@ -144,8 +144,54 @@
     <string name="dark">Întunecat</string>
     <string name="system_colors">Culorile sistemului</string>
     <string name="appwidget_alpha">Opacitatea fundalului</string>
+    <string name="pin_help">Țineți apăsat elementele fixate pentru ale reordona</string>
     <string name="use_channel" comment="(Use youtube channel name)">Folosește numele canalului</string>
     <string name="regex_edits_suggestion" formatted="true" comment="%1= the preset name (e.g. Remastered)">Doriți să activați regula de editare a modelului: %1$s?</string>
     <string name="show_persistent_noti">Arată o notificare persistentă</string>
     <string name="fix_it_desc">Acestea pot face ca scrobbler-ul să ruleze în fundal pe unele dispozitive</string>
+    <string name="persistent_noti_text">Atingeți pentru a ascunde notificarea</string>
+    <string name="scrobbler_off">Scrobbler dezactivat</string>
+    <string name="scrobbler_on">Scrobbler activ</string>
+    <string name="duration">Durată</string>
+    <string name="total_listen_time">Timp total de ascultare</string>
+    <string name="disable" comment="To disable some feature">Dezactivare</string>
+    <string name="remove" formatted="true" comment="%1= the text to remove. For example, Remove: Remastered">Elimină: %1$s</string>
+    <string name="size" comment="Collage size such as 3x3, 4x4 etc">Dimensiune</string>
+    <string name="skip_missing_images" comment="(while generating a collage)">Omite imaginile lipsă</string>
+    <string name="create_collage">Creează colaj</string>
+    <string name="captions" comment="Collage image captions such as artist names, play counts">Legenda imaginii</string>
+    <string name="username" comment="last.fm Username">Nume de utilizator</string>
+    <string name="pref_master">Scrobble de muzică</string>
+    <string name="pref_master_qs_add">Adaugă iconița pentru setări rapide</string>
+    <string name="pref_master_qs_already_addded">Iconița pentru setări rapide este deja adăugată</string>
+    <string name="pref_noti">Notificări</string>
+    <string name="pref_delay">Întârziere scrobble (Oricare este mai devreme)</string>
+    <string name="pref_delay_mins" comment="(Scrobble delay in minutes)">Minute</string>
+    <string name="pref_delay_per" comment="(Scrobble delay in percent)">Procent</string>
+    <string name="pref_logout">Deconectare</string>
+    <string name="sure_tap_again">Sigur? Apăsați din nou</string>
+    <string name="pref_login">Autentifică-te</string>
+    <string name="pref_about" comment="Info about this app">Despre</string>
+    <string name="pref_privacy_policy">Politica de confidențialitate</string>
+    <string name="pref_user_label" comment="(Like username)">Utilizator</string>
+    <string name="pref_token_label" comment="For Listenbrainz">Token de autentificare</string>
+    <string name="api_url" comment="For Listenbrainz">API URL</string>
+    <string name="server_url" comment="For self hosted scrobbling services">URL-ul serverului</string>
+    <string name="listenbrainz_info" formatted="true" comment="%1 = the link to page containing the token">Poți găsi tău tokenul de autentificare la: %1$s</string>
+    <string name="pref_now_playing">Trimite acum redă</string>
+    <string name="pref_fetch_missing_album" formatted="true" comment="%1= the name of a service like last.fm, Deezer etc">Preluare album lipsă de la %1$s</string>
+    <string name="pref_locale">Limbi</string>
+    <string name="pref_crashlytics_enabled">Raportează erorile automat</string>
+    <string name="pref_misc">Diverse</string>
+    <string name="pref_first_day_of_week" comment="Sunday, Monday etc">O săptămână începe pe</string>
+    <string name="pref_export">Exportă</string>
+    <string name="pref_import">Importă</string>
+    <string name="pref_imexport_network" comment="As in backup or restore the settings over network">Rețea</string>
+    <string name="pref_imexport_code" comment="A code shown on the screen to be entered on the other device">Cod</string>
+    <string name="pref_imexport_network_notice">Pentru modul de rețea, ambele dispozitive trebuie să fie conectate la aceeași rețea.</string>
+    <string name="pref_personalization" comment="Such as themes, widgets and some appearance settings">Personalizare</string>
+    <string name="pref_themes" comment="Color themes">Teme</string>
+    <string name="pref_widget_charts">Widget ecran acasă - Clasament</string>
+    <string name="pref_show_scrobble_sources">Arată pictogramele aplicațiilor din care ai scrobblat</string>
+    <string name="pref_show_scrobble_sources_desc" comment="This is a continuation of the string: Show icons of apps you scrobbled from">…lângă fiecare scrobble. Aceste date rămân pe dispozitivul dvs</string>
 </resources>

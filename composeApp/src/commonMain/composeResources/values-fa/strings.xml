@@ -10,23 +10,23 @@
     </plurals>
     <plurals name="num_listeners">
         <item quantity="one">%1$s شنونده</item>
-        <item quantity="other">%1$s شنونده</item>
+        <item quantity="other">%1$s شنونده ها</item>
     </plurals>
     <plurals name="num_days">
         <item quantity="one">%1$s روز</item>
-        <item quantity="other">%1$s روز</item>
+        <item quantity="other">%1$s روز ها</item>
     </plurals>
     <plurals name="num_weeks">
         <item quantity="one">%1$s هفته</item>
-        <item quantity="other">%1$s هفته</item>
+        <item quantity="other">%1$s هفته ها</item>
     </plurals>
     <plurals name="num_months">
         <item quantity="one">%1$s ماه</item>
-        <item quantity="other">%1$s ماه</item>
+        <item quantity="other">%1$s ماه ها</item>
     </plurals>
     <plurals name="num_years">
         <item quantity="one">%1$s سال</item>
-        <item quantity="other">%1$s سال</item>
+        <item quantity="other">%1$s سال ها</item>
     </plurals>
     <plurals name="num_artists">
         <item quantity="one">%1$s هنرمند</item>
@@ -372,7 +372,8 @@
     <string name="edit_no_save">این برای اسکروبل‌های آینده ذخیره نخواهد شد.</string>
     <string name="also_available_on" formatted="true" comment="%1$s is the platform name, like Android, PC">این برنامه رو از %1$s دریافت کن</string>
     <string name="first_artist">فقط ار هنرمند اول استفاده کن</string>
-    <string name="external_metadata">منابع خارجی فراداده</string>
+    <string name="external_metadata">منابع خارجی فراداده
+</string>
     <string name="line_n" formatted="true" comment="%1$s is the line number, currently used in the context of Discord Rich Presence">خط %1$s</string>
     <string name="album_art_now_playing">در صورت نیاز، کاور آلبوم Now Playing را دریافت کنید</string>
     <string name="is_turned_off" formatted="true" comment="%1$s= the name of a web service, e.g. Spotify, %2$s=the section name in settings screen where this setting can be found">%1$s در %2$s غیرفعال شده است</string>
@@ -388,6 +389,26 @@
     <string name="album_art_now_playing_desc">به ورود به سیستم last.fm نیاز دارد</string>
     <string name="spotify_consent">تصاویر هنرمندان را از اسپاتیفای دریافت می‌کنید؟</string>
     <string name="show_track_url" comment="Toggle to put the URL of the currently playing track, used for Discord Rich Presence">آدرس اینترنتی (URL) قطعه</string>
+    <string name="search_in_media_player" comment="This launches and searches in the media player app directly instead of opening a browser">جستجو مستقیم در مدیا</string>
+    <string name="forget_unchecked_apps" comment="Shown in the 'Scrobble From' apps list on desktop">فراموشی اپ های انتخاب نشده</string>
+    <string name="discord_app_name" comment="usually the media player app name, shown in discord rich presence">نام اپ</string>
+    <string name="convert_file" formatted="true" comment="%1$s is the file extension, used in the context of converting from one file format to another">تبدیل از %1$s</string>
+    <string name="move_up" comment="Screen reader text for drag and drop reordering">بالا بردن</string>
+    <string name="move_down" comment="Screen reader text for drag and drop reordering">پایین آوردن</string>
+    <string name="at_least" formatted="true" comment="%1$s=some number">حداقل %1$s</string>
+    <string name="code_will_be_sent" formatted="true" comment="%1$s is either Ko-Fi or BuyMeACoffee, %2$s is the donation amount">کد به ایمیل مربوط به اکانت %1$s ارسال خواهد شد، اگر شما %2$s دونیت کرده باشید</string>
+    <string name="proxy" comment="network proxy">پروکسی</string>
+    <string name="system" comment="system default settings">سیستم</string>
+    <string name="host" comment="proxy host">هاست</string>
+    <string name="port" comment="proxy port">پورت</string>
+    <string name="scanning" comment="finds other instances of Pano Scrobbler import server on the local network">درحال اسکن</string>
+    <string name="missing_local_network_permission">این امکان نیاز به دسترسی به وصل شدن اینترنت لوکال است</string>
+    <string name="artist_splitting_exceptions" comment="exceptions for the use first artist feature">استثنا های جدا کردن آرتیست ها</string>
+    <string name="add_exception" comment="as in adding an exception to a rule or setting">یک استثنا اضافه کنید</string>
+    <string name="upto_n" formatted="true">تا %1$d</string>
+    <string name="persistent_noti_fgs">جمع‌کننده در پس زمینه روشن نگه داشته شود</string>
+    <string name="cache" comment="as a noun">کش</string>
+    <string name="random_on_start" comment="currently used as a toggle in the themes screen to pick a random theme when the app starts">تصادفی در زمان شروع برنامه</string>
     <string name="get_pro">به این برنامه کمک کنید</string>
     <string name="one_time_purchase">پرداخت یک باره</string>
     <string name="help">کمک</string>

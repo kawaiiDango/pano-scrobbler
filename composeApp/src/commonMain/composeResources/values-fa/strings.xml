@@ -387,8 +387,8 @@
     <string name="automation_cli">آرگومان‌های خط فرمان</string>
     <string name="automation_cli_info">فایل اجرایی pano-scrobbler را با یکی از این آرگومان‌های خط فرمان، در حالی که یک نمونه از آن در حال اجرا است، اجرا کنید.</string>
     <string name="album_art_now_playing_desc">به ورود به سیستم last.fm نیاز دارد</string>
-    <string name="spotify_consent">تصاویر هنرمندان را از اسپاتیفای دریافت می‌کنید؟</string>
-    <string name="show_track_url" comment="Toggle to put the URL of the currently playing track, used for Discord Rich Presence">آدرس اینترنتی (URL) قطعه</string>
+    <string name="spotify_consent">تصاویر هنرمندان را از اسپاتیفای دریافت شود؟</string>
+    <string name="show_track_url" comment="Toggle to put the URL of the currently playing track, used for Discord Rich Presence">آدرس اینترنتی "URL" قطعه</string>
     <string name="search_in_media_player" comment="This launches and searches in the media player app directly instead of opening a browser">جستجو مستقیم در مدیا</string>
     <string name="forget_unchecked_apps" comment="Shown in the 'Scrobble From' apps list on desktop">فراموشی اپ های انتخاب نشده</string>
     <string name="discord_app_name" comment="usually the media player app name, shown in discord rich presence">نام اپ</string>
@@ -402,11 +402,11 @@
     <string name="host" comment="proxy host">هاست</string>
     <string name="port" comment="proxy port">پورت</string>
     <string name="scanning" comment="finds other instances of Pano Scrobbler import server on the local network">درحال اسکن</string>
-    <string name="missing_local_network_permission">این امکان نیاز به دسترسی به وصل شدن اینترنت لوکال است</string>
+    <string name="missing_local_network_permission">این امکان نیاز به دسترسی به وصل شدن به شبکه لوکال است</string>
     <string name="artist_splitting_exceptions" comment="exceptions for the use first artist feature">استثنا های جدا کردن آرتیست ها</string>
     <string name="add_exception" comment="as in adding an exception to a rule or setting">یک استثنا اضافه کنید</string>
     <string name="upto_n" formatted="true">تا %1$d</string>
-    <string name="persistent_noti_fgs">جمع‌کننده در پس زمینه روشن نگه داشته شود</string>
+    <string name="persistent_noti_fgs">اسکرابل‌کننده در پس زمینه روشن نگه داشته شود</string>
     <string name="cache" comment="as a noun">کش</string>
     <string name="random_on_start" comment="currently used as a toggle in the themes screen to pick a random theme when the app starts">تصادفی در زمان شروع برنامه</string>
     <string name="get_pro">به این برنامه کمک کنید</string>
@@ -423,7 +423,8 @@
 • این برنامه رو حذف نصب کنید.
 • صفحه وب گوگل پلی را از رایانه خود باز کنید.
 • با حسابی که خریدید وارد شوید.
-• این برنامه رو مستقیماً از صفحه وب گوگل پلی نصب کنید.</string>
+• این برنامه رو مستقیماً از صفحه وب گوگل پلی نصب کنید.
+</string>
     <string name="billing_block">مسدود کردن هنرمندان/آهنگ‌ها و رد یا بی‌صدا کردن خودکار</string>
     <string name="billing_pin_friends" formatted="true" comment="%1= number of pins, always 10 or more">تا %1$d دوست را پین کنید و آنها را دوباره مرتب کنید</string>
     <string name="billing_sharing">حذف نام برنامه هنگام اشتراک‌گذاری</string>

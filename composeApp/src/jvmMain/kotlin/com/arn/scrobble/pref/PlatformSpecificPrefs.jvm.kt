@@ -17,9 +17,7 @@ import pano_scrobbler.composeapp.generated.resources.done
 import pano_scrobbler.composeapp.generated.resources.enable
 import pano_scrobbler.composeapp.generated.resources.pref_check_updates
 import pano_scrobbler.composeapp.generated.resources.pref_fetch_missing_album
-import pano_scrobbler.composeapp.generated.resources.pref_master
 import pano_scrobbler.composeapp.generated.resources.pref_notify_updates
-import pano_scrobbler.composeapp.generated.resources.pref_offline_info
 import pano_scrobbler.composeapp.generated.resources.run_on_start
 import pano_scrobbler.composeapp.generated.resources.tidal
 import pano_scrobbler.composeapp.generated.resources.tidal_steelseries
@@ -140,21 +138,9 @@ actual object PlatformSpecificPrefs {
         }
     }
 
-    actual fun prefScrobbler(
-        filteredItem: FilteredItem,
+    actual fun onPrefScrobblerToggled(
         scrobblerEnabled: Boolean,
-        nlsEnabled: Boolean,
-        onNavigate: (PanoRoute) -> Unit,
     ) {
-        filteredItem(MainPrefs::scrobblerEnabled.name, Res.string.pref_master, null) { title ->
-            SwitchPref(
-                text = title,
-                summary = stringResource(Res.string.pref_offline_info),
-                value = scrobblerEnabled && nlsEnabled,
-                enabled = nlsEnabled,
-                copyToSave = { copy(scrobblerEnabled = it) }
-            )
-        }
     }
 
     actual fun updateCheck(

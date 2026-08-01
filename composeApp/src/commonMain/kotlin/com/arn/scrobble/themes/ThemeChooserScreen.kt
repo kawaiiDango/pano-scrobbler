@@ -8,52 +8,65 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.FilledTonalIconToggleButton
 import androidx.compose.material3.FilterChip
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconToggleButtonShapes
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Slider
 import androidx.compose.material3.Text
 import androidx.compose.material3.ToggleButtonDefaults
+import androidx.compose.material3.TonalToggleButton
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
 import com.arn.scrobble.BuildKonfig
 import com.arn.scrobble.billing.LocalLicenseValidState
+import com.arn.scrobble.icons.Casino
 import com.arn.scrobble.icons.Check
 import com.arn.scrobble.icons.Icons
+import com.arn.scrobble.icons.Lock
+import com.arn.scrobble.icons.Palette
+import com.arn.scrobble.pref.MainPrefs
+import com.arn.scrobble.pref.SliderPref
 import com.arn.scrobble.themes.colors.ThemeVariants
+import com.arn.scrobble.ui.ButtonWithIcon
 import com.arn.scrobble.ui.LabeledCheckbox
 import com.arn.scrobble.utils.PlatformStuff
-import com.arn.scrobble.utils.Stuff
+import com.arn.scrobble.utils.Stuff.collectAsStateWithInitialValue
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
 import pano_scrobbler.composeapp.generated.resources.Res
 import pano_scrobbler.composeapp.generated.resources.appwidget_alpha
 import pano_scrobbler.composeapp.generated.resources.auto
+import pano_scrobbler.composeapp.generated.resources.blur
+import pano_scrobbler.composeapp.generated.resources.blur_main_window
+import pano_scrobbler.composeapp.generated.resources.blur_notice
+import pano_scrobbler.composeapp.generated.resources.blur_sub_window
 import pano_scrobbler.composeapp.generated.resources.contrast
 import pano_scrobbler.composeapp.generated.resources.dark
+import pano_scrobbler.composeapp.generated.resources.experimental
 import pano_scrobbler.composeapp.generated.resources.high
 import pano_scrobbler.composeapp.generated.resources.light
 import pano_scrobbler.composeapp.generated.resources.low
 import pano_scrobbler.composeapp.generated.resources.medium
-import pano_scrobbler.composeapp.generated.resources.random_on_start
+import pano_scrobbler.composeapp.generated.resources.pref_themes
+import pano_scrobbler.composeapp.generated.resources.random_text
 import pano_scrobbler.composeapp.generated.resources.system_colors
 
 @Composable
@@ -62,86 +75,108 @@ fun ThemeChooserScreen(
     modifier: Modifier = Modifier,
 ) {
     val isLicenseValid = LocalLicenseValidState.current
-    var themeName: String? by rememberSaveable { mutableStateOf(null) }
-    var dynamic: Boolean? by rememberSaveable { mutableStateOf(null) }
-    var dayNightMode: DayNightMode? by rememberSaveable { mutableStateOf(null) }
-    var random: Boolean? by rememberSaveable { mutableStateOf(false) }
-    var contrastMode: ContrastMode? by rememberSaveable { mutableStateOf(null) }
-    var alpha: Float? by rememberSaveable { mutableStateOf(null) }
+    val themeName by PlatformStuff.mainPrefs.data.collectAsStateWithInitialValue { it.themeName }
+    val dynamic by PlatformStuff.mainPrefs.data.collectAsStateWithInitialValue { it.themeDynamic }
+    val dayNightMode by PlatformStuff.mainPrefs.data.collectAsStateWithInitialValue { it.themeDayNight }
+    val random by PlatformStuff.mainPrefs.data.collectAsStateWithInitialValue { it.themeRandom }
+    val contrastMode by PlatformStuff.mainPrefs.data.collectAsStateWithInitialValue { it.themeContrast }
+    val alpha by PlatformStuff.mainPrefs.data.collectAsStateWithInitialValue { it.themeAlpha }
+    val alphaIntPercent by remember(alpha) { mutableIntStateOf((alpha * 100).toInt()) }
+    val blurMainWindow by PlatformStuff.mainPrefs.data.collectAsStateWithInitialValue { it.themeBlurMainWindow }
+    val blurSubWindow by PlatformStuff.mainPrefs.data.collectAsStateWithInitialValue { it.themeBlurSubWindow }
     val isAppInNightMode = LocalThemeAttributes.current.isDark
+    val scope = rememberCoroutineScope()
 
-    DisposableEffect(Unit) {
-        onDispose {
-            if (themeName != null && dynamic != null && dayNightMode != null && contrastMode != null && alpha != null) {
-                if (isLicenseValid) {
-                    Stuff.appScope.launch {
-                        PlatformStuff.mainPrefs.updateData {
-                            it.copy(
-                                themeName = themeName!!,
-                                themeDynamic = dynamic!!,
-                                themeDayNight = dayNightMode!!,
-                                themeRandom = random!!,
-                                themeContrast = contrastMode!!,
-                                themeAlpha = alpha!!
-                            )
-                        }
-                    }
-                } else
-                    onNavigateToBilling()
-            }
+    fun save(block: MainPrefs.() -> MainPrefs) {
+        scope.launch {
+            PlatformStuff.mainPrefs.updateData(block)
         }
-    }
-
-    LaunchedEffect(Unit) {
-        PlatformStuff.mainPrefs.data
-            .collect {
-                themeName = it.themeName
-                dynamic = it.themeDynamic
-                dayNightMode = it.themeDayNight
-                random = it.themeRandom
-                contrastMode = it.themeContrast
-                alpha = it.themeAlpha
-            }
     }
 
     Column(
         verticalArrangement = Arrangement.spacedBy(16.dp),
         modifier = modifier
     ) {
+
+        if (!isLicenseValid) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                modifier = Modifier
+                    .fillMaxWidth()
+            ) {
+                HorizontalDivider(
+                    modifier = Modifier
+                        .weight(1f)
+                )
+
+                ButtonWithIcon(
+                    onClick = onNavigateToBilling,
+                    icon = Icons.Lock,
+                    text = stringResource(Res.string.pref_themes),
+                )
+
+                HorizontalDivider(
+                    modifier = Modifier
+                        .weight(1f)
+                )
+            }
+        }
+
         FlowRow(
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp),
+            horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterHorizontally),
+            verticalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterVertically),
+            modifier = Modifier
+                .fillMaxWidth()
         ) {
             ThemeUtils.themesMap.forEach { (_, themeObj) ->
                 ThemeSwatch(
                     themeVariants = themeObj,
                     isDark = isAppInNightMode,
-                    selected = themeName == themeObj.name,
+                    selected = themeName == themeObj.name && !dynamic && !random,
                     onClick = {
-                        themeName = themeObj.name
+                        save {
+                            copy(
+                                themeName = themeObj.name,
+                                themeDynamic = false,
+                                themeRandom = false
+                            )
+                        }
                     },
-                    enabled = isLicenseValid && dynamic != true && random != true,
-                )
-            }
-        }
-
-        if (BuildKonfig.DEBUG && !PlatformStuff.isTv) {
-            // looks ass right now
-            val alphaValue = alpha ?: 0.5f
-            Row {
-                Text(
-                    text = stringResource(Res.string.appwidget_alpha) +
-                            ": ${"%.0f".format(alphaValue * 100)}%",
-                    style = MaterialTheme.typography.titleMedium
+                    enabled = isLicenseValid,
                 )
             }
 
-            Slider(
-                value = alphaValue,
-                onValueChange = { alpha = it },
-                valueRange = 0.5f..1f,
-                steps = 9,
-                enabled = isLicenseValid
+            if (PlatformStuff.supportsDynamicColors && !PlatformStuff.isTv) {
+                ThemeSwatchLikeButton(
+                    icon = Icons.Palette,
+                    text = stringResource(Res.string.system_colors),
+                    selected = dynamic,
+                    onCheckedChange = {
+                        save {
+                            copy(
+                                themeDynamic = it,
+                                themeRandom = false
+                            )
+                        }
+                    },
+                    enabled = isLicenseValid,
+                )
+            }
+
+            ThemeSwatchLikeButton(
+                icon = Icons.Casino,
+                text = stringResource(Res.string.random_text),
+                selected = random,
+                onCheckedChange = {
+                    save {
+                        copy(
+                            themeRandom = it,
+                            themeDynamic = false
+                        )
+                    }
+                },
+                enabled = isLicenseValid,
             )
         }
 
@@ -154,50 +189,114 @@ fun ThemeChooserScreen(
                     selected = dayNightMode == it,
                     enabled = isLicenseValid,
                     onClick = {
-                        dayNightMode = it
+                        save {
+                            copy(themeDayNight = it)
+                        }
                     }
                 )
             }
         }
 
-        Text(
-            text = stringResource(Res.string.contrast),
-            style = MaterialTheme.typography.bodyLarge,
-        )
-
         Row(
+            verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(16.dp),
             modifier = Modifier
                 .fillMaxWidth()
-                .alpha(if (dynamic == true) 0.5f else 1f)
+                .alpha(if (dynamic) 0.5f else 1f)
         ) {
+            Text(
+                text = stringResource(Res.string.contrast),
+                style = MaterialTheme.typography.bodyLarge,
+            )
+
             ContrastMode.entries.forEach {
                 FilterChip(
                     label = { it.Label() },
-                    enabled = isLicenseValid && dynamic != true,
+                    enabled = !dynamic && isLicenseValid,
                     selected = contrastMode == it,
                     onClick = {
-                        contrastMode = it
+                        save {
+                            copy(themeContrast = it)
+                        }
                     }
                 )
             }
         }
 
-        if (PlatformStuff.supportsDynamicColors && !PlatformStuff.isTv) {
-            LabeledCheckbox(
-                text = stringResource(Res.string.system_colors),
-                checked = dynamic == true,
-                enabled = isLicenseValid,
-                onCheckedChange = { dynamic = it }
-            )
-        }
+        if (BuildKonfig.DEBUG && !PlatformStuff.isTv) {
+            // looks ass right now
 
-        LabeledCheckbox(
-            text = stringResource(Res.string.random_on_start),
-            checked = random == true,
-            enabled = isLicenseValid,
-            onCheckedChange = { random = it }
-        )
+            if (PlatformStuff.supportsBlur) {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                ) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(16.dp),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                    ) {
+                        Text(
+                            text = stringResource(Res.string.blur),
+                            style = MaterialTheme.typography.bodyLarge,
+                            modifier = Modifier.padding(end = 16.dp)
+                        )
+
+                        LabeledCheckbox(
+                            text = stringResource(Res.string.blur_main_window),
+                            maxLines = 1,
+                            checked = blurMainWindow,
+                            enabled = isLicenseValid,
+                            onCheckedChange = {
+                                save {
+                                    copy(
+                                        themeBlurMainWindow = it,
+                                        themeAlpha = if (themeAlpha == 1f) MainPrefs.PREF_MID_ALPHA else themeAlpha
+                                    )
+                                }
+                            },
+                        )
+
+                        LabeledCheckbox(
+                            text = stringResource(Res.string.blur_sub_window),
+                            maxLines = 1,
+                            checked = blurSubWindow,
+                            enabled = isLicenseValid,
+                            onCheckedChange = {
+                                save {
+                                    copy(themeBlurSubWindow = it)
+                                }
+                            },
+                        )
+                    }
+                }
+
+                Text(
+                    text = "ⓘ " + stringResource(Res.string.experimental) + " " + stringResource(Res.string.blur_notice),
+                    style = MaterialTheme.typography.bodyMedium,
+                )
+            }
+
+            SliderPref(
+                text = stringResource(Res.string.appwidget_alpha) + " " + stringResource(Res.string.experimental),
+                value = alphaIntPercent.toFloat(),
+                copyToSave = {
+                    val a = it / 100f
+                    copy(
+                        themeAlpha = a,
+                        themeBlurMainWindow = if (a == 1f) false else themeBlurMainWindow,
+                    )
+                },
+                default = null,
+                min = (MainPrefs.PREF_MIN_ALPHA * 100).toInt(),
+                max = (MainPrefs.PREF_MAX_ALPHA * 100).toInt(),
+                increments = 5,
+                stringRepresentation = { "$it%" },
+                enabled = isLicenseValid
+            )
+
+        }
     }
 }
 
@@ -307,6 +406,35 @@ private fun ThemeSwatch(
                     modifier = Modifier.align(Alignment.Center)
                 )
             }
+        }
+    }
+}
+
+@Composable
+private fun ThemeSwatchLikeButton(
+    icon: ImageVector,
+    text: String,
+    selected: Boolean,
+    enabled: Boolean,
+    onCheckedChange: (Boolean) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    TonalToggleButton(
+        checked = selected,
+        onCheckedChange = onCheckedChange,
+        enabled = enabled,
+        modifier = modifier
+            .alpha(if (enabled) 1f else 0.5f)
+    ) {
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Icon(
+                imageVector = icon,
+                contentDescription = null
+            )
+            Spacer(modifier = Modifier.height(4.dp))
+            Text(text = text, style = MaterialTheme.typography.labelSmall)
         }
     }
 }

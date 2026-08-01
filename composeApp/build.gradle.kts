@@ -331,7 +331,7 @@ tasks.register<Exec>("packageInno") {
     val distDir = file("../dist")
     val scriptFile = file("inno/installer.iss")
     val iconFile = file("app-icons/pano-scrobbler.ico")
-    val isccPath = System.getenv("PROGRAMFILES(x86)") + "\\Inno Setup 6\\ISCC.exe"
+    val isccPath = System.getenv("PROGRAMFILES") + "\\Inno Setup 7\\ISCC.exe"
 
     doFirst {
         distDir.mkdirs()

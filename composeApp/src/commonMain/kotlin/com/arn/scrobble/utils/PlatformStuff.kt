@@ -26,6 +26,7 @@ expect object PlatformStuff {
     val isJava8OrGreater: Boolean
 
     val supportsDynamicColors: Boolean
+    val supportsBlur: Boolean
 
     val isTv: Boolean
 

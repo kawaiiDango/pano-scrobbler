@@ -47,3 +47,7 @@ actual fun AddAdditionalProviders(content: @Composable () -> Unit) {
         content()
     }
 }
+
+actual fun setupWindowBlurListener(activity: Any?, onBlurChanged: (Boolean) -> Unit) {
+    onBlurChanged(true)
+}

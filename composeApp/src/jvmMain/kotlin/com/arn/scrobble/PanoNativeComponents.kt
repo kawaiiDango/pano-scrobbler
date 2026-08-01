@@ -203,7 +203,7 @@ object PanoNativeComponents {
     external fun setEnvironmentVariable(key: String, value: String)
 
     @JvmStatic
-    external fun setHwndWindows(hwnd: Long)
+    external fun applyWindowEffects(handle: Long, isDark: Boolean, isBlur: Boolean)
 
     @JvmStatic
     external fun sendIpcCommand(command: String, arg: String): Boolean

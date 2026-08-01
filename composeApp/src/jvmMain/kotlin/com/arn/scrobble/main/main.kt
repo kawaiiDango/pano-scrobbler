@@ -22,6 +22,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ComposeUiFlags
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.awt.SwingWindow
@@ -30,11 +31,11 @@ import androidx.compose.ui.graphics.painter.BitmapPainter
 import androidx.compose.ui.input.pointer.PointerIcon
 import androidx.compose.ui.input.pointer.pointerHoverIcon
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.pollSystemTheme
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Tray
-import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.WindowDecoration
 import androidx.compose.ui.window.WindowPlacement
 import androidx.compose.ui.window.WindowPosition
@@ -65,6 +66,8 @@ import com.arn.scrobble.utils.PanoTrayUtils
 import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff
 import com.arn.scrobble.utils.VariantStuff
+import com.arn.scrobble.utils.findSkiaLayer
+import com.arn.scrobble.utils.hackContentPane
 import com.arn.scrobble.utils.setAppLocale
 import com.arn.scrobble.work.DesktopWorkManager
 import com.arn.scrobble.work.UpdaterWork
@@ -108,15 +111,16 @@ import java.awt.GraphicsEnvironment
 import java.awt.Point
 import java.awt.SystemTray
 import java.awt.Toolkit
-import java.awt.Window
 import java.awt.event.MouseEvent
 import java.awt.event.MouseListener
 import java.lang.reflect.Constructor
 import java.util.Locale
+import javax.swing.SwingUtilities
 import kotlin.system.exitProcess
 import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.Duration.Companion.minutes
 import kotlin.time.Duration.Companion.seconds
+
 
 @OptIn(InternalResourceApi::class)
 private fun initHeadlessResourceEnvironment() {
@@ -445,6 +449,7 @@ fun main(args: Array<String>) {
     }
 
     var firstCompositionDone = false
+    ComposeUiFlags.pollSystemTheme = false
 
     return application {
 
@@ -479,6 +484,12 @@ fun main(args: Array<String>) {
 
         val isTranslucent by PlatformStuff.mainPrefs.data.map { it.themeAlpha < 1f }
             .collectAsState(initialPrefs.themeAlpha < 1f)
+
+        val isBlur by PlatformStuff.mainPrefs.data.map { it.themeBlurMainWindow }
+            .collectAsState(initialPrefs.themeBlurMainWindow)
+
+        val dayNightPref by PlatformStuff.mainPrefs.data.map { it.themeDayNight }
+            .collectAsState(initialPrefs.themeDayNight)
 
         LaunchedEffect(windowState.size, windowState.placement) {
             delay(5.seconds)
@@ -613,7 +624,7 @@ fun main(args: Array<String>) {
         }
 
         LaunchedEffect(Unit) {
-            snapshotFlow { isTranslucent }.drop(1).collect {
+            snapshotFlow { Triple(isTranslucent, isBlur, dayNightPref) }.drop(1).collect {
                 if (windowCreated) {
                     val wasShown = windowShown
                     windowCreated = false
@@ -625,20 +636,43 @@ fun main(args: Array<String>) {
         }
 
         if (windowCreated) {
-            val isTranslucent = isTranslucent &&
-                    VariantStuff.billingRepository.licenseState.value == LicenseState.VALID
+            val isTranslucentAwtWindow =
+                (isTranslucent && !isBlur || isBlur && DesktopStuff.os != DesktopStuff.Os.Windows) &&
+                        VariantStuff.billingRepository.licenseState.value == LicenseState.VALID
 
-            Window(
+            SwingWindow(
                 onCloseRequest = { windowShown = false },
                 state = windowState,
                 title = BuildKonfig.APP_NAME,
                 visible = windowShown,
-                transparent = isTranslucent,
-                decoration = if (isTranslucent)
+                transparent = isTranslucentAwtWindow,
+                decoration = if (isTranslucentAwtWindow)
                     WindowDecoration.Undecorated()
                 else
                     WindowDecoration.SystemDefault,
-                icon = painterResource(Res.drawable.ic_launcher_with_bg)
+                icon = painterResource(Res.drawable.ic_launcher_with_bg),
+                init = { window ->
+                    val isBlur = isBlur &&
+                            VariantStuff.billingRepository.licenseState.value == LicenseState.VALID
+
+                    val isDark = dayNightPref == DayNightMode.DARK ||
+                            dayNightPref == DayNightMode.SYSTEM &&
+                            PanoNativeComponents.onDarkModeChangeFlow.value == true
+
+                    if (isBlur && !isTranslucentAwtWindow) {
+                        window.background = java.awt.Color.BLACK
+                        window.findSkiaLayer()?.transparency = true
+                        window.hackContentPane()
+                    }
+
+                    SwingUtilities.invokeLater {
+                        PanoNativeComponents.applyWindowEffects(
+                            window.windowHandle,
+                            isDark,
+                            isBlur
+                        )
+                    }
+                }
             ) {
                 val density = LocalDensity.current
 
@@ -664,17 +698,10 @@ fun main(args: Array<String>) {
 
                 LaunchedEffect(Unit) {
                     window.exceptionHandler = null
-                }
 
-                LaunchedEffect(Unit) {
-                    if (DesktopStuff.os == DesktopStuff.Os.Windows)
-                        PanoNativeComponents.setHwndWindows(window.windowHandle)
-                }
-
-                LaunchedEffect(Unit) {
                     if (!BuildKonfig.DEBUG) {
                         val minDim =
-                            if (DesktopStuff.os == DesktopStuff.Os.Windows && !isTranslucent)
+                            if (DesktopStuff.os == DesktopStuff.Os.Windows && !isTranslucentAwtWindow)
                                 with(density) { 480.dp.roundToPx() }
                             else
                                 480
@@ -691,7 +718,7 @@ fun main(args: Array<String>) {
                 AppTheme {
                     PanoAppContent(
                         draggableWrapper = {
-                            if (isTranslucent) {
+                            if (isTranslucentAwtWindow) {
                                 WindowDraggableArea(
                                     modifier = Modifier.pointerHoverIcon(PointerIcon(Cursor(Cursor.MOVE_CURSOR)))
                                 ) {
@@ -846,7 +873,7 @@ private fun TrayWindow(
         alwaysOnTop = true,
         state = state,
         init = { window ->
-            window.type = Window.Type.UTILITY
+            window.type = java.awt.Window.Type.UTILITY
             // put it on the same monitor as the cursor
             window.setLocation(graphicsConfig.bounds.x, graphicsConfig.bounds.y)
         }
@@ -863,6 +890,7 @@ private fun TrayWindow(
 
         AppTheme {
             Surface(
+                color = MaterialTheme.colorScheme.surface.copy(alpha = 1f),
                 shape = MaterialTheme.shapes.large,
             ) {
                 Column(

@@ -239,6 +239,7 @@ fun ChartsOverviewScreen(
         TimePeriodSelector(
             user = user,
             viewModel = chartsPeriodViewModel,
+            onNavigate = onNavigate,
             onSelected = ::setInput,
             showRefreshButton = true,
             digestTimePeriod = digestTimePeriod,

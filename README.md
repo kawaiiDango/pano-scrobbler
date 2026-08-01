@@ -36,7 +36,7 @@ The installer also has an "extract only, no install" mode for portable use.
 [![Download tar.gz for x64 from GitHub](img/github-targz-x64.svg)](https://github.com/kawaiiDango/pano-scrobbler/releases/latest/download/pano-scrobbler-linux-x64.tar.gz)
 [![Download tar.gz for arm64 from GitHub](img/github-targz-arm64.svg)](https://github.com/kawaiiDango/pano-scrobbler/releases/latest/download/pano-scrobbler-linux-arm64.tar.gz)
 
-#### Arch:
+#### Arch (AUR):
 
 ```sh
 yay -S pano-scrobbler-bin

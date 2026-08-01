@@ -36,8 +36,11 @@ import com.arn.scrobble.icons.Close
 import com.arn.scrobble.icons.Icons
 import com.arn.scrobble.icons.automirrored.ArrowBack
 import com.arn.scrobble.navigation.BottomSheetSceneStrategy.Companion.bottomSheet
+import com.arn.scrobble.themes.LocalThemeAttributes
+import com.arn.scrobble.ui.ApplyWindowBlur
 import com.arn.scrobble.ui.isImeVisible
 import com.arn.scrobble.utils.PlatformStuff
+import com.arn.scrobble.utils.Stuff
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
 import pano_scrobbler.composeapp.generated.resources.Res
@@ -50,6 +53,7 @@ private data object BottomSheetKey : NavMetadataKey<Unit>
 
 /** An [OverlayScene] that renders an [entry] within a [ModalBottomSheet]. */
 internal data class BottomSheetScene<T : Any>(
+    private val isStandalone: Boolean,
     override val key: T,
     override val previousEntries: List<NavEntry<T>>,
     override val overlaidEntries: List<NavEntry<T>>,
@@ -66,6 +70,7 @@ internal data class BottomSheetScene<T : Any>(
         val canGoBack = previousEntries.lastOrNull()?.metadata?.get(BottomSheetKey) != null
 
         BottomSheetDialogParent(
+            isStandalone = isStandalone,
             sheetState = sheetState,
             onDismissRequest = onDismissRequest,
             onBack = if (canGoBack) {
@@ -84,6 +89,7 @@ internal data class BottomSheetScene<T : Any>(
 
 @Composable
 private fun BottomSheetDialogParent(
+    isStandalone: Boolean,
     sheetState: SheetState,
     onDismissRequest: () -> Unit,
     onBack: (() -> Unit)?,
@@ -106,6 +112,13 @@ private fun BottomSheetDialogParent(
                     .add(WindowInsets(top = 42.dp))
             ),
     ) {
+        if (LocalThemeAttributes.current.blurSubWindow ||
+            isStandalone && LocalThemeAttributes.current.blurMainWindow
+        )
+            ApplyWindowBlur(behind = 0, bg = Stuff.BLUR_BACKDROP_RADIUS_DP)
+        // there can be only one window blur at a time per task, according to android source
+        // behind is already used by the main window, use bg to make them stack
+
         if (onBack != null) {
             OutlinedIconButton(
                 onClick = onBack,
@@ -153,6 +166,7 @@ private fun BottomSheetDialogParent(
  * This strategy should always be added before any non-overlay scene strategies.
  */
 class BottomSheetSceneStrategy<T : Any>(
+    private val isStandalone: Boolean,
     private val sheetState: SheetState,
     private val onDismiss: () -> Unit
 ) : SceneStrategy<T> {
@@ -164,6 +178,7 @@ class BottomSheetSceneStrategy<T : Any>(
         return if (isBottomSheet)
             @Suppress("UNCHECKED_CAST")
             BottomSheetScene(
+                isStandalone = isStandalone,
                 key = lastEntry.contentKey as T,
                 previousEntries = entries.dropLast(1),
                 overlaidEntries = entries.filterNot { it.metadata[BottomSheetKey] != null },

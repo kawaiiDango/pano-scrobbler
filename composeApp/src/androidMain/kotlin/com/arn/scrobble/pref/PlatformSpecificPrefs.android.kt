@@ -27,15 +27,12 @@ import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.getString
 import org.jetbrains.compose.resources.stringResource
 import pano_scrobbler.composeapp.generated.resources.Res
-import pano_scrobbler.composeapp.generated.resources.grant_notification_access
 import pano_scrobbler.composeapp.generated.resources.persistent_noti_desc
 import pano_scrobbler.composeapp.generated.resources.persistent_noti_fgs
 import pano_scrobbler.composeapp.generated.resources.persistent_noti_oems
-import pano_scrobbler.composeapp.generated.resources.pref_master
 import pano_scrobbler.composeapp.generated.resources.pref_master_qs_add
 import pano_scrobbler.composeapp.generated.resources.pref_master_qs_already_addded
 import pano_scrobbler.composeapp.generated.resources.pref_noti
-import pano_scrobbler.composeapp.generated.resources.pref_offline_info
 import pano_scrobbler.composeapp.generated.resources.pref_widget_charts
 import pano_scrobbler.composeapp.generated.resources.scrobbler_off
 import pano_scrobbler.composeapp.generated.resources.scrobbler_on
@@ -170,39 +167,14 @@ actual object PlatformSpecificPrefs {
     actual fun deezerApi(filteredItem: FilteredItem, enabled: Boolean) {
     }
 
-    actual fun prefScrobbler(
-        filteredItem: FilteredItem,
+    actual fun onPrefScrobblerToggled(
         scrobblerEnabled: Boolean,
-        nlsEnabled: Boolean,
-        onNavigate: (PanoRoute) -> Unit,
     ) {
-        filteredItem(MainPrefs::scrobblerEnabled.name, Res.string.pref_master, null) { title ->
-            val scope = rememberCoroutineScope()
-            val context = LocalContext.current
-
-            SwitchPref(
-                text = title,
-                summary = if (!nlsEnabled)
-                    stringResource(Res.string.grant_notification_access)
-                else
-                    stringResource(Res.string.pref_offline_info),
-                value = scrobblerEnabled && nlsEnabled,
-                copyToSave = {
-                    if (!nlsEnabled) {
-                        onNavigate(PanoRoute.Onboarding)
-                        this
-                    } else {
-                        scope.launch(Dispatchers.IO) {
-                            MasterSwitchQS.requestListeningState(context)
-                            if (it) {
-                                AndroidStuff.requestRebindFromContentProvider(context.contentResolver)
-                            }
-                        }
-
-                        copy(scrobblerEnabled = it)
-                    }
-                }
-            )
+        Stuff.appScope.launch(Dispatchers.IO) {
+            MasterSwitchQS.requestListeningState(AndroidStuff.applicationContext)
+            if (scrobblerEnabled) {
+                AndroidStuff.requestRebindFromContentProvider(AndroidStuff.applicationContext.contentResolver)
+            }
         }
     }
 

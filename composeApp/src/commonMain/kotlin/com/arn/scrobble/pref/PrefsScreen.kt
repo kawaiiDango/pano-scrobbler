@@ -5,12 +5,16 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -21,6 +25,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.navigation3.runtime.result.ResultEffect
 import com.arn.scrobble.BuildKonfig
 import com.arn.scrobble.api.AccountType
 import com.arn.scrobble.api.Requesters
@@ -38,10 +43,13 @@ import com.arn.scrobble.icons.MoreHoriz
 import com.arn.scrobble.icons.MusicNote
 import com.arn.scrobble.icons.Person
 import com.arn.scrobble.icons.SwapVert
+import com.arn.scrobble.icons.Timer
+import com.arn.scrobble.icons.ToggleOff
 import com.arn.scrobble.icons.Translate
 import com.arn.scrobble.main.MainViewModel
 import com.arn.scrobble.main.ScrobblerState
 import com.arn.scrobble.navigation.PanoRoute
+import com.arn.scrobble.navigation.TimePickerResult
 import com.arn.scrobble.themes.DayNightMode
 import com.arn.scrobble.ui.PanoLazyColumn
 import com.arn.scrobble.ui.SearchField
@@ -66,6 +74,7 @@ import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.getString
@@ -78,6 +87,7 @@ import pano_scrobbler.composeapp.generated.resources.artist_image
 import pano_scrobbler.composeapp.generated.resources.auto
 import pano_scrobbler.composeapp.generated.resources.automation
 import pano_scrobbler.composeapp.generated.resources.cache
+import pano_scrobbler.composeapp.generated.resources.charts_custom
 import pano_scrobbler.composeapp.generated.resources.copy_sk
 import pano_scrobbler.composeapp.generated.resources.country_for_api
 import pano_scrobbler.composeapp.generated.resources.dark
@@ -86,12 +96,15 @@ import pano_scrobbler.composeapp.generated.resources.delete_account
 import pano_scrobbler.composeapp.generated.resources.delete_receipt
 import pano_scrobbler.composeapp.generated.resources.demo_mode
 import pano_scrobbler.composeapp.generated.resources.desktop
+import pano_scrobbler.composeapp.generated.resources.disable
 import pano_scrobbler.composeapp.generated.resources.external_metadata
 import pano_scrobbler.composeapp.generated.resources.first_artist
+import pano_scrobbler.composeapp.generated.resources.grant_notification_access
 import pano_scrobbler.composeapp.generated.resources.lastfm
 import pano_scrobbler.composeapp.generated.resources.light
 import pano_scrobbler.composeapp.generated.resources.min_track_duration
 import pano_scrobbler.composeapp.generated.resources.notification_channel_blocked
+import pano_scrobbler.composeapp.generated.resources.pause_for
 import pano_scrobbler.composeapp.generated.resources.pref_about
 import pano_scrobbler.composeapp.generated.resources.pref_auto_detect
 import pano_scrobbler.composeapp.generated.resources.pref_blocked_metadata
@@ -108,8 +121,10 @@ import pano_scrobbler.composeapp.generated.resources.pref_imexport
 import pano_scrobbler.composeapp.generated.resources.pref_import
 import pano_scrobbler.composeapp.generated.resources.pref_link_heart_button_rating
 import pano_scrobbler.composeapp.generated.resources.pref_locale
+import pano_scrobbler.composeapp.generated.resources.pref_master
 import pano_scrobbler.composeapp.generated.resources.pref_misc
 import pano_scrobbler.composeapp.generated.resources.pref_now_playing
+import pano_scrobbler.composeapp.generated.resources.pref_offline_info
 import pano_scrobbler.composeapp.generated.resources.pref_oss_credits
 import pano_scrobbler.composeapp.generated.resources.pref_personalization
 import pano_scrobbler.composeapp.generated.resources.pref_prevent_duplicate_ambient_scrobbles
@@ -138,7 +153,10 @@ import pano_scrobbler.composeapp.generated.resources.system
 import pano_scrobbler.composeapp.generated.resources.when_not_using
 import java.util.Calendar
 import java.util.Locale
+import kotlin.time.Duration.Companion.hours
 import kotlin.time.Duration.Companion.milliseconds
+import kotlin.time.Duration.Companion.minutes
+import kotlin.time.Duration.Companion.seconds
 
 
 @Composable
@@ -153,6 +171,7 @@ fun PrefsScreen(
     val scrobblerState by mainViewModel.scrobblerStateFlow.collectAsStateWithLifecycle()
 
     val scrobblerEnabled by mainPrefs.data.collectAsStateWithInitialValue { it.scrobblerEnabled }
+    val scrobblerPausedTill by mainPrefs.data.collectAsStateWithInitialValue { it.scrobblerPausedTill }
     val allowedPackages by mainPrefs.data.collectAsStateWithInitialValue { it.allowedPackages }
     val scrobbleSpotifyRemoteP by mainPrefs.data.collectAsStateWithInitialValue { it.scrobbleSpotifyRemoteP }
     val autoDetectApps by mainPrefs.data.collectAsStateWithInitialValue { it.autoDetectApps }
@@ -285,15 +304,35 @@ fun PrefsScreen(
         mainViewModel.updateScrobblerServiceState(scrobblerEnabled)
     }
 
+    ResultEffect<TimePickerResult> { res ->
+        val then = Calendar.getInstance()
+        then.set(Calendar.HOUR_OF_DAY, res.hour)
+        then.set(Calendar.MINUTE, res.minute)
+
+        // if the selected time is in the past, add a day
+        if (then.timeInMillis <= System.currentTimeMillis()) {
+            then.add(Calendar.DAY_OF_MONTH, 1)
+        }
+
+        mainPrefs.updateData { p ->
+            p.copy(
+                scrobblerEnabled = true,
+                scrobblerPausedTill = then.timeInMillis
+            )
+        }
+    }
+
     Column(
         verticalArrangement = Arrangement.spacedBy(8.dp),
         modifier = modifier
     ) {
-        SearchField(
-            searchTerm,
-            onSearchTermChange = { searchTerm = it },
-            modifier = Modifier.padding(horizontal = horizontalOverscanPadding())
-        )
+        if (!PlatformStuff.isTv) {
+            SearchField(
+                searchTerm,
+                onSearchTermChange = { searchTerm = it },
+                modifier = Modifier.padding(horizontal = horizontalOverscanPadding())
+            )
+        }
 
         PanoLazyColumn(modifier = Modifier.fillMaxSize()) {
             fun filteredItem(
@@ -341,12 +380,132 @@ fun PrefsScreen(
 
             filteredHeader("scrobbling", Res.string.scrobbles, Icons.MusicNote)
 
-            PlatformSpecificPrefs.prefScrobbler(
-                ::filteredItem,
-                scrobblerEnabled,
-                scrobblerState != ScrobblerState.NLSDisabled,
-                onNavigate
-            )
+//            PlatformSpecificPrefs.prefScrobbler(
+//                ::filteredItem,
+//                scrobblerEnabled,
+//                scrobblerState != ScrobblerState.NLSDisabled,
+//                onNavigate
+//            )
+
+            filteredItem(MainPrefs::scrobblerEnabled.name, Res.string.pref_master, null) { title ->
+                val scope = rememberCoroutineScope()
+                val nlsEnabled = scrobblerState != ScrobblerState.NLSDisabled
+                var dropdownShown by remember { mutableStateOf(false) }
+                var now by remember(scrobblerPausedTill) { mutableLongStateOf(System.currentTimeMillis()) }
+                val isPaused = scrobblerPausedTill > now
+                val summary = if (!nlsEnabled)
+                    stringResource(Res.string.grant_notification_access)
+                else if (isPaused)
+                    stringResource(Res.string.pause_for) + ": " +
+                            Stuff.humanReadableDuration(scrobblerPausedTill - now)
+                else
+                    stringResource(Res.string.pref_offline_info)
+
+                if (isPaused && nlsEnabled) {
+                    LaunchedEffect(Unit) {
+                        while (isActive) {
+                            delay(1.seconds)
+                            now = System.currentTimeMillis()
+                        }
+                    }
+                }
+
+                SwitchPref(
+                    text = title,
+                    summary = summary,
+                    value = scrobblerEnabled && nlsEnabled && !isPaused,
+                    copyToSave = {
+                        if (!nlsEnabled) {
+                            onNavigate(PanoRoute.Onboarding)
+                            this
+                        } else if (!it) {
+                            dropdownShown = true
+                            this
+                        } else {
+                            PlatformSpecificPrefs.onPrefScrobblerToggled(it)
+                            copy(scrobblerEnabled = it, scrobblerPausedTill = -1L)
+                        }
+                    }
+                )
+
+                DropdownMenu(
+                    expanded = dropdownShown,
+                    onDismissRequest = { dropdownShown = false },
+                ) {
+                    DropdownMenuItem(
+                        leadingIcon = {
+                            Icon(
+                                imageVector = Icons.ToggleOff,
+                                contentDescription = null
+                            )
+                        },
+                        text = {
+                            Text(stringResource(Res.string.disable))
+                        },
+                        onClick = {
+                            scope.launch {
+                                mainPrefs.updateData { p ->
+                                    p.copy(
+                                        scrobblerEnabled = false,
+                                        scrobblerPausedTill = -1L
+                                    )
+                                }
+                            }
+                            PlatformSpecificPrefs.onPrefScrobblerToggled(false)
+                            dropdownShown = false
+                        }
+                    )
+
+                    arrayOf(
+                        30.minutes,
+                        1.hours,
+                        2.hours,
+                        4.hours,
+                    ).forEach {
+                        DropdownMenuItem(
+                            text = {
+                                Text(
+                                    stringResource(Res.string.pause_for) + ": " +
+                                            Stuff.humanReadableDuration(it.inWholeMilliseconds)
+                                )
+                            },
+                            onClick = {
+                                scope.launch {
+                                    mainPrefs.updateData { p ->
+                                        p.copy(
+                                            scrobblerEnabled = true,
+                                            scrobblerPausedTill = System.currentTimeMillis() + it.inWholeMilliseconds
+                                        )
+                                    }
+                                }
+                                dropdownShown = false
+                            }
+                        )
+                    }
+
+                    DropdownMenuItem(
+                        leadingIcon = {
+                            Icon(
+                                imageVector = Icons.Timer,
+                                contentDescription = null
+                            )
+                        },
+                        text = {
+                            Text(
+                                stringResource(Res.string.pause_for) + ": " + stringResource(Res.string.charts_custom)
+                            )
+                        },
+                        onClick = {
+                            dropdownShown = false
+
+                            val (h, m) = Calendar.getInstance().let {
+                                it.get(Calendar.HOUR_OF_DAY) to it.get(Calendar.MINUTE)
+                            }
+                            onNavigate(PanoRoute.Modal.TimePicker(h, m))
+                        }
+                    )
+                }
+            }
 
             PlatformSpecificPrefs.prefQuickSettings(::filteredItem, scrobblerEnabled)
 

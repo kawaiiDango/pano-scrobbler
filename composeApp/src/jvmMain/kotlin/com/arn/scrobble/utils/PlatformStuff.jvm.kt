@@ -45,6 +45,8 @@ actual object PlatformStuff {
 
     actual const val supportsDynamicColors = false
 
+    actual const val supportsBlur = true
+
     actual const val isDesktop = true
 
     actual const val hasSystemLocaleStore = false

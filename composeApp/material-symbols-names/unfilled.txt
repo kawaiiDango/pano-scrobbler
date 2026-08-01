@@ -80,6 +80,7 @@ stop
 swap_vert
 swipe_left_alt
 tag
+timer
 today
 toggle_off
 toggle_on

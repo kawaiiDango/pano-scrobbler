@@ -1,11 +1,6 @@
 package com.arn.scrobble.navigation
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.pulltorefresh.PullToRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -13,6 +8,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.navigation3.runtime.entryProvider
+import androidx.navigation3.runtime.result.LocalResultEventBus
 import com.arn.scrobble.api.AccountType
 import com.arn.scrobble.api.DrawerData
 import com.arn.scrobble.api.lastfm.LastfmPeriod
@@ -56,7 +52,8 @@ import com.arn.scrobble.search.SearchScreen
 import com.arn.scrobble.themes.ThemeChooserScreen
 import com.arn.scrobble.ui.PanoPullToRefreshStateForTab
 import com.arn.scrobble.ui.accountTypeLabel
-import com.arn.scrobble.ui.addColumnPadding
+import com.arn.scrobble.ui.navColumn
+import com.arn.scrobble.ui.navScrollableColumn
 import com.arn.scrobble.ui.panoContentPadding
 import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff
@@ -122,13 +119,6 @@ object PanoNavGraph {
         }
 
         @Composable
-        fun modifier() = Modifier
-            .fillMaxSize() then
-                MaterialTheme.colorScheme.surface.let {
-                    if (it.alpha == 1f) Modifier.background(it) else Modifier
-                }
-
-        @Composable
         fun getTabData(route: PanoRoute.HasTabs): List<PanoTab> {
             val currentAccountType by PlatformStuff.mainPrefs.data
                 .collectAsStateWithInitialValue { it.currentAccountType }
@@ -166,7 +156,7 @@ object PanoNavGraph {
                     onSetRefreshing = onSetRefreshing,
                     mainViewModel = mainViewModel,
                     getPullToRefreshTrigger = { mainViewModel.getPullToRefreshTrigger(it) },
-                    modifier = modifier()
+                    modifier = Modifier.navColumn()
                 )
             }
         }
@@ -186,7 +176,7 @@ object PanoNavGraph {
                 onSetRefreshing = onSetRefreshing,
                 mainViewModel = mainViewModel,
                 getPullToRefreshTrigger = { mainViewModel.getPullToRefreshTrigger(it) },
-                modifier = modifier()
+                modifier = Modifier.navColumn()
             )
         }
 
@@ -196,7 +186,7 @@ object PanoNavGraph {
             RandomScreen(
                 user = route.user,
                 onNavigate = navigate,
-                modifier = modifier().padding(panoContentPadding())
+                modifier = Modifier.navColumn().padding(panoContentPadding())
             )
         }
 
@@ -204,11 +194,13 @@ object PanoNavGraph {
 
             onSetTitleRes(route, Res.string.pref_oss_credits)
             OssCreditsScreen(
-                modifier = modifier()
+                modifier = Modifier.navColumn()
             )
         }
 
         entry<PanoRoute.AppList> { route ->
+            val resultBus = LocalResultEventBus.current
+
             onSetTitleRes(
                 route,
                 if (route.saveType == AppListSaveType.ExtractFirstArtist)
@@ -218,16 +210,22 @@ object PanoNavGraph {
                 else
                     Res.string.choose_apps
             )
+
             AppListScreen(
                 isSingleSelect = route.isSingleSelect,
                 saveType = route.saveType,
                 packagesOverride = route.packagesOverride?.toSet(),
                 preSelectedPackages = route.preSelectedPackages.toSet(),
                 onSetPackagesSelection = { checked, unchecked ->
-                    mainViewModel.onSetPackagesSelection(checked, unchecked)
+                    resultBus.sendResult(
+                        SelectedPackagesResult(
+                            checked = checked,
+                            unchecked = unchecked
+                        )
+                    )
                 },
                 onNavigate = navigate,
-                modifier = modifier()
+                modifier = Modifier.navColumn()
             )
         }
 
@@ -236,9 +234,7 @@ object PanoNavGraph {
             onSetTitleRes(route, Res.string.pref_themes)
             ThemeChooserScreen(
                 onNavigateToBilling = { navigate(PanoRoute.Billing) },
-                modifier = modifier()
-                    .verticalScroll(rememberScrollState())
-                    .padding(panoContentPadding(mayHaveBottomFab = true))
+                modifier = Modifier.navScrollableColumn()
             )
         }
 
@@ -246,7 +242,7 @@ object PanoNavGraph {
 
             onSetTitleRes(route, Res.string.delete_account)
             DeleteAccountScreen(
-                modifier = modifier().addColumnPadding()
+                modifier = Modifier.navScrollableColumn()
             )
         }
 
@@ -255,7 +251,7 @@ object PanoNavGraph {
             onSetTitleRes(route, Res.string.help)
             BillingTroubleshootScreen(
                 onBack = goBack,
-                modifier = modifier().addColumnPadding()
+                modifier = Modifier.navScrollableColumn()
             )
         }
 
@@ -264,7 +260,7 @@ object PanoNavGraph {
                 onBack = goBack,
                 onNavigateToTroubleshoot = { navigate(PanoRoute.BillingTroubleshoot) },
                 viewModel = mainViewModel,
-                modifier = modifier().addColumnPadding()
+                modifier = Modifier.navScrollableColumn()
             )
         }
 
@@ -274,7 +270,7 @@ object PanoNavGraph {
             PrefsScreen(
                 onNavigate = navigate,
                 mainViewModel = mainViewModel,
-                modifier = modifier()
+                modifier = Modifier.navColumn()
             )
         }
 
@@ -283,7 +279,7 @@ object PanoNavGraph {
             onSetTitleRes(route, Res.string.simple_edits)
             SimpleEditsScreen(
                 onNavigate = navigate,
-                modifier = modifier()
+                modifier = Modifier.navColumn()
             )
         }
 
@@ -299,7 +295,7 @@ object PanoNavGraph {
                 hash = null,
                 key = null,
                 viewModel = mainViewModel,
-                modifier = modifier().addColumnPadding()
+                modifier = Modifier.navScrollableColumn()
             )
         }
 
@@ -308,7 +304,7 @@ object PanoNavGraph {
             onSetTitleRes(route, Res.string.regex_rules)
             RegexEditsScreen(
                 onNavigate = navigate,
-                modifier = modifier()
+                modifier = Modifier.navColumn()
             )
         }
 
@@ -316,11 +312,10 @@ object PanoNavGraph {
 
             onSetTitleRes(route, Res.string.edit_regex)
             RegexEditsAddScreen(
-                mainViewModel = mainViewModel,
                 regexEdit = route.regexEdit,
                 onNavigate = navigate,
                 onBack = goBack,
-                modifier = modifier().addColumnPadding()
+                modifier = Modifier.navScrollableColumn()
             )
         }
 
@@ -328,7 +323,6 @@ object PanoNavGraph {
 
             onSetTitleRes(route, Res.string.edit_regex_test)
             RegexEditsTestScreen(
-                mainViewModel = mainViewModel,
                 onNavigateToAppList = {
                     navigate(
                         PanoRoute.AppList(
@@ -339,7 +333,7 @@ object PanoNavGraph {
                     )
                 },
                 onNavigateToRegexEditsAdd = { navigate(PanoRoute.RegexEditsAdd(it)) },
-                modifier = modifier().addColumnPadding()
+                modifier = Modifier.navScrollableColumn()
             )
         }
 
@@ -348,7 +342,7 @@ object PanoNavGraph {
             onSetTitleRes(route, Res.string.pref_blocked_metadata)
             BlockedMetadatasScreen(
                 onNavigate = navigate,
-                modifier = modifier()
+                modifier = Modifier.navColumn()
             )
         }
 
@@ -364,14 +358,14 @@ object PanoNavGraph {
                 originalArtist = route.originalArtist,
                 album = route.album,
                 originalAlbum = route.originalAlbum,
-                modifier = modifier()
+                modifier = Modifier.navColumn()
             )
         }
 
         entry<PanoRoute.Translators> { route ->
             onSetTitleRes(route, Res.string.pref_translate_credits)
             TranslatorsScreen(
-                modifier = modifier()
+                modifier = Modifier.navColumn()
             )
         }
 
@@ -379,7 +373,7 @@ object PanoNavGraph {
             onSetTitleRes(route, Res.string.pref_import)
             ImportScreen(
                 onBack = goBack,
-                modifier = modifier().addColumnPadding()
+                modifier = Modifier.navScrollableColumn()
             )
         }
 
@@ -387,7 +381,7 @@ object PanoNavGraph {
             onSetTitleRes(route, Res.string.pref_export)
             ExportScreen(
                 onBack = goBack,
-                modifier = modifier().addColumnPadding()
+                modifier = Modifier.navScrollableColumn()
             )
         }
 
@@ -396,7 +390,7 @@ object PanoNavGraph {
 
             FileLoginScreen(
                 onBack = goBack,
-                modifier = modifier().addColumnPadding()
+                modifier = Modifier.navScrollableColumn()
             )
         }
 
@@ -405,7 +399,7 @@ object PanoNavGraph {
             onSetTitleString(route, accountTypeLabel(AccountType.GNUFM))
             GnufmLoginScreen(
                 onDone = goBack,
-                modifier = modifier().addColumnPadding()
+                modifier = Modifier.navScrollableColumn()
             )
         }
 
@@ -415,7 +409,7 @@ object PanoNavGraph {
             ListenBrainzLoginScreen(
                 onDone = goBack,
                 customServerSlot = null,
-                modifier = modifier().addColumnPadding()
+                modifier = Modifier.navScrollableColumn()
             )
         }
 
@@ -430,7 +424,7 @@ object PanoNavGraph {
             ListenBrainzLoginScreen(
                 onDone = goBack,
                 customServerSlot = route.slot,
-                modifier = modifier().addColumnPadding()
+                modifier = Modifier.navScrollableColumn()
             )
         }
 
@@ -442,7 +436,7 @@ object PanoNavGraph {
                     goBack()
                     navigate(it)
                 },
-                modifier = modifier().addColumnPadding()
+                modifier = Modifier.navScrollableColumn()
             )
         }
 
@@ -454,7 +448,7 @@ object PanoNavGraph {
                 onSetTitle = { title -> onSetTitle(route, title) },
                 onBack = goBack,
                 onNavigate = navigate,
-                modifier = modifier().padding(panoContentPadding())
+                modifier = Modifier.navColumn().padding(panoContentPadding())
                 // webview has issues with nested scroll
             )
         }
@@ -467,7 +461,7 @@ object PanoNavGraph {
                 userAccountTemp = route.userAccountTemp,
                 pleromaCreds = route.creds,
                 onBack = goBack,
-                modifier = modifier().addColumnPadding()
+                modifier = Modifier.navScrollableColumn()
             )
         }
 
@@ -482,7 +476,7 @@ object PanoNavGraph {
             OobLastfmLibrefmLoginScreen(
                 userAccountTemp = route.userAccountTemp,
                 onBack = goBack,
-                modifier = modifier().addColumnPadding()
+                modifier = Modifier.navScrollableColumn()
             )
         }
 
@@ -494,7 +488,7 @@ object PanoNavGraph {
 
             SearchScreen(
                 onNavigate = navigate,
-                modifier = modifier()
+                modifier = Modifier.navColumn()
             )
         }
 
@@ -504,7 +498,7 @@ object PanoNavGraph {
                 onNavigate = navigate,
                 onDone = onSetOnboardingFinished,
                 mainViewModel = mainViewModel,
-                modifier = modifier().addColumnPadding()
+                modifier = Modifier.navScrollableColumn()
             )
         }
 
@@ -529,7 +523,7 @@ object PanoNavGraph {
                 },
                 tabsList = getTabData(route),
                 onNavigate = navigate,
-                modifier = modifier()
+                modifier = Modifier.navColumn()
             )
         }
 
@@ -552,7 +546,7 @@ object PanoNavGraph {
                 tabsList = getTabData(route),
                 onSetTitle = { title -> onSetTitle(route, title) },
                 onNavigate = navigate,
-                modifier = modifier()
+                modifier = Modifier.navColumn()
             )
         }
 
@@ -570,7 +564,7 @@ object PanoNavGraph {
                 user = route.user,
                 appId = route.appId,
                 onNavigate = navigate,
-                modifier = modifier()
+                modifier = Modifier.navColumn()
             )
         }
 
@@ -580,7 +574,7 @@ object PanoNavGraph {
             HelpScreen(
                 searchTerm = route.searchTerm,
                 scrobblerStateFlow = mainViewModel.scrobblerStateFlow,
-                modifier = modifier().padding(panoContentPadding())
+                modifier = Modifier.navColumn().padding(panoContentPadding())
             )
         }
 
@@ -588,7 +582,7 @@ object PanoNavGraph {
             onSetTitleRes(route, Res.string.pref_privacy_policy)
 
             PrivacyPolicyScreen(
-                modifier = modifier()
+                modifier = Modifier.navColumn()
             )
         }
 
@@ -602,7 +596,7 @@ object PanoNavGraph {
                 onSetTitle = { title -> onSetTitle(route, title) },
                 onNavigate = navigate,
                 editDataFlow = mainViewModel.editScrobbleUtils.editDataFlow,
-                modifier = modifier()
+                modifier = Modifier.navColumn()
             )
         }
 
@@ -617,7 +611,7 @@ object PanoNavGraph {
 
             AutomationInfoScreen(
                 onNavigate = navigate,
-                modifier = modifier().padding(panoContentPadding())
+                modifier = Modifier.navColumn().padding(panoContentPadding())
             )
         }
 
@@ -626,7 +620,7 @@ object PanoNavGraph {
 
             ArtistsWithDelimitersScreen(
                 onNavigate = navigate,
-                modifier = modifier()
+                modifier = Modifier.navColumn()
             )
         }
 

@@ -1,11 +1,15 @@
 package com.arn.scrobble.ui
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.calculateEndPadding
 import androidx.compose.foundation.layout.calculateStartPadding
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.ui.Modifier
@@ -18,8 +22,19 @@ import com.arn.scrobble.navigation.PanoNavigationType
 val LocalInnerPadding = compositionLocalOf { PaddingValues(0.dp) }
 
 @Composable
-fun Modifier.addColumnPadding() = verticalScroll(rememberScrollState())
+private fun Modifier.navBg() = fillMaxSize() then
+        MaterialTheme.colorScheme.surface.let {
+            if (it.alpha == 1f) Modifier.background(it) else Modifier
+        }
+
+@Composable
+fun Modifier.navScrollableColumn() = navBg()
+    .verticalScroll(rememberScrollState())
     .padding(panoContentPadding())
+    .imePadding()
+
+@Composable
+fun Modifier.navColumn() = navBg().imePadding()
 
 @Composable
 fun panoContentPadding(

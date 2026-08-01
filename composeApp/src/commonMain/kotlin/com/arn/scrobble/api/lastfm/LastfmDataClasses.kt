@@ -280,6 +280,8 @@ data class User(
     override val image: List<LastFmImage>? = null,
     @Serializable(with = LastfmUnixTimestampSerializer::class)
     val registered: Long? = null,
+    @Serializable(with = LastfmUnixTimestampSerializer::class)
+    val spotify_expiry_estimate: Long? = null,
     val country: String? = null,
 ) : IHasImage
 

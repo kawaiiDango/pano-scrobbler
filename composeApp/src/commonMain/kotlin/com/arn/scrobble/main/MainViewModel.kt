@@ -12,7 +12,6 @@ import com.arn.scrobble.api.lastfm.ApiException
 import com.arn.scrobble.billing.PurchaseMethod
 import com.arn.scrobble.db.PanoDb
 import com.arn.scrobble.edits.EditScrobbleUtils
-import com.arn.scrobble.pref.AppItem
 import com.arn.scrobble.ui.PanoSnackbarVisuals
 import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff
@@ -26,7 +25,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.first
@@ -46,9 +44,6 @@ class MainViewModel : ViewModel() {
     private val repository = VariantStuff.billingRepository
 
     val formattedPrice = repository.formattedPrice
-
-    private val _selectedPackages = MutableSharedFlow<Pair<List<AppItem>, List<AppItem>>>()
-    val selectedPackages = _selectedPackages.asSharedFlow()
 
     val isItChristmas by lazy {
         val cal = Calendar.getInstance()
@@ -156,13 +151,6 @@ class MainViewModel : ViewModel() {
 
     override fun onCleared() {
         repository.endDataSourceConnections()
-    }
-
-
-    fun onSetPackagesSelection(checked: List<AppItem>, unchecked: List<AppItem>) {
-        viewModelScope.launch {
-            _selectedPackages.emit(checked to unchecked)
-        }
     }
 
     fun notifyPullToRefresh(id: Int) {

@@ -313,7 +313,7 @@ fun SliderPref(
     text: String,
     value: Float,
     copyToSave: MainPrefs.(Int) -> MainPrefs,
-    default: Int,
+    default: Int?,
     min: Int,
     max: Int,
     increments: Int,
@@ -389,16 +389,18 @@ fun SliderPref(
                 modifier = Modifier.padding(start = 16.dp)
             )
 
-            IconButton(
-                enabled = enabled && internalValue.roundToInt() != default,
-                onClick = {
-                    scope.launch { mainPrefs.updateData { it.copyToSave(default) } }
+            if (default != null) {
+                IconButton(
+                    enabled = enabled && internalValue.roundToInt() != default,
+                    onClick = {
+                        scope.launch { mainPrefs.updateData { it.copyToSave(default) } }
+                    }
+                ) {
+                    Icon(
+                        imageVector = Icons.ResetSettings,
+                        contentDescription = stringResource(Res.string.reset)
+                    )
                 }
-            ) {
-                Icon(
-                    imageVector = Icons.ResetSettings,
-                    contentDescription = stringResource(Res.string.reset)
-                )
             }
         }
     }

@@ -9,10 +9,14 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.arn.scrobble.billing.LicenseState
 import com.arn.scrobble.billing.LocalLicenseValidState
+import com.arn.scrobble.pref.MainPrefs
 import com.arn.scrobble.themes.colors.ThemeVariants
+import com.arn.scrobble.ui.getActivityOrNull
 import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff.collectAsStateWithInitialValue
 import com.arn.scrobble.utils.VariantStuff
@@ -33,19 +37,37 @@ fun AppTheme(
     val random by PlatformStuff.mainPrefs.data.collectAsStateWithInitialValue { it.themeRandom }
     val dayNightMode by PlatformStuff.mainPrefs.data.collectAsStateWithInitialValue { it.themeDayNight }
     val contrastMode by PlatformStuff.mainPrefs.data.collectAsStateWithInitialValue { it.themeContrast }
+    val blurMainWindowPref by PlatformStuff.mainPrefs.data.collectAsStateWithInitialValue {
+        it.themeBlurMainWindow
+    }
+    var osWindowBlur by rememberSaveable { mutableStateOf(false) }
+    val blurSubWindowPref by PlatformStuff.mainPrefs.data.collectAsStateWithInitialValue {
+        it.themeBlurSubWindow
+    }
+    val blurMainWindow by remember(blurMainWindowPref, osWindowBlur) {
+        mutableStateOf(PlatformStuff.supportsBlur && blurMainWindowPref && osWindowBlur)
+    }
+
+    val blurSubWindow by remember(blurSubWindowPref, osWindowBlur) {
+        mutableStateOf(PlatformStuff.supportsBlur && blurSubWindowPref && osWindowBlur)
+    }
+
     val alpha by PlatformStuff.mainPrefs.data.collectAsStateWithInitialValue {
-        if (!PlatformStuff.isTv)
-            it.themeAlpha.coerceIn(0.5f, 1f)
-        else
+        if (PlatformStuff.isTv)
             1f
+        else
+            it.themeAlpha.coerceIn(MainPrefs.PREF_MIN_ALPHA, 1f)
     }
 
     val isSystemInDarkTheme by isSystemInDarkThemeNative()
+    val activity = getActivityOrNull()
 
     if (licenseState == LicenseState.UNKNOWN || prefsVersion == 0)
         return
 
+
     LaunchedEffect(Unit) {
+        setupWindowBlurListener(activity) { osWindowBlur = it }
         onInitDone()
     }
 
@@ -54,7 +76,11 @@ fun AppTheme(
             PlatformStuff.mainPrefs.updateData {
                 it.copy(
                     themeDayNight = DayNightMode.DARK,
-                    themeAlpha = 1f
+                    themeAlpha = 1f,
+                    themeDynamic = false,
+                    themeRandom = false,
+                    themeBlurMainWindow = false,
+                    themeBlurSubWindow = false,
                 )
             }
         }
@@ -69,33 +95,40 @@ fun AppTheme(
         )
     }
 
-    val themeAttributes = remember(isDark, contrastMode, themeName, alpha) {
-        val otherColorSchemes = ThemeUtils.themesMap.values
-            .filter { it.name != themeName }
-            .map {
-                getColorScheme(
-                    theme = it,
-                    isDark = isDark,
-                    contrastMode = contrastMode,
-                )
-            }
+    val themeAttributes =
+        remember(isDark, contrastMode, themeName, alpha, blurMainWindow, blurSubWindow) {
+            val otherColorSchemes = ThemeUtils.themesMap.values
+                .filter { it.name != themeName }
+                .map {
+                    getColorScheme(
+                        theme = it,
+                        isDark = isDark,
+                        contrastMode = contrastMode,
+                    )
+                }
 
-        ThemeAttributes(
-            isDark = isDark,
-            isTranslucent = alpha < 1f,
-            contrastMode = contrastMode,
-            allOnSecondaryContainerColors = otherColorSchemes.map { it.onSecondaryContainer },
-            allSecondaryContainerColors = otherColorSchemes.map { it.secondaryContainer },
-        )
-    }
+            ThemeAttributes(
+                isDark = isDark,
+                isTranslucent = alpha < 1f,
+                blurMainWindow = blurMainWindow,
+                blurSubWindow = blurSubWindow,
+                contrastMode = contrastMode,
+                allOnSecondaryContainerColors = otherColorSchemes.map { it.onSecondaryContainer },
+                allSecondaryContainerColors = otherColorSchemes.map { it.secondaryContainer },
+            )
+        }
 
     val colorScheme: ColorScheme = when {
         licenseState != LicenseState.VALID -> {
-            ThemeUtils.defaultTheme.dark
+            getColorScheme(
+                theme = ThemeUtils.defaultTheme,
+                isDark = true,
+                contrastMode = ContrastMode.LOW,
+            )
         }
 
         dynamic && PlatformStuff.supportsDynamicColors -> {
-            getDynamicColorScheme(isDark).withAlpha(alpha)
+            getDynamicColorScheme(isDark).withAlpha(alpha, blurSubWindow)
         }
 
         else -> {
@@ -108,7 +141,7 @@ fun AppTheme(
                 theme = theme,
                 isDark = isDark,
                 contrastMode = contrastMode,
-            ).withAlpha(alpha)
+            ).withAlpha(alpha, blurSubWindow)
         }
     }
 
@@ -144,17 +177,19 @@ private fun getColorScheme(
     }
 }
 
-// alpha should be between 0.5f and 1f
-private fun ColorScheme.withAlpha(alpha: Float): ColorScheme {
+private fun ColorScheme.withAlpha(alpha: Float, hasBlur: Boolean): ColorScheme {
     fun boostAlpha(alpha: Float, boost: Float) = alpha + (1f - alpha) * boost
 
-    if (alpha == 1f) return this
+    if (alpha == 1f && !hasBlur) return this
 
-    val highAlpha = boostAlpha(alpha, 0.75f)
+    val midAlpha = boostAlpha(alpha.coerceIn(0.5f, 1f), 0.4f).coerceIn(0.3f, 0.75f)
+    val highAlpha = boostAlpha(alpha.coerceIn(0.5f, 1f), 0.8f)
 
     return copy(
         background = background.copy(alpha = alpha),
         surface = surface.copy(alpha = alpha),
+        surfaceContainerLow = surfaceContainerLow.copy(alpha = if (hasBlur) midAlpha else highAlpha),
+        surfaceContainerHigh = surfaceContainerHigh.copy(alpha = if (hasBlur) midAlpha else highAlpha),
         surfaceContainer = surfaceContainer.copy(alpha = highAlpha),
         secondaryContainer = secondaryContainer.copy(alpha = highAlpha),
         tertiaryContainer = tertiaryContainer.copy(alpha = highAlpha),
@@ -177,3 +212,5 @@ expect fun getDynamicColorScheme(dark: Boolean): ColorScheme
 
 @Composable
 expect fun AddAdditionalProviders(content: @Composable () -> Unit)
+
+expect fun setupWindowBlurListener(activity: Any?, onBlurChanged: (Boolean) -> Unit)

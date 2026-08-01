@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.AssistChip
-import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.Icon
 import androidx.compose.material3.InputChip
 import androidx.compose.material3.MaterialTheme
@@ -26,6 +25,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation3.runtime.result.ResultEffect
 import com.arn.scrobble.api.lastfm.ScrobbleData
 import com.arn.scrobble.db.RegexEdit
 import com.arn.scrobble.icons.Add
@@ -34,7 +34,7 @@ import com.arn.scrobble.icons.Block
 import com.arn.scrobble.icons.Icons
 import com.arn.scrobble.icons.Mic
 import com.arn.scrobble.icons.MusicNote
-import com.arn.scrobble.main.MainViewModel
+import com.arn.scrobble.navigation.SelectedPackagesResult
 import com.arn.scrobble.navigation.jsonSerializableSaver
 import com.arn.scrobble.panoicons.AlbumArtist
 import com.arn.scrobble.panoicons.PanoIcons
@@ -57,7 +57,6 @@ import pano_scrobbler.composeapp.generated.resources.track
 
 @Composable
 fun RegexEditsTestScreen(
-    mainViewModel: MainViewModel,
     onNavigateToAppList: () -> Unit,
     onNavigateToRegexEditsAdd: (RegexEdit) -> Unit,
     modifier: Modifier = Modifier,
@@ -71,10 +70,8 @@ fun RegexEditsTestScreen(
     var albumArtist by rememberSaveable { mutableStateOf("") }
     val gotMatches = regexMatches?.scrobbleData != null || regexMatches?.blockPlayerAction != null
 
-    LaunchedEffect(Unit) {
-        mainViewModel.selectedPackages.collect { (checked, _) ->
-            appItem = checked.firstOrNull()
-        }
+    ResultEffect<SelectedPackagesResult> { res ->
+        appItem = res.checked.firstOrNull()
     }
 
     LaunchedEffect(track, album, artist, albumArtist, appItem) {

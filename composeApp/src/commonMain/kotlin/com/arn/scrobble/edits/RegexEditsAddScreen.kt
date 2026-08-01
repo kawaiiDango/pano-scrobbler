@@ -38,6 +38,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
+import androidx.navigation3.runtime.result.ResultEffect
 import com.arn.scrobble.billing.LocalLicenseValidState
 import com.arn.scrobble.db.BlockPlayerAction
 import com.arn.scrobble.db.PanoDb
@@ -55,8 +56,8 @@ import com.arn.scrobble.icons.Icons
 import com.arn.scrobble.icons.Lock
 import com.arn.scrobble.icons.Mic
 import com.arn.scrobble.icons.MusicNote
-import com.arn.scrobble.main.MainViewModel
 import com.arn.scrobble.navigation.PanoRoute
+import com.arn.scrobble.navigation.SelectedPackagesResult
 import com.arn.scrobble.navigation.jsonSerializableSaver
 import com.arn.scrobble.panoicons.AlbumArtist
 import com.arn.scrobble.panoicons.PanoIcons
@@ -115,7 +116,6 @@ import java.util.regex.PatternSyntaxException
 
 @Composable
 fun RegexEditsAddScreen(
-    mainViewModel: MainViewModel,
     regexEdit: RegexEdit?,
     onNavigate: (PanoRoute) -> Unit,
     onBack: () -> Unit,
@@ -244,10 +244,8 @@ fun RegexEditsAddScreen(
         }
     }
 
-    LaunchedEffect(Unit) {
-        mainViewModel.selectedPackages.collect { (checked, _) ->
-            appItems = checked.toSet()
-        }
+    ResultEffect<SelectedPackagesResult> { res ->
+        appItems = res.checked.toSet()
     }
 
     LaunchedEffect(Unit) {

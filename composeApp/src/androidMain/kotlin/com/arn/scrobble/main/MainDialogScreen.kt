@@ -85,7 +85,13 @@ fun PanoMainDialogContent(
     }
 
     val bottomSheetStrategy =
-        remember { BottomSheetSceneStrategy<PanoRoute>(bottomSheetState, ::removeAllModals) }
+        remember {
+            BottomSheetSceneStrategy<PanoRoute>(
+                true,
+                bottomSheetState,
+                ::removeAllModals
+            )
+        }
 
     NavFromOutsideEffect(
         onNavigate = ::replace,

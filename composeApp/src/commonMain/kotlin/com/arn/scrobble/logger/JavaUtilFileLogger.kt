@@ -1,9 +1,9 @@
 package com.arn.scrobble.logger
 
-import co.touchlab.kermit.DefaultFormatter
 import co.touchlab.kermit.LogWriter
 import co.touchlab.kermit.Message
 import co.touchlab.kermit.MessageStringFormatter
+import co.touchlab.kermit.NoTagFormatter
 import co.touchlab.kermit.Severity
 import co.touchlab.kermit.Tag
 import com.arn.scrobble.utils.PanoTimeFormatter
@@ -20,20 +20,11 @@ class JavaUtilFileLogger(
     var isEnabled: Boolean,
     redirectStderr: Boolean,
     private val printToStd: Boolean,
-    private val messageStringFormatter: MessageStringFormatter = DefaultFormatter
 ) : LogWriter() {
     private val originalErrStream = System.err
 
     private val fileLogFormatter = object : Formatter() {
-        override fun format(record: LogRecord): String {
-            return "[" + PanoTimeFormatter.short(record.millis) + "] " +
-                    messageStringFormatter.formatMessage(
-                        null,
-                        null,
-                        Message(record.message)
-                    ) +
-                    "\n"
-        }
+        override fun format(record: LogRecord) = format(record.millis, record.message) + "\n"
     }
 
     private val logger by lazy {
@@ -51,8 +42,8 @@ class JavaUtilFileLogger(
                     true
                 )
 
-                // set this to a minimum of INFO level. The rest can be set in Kermit
-                fileHandler.level = Level.INFO
+                // minimum file log level
+                fileHandler.level = Level.FINE
                 fileHandler.formatter = fileLogFormatter
                 addHandler(fileHandler)
 
@@ -92,7 +83,7 @@ class JavaUtilFileLogger(
                 originalErrStream.println(str)
                 throwable?.printStackTrace(originalErrStream)
             } else {
-                println(str)
+                println(format(System.currentTimeMillis(), str))
                 throwable?.printStackTrace(System.out)
             }
         }
@@ -100,6 +91,17 @@ class JavaUtilFileLogger(
 
     companion object {
         private const val N_FILES = 2
+
+        private val messageStringFormatter: MessageStringFormatter = NoTagFormatter
+
+        private fun format(millis: Long, message: String): String {
+            return "[" + PanoTimeFormatter.short(millis) + "] " +
+                    messageStringFormatter.formatMessage(
+                        null,
+                        null,
+                        Message(message)
+                    )
+        }
 
         fun mergeLogFilesTo(dest: OutputStream) {
             val logFiles = PlatformStuff.logsDir.listFiles { file ->

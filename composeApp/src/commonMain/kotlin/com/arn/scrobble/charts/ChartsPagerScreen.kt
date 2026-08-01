@@ -111,6 +111,7 @@ fun ChartsPagerScreen(
         TimePeriodSelector(
             user = user,
             viewModel = chartsPeriodViewModel,
+            onNavigate = onNavigate,
             onSelected = ::setInput,
             showRefreshButton = true,
             modifier = Modifier.fillMaxWidth()

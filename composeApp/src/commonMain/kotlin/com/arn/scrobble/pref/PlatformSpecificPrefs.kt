@@ -8,11 +8,8 @@ expect object PlatformSpecificPrefs {
 
     fun prefPersistentNotification(filteredItem: FilteredItem, notiPersistent: Boolean)
 
-    fun prefScrobbler(
-        filteredItem: FilteredItem,
+    fun onPrefScrobblerToggled(
         scrobblerEnabled: Boolean,
-        nlsEnabled: Boolean,
-        onNavigate: (PanoRoute) -> Unit
     )
 
     fun prefQuickSettings(filteredItem: FilteredItem, scrobblerEnabled: Boolean)

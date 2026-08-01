@@ -208,7 +208,7 @@ class LoginViewModel : ViewModel() {
                     result.isFailure && ((result.exceptionOrNull() as? ApiException)?.code == 14 ||
                             (result.exceptionOrNull() is UnknownHostException))
                 ) {
-                    delay(5.seconds)
+                    delay(8.seconds)
                     val hasTimeLeft = tryAgainTimeout - System.currentTimeMillis() > 0
 
                     if (!hasTimeLeft) {

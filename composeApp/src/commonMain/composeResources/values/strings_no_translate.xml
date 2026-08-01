@@ -32,7 +32,7 @@
     <string name="special_app_access" translatable="false">Special app access</string>
     <string name="automation_cp" translatable="false">ContentProvider URIs</string>
     <string name="discord_rich_presence" translatable="false">Discord Rich Presence</string>
-    <string name="log_to_file">Persist scrobble logs</string>
+    <string name="log_to_file" translatable="false">Persist scrobble logs</string>
     <string name="affect_performance">Will affect performance</string>
     <string name="proxy_socks5" translatable="false">SOCKS5</string>
     <string name="proxy_http" translatable="false">HTTP</string>
@@ -40,9 +40,15 @@
     <string name="android" translatable="false">Android</string>
     <string name="persistent_noti_oems" translatable="false">Xiaomi, Samsung, Huawei</string>
     <string name="ambient_apps" translatable="false">Shazam, Audile, Ambient Music Mod</string>
+    <string name="experimental" translatable="false">(Experimental)</string>
 
     <!--  strings for unfinalized stuff  -->
 
+    <string name="blur_notice" comment="blur effect in theme">Needs Windows 11, KDE or Android 12+ on supported hardware</string>
+    <string name="blur" comment="blur effect in theme">Blur</string>
+    <string name="blur_main_window" comment="os level blur effect behind the main window">Cross-app</string>
+    <string name="blur_sub_window" comment="blur effect within the app">In-app</string>
+    <string name="pause_for" comment="Pause scrobbling for a some time">Pause for</string>
     <string name="button_url" comment="used for the button in discord rich presence">Button URL</string>
     <string name="minimize">Minimize</string>
     <string name="websites">Websites</string>

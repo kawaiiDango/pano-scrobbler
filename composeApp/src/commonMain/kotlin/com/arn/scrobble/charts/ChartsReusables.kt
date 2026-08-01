@@ -5,30 +5,20 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.material3.DatePickerDefaults
-import androidx.compose.material3.DatePickerDialog
-import androidx.compose.material3.DateRangePicker
-import androidx.compose.material3.DateRangePickerDefaults
-import androidx.compose.material3.DateRangePickerState
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedToggleButton
-import androidx.compose.material3.SelectableDates
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -50,6 +40,7 @@ import androidx.compose.ui.unit.round
 import androidx.compose.ui.window.Popup
 import androidx.compose.ui.window.PopupProperties
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.navigation3.runtime.result.ResultEffect
 import com.arn.scrobble.api.AccountType
 import com.arn.scrobble.api.UserCached
 import com.arn.scrobble.api.lastfm.LastfmPeriod
@@ -66,10 +57,12 @@ import com.arn.scrobble.icons.Icons
 import com.arn.scrobble.icons.Refresh
 import com.arn.scrobble.icons.automirrored.ArrowLeft
 import com.arn.scrobble.icons.automirrored.ArrowRight
+import com.arn.scrobble.navigation.DatePickerResult
+import com.arn.scrobble.navigation.DateRangePickerResult
+import com.arn.scrobble.navigation.PanoRoute
 import com.arn.scrobble.navigation.jsonSerializableSaver
 import com.arn.scrobble.ui.PanoLazyColumn
 import com.arn.scrobble.ui.combineImageVectors
-import com.arn.scrobble.ui.rememberLocaleWithCustomWeekday
 import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff.collectAsStateWithInitialValue
 import com.arn.scrobble.utils.Stuff.format
@@ -83,7 +76,6 @@ import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.pluralStringResource
 import org.jetbrains.compose.resources.stringResource
 import pano_scrobbler.composeapp.generated.resources.Res
-import pano_scrobbler.composeapp.generated.resources.cancel
 import pano_scrobbler.composeapp.generated.resources.charts_continuous
 import pano_scrobbler.composeapp.generated.resources.charts_custom
 import pano_scrobbler.composeapp.generated.resources.item_options
@@ -92,7 +84,6 @@ import pano_scrobbler.composeapp.generated.resources.months
 import pano_scrobbler.composeapp.generated.resources.num_months
 import pano_scrobbler.composeapp.generated.resources.num_weeks
 import pano_scrobbler.composeapp.generated.resources.num_years
-import pano_scrobbler.composeapp.generated.resources.ok
 import pano_scrobbler.composeapp.generated.resources.reload
 import pano_scrobbler.composeapp.generated.resources.weeks
 import pano_scrobbler.composeapp.generated.resources.years
@@ -183,6 +174,7 @@ private fun monthPickerMonths(
 fun TimePeriodSelector(
     user: UserCached,
     viewModel: ChartsPeriodVM,
+    onNavigate: (PanoRoute) -> Unit,
     onSelected: (timePeriod: TimePeriod, prevTimePeriod: TimePeriod?, Int) -> Unit,
     showRefreshButton: Boolean,
     modifier: Modifier = Modifier,
@@ -200,6 +192,9 @@ fun TimePeriodSelector(
     val accountType by PlatformStuff.mainPrefs.data.collectAsStateWithInitialValue { it.currentAccountType }
     val listState = rememberLazyListState()
     var selectedPeriodOffsetX by remember { mutableIntStateOf(0) }
+    val validTimes = remember(timePeriods) {
+        timePeriodsList.associateBy { it.start.timeToUTC() }
+    }
     val density = LocalDensity.current
 
     LaunchedEffect(accountType, digestTimePeriod) {
@@ -260,6 +255,19 @@ fun TimePeriodSelector(
             }
 
             onSelected(selectedPeriod, prevPeriod, refreshCount)
+        }
+    }
+
+    ResultEffect<DateRangePickerResult> { res ->
+        val timePeriod =
+            TimePeriod(res.startUtc.timeToLocal(), res.endUtc.timeToLocal())
+
+        viewModel.setCustomPeriodInput(timePeriod)
+    }
+
+    ResultEffect<DatePickerResult> { res ->
+        validTimes[res.dateMillis]?.let {
+            viewModel.setSelectedPeriod(it)
         }
     }
 
@@ -363,44 +371,26 @@ fun TimePeriodSelector(
 
         when (dropdownTypeShown) {
             TimePeriodType.CUSTOM -> {
-                DateRangePickerModal(
-                    selectedDateRange = selectedPeriod?.start?.timeToUTC() to selectedPeriod?.end?.timeToUTC(),
+                val route = PanoRoute.Modal.DateRangePicker(
+                    selectedDateRange = selectedPeriod?.let { it.start.timeToUTC() to it.end.timeToUTC() },
                     allowedRange = user.registeredTime to System.currentTimeMillis(),
-                    onDateRangeSelected = { (startUtc, endUtc) ->
-                        if (startUtc != null && endUtc != null) {
-                            val timePeriod =
-                                TimePeriod(startUtc.timeToLocal(), endUtc.timeToLocal())
-
-                            viewModel.setCustomPeriodInput(timePeriod)
-                        }
-                    },
-                    onDismiss = { dropdownTypeShown = null }
                 )
+
+                onNavigate(route)
+                dropdownTypeShown = null
             }
 
             TimePeriodType.WEEK -> {
-                val validTimes = remember(timePeriods) {
-                    timePeriodsList.associateBy { it.start.timeToUTC() }
-                }
-
-                DatePickerModal(
+                val route = PanoRoute.Modal.DatePicker(
                     selectedDate = selectedPeriod?.start,
                     allowedRange = user.registeredTime to System.currentTimeMillis(),
-                    selectableDates = object : SelectableDates {
-                        override fun isSelectableDate(utcTimeMillis: Long) =
-                            utcTimeMillis in user.registeredTime..System.currentTimeMillis() && utcTimeMillis in validTimes
-                    },
-                    onDateSelected = {
-                        if (it != null && validTimes[it] != null)
-                            viewModel.setSelectedPeriod(validTimes[it]!!)
-                    },
-                    onDismiss = { dropdownTypeShown = null }
+                    weeksOnly = true,
                 )
+                onNavigate(route)
+                dropdownTypeShown = null
             }
 
             TimePeriodType.MONTH -> {
-                val validTimes = remember(timePeriods) { timePeriodsList.associateBy { it.start } }
-
                 MonthPickerPopup(
                     offset = IntOffset(selectedPeriodOffsetX, 0),
                     selectedMillis = selectedPeriod?.start ?: System.currentTimeMillis(),
@@ -433,9 +423,7 @@ fun TimePeriodSelector(
                                 },
                                 enabled = timePeriod != selectedPeriod,
                                 text = {
-                                    Text(
-                                        text = timePeriod.name,
-                                    )
+                                    Text(timePeriod.name)
                                 },
                             )
                         }
@@ -488,79 +476,6 @@ private fun PeriodTypeSelector(
         }
     }
 }
-
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-private fun DateRangePickerModal(
-    selectedDateRange: Pair<Long?, Long?>,
-    allowedRange: Pair<Long, Long>,
-    onDateRangeSelected: (Pair<Long?, Long?>) -> Unit,
-    onDismiss: () -> Unit,
-) {
-    val locale = rememberLocaleWithCustomWeekday()
-    val allowedRangeYears = remember { millisRangeToYears(allowedRange) }
-    val dateFormatter = remember { DatePickerDefaults.dateFormatter() }
-    val initialDisplayedMonthMillis =
-        remember { selectedDateRange.first ?: System.currentTimeMillis() }
-
-    val dateRangePickerState = remember {
-        DateRangePickerState(
-            locale = locale,
-            initialSelectedStartDateMillis = selectedDateRange.first,
-            initialSelectedEndDateMillis = selectedDateRange.second,
-            initialDisplayedMonthMillis = initialDisplayedMonthMillis,
-            yearRange = allowedRangeYears,
-            selectableDates = object : SelectableDates {
-                override fun isSelectableDate(utcTimeMillis: Long) =
-                    utcTimeMillis in allowedRange.first..allowedRange.second
-            }
-        )
-    }
-
-    DatePickerDialog(
-        onDismissRequest = onDismiss,
-        confirmButton = {
-            TextButton(
-                onClick = {
-                    onDateRangeSelected(
-                        Pair(
-                            dateRangePickerState.selectedStartDateMillis,
-                            dateRangePickerState.selectedEndDateMillis?.plus(24 * 60 * 60 * 1000 - 1)
-                        )
-                    )
-                    onDismiss()
-                }
-            ) {
-                Text(stringResource(Res.string.ok))
-            }
-        },
-        dismissButton = {
-            TextButton(onClick = onDismiss) {
-                Text(stringResource(Res.string.cancel))
-            }
-        }
-    ) {
-        DateRangePicker(
-            state = dateRangePickerState,
-            headline = {
-                // workaround for a text overflow bug in compose in pt locale
-                DateRangePickerDefaults.DateRangePickerHeadline(
-                    selectedStartDateMillis = dateRangePickerState.selectedStartDateMillis,
-                    selectedEndDateMillis = dateRangePickerState.selectedEndDateMillis,
-                    displayMode = dateRangePickerState.displayMode,
-                    dateFormatter = dateFormatter,
-                    modifier = Modifier.padding(bottom = 12.dp),
-                )
-            },
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(500.dp)
-                .padding(16.dp)
-        )
-    }
-}
-
 
 @Composable
 private fun MonthPickerPopup(

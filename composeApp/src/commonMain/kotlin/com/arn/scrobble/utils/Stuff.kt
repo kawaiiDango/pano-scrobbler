@@ -84,6 +84,8 @@ object Stuff {
     const val MAX_HISTORY_ITEMS = 20
     const val DEFAULT_PAGE_SIZE = 100
     const val SCROBBLE_SOURCE_THRESHOLD = 1000L
+    const val BLUR_BACKDROP_RADIUS_DP = 12
+    const val BLUR_FROSTED_RADIUS_DP = 36
 
     const val LASTFM_API_ROOT = "https://ws.audioscrobbler.com/2.0/"
     const val LIBREFM_API_ROOT = "https://libre.fm/2.0/"

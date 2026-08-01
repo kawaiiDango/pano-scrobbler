@@ -1,5 +1,6 @@
 package com.arn.scrobble.navigation
 
+import androidx.compose.ui.Modifier
 import androidx.navigation3.runtime.EntryProviderScope
 import com.arn.scrobble.onboarding.FixItDialog
 
@@ -13,7 +14,7 @@ actual fun EntryProviderScope<PanoRoute>.panoPlatformSpecificNavGraph(
         FixItDialog(
             killedReason = route.killedReason,
             onNavigate = navigate,
-            modifier = modalModifier(),
+            modifier = Modifier.modalModifier(),
         )
     }
 }

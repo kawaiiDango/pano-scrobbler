@@ -8,6 +8,8 @@ import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff.stateInWithCache
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import kotlin.math.min
 import kotlin.time.Duration.Companion.seconds
@@ -29,6 +31,8 @@ abstract class MediaListener(
     protected val scrobblerEnabled =
         mainPrefs.data.stateInWithCache(scope) { it.scrobblerEnabled && it.scrobbleAccounts.isNotEmpty() }
 
+    private var scrobblerPausedTill = -1L
+
     protected abstract val notifyTimelineUpdates: Boolean
 
     private val scrobbleTimingPrefs =
@@ -45,6 +49,16 @@ abstract class MediaListener(
     protected var mutedHash: Int? = null
 
     private var scrobbleLockKey: MediaTrackerKey? = null
+
+    init {
+        scope.launch {
+            mainPrefs.data.map { it.scrobblerPausedTill }
+                .distinctUntilChanged()
+                .collect {
+                    pauseAllSessionsTill(it)
+                }
+        }
+    }
 
     private fun PlayingTrackInfo.isEligibleForScrobble() = isPlaying &&
             title.isNotEmpty() &&
@@ -160,6 +174,13 @@ abstract class MediaListener(
         }
     }
 
+    private fun pauseAllSessionsTill(time: Long) {
+        scrobblerPausedTill = time
+
+        if (time > System.currentTimeMillis())
+            sessionTrackers.values.forEach { it.pause() }
+    }
+
     abstract fun shouldScrobble(rawAppId: String): Boolean
 
     abstract inner class SessionTracker(
@@ -171,6 +192,7 @@ abstract class MediaListener(
         var isMuted = false
         var lastDuration = trackInfo.durationMillis
             private set
+//        private var lastPosition = 0L
 
         fun scrobble() {
             Logger.d { "playing: timePlayed=${trackInfo.timePlayed} title=${trackInfo.title} hash=${trackInfo.hash.toHexString()}" }
@@ -273,6 +295,9 @@ abstract class MediaListener(
             playbackInfo: PlaybackInfo,
             ignoreScrobble: Boolean,
         ) {
+            if (System.currentTimeMillis() < scrobblerPausedTill)
+                return
+
             if (BuildKonfig.DEBUG || (lastPlaybackState != playbackInfo.state))
                 Logger.i { "$playbackInfo lastPlaybackState: $lastPlaybackState ${hashCode().toHexString()}" }
 
@@ -281,8 +306,12 @@ abstract class MediaListener(
                 return
             }
 
+//            val positionDelta = playbackInfo.position - lastPosition
             val isPossiblyAtStart =
                 playbackInfo.position != -1L && playbackInfo.position < START_POS_LIMIT
+//                        (playbackInfo.position < START_POS_LIMIT ||
+//                        trackInfo.durationMillis > 0 && positionDelta < trackInfo.durationMillis * 0.5
+//                        )
 
             val timelineChanged = trackInfo.setTimelineStartTime(playbackInfo.position) &&
                     playbackInfo.state == CommonPlaybackState.Playing

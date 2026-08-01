@@ -161,14 +161,7 @@ sealed interface PanoRoute : NavKey {
     }
 
     @Serializable
-    data object ThemeChooser : PanoRoute, HasFab {
-        override fun getFabData() = PanoFabData(
-            Res.string.done,
-            Icons.Check,
-            true,
-            null
-        )
-    }
+    data object ThemeChooser : PanoRoute
 
     @Serializable
     data class ImageSearch(
@@ -334,6 +327,25 @@ sealed interface PanoRoute : NavKey {
 
         @Serializable
         data object ProxyPref : Modal
+
+        @Serializable
+        data class TimePicker(
+            val initialHour: Int,
+            val initialMinute: Int,
+        ) : Modal
+
+        @Serializable
+        data class DateRangePicker(
+            val selectedDateRange: Pair<Long, Long>?,
+            val allowedRange: Pair<Long, Long>,
+        ) : Modal
+
+        @Serializable
+        data class DatePicker(
+            val selectedDate: Long?,
+            val allowedRange: Pair<Long, Long>,
+            val weeksOnly: Boolean,
+        ) : Modal
     }
 
     fun homePagerTabData(accountType: AccountType): List<PanoTab> {

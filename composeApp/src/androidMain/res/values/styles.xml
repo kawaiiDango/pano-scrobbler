@@ -1,4 +1,4 @@
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
 
     <style name="ParentTheme" parent="android:Theme.DeviceDefault.NoActionBar" />
 
@@ -28,16 +28,13 @@
 
     <style name="AppTheme.Wallpaper">
         <item name="android:windowBackground">@android:color/transparent</item>
-        <!--        <item name="android:windowContentOverlay">@null</item>-->
         <item name="android:windowShowWallpaper">true</item>
     </style>
 
     <style name="Patch.Wallpaper">
         <item name="android:windowBackground">@android:color/transparent</item>
-        <!--        <item name="android:windowContentOverlay">@null</item>-->
         <item name="android:windowShowWallpaper">true</item>
     </style>
-
 
     <style name="AppThemeDialog" parent="android:Theme.DeviceDefault.Dialog.Alert">
         <item name="android:windowSoftInputMode">adjustResize</item>
@@ -54,9 +51,35 @@
         <item name="android:windowBackground">@android:color/transparent</item>
         <item name="android:windowContentOverlay">@null</item>
 
-        <!--<item name="android:windowNoTitle">true</item>-->
         <item name="android:windowIsFloating">true</item>
-        <!--        <item name="android:backgroundDimEnabled">false</item>-->
+        <item name="android:backgroundDimEnabled">false</item>
+        <item name="android:windowAnimationStyle">@null</item>
     </style>
 
+    <!--  todo: remove when it arrives in cmp  -->
+
+    <!-- Stub style to workaround Window.setClipToOutline not being available on API 21 -->
+    <style name="DialogWindowTheme" tools:override="true">
+        <item name="android:windowClipToOutline">false</item>
+        <item name="android:windowIsTranslucent">true</item>
+    </style>
+    <!-- Style for decorFitsSystemWindows = false -->
+    <style name="FloatingDialogWindowTheme" tools:override="true">
+        <item name="android:windowClipToOutline">false</item>
+        <item name="android:backgroundDimEnabled">true</item>
+        <item name="android:windowIsTranslucent">true</item>
+    </style>
+
+    <!-- Override material3's ModalBottomSheet theme to enable background blur -->
+    <style name="EdgeToEdgeFloatingDialogTheme" parent="android:Theme.DeviceDefault.Dialog" tools:override="true">
+        <item name="android:windowAnimationStyle">@null</item>
+        <item name="android:windowClipToOutline">false</item>
+        <item name="android:windowIsFloating">false</item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:navigationBarColor">@android:color/transparent</item>
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:windowElevation">0dp</item>
+        <item name="android:windowIsTranslucent">true</item>
+    </style>
 </resources>

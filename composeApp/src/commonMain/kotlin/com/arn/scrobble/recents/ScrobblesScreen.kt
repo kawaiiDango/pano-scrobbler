@@ -40,13 +40,13 @@ import androidx.lifecycle.compose.LifecycleResumeEffect
 import androidx.lifecycle.compose.LifecycleStartEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation3.runtime.result.ResultEffect
 import androidx.paging.LoadState
 import androidx.paging.compose.collectAsLazyPagingItems
 import com.arn.scrobble.api.AccountType
 import com.arn.scrobble.api.UserCached
 import com.arn.scrobble.api.lastfm.Track
 import com.arn.scrobble.billing.LocalLicenseValidState
-import com.arn.scrobble.charts.DatePickerModal
 import com.arn.scrobble.charts.TimePeriodType
 import com.arn.scrobble.charts.TimePeriodsGenerator
 import com.arn.scrobble.charts.getPeriodTypeIcon
@@ -61,6 +61,7 @@ import com.arn.scrobble.icons.Icons
 import com.arn.scrobble.icons.Refresh
 import com.arn.scrobble.main.PanoPullToRefresh
 import com.arn.scrobble.main.ScrobblerState
+import com.arn.scrobble.navigation.DatePickerResult
 import com.arn.scrobble.navigation.PanoRoute
 import com.arn.scrobble.ui.AutoRefreshEffect
 import com.arn.scrobble.ui.DismissableNotice
@@ -357,6 +358,7 @@ fun ScrobblesScreen(
                     onNavigateToRandom = {
                         onNavigate(PanoRoute.Random(user))
                     },
+                    onNavigate = onNavigate,
                     modifier = Modifier.fillMaxWidth()
                 )
             }
@@ -536,11 +538,18 @@ private fun ScrobblesTypeSelector(
     onTypeSelected: (ScrobblesType, Long?) -> Unit,
     onRefresh: () -> Unit,
     onNavigateToRandom: () -> Unit,
+    onNavigate: (PanoRoute) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     var timeJumpMenuShown by remember { mutableStateOf(false) }
-    var datePickerShown by rememberSaveable { mutableStateOf(false) }
     val firstDayOfWeek by PlatformStuff.mainPrefs.data.collectAsStateWithInitialValue { it.firstDayOfWeek }
+
+    ResultEffect<DatePickerResult> { res ->
+        onTypeSelected(
+            ScrobblesType.TIME_JUMP,
+            res.dateMillis.timeToLocal().plus((24 * 60 * 60 - 1) * 1000)
+        )
+    }
 
     Row(
         modifier = modifier.padding(horizontal = 8.dp),
@@ -653,7 +662,12 @@ private fun ScrobblesTypeSelector(
                 }
                 DropdownMenuItem(
                     onClick = {
-                        datePickerShown = true
+                        val route = PanoRoute.Modal.DatePicker(
+                            selectedDate = timeJumpMillis,
+                            allowedRange = registeredTime to System.currentTimeMillis(),
+                            weeksOnly = false,
+                        )
+                        onNavigate(route)
                         timeJumpMenuShown = false
                     },
                     leadingIcon = {
@@ -675,20 +689,6 @@ private fun ScrobblesTypeSelector(
                 onNavigateToRandom()
             },
             isLast = true
-        )
-    }
-
-    if (datePickerShown) {
-        DatePickerModal(
-            selectedDate = timeJumpMillis,
-            allowedRange = Pair(registeredTime, System.currentTimeMillis()),
-            onDateSelected = {
-                onTypeSelected(
-                    ScrobblesType.TIME_JUMP,
-                    it?.timeToLocal()?.plus((24 * 60 * 60 - 1) * 1000)
-                )
-            },
-            onDismiss = { datePickerShown = false },
         )
     }
 }

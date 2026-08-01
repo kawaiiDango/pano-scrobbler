@@ -12,11 +12,15 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation3.runtime.EntryProviderScope
+import androidx.navigation3.runtime.result.LocalResultEventBus
 import com.arn.scrobble.api.AccountType
 import com.arn.scrobble.api.DrawerData
 import com.arn.scrobble.charts.ChartsLegendDialog
 import com.arn.scrobble.charts.CollageGeneratorDialog
+import com.arn.scrobble.charts.DateDialog
+import com.arn.scrobble.charts.DateRangeDialog
 import com.arn.scrobble.charts.HiddenTagsDialog
+import com.arn.scrobble.charts.TimeDialog
 import com.arn.scrobble.db.SimpleEdit
 import com.arn.scrobble.edits.BlockedMetadataAddDialog
 import com.arn.scrobble.edits.SimpleEditsAddScreen
@@ -56,33 +60,33 @@ fun EntryProviderScope<PanoRoute>.panoModalNavGraph(
             drawSnowfall = mainViewModel.isItChristmas,
             onSetDrawerData = onSetDrawerData,
             onNavigate = navigate,
-            modifier = modalModifier()
+            modifier = Modifier.modalModifier()
         )
     }
 
     modalEntry<PanoRoute.Modal.Changelog> { route ->
         ChangelogDialog(
             text = route.text,
-            modifier = modalModifier()
+            modifier = Modifier.modalModifier()
         )
     }
 
     modalEntry<PanoRoute.Modal.ChartsLegend> {
         ChartsLegendDialog(
-            modifier = modalModifier()
+            modifier = Modifier.modalModifier()
         )
     }
 
     modalEntry<PanoRoute.Modal.UpdateAvailable> { route ->
         UpdateAvailableDialog(
             updateAction = route.updateAction,
-            modifier = modalModifier()
+            modifier = Modifier.modalModifier()
         )
     }
 
     modalEntry<PanoRoute.Modal.HiddenTags> {
         HiddenTagsDialog(
-            modifier = modalModifier()
+            modifier = Modifier.modalModifier()
         )
     }
 
@@ -96,7 +100,7 @@ fun EntryProviderScope<PanoRoute>.panoModalNavGraph(
             onAskForReview = {
                 VariantStuff.reviewPrompter.showIfNeeded(activity)
             },
-            modifier = modalModifier()
+            modifier = Modifier.modalModifier()
         )
     }
 
@@ -108,7 +112,7 @@ fun EntryProviderScope<PanoRoute>.panoModalNavGraph(
             user = route.user,
             onNavigate = navigate,
             scrollState = scrollState,
-            modifier = modalModifier(padding = false)
+            modifier = Modifier.modalModifier(padding = false)
         )
     }
 
@@ -117,26 +121,26 @@ fun EntryProviderScope<PanoRoute>.panoModalNavGraph(
         TagInfoDialog(
             tag = route.tag,
             scrollState = scrollState,
-            modifier = modalModifier()
+            modifier = Modifier.modalModifier()
         )
     }
 
     modalEntry<PanoRoute.Modal.ShowLink> { route ->
         ShowLinkDialog(
             url = route.url,
-            modifier = modalModifier(),
+            modifier = Modifier.modalModifier(),
         )
     }
 
     modalEntry<PanoRoute.Modal.MediaSearchPref> {
         MediaSearchPrefDialog(
-            modifier = modalModifier(),
+            modifier = Modifier.modalModifier(),
         )
     }
 
     modalEntry<PanoRoute.Modal.ProxyPref> {
         ProxyPrefDialog(
-            modifier = modalModifier(),
+            modifier = Modifier.modalModifier(),
         )
     }
 
@@ -149,7 +153,7 @@ fun EntryProviderScope<PanoRoute>.panoModalNavGraph(
             onNavigateToBilling = {
                 navigate(PanoRoute.Billing)
             },
-            modifier = modalModifier()
+            modifier = Modifier.modalModifier()
         )
     }
 
@@ -187,28 +191,71 @@ fun EntryProviderScope<PanoRoute>.panoModalNavGraph(
             },
             // this viewmodel should be scoped to the main viewmodel store owner
             viewModel = mainViewModel,
-            modifier = modalModifier()
+            modifier = Modifier.modalModifier()
+        )
+    }
+
+    modalEntry<PanoRoute.Modal.TimePicker> { route ->
+        val resultBus = LocalResultEventBus.current
+
+        TimeDialog(
+            h = route.initialHour,
+            m = route.initialMinute,
+            onTimeSelected = {
+                resultBus.sendResult(it)
+                goBack()
+            },
+            modifier = Modifier
+                .fillMaxWidth()
+        )
+    }
+
+    modalEntry<PanoRoute.Modal.DateRangePicker> { route ->
+        val resultBus = LocalResultEventBus.current
+
+        DateRangeDialog(
+            selectedDateRange = route.selectedDateRange,
+            allowedRange = route.allowedRange,
+            onDateRangeSelected = {
+                resultBus.sendResult(it)
+                goBack()
+            },
+            modifier = Modifier
+                .fillMaxWidth()
+        )
+    }
+
+    modalEntry<PanoRoute.Modal.DatePicker> { route ->
+        val resultBus = LocalResultEventBus.current
+
+        DateDialog(
+            selectedDate = route.selectedDate,
+            allowedRange = route.allowedRange,
+            weeksOnly = route.weeksOnly,
+            onDateSelected = {
+                resultBus.sendResult(it)
+                goBack()
+            },
+            modifier = Modifier
+                .fillMaxWidth()
         )
     }
 }
 
 
 @Composable
-fun modalModifier(
+fun Modifier.modalModifier(
     padding: Boolean = true,
     scrollState: ScrollState = rememberScrollState()
-): Modifier {
-    return Modifier
-        .fillMaxWidth()
-        .then(
-            if (padding)
-                Modifier.padding(horizontal = 24.dp)
-            else
-                Modifier
-        )
-        .padding(bottom = verticalOverscanPadding())
-        .verticalScroll(scrollState)
-}
+) = fillMaxWidth()
+    .then(
+        if (padding)
+            Modifier.padding(horizontal = 24.dp)
+        else
+            Modifier
+    )
+    .padding(bottom = verticalOverscanPadding())
+    .verticalScroll(scrollState)
 
 inline fun <reified K : PanoRoute.Modal> EntryProviderScope<PanoRoute>.modalEntry(
     noinline content: @Composable (K) -> Unit,

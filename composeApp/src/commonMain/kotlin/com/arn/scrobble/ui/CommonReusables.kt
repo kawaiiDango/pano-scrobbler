@@ -14,10 +14,11 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.BasicAlertDialog
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ButtonGroupDefaults
 import androidx.compose.material3.CircularWavyProgressIndicator
@@ -104,6 +105,7 @@ import com.arn.scrobble.utils.LocalNetworkHandshakeExceptionWrapper
 import com.arn.scrobble.utils.LocalNetworkPermissionNeededException
 import com.arn.scrobble.utils.LocalNetworkPermissionsRequest
 import com.arn.scrobble.utils.PlatformStuff
+import com.arn.scrobble.utils.Stuff
 import com.arn.scrobble.utils.Stuff.collectAsStateWithInitialValue
 import com.arn.scrobble.utils.redactedMessage
 import kotlinx.coroutines.delay
@@ -147,6 +149,7 @@ fun AlertDialogOk(
     onDismissRequest: () -> Unit = onConfirmation,
     title: String? = null,
     confirmText: String = stringResource(Res.string.ok),
+    scrollable: Boolean = false,
 ) {
     AlertDialog(
         title = if (title != null) {
@@ -156,7 +159,16 @@ fun AlertDialogOk(
         } else
             null,
         text = {
-            Text(text = text)
+            if (LocalThemeAttributes.current.blurSubWindow)
+                ApplyWindowBlur(
+                    behind = Stuff.BLUR_BACKDROP_RADIUS_DP,
+                    bg = Stuff.BLUR_FROSTED_RADIUS_DP
+                )
+
+            Text(
+                text = text,
+                modifier = if (scrollable) Modifier.verticalScroll(rememberScrollState()) else Modifier
+            )
         },
         icon = {
             Icon(
@@ -534,24 +546,6 @@ fun ButtonWithIcon(
         Spacer(Modifier.size(ButtonDefaults.IconSpacing))
         Text(text, maxLines = 1, overflow = TextOverflow.Ellipsis)
     }
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun DialogParent(
-    onDismiss: () -> Unit,
-    content: @Composable (modifier: Modifier) -> Unit,
-) {
-    BasicAlertDialog(
-        onDismissRequest = onDismiss,
-        content = {
-            Surface(
-                shape = MaterialTheme.shapes.extraLarge,
-            ) {
-                content(Modifier.padding(24.dp))
-            }
-        }
-    )
 }
 
 @Composable
@@ -1080,6 +1074,9 @@ fun accountTypeLabel(accountType: AccountType): String {
                 if (slot != null) " $slot" else ""
     }
 }
+
+@Composable
+expect fun ApplyWindowBlur(behind: Int, bg: Int)
 
 @Composable
 expect fun isImeVisible(): Boolean

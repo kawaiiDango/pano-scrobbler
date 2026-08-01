@@ -128,7 +128,7 @@ actual fun transformMediaMetadata(
 
     var ignoreScrobble = metadata.getLong(METADATA_KEY_ADVERTISEMENT) != 0L
 
-    if (trackInfo.notiKey.contains("|TelegramMediaSession") &&
+    if (("|TelegramMediaSession" in trackInfo.notiKey || "|telegramAudioPlayer" in trackInfo.notiKey) &&
         MetadataUtils.isTgVoiceMessage(artist) &&
         artist == albumArtist &&
         album.isEmpty()

@@ -10,15 +10,12 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.animation.scaleIn
 import androidx.compose.animation.scaleOut
 import androidx.compose.animation.shrinkOut
-import androidx.compose.foundation.background
 import androidx.compose.foundation.focusGroup
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.consumeWindowInsets
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -33,10 +30,10 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.MediumFlexibleTopAppBar
-import androidx.compose.material3.NavigationBar
-import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SheetValue
+import androidx.compose.material3.ShortNavigationBar
+import androidx.compose.material3.ShortNavigationBarItem
 import androidx.compose.material3.SmallExtendedFloatingActionButton
 import androidx.compose.material3.Snackbar
 import androidx.compose.material3.SnackbarDefaults
@@ -67,17 +64,20 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.blur
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.TransformOrigin
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.input.pointer.PointerIcon
 import androidx.compose.ui.input.pointer.pointerHoverIcon
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDecorator
 import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
+import androidx.navigation3.runtime.result.rememberResultEventBusNavEntryDecorator
 import androidx.navigation3.scene.SinglePaneSceneStrategy
 import androidx.navigation3.ui.NavDisplay
 import androidx.savedstate.serialization.SavedStateConfiguration
@@ -101,6 +101,7 @@ import com.arn.scrobble.navigation.PanoNavigationType
 import com.arn.scrobble.navigation.PanoRoute
 import com.arn.scrobble.navigation.PanoTab
 import com.arn.scrobble.navigation.rememberPanoNavBackStack
+import com.arn.scrobble.themes.LocalThemeAttributes
 import com.arn.scrobble.ui.AvatarOrInitials
 import com.arn.scrobble.ui.LocalInnerPadding
 import com.arn.scrobble.ui.PanoPullToRefreshStateForTab
@@ -163,7 +164,7 @@ fun PanoAppContent(
     val tabIdxMap = remember { mutableStateMapOf<PanoRoute.HasTabs, Int>() }
     val drawerDataMap = remember { viewModel.drawerDataMap }
 
-    val topBarScrollBehavior = if (PlatformStuff.isTv)
+    val topBarScrollBehavior = if (PlatformStuff.isTv || PlatformStuff.isDesktop)
         TopAppBarDefaults.pinnedScrollBehavior()
     else
         TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
@@ -217,7 +218,16 @@ fun PanoAppContent(
         if (backStack.size <= 1)
             return null
 
-        val route = backStack.removeLastOrNull()
+        val route = backStack.lastOrNull()
+
+        if (backStack.count { it is PanoRoute.Modal } == 1 && route is PanoRoute.Modal) {
+            scope.launch {
+                bottomSheetState.hide()
+                backStack.remove(route)
+            }
+        } else {
+            backStack.remove(route)
+        }
 
         if (route is PanoRoute.HasTabs)
             tabIdxMap.remove(route)
@@ -260,7 +270,13 @@ fun PanoAppContent(
     }
 
     val bottomSheetStrategy =
-        remember { BottomSheetSceneStrategy<PanoRoute>(bottomSheetState, ::removeAllModals) }
+        remember {
+            BottomSheetSceneStrategy<PanoRoute>(
+                false,
+                bottomSheetState,
+                ::removeAllModals
+            )
+        }
     val singlePaneStrategy = remember { SinglePaneSceneStrategy<PanoRoute>() }
 
     // show onboarding again when logged out
@@ -336,159 +352,173 @@ fun PanoAppContent(
         val currentNavType = LocalNavigationType.current
 
         key(locale) {
-            val needsRoundedCorners =
-                PlatformStuff.isDesktop && MaterialTheme.colorScheme.background.alpha < 1f
+            val needsRoundedCorners = PlatformStuff.isDesktop &&
+                    !LocalThemeAttributes.current.blurMainWindow &&
+                    MaterialTheme.colorScheme.background.alpha < 1f
 
-            Row(
-                Modifier.fillMaxSize() then
-                        if (needsRoundedCorners) Modifier.clip(MaterialTheme.shapes.large) else Modifier
-            ) {
-                if (currentNavType != PanoNavigationType.BOTTOM_NAVIGATION) {
-                    PanoNavigationRail(
-                        tabs = tabData.orEmpty(),
-                        selectedTabIdx = tabIdxMap.getOrDefault(currentPanoRoute, 0),
-                        fabData = fabData,
-                        onNavigate = ::navigate,
-                        onBack = ::goBack,
-                        onTabClicked = { pos ->
-                            (currentPanoRoute as? PanoRoute.HasTabs)?.let {
-                                tabIdxMap[it] = pos
-                            }
-                        },
-                        onProfileClicked = {
-                            if (currentUser != null) {
+            val needsBackdropBlur = PlatformStuff.isDesktop &&
+                    PlatformStuff.supportsBlur &&
+                    LocalThemeAttributes.current.blurSubWindow &&
+                    bottomSheetState.isVisible
+
+            Scaffold(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .pullToRefresh(
+                        state = pullToRefreshState,
+                        isRefreshing = pullToRefreshStateForSelfHomePager.values.any { it == PanoPullToRefreshStateForTab.Refreshing },
+                        enabled = (!PlatformStuff.isDesktop && !PlatformStuff.isTv) && !pullToRefreshStateForSelfHomePager.values.all { it == PanoPullToRefreshStateForTab.Disabled },
+                        onRefresh = {
+                            // find the right tab
+                            pullToRefreshStateForSelfHomePager.entries
+                                .find { it.value == PanoPullToRefreshStateForTab.NotRefreshing }
+                                ?.key
+                                ?.let { id ->
+                                    viewModel.notifyPullToRefresh(id)
+                                }
+                        }
+                    )
+                    .nestedScroll(topBarScrollBehavior.nestedScrollConnection)
+                    .focusGroup()
+                    .then(
+                        if (needsRoundedCorners) Modifier.clip(MaterialTheme.shapes.medium) else Modifier
+                    ).then(
+                        if (needsBackdropBlur) Modifier.blur(radius = Stuff.BLUR_BACKDROP_RADIUS_DP.dp) else Modifier
+                    ),
+                topBar = {
+                    draggableWrapper { windowTitleActions ->
+                        PanoTopAppBar(
+                            titlesMap[currentPanoRoute] ?: "",
+                            scrollBehavior = topBarScrollBehavior,
+                            windowTitleActions = windowTitleActions,
+                            showBack = !PlatformStuff.isTv && backStack.count { it !is PanoRoute.Modal } > 1,
+                            onBack = ::goBack,
+                        )
+                    }
+                },
+                bottomBar = {
+                    if (currentNavType == PanoNavigationType.BOTTOM_NAVIGATION && tabData != null && currentUser != null) {
+                        PanoBottomNavigationBar(
+                            tabs = tabData,
+                            selectedTabIdx = tabIdxMap.getOrDefault(
+                                currentPanoRoute,
+                                0
+                            ),
+                            onTabClicked = { pos ->
+                                (currentPanoRoute as? PanoRoute.HasTabs)?.let {
+                                    tabIdxMap[it] = pos
+                                }
+                            },
+                            user = currentUser,
+                            onProfileClicked = {
                                 navigate(
                                     PanoRoute.Modal.NavPopup(
                                         otherUser = currentUser.takeIf { currentUser != userSelf },
-                                        initialDrawerData = drawerDataMap.getOrElse(currentUser) {
+                                        initialDrawerData = drawerDataMap.getOrElse(
+                                            currentUser
+                                        ) {
                                             DrawerData(0)
                                         }
                                     )
                                 )
-                            }
-                        },
-                        user = currentUser,
-                    )
-                }
-
-                Box(
-                    Modifier
-                        .fillMaxHeight()
-                        .weight(1f)
-                        .background(MaterialTheme.colorScheme.background)
-                )
-
-                Scaffold(
-                    modifier = Modifier
-                        .fillMaxHeight()
-                        .widthIn(max = 1020.dp)
-                        .pullToRefresh(
-                            state = pullToRefreshState,
-                            isRefreshing = pullToRefreshStateForSelfHomePager.values.any { it == PanoPullToRefreshStateForTab.Refreshing },
-                            enabled = (!PlatformStuff.isDesktop && !PlatformStuff.isTv) && !pullToRefreshStateForSelfHomePager.values.all { it == PanoPullToRefreshStateForTab.Disabled },
-                            onRefresh = {
-                                // find the right tab
-                                pullToRefreshStateForSelfHomePager.entries
-                                    .find { it.value == PanoPullToRefreshStateForTab.NotRefreshing }
-                                    ?.key
-                                    ?.let { id ->
-                                        viewModel.notifyPullToRefresh(id)
-                                    }
-                            }
+                            },
                         )
-                        .nestedScroll(topBarScrollBehavior.nestedScrollConnection)
-                        .focusGroup(),
-                    topBar = {
-                        draggableWrapper { windowTitleActions ->
-                            PanoTopAppBar(
-                                titlesMap[currentPanoRoute] ?: "",
-                                scrollBehavior = topBarScrollBehavior,
-                                windowTitleActions = windowTitleActions,
-                                showBack = !PlatformStuff.isTv && backStack.count { it !is PanoRoute.Modal } > 1,
+                    }
+                },
+                floatingActionButton = {
+                    if (currentNavType == PanoNavigationType.BOTTOM_NAVIGATION) {
+                        fabData?.let { fabData ->
+                            PanoFab(
+                                fabData,
                                 onBack = ::goBack,
+                                onNavigate = ::navigate,
                             )
                         }
-                    },
-                    bottomBar = {
-                        if (currentNavType == PanoNavigationType.BOTTOM_NAVIGATION && tabData != null && currentUser != null) {
-                            PanoBottomNavigationBar(
-                                tabs = tabData,
-                                selectedTabIdx = tabIdxMap.getOrDefault(
-                                    currentPanoRoute,
-                                    0
-                                ),
+                    }
+                },
+
+                snackbarHost = {
+                    SnackbarHost(
+                        hostState = snackbarHostState,
+                    ) { snackbarData ->
+                        val visuals = snackbarData.visuals as? PanoSnackbarVisuals
+                        Snackbar(
+                            snackbarData = snackbarData,
+                            containerColor = if (visuals?.isError == true) MaterialTheme.colorScheme.errorContainer else SnackbarDefaults.color,
+                            contentColor = if (visuals?.isError == true) MaterialTheme.colorScheme.onErrorContainer else SnackbarDefaults.contentColor,
+                        )
+                    }
+                },
+            ) { innerPadding ->
+                CompositionLocalProvider(LocalInnerPadding provides innerPadding) {
+                    val topPadding =
+                        PaddingValues(top = innerPadding.calculateTopPadding())
+                    val offsetDenominator = 4
+                    val scaleFactor = 0.95f
+
+                    val scaleInTransformOrigin = remember {
+                        TransformOrigin(
+                            0.15f,
+                            0.75f,
+                        )
+                    }
+
+                    val scaleOutTransformOrigin = remember {
+                        TransformOrigin(
+                            0.85f,
+                            0.75f,
+                        )
+                    }
+
+                    Row(
+                        modifier = Modifier
+                            .fillMaxSize()
+                    ) {
+                        if (currentNavType != PanoNavigationType.BOTTOM_NAVIGATION) {
+                            PanoNavigationRail(
+                                tabs = tabData.orEmpty(),
+                                selectedTabIdx = tabIdxMap.getOrDefault(currentPanoRoute, 0),
+                                fabData = fabData,
+                                onNavigate = ::navigate,
+                                onBack = ::goBack,
                                 onTabClicked = { pos ->
                                     (currentPanoRoute as? PanoRoute.HasTabs)?.let {
                                         tabIdxMap[it] = pos
                                     }
                                 },
-                                user = currentUser,
                                 onProfileClicked = {
-                                    navigate(
-                                        PanoRoute.Modal.NavPopup(
-                                            otherUser = currentUser.takeIf { currentUser != userSelf },
-                                            initialDrawerData = drawerDataMap.getOrElse(
-                                                currentUser
-                                            ) {
-                                                DrawerData(0)
-                                            }
+                                    if (currentUser != null) {
+                                        navigate(
+                                            PanoRoute.Modal.NavPopup(
+                                                otherUser = currentUser.takeIf { currentUser != userSelf },
+                                                initialDrawerData = drawerDataMap.getOrElse(
+                                                    currentUser
+                                                ) {
+                                                    DrawerData(0)
+                                                }
+                                            )
                                         )
-                                    )
+                                    }
                                 },
-                            )
-                        }
-                    },
-                    floatingActionButton = {
-                        if (currentNavType == PanoNavigationType.BOTTOM_NAVIGATION) {
-                            fabData?.let { fabData ->
-                                PanoFab(
-                                    fabData,
-                                    onBack = ::goBack,
-                                    onNavigate = ::navigate,
-                                )
-                            }
-                        }
-                    },
-
-                    snackbarHost = {
-                        SnackbarHost(
-                            hostState = snackbarHostState,
-                        ) { snackbarData ->
-                            val visuals = snackbarData.visuals as? PanoSnackbarVisuals
-                            Snackbar(
-                                snackbarData = snackbarData,
-                                containerColor = if (visuals?.isError == true) MaterialTheme.colorScheme.errorContainer else SnackbarDefaults.color,
-                                contentColor = if (visuals?.isError == true) MaterialTheme.colorScheme.onErrorContainer else SnackbarDefaults.contentColor,
-                            )
-                        }
-                    },
-                ) { innerPadding ->
-                    CompositionLocalProvider(LocalInnerPadding provides innerPadding) {
-                        val topPadding =
-                            PaddingValues(top = innerPadding.calculateTopPadding())
-                        val offsetDenominator = 4
-                        val scaleFactor = 0.95f
-
-                        val scaleInTransformOrigin = remember {
-                            TransformOrigin(
-                                0.15f,
-                                0.75f,
+                                user = currentUser,
+                                modifier = Modifier
+                                    .padding(topPadding)
+                                    .consumeWindowInsets(topPadding)
                             )
                         }
 
-                        val scaleOutTransformOrigin = remember {
-                            TransformOrigin(
-                                0.85f,
-                                0.75f,
-                            )
-                        }
+                        Spacer(
+                            modifier = Modifier
+                                .weight(1f)
+                        )
 
                         NavDisplay(
                             backStack = backStack,
                             onBack = ::goBack,
                             entryDecorators = listOf(
                                 rememberSaveableStateHolderNavEntryDecorator(),
-                                rememberViewModelStoreNavEntryDecorator()
+                                rememberViewModelStoreNavEntryDecorator(),
+                                rememberResultEventBusNavEntryDecorator()
                             ),
                             sceneStrategies = listOf(
                                 bottomSheetStrategy,
@@ -588,18 +618,18 @@ fun PanoAppContent(
                                 mainViewModel = viewModel,
                             ),
                             modifier = Modifier
+                                .widthIn(max = 1020.dp)
                                 .padding(topPadding)
                                 .consumeWindowInsets(topPadding),
                         )
+
+
+                        Spacer(
+                            modifier = Modifier
+                                .weight(1f)
+                        )
                     }
                 }
-
-                Box(
-                    Modifier
-                        .fillMaxHeight()
-                        .weight(1f)
-                        .background(MaterialTheme.colorScheme.background)
-                )
 
 //            if (BuildKonfig.DEBUG && PlatformStuff.isTv) {
 //                Box(
@@ -639,6 +669,7 @@ private fun PanoFab(
             text = {
                 Text(
                     text = stringResource(fabData.stringRes),
+                    textAlign = TextAlign.Center
                 )
             },
             modifier = modifier.padding(16.dp)
@@ -672,48 +703,58 @@ private fun PanoTopAppBar(
     scrollBehavior: TopAppBarScrollBehavior,
     modifier: Modifier = Modifier,
 ) {
-    if (PlatformStuff.isTv) {
+    val colors = TopAppBarDefaults.topAppBarColors().let {
+        if (it.containerColor.alpha == 1f)
+            it
+        else
+            it.copy(
+                scrolledContainerColor = it.scrolledContainerColor.copy(
+                    alpha = it.containerColor.alpha
+                )
+            )
+    }
+
+    @Composable
+    fun NavIconContent() {
+        AnimatedVisibility(
+            visible = showBack,
+            enter = fadeIn() + expandIn(expandFrom = Alignment.Center),
+            exit = shrinkOut(shrinkTowards = Alignment.Center) + fadeOut(),
+        ) {
+            IconButton(
+                onClick = onBack,
+                enabled = showBack,
+                modifier = Modifier.pointerHoverIcon(PointerIcon.Default)
+            ) {
+                Icon(
+                    imageVector = Icons.AutoMirrored.ArrowBack,
+                    contentDescription = stringResource(Res.string.back)
+                )
+            }
+        }
+    }
+
+    @Composable
+    fun TitleContent() {
+        Text(
+            text = title,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
+            color = MaterialTheme.colorScheme.primary,
+            modifier = if (PlatformStuff.isTv)
+                Modifier.padding(top = 8.dp) // for TV overscan
+            else
+                Modifier
+        )
+    }
+
+    if (PlatformStuff.isTv || PlatformStuff.isDesktop) {
         TopAppBar(
             modifier = modifier,
-            title = {
-                Text(
-                    text = title,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis,
-                    color = MaterialTheme.colorScheme.primary,
-                    modifier = Modifier.padding(top = 8.dp) // for TV overscan
-                )
-            },
-            scrollBehavior = scrollBehavior
-        )
-    } else {
-        MediumFlexibleTopAppBar(
-            modifier = modifier,
-            title = {
-                Text(
-                    text = title,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis,
-                    color = MaterialTheme.colorScheme.primary,
-                )
-            },
+            title = ::TitleContent,
             navigationIcon = {
-                AnimatedVisibility(
-                    visible = showBack,
-                    enter = fadeIn() + expandIn(expandFrom = Alignment.Center),
-                    exit = shrinkOut(shrinkTowards = Alignment.Center) + fadeOut(),
-                ) {
-                    IconButton(
-                        onClick = onBack,
-                        enabled = showBack,
-                        modifier = Modifier.pointerHoverIcon(PointerIcon.Default)
-                    ) {
-                        Icon(
-                            imageVector = Icons.AutoMirrored.ArrowBack,
-                            contentDescription = stringResource(Res.string.back)
-                        )
-                    }
-                }
+                if (!PlatformStuff.isTv)
+                    NavIconContent()
             },
             actions = {
                 if (windowTitleActions != null) {
@@ -750,6 +791,15 @@ private fun PanoTopAppBar(
                     }
                 }
             },
+            colors = colors,
+            scrollBehavior = scrollBehavior
+        )
+    } else {
+        MediumFlexibleTopAppBar(
+            modifier = modifier,
+            title = ::TitleContent,
+            navigationIcon = ::NavIconContent,
+            colors = colors,
             scrollBehavior = scrollBehavior
         )
     }
@@ -806,7 +856,6 @@ private fun PanoNavigationRail(
         arrangement = Arrangement.aligned(Alignment.CenterVertically),
         modifier = modifier
             .widthIn(max = 200.dp)
-            .fillMaxHeight()
     ) {
         (
                 tabs +
@@ -868,8 +917,10 @@ private fun PanoNavigationRail(
                                 overflow = TextOverflow.MiddleEllipsis,
                             )
                         },
-                        colors = if (MaterialTheme.colorScheme.secondaryContainer.alpha < 1)
-                            WideNavigationRailItemDefaults.colors(selectedTextColor = MaterialTheme.colorScheme.onSecondaryContainer)
+                        colors = if (state.targetValue == WideNavigationRailValue.Expanded)
+                            WideNavigationRailItemDefaults.colors(
+                                selectedTextColor = MaterialTheme.colorScheme.onSecondaryContainer
+                            )
                         else
                             WideNavigationRailItemDefaults.colors(),
                         modifier = Modifier.fillMaxWidth()
@@ -887,20 +938,15 @@ private fun PanoBottomNavigationBar(
     onProfileClicked: () -> Unit,
     user: UserCached,
 ) {
-    NavigationBar(
-        modifier = Modifier.fillMaxWidth(),
-    ) {
+    ShortNavigationBar {
         tabs.forEachIndexed { index, tabMetadata ->
 
-            NavigationBarItem(
+            ShortNavigationBarItem(
                 selected = index == selectedTabIdx,
                 onClick = {
                     if (tabMetadata is PanoTab.Profile) {
                         onProfileClicked()
-                        return@NavigationBarItem
-                    }
-
-                    if (index != selectedTabIdx) {
+                    } else if (index != selectedTabIdx) {
                         onTabClicked(index)
                     }
                 },

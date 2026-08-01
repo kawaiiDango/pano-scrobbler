@@ -42,3 +42,8 @@ actual fun Modifier.testTagsAsResId() = this
 
 @Composable
 actual fun isImeVisible() = false
+
+@Composable
+actual fun ApplyWindowBlur(behind: Int, bg: Int) {
+    // not implemented
+}

@@ -128,6 +128,7 @@ fun RandomScreen(
             TimePeriodSelector(
                 user = user,
                 viewModel = chartsPeriodViewModel,
+                onNavigate = onNavigate,
                 onSelected = { curr, prev, _ ->
                     timePeriod = curr
                     load(type)

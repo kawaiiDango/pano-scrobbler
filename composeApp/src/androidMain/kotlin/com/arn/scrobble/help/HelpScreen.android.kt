@@ -1,9 +1,6 @@
 package com.arn.scrobble.help
 
 import android.os.Build
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
@@ -11,7 +8,6 @@ import androidx.compose.material3.MenuDefaults
 import androidx.compose.material3.SplitButtonDefaults
 import androidx.compose.material3.SplitButtonLayout
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -22,6 +18,7 @@ import androidx.compose.ui.Modifier
 import com.arn.scrobble.icons.Check
 import com.arn.scrobble.icons.Icons
 import com.arn.scrobble.icons.KeyboardArrowDown
+import com.arn.scrobble.ui.AlertDialogOk
 import com.arn.scrobble.utils.AndroidStuff
 import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff.collectAsStateWithInitialValue
@@ -130,24 +127,16 @@ actual fun HelpSaveLogsButton(
         }
 
         if (exitReasonsText != null) {
-            AlertDialog(
-                text = {
-                    Text(
-                        text = exitReasonsText,
-                        modifier = Modifier.verticalScroll(rememberScrollState())
-                    )
-                },
+            AlertDialogOk(
+                text = exitReasonsText,
+                confirmText = stringResource(Res.string.copy),
+                scrollable = true,
                 onDismissRequest = {
                     exitReasonsShown = false
                 },
-                confirmButton = {
-                    TextButton(
-                        onClick = {
-                            PlatformStuff.copyToClipboard(exitReasonsText)
-                        }
-                    ) {
-                        Text(text = stringResource(Res.string.copy))
-                    }
+                onConfirmation = {
+                    PlatformStuff.copyToClipboard(exitReasonsText)
+                    exitReasonsShown = false
                 }
             )
         }

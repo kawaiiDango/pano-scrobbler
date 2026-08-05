@@ -16,7 +16,6 @@ import kotlinx.coroutines.withContext
 class BlockedMetadataVM : ViewModel() {
     private val dao = PanoDb.db.getBlockedMetadataDao()
     private val _searchTerm = MutableStateFlow("")
-    val count = dao.count().stateIn(viewModelScope, SharingStarted.Lazily, 0)
     private var inited = false
     val blockedMetadataFiltered = _searchTerm
         .debounce {

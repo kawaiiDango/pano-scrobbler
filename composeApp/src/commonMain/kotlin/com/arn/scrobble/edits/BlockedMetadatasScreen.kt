@@ -9,14 +9,11 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -36,12 +33,11 @@ import com.arn.scrobble.panoicons.AlbumArtist
 import com.arn.scrobble.panoicons.PanoIcons
 import com.arn.scrobble.ui.EmptyTextWithImportButtonOnTv
 import com.arn.scrobble.ui.PanoLazyColumn
-import com.arn.scrobble.ui.SearchField
+import com.arn.scrobble.ui.SearchEffect
 import com.arn.scrobble.ui.TextWithIcon
 import com.arn.scrobble.ui.backgroundForShimmer
 import com.arn.scrobble.ui.panoContentPadding
 import com.arn.scrobble.ui.shimmerWindowBounds
-import com.arn.scrobble.utils.Stuff
 import org.jetbrains.compose.resources.stringResource
 import pano_scrobbler.composeapp.generated.resources.Res
 import pano_scrobbler.composeapp.generated.resources.mute
@@ -50,30 +46,18 @@ import pano_scrobbler.composeapp.generated.resources.skip
 
 @Composable
 fun BlockedMetadatasScreen(
+    searchFieldState: TextFieldState,
     onNavigate: (PanoRoute) -> Unit,
     modifier: Modifier = Modifier,
     viewModel: BlockedMetadataVM = viewModel { BlockedMetadataVM() },
 ) {
     val blockedMetadatas by viewModel.blockedMetadataFiltered.collectAsStateWithLifecycle()
-    val count by viewModel.count.collectAsStateWithLifecycle()
-    var searchTerm by rememberSaveable { mutableStateOf("") }
 
-    LaunchedEffect(searchTerm) {
-        viewModel.setFilter(searchTerm)
+    SearchEffect(searchFieldState) {
+        viewModel.setFilter(it)
     }
 
     Column(modifier = modifier) {
-        if (count > Stuff.MIN_ITEMS_TO_SHOW_SEARCH) {
-            SearchField(
-                searchTerm = searchTerm,
-                onSearchTermChange = {
-                    searchTerm = it
-                    viewModel.setFilter(it)
-                },
-                modifier = Modifier.padding(panoContentPadding(bottom = false))
-            )
-        }
-
         EmptyTextWithImportButtonOnTv(
             visible = blockedMetadatas?.isEmpty() == true,
             text = stringResource(Res.string.pref_blocked_metadata) + ": " + 0,

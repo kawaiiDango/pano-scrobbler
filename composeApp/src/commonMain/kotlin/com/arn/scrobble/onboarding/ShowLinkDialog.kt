@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.FilledTonalIconButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -33,6 +34,7 @@ fun ShowLinkDialog(url: String, modifier: Modifier = Modifier) {
 
         if (!PlatformStuff.isTv) {
             FilledTonalIconButton(
+                shapes = IconButtonDefaults.shapes(),
                 onClick = {
                     PlatformStuff.openInBrowser(url)
                 },

@@ -2,20 +2,25 @@ package com.arn.scrobble.charts
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.wrapContentWidth
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.material3.DropdownMenu
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.DropdownMenuGroup
 import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.DropdownMenuPopup
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.FilterChip
+import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.MenuDefaults
 import androidx.compose.material3.OutlinedToggleButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -35,10 +40,9 @@ import androidx.compose.ui.layout.positionInParent
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.IntOffset
+import androidx.compose.ui.unit.center
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.round
-import androidx.compose.ui.window.Popup
-import androidx.compose.ui.window.PopupProperties
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation3.runtime.result.ResultEffect
 import com.arn.scrobble.api.AccountType
@@ -61,7 +65,8 @@ import com.arn.scrobble.navigation.DatePickerResult
 import com.arn.scrobble.navigation.DateRangePickerResult
 import com.arn.scrobble.navigation.PanoRoute
 import com.arn.scrobble.navigation.jsonSerializableSaver
-import com.arn.scrobble.ui.PanoLazyColumn
+import com.arn.scrobble.ui.LocalAppBarBg
+import com.arn.scrobble.ui.PanoDropdownMenu
 import com.arn.scrobble.ui.combineImageVectors
 import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff.collectAsStateWithInitialValue
@@ -191,7 +196,7 @@ fun TimePeriodSelector(
     var typeSelectorShown by remember { mutableStateOf(false) }
     val accountType by PlatformStuff.mainPrefs.data.collectAsStateWithInitialValue { it.currentAccountType }
     val listState = rememberLazyListState()
-    var selectedPeriodOffsetX by remember { mutableIntStateOf(0) }
+    var selectedPeriodOffset by remember { mutableStateOf(DpOffset.Zero) }
     val validTimes = remember(timePeriods) {
         timePeriodsList.associateBy { it.start.timeToUTC() }
     }
@@ -272,8 +277,7 @@ fun TimePeriodSelector(
     }
 
     Surface(
-        tonalElevation = 6.dp,
-        shape = MaterialTheme.shapes.large,
+        color = LocalAppBarBg.current,
         modifier = modifier
     ) {
         Row(
@@ -355,15 +359,25 @@ fun TimePeriodSelector(
                                 )
                             }
                         },
+                        shapes = FilterChipDefaults.shapes(),
                         label = { Text(text = timePeriod.name) },
-                        modifier = Modifier
-                            .onGloballyPositioned { coordinates ->
-                                if (timePeriod == selectedPeriod) {
-                                    selectedPeriodOffsetX =
-                                        coordinates.positionInParent().round().x +
-                                                coordinates.size.width / 2
+                        modifier = if (timePeriod == selectedPeriod) {
+                            Modifier
+                                .onGloballyPositioned { coordinates ->
+                                    val intOffset =
+                                        coordinates.positionInParent().round() +
+                                                IntOffset(
+                                                    coordinates.size.center.x,
+                                                    coordinates.size.height
+                                                )
+                                    selectedPeriodOffset = with(density) {
+                                        DpOffset(
+                                            intOffset.x.toDp(),
+                                            intOffset.y.toDp()
+                                        )
+                                    }
                                 }
-                            }
+                        } else Modifier
                     )
                 }
             }
@@ -392,12 +406,12 @@ fun TimePeriodSelector(
 
             TimePeriodType.MONTH -> {
                 MonthPickerPopup(
-                    offset = IntOffset(selectedPeriodOffsetX, 0),
+                    offset = selectedPeriodOffset,
                     selectedMillis = selectedPeriod?.start ?: System.currentTimeMillis(),
                     onDismissRequest = { dropdownTypeShown = null },
                     allowedRange = user.registeredTime to System.currentTimeMillis(),
                     onMonthMillisSelected = {
-                        validTimes[it]?.let {
+                        validTimes[it.timeToUTC()]?.let {
                             viewModel.setSelectedPeriod(it)
                         }
                     }
@@ -405,13 +419,9 @@ fun TimePeriodSelector(
             }
 
             TimePeriodType.CONTINUOUS, TimePeriodType.YEAR, TimePeriodType.LISTENBRAINZ -> {
-                val selectedPeriodOffsetXDp = with(density) {
-                    selectedPeriodOffsetX.toDp()
-                }
-
                 Box {
-                    DropdownMenu(
-                        offset = DpOffset(selectedPeriodOffsetXDp, 0.dp),
+                    PanoDropdownMenu(
+                        offset = selectedPeriodOffset,
                         expanded = dropdownTypeShown != null,
                         onDismissRequest = { dropdownTypeShown = null }
                     ) {
@@ -444,7 +454,7 @@ private fun PeriodTypeSelector(
     onMenuItemClick: (TimePeriodType) -> Unit,
     onRefresh: (() -> Unit)?
 ) {
-    DropdownMenu(
+    PanoDropdownMenu(
         expanded = expanded,
         onDismissRequest = onDismissRequest
     ) {
@@ -477,9 +487,10 @@ private fun PeriodTypeSelector(
     }
 }
 
+@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 private fun MonthPickerPopup(
-    offset: IntOffset,
+    offset: DpOffset,
     selectedMillis: Long,
     allowedRange: Pair<Long, Long>,
     onDismissRequest: () -> Unit,
@@ -515,71 +526,68 @@ private fun MonthPickerPopup(
         }
     }
 
-    Popup(
+    DropdownMenuPopup(
         offset = offset,
-        properties = PopupProperties(
-            focusable = true,
-        ),
+        expanded = true,
         onDismissRequest = onDismissRequest
     ) {
-        Surface(
-            color = MaterialTheme.colorScheme.surfaceContainer,
-            shape = MaterialTheme.shapes.large,
-            tonalElevation = 4.dp,
-            modifier = Modifier
-                .fillMaxHeight(0.6f)
-                .wrapContentWidth()
+        Row(
+            horizontalArrangement = Arrangement.spacedBy(4.dp),
         ) {
-            Row(
-                horizontalArrangement = Arrangement.spacedBy(16.dp),
-                modifier = Modifier.padding(24.dp)
+            DropdownMenuGroup(
+                shapes = MenuDefaults.groupShapes(),
+                modifier = Modifier
+                    .width(IntrinsicSize.Min)
+                    .verticalScroll(rememberScrollState())
             ) {
-                PanoLazyColumn {
-                    items(yearsMap.toList()) { (year, text) ->
-                        OutlinedToggleButton(
-                            checked = year == selectedYear,
-                            onCheckedChange = {
-                                if (it) {
-                                    selectedYear = year
+                yearsMap.forEach { (year, text) ->
+                    DropdownMenuItem(
+                        selected = year == selectedYear,
+                        shapes = MenuDefaults.itemShapes(),
+                        onClick = {
+                            selectedYear = year
 
-                                    cal.apply {
-                                        set(Calendar.YEAR, selectedYear)
-                                        set(Calendar.MONTH, selectedMonth)
-                                        set(Calendar.DAY_OF_MONTH, 1)
-                                    }
+                            cal.apply {
+                                set(Calendar.YEAR, selectedYear)
+                                set(Calendar.MONTH, selectedMonth)
+                                set(Calendar.DAY_OF_MONTH, 1)
+                            }
 
-                                    onMonthMillisSelected(cal.timeInMillis)
-                                }
-                            },
-//                        modifier = Modifier.fillMaxWidth(),
-                        ) {
+                            onMonthMillisSelected(cal.timeInMillis)
+                        },
+                        text = {
                             Text(text)
-                        }
-                    }
+                        },
+                    )
                 }
-                PanoLazyColumn {
-                    items(monthsMap.toList()) { (month, text) ->
-                        OutlinedToggleButton(
-                            checked = month == selectedMonth,
-                            onCheckedChange = {
-                                if (it) {
-                                    selectedMonth = month
+            }
 
-                                    cal.apply {
-                                        set(Calendar.YEAR, selectedYear)
-                                        set(Calendar.MONTH, selectedMonth)
-                                        set(Calendar.DAY_OF_MONTH, 1)
-                                    }
+            DropdownMenuGroup(
+                shapes = MenuDefaults.groupShapes(),
+                modifier = Modifier
+                    .width(IntrinsicSize.Min)
+                    .verticalScroll(rememberScrollState())
+            ) {
+                monthsMap.forEach { (month, text) ->
+                    DropdownMenuItem(
+                        selected = month == selectedMonth,
+                        shapes = MenuDefaults.itemShapes(),
+                        onClick = {
+                            selectedMonth = month
 
-                                    onMonthMillisSelected(cal.timeInMillis)
-                                    onDismissRequest()
-                                }
-                            },
-//                        modifier = Modifier.fillMaxWidth(),
-                        ) {
+                            cal.apply {
+                                set(Calendar.YEAR, selectedYear)
+                                set(Calendar.MONTH, selectedMonth)
+                                set(Calendar.DAY_OF_MONTH, 1)
+                            }
+
+                            onMonthMillisSelected(cal.timeInMillis)
+                            onDismissRequest()
+                        },
+                        text = {
                             Text(text)
-                        }
-                    }
+                        },
+                    )
                 }
             }
         }

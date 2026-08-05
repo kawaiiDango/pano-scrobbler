@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedIconButton
 import androidx.compose.material3.SheetState
@@ -121,6 +122,7 @@ private fun BottomSheetDialogParent(
 
         if (onBack != null) {
             OutlinedIconButton(
+                shapes = IconButtonDefaults.shapes(),
                 onClick = onBack,
                 modifier = Modifier.padding(4.dp)
                     .align(Alignment.CenterHorizontally),
@@ -134,6 +136,7 @@ private fun BottomSheetDialogParent(
         } else if (!sheetGesturesEnabled && !PlatformStuff.isTv) {
             // there isn't much vertical space on a TV
             OutlinedIconButton(
+                shapes = IconButtonDefaults.shapes(),
                 onClick = {
                     scope.launch {
                         sheetState.hide()

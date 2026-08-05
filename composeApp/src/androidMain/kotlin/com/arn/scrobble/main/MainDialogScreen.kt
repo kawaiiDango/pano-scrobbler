@@ -132,7 +132,6 @@ fun PanoMainDialogContent(
                     }
                 },
                 goBack = ::goBack,
-                onSetDrawerData = {},
                 mainViewModel = viewModel
             )
         }

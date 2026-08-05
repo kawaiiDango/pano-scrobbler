@@ -1,6 +1,7 @@
 package com.arn.scrobble.ui
 
 import androidx.compose.foundation.layout.Box
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -21,6 +22,7 @@ fun FilePickerSample(modifier: Modifier = Modifier) {
         modifier = modifier
     ) {
         OutlinedButton(
+            shapes = ButtonDefaults.shapes(),
             onClick = { show = !show }
         ) {
             Text("Show File Picker")

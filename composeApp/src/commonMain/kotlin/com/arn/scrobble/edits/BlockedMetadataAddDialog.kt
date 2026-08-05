@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
@@ -34,8 +35,9 @@ import com.arn.scrobble.navigation.enumSaver
 import com.arn.scrobble.ui.ErrorText
 import com.arn.scrobble.ui.InlineCheckButton
 import com.arn.scrobble.ui.LabeledCheckbox
-import com.arn.scrobble.ui.OutlinedToggleIconButtons
+import com.arn.scrobble.ui.OutlinedToggleButtons
 import com.arn.scrobble.ui.PanoOutlinedTextField
+import com.arn.scrobble.ui.PanoToggleButtonsMode
 import com.arn.scrobble.utils.PlatformStuff
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -213,6 +215,7 @@ private fun BlockedMetadataAddContent(
         ErrorText(errorText)
 
         OutlinedButton(
+            shapes = ButtonDefaults.shapes(),
             onClick = {
                 if (!isLicenseValid) {
                     onNavigateToBilling()
@@ -255,8 +258,8 @@ fun ColumnScope.BlockPlayerActions(
         color = MaterialTheme.colorScheme.secondary,
     )
 
-    OutlinedToggleIconButtons(
-        items = listOf(
+    OutlinedToggleButtons(
+        texts = listOf(
             stringResource(Res.string.skip),
             stringResource(Res.string.mute),
             stringResource(Res.string.do_nothing),
@@ -273,6 +276,7 @@ fun ColumnScope.BlockPlayerActions(
         },
         selectedIndex = blockPlayerAction.ordinal,
         enabled = enabled,
+        mode = PanoToggleButtonsMode.Icon
     )
 }
 

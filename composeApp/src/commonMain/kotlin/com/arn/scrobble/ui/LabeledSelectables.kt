@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.selection.toggleable
 import androidx.compose.material3.Checkbox
-import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
@@ -17,7 +16,6 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 
 
@@ -28,7 +26,6 @@ fun LabeledCheckbox(
     onCheckedChange: (Boolean) -> Unit,
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
-    textStyle: TextStyle = LocalTextStyle.current,
     maxLines: Int = 2,
 ) {
     Row(
@@ -53,9 +50,8 @@ fun LabeledCheckbox(
         )
         Text(
             text = text,
-            style = textStyle,
             maxLines = maxLines,
-            overflow = TextOverflow.Ellipsis,
+            style = MaterialTheme.typography.bodyLargeEmphasized,
             modifier = Modifier.padding(start = 16.dp)
         )
     }

@@ -1,12 +1,12 @@
 package com.arn.scrobble.search
 
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.text.input.TextFieldState
+import androidx.compose.foundation.text.input.setTextAndPlaceCursorAtEnd
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -38,8 +38,7 @@ import com.arn.scrobble.ui.FilePickerMode
 import com.arn.scrobble.ui.FileType
 import com.arn.scrobble.ui.MusicEntryListItem
 import com.arn.scrobble.ui.PanoLazyColumn
-import com.arn.scrobble.ui.SearchField
-import com.arn.scrobble.ui.panoContentPadding
+import com.arn.scrobble.ui.SearchEffect
 import com.arn.scrobble.ui.shimmerWindowBounds
 import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff
@@ -48,7 +47,6 @@ import com.arn.scrobble.utils.redactedMessage
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
 import pano_scrobbler.composeapp.generated.resources.Res
-import pano_scrobbler.composeapp.generated.resources.external_metadata
 import pano_scrobbler.composeapp.generated.resources.from_gallery
 import pano_scrobbler.composeapp.generated.resources.is_turned_off
 import pano_scrobbler.composeapp.generated.resources.not_found
@@ -59,6 +57,7 @@ import pano_scrobbler.composeapp.generated.resources.square_photo_hint
 
 @Composable
 fun ImageSearchScreen(
+    searchFieldState: TextFieldState,
     artist: Artist?,
     originalArtist: Artist?,
     album: Album?,
@@ -94,15 +93,6 @@ fun ImageSearchScreen(
 
     val searchError by viewModel.searchError.collectAsStateWithLifecycle()
 
-    var searchTerm by rememberSaveable {
-        mutableStateOf(
-            if (musicEntry is Album)
-                musicEntry.artist!!.name + " " + musicEntry.name
-            else
-                musicEntry.name
-        )
-    }
-
     val useSpotify by PlatformStuff.mainPrefs.data.collectAsStateWithInitialValue { it.spotifyApi }
     val existingMappings by viewModel.existingMappings.collectAsStateWithLifecycle()
     val squarePhotoLearnt by PlatformStuff.mainPrefs.data.collectAsStateWithInitialValue { it.squarePhotoLearnt }
@@ -114,136 +104,130 @@ fun ImageSearchScreen(
         viewModel.setMusicEntries(musicEntry, originalMusicEntry)
     }
 
-    LaunchedEffect(searchTerm) {
-        if (useSpotify)
-            viewModel.search(searchTerm)
+    LaunchedEffect(Unit) {
+        searchFieldState.setTextAndPlaceCursorAtEnd(
+            if (musicEntry is Album)
+                musicEntry.artist!!.name + " " + musicEntry.name
+            else
+                musicEntry.name
+        )
     }
 
-    Column(
-        verticalArrangement = Arrangement.spacedBy(8.dp),
+    if (useSpotify) {
+        SearchEffect(searchFieldState) {
+            viewModel.search(it)
+        }
+    }
+
+    PanoLazyColumn(
         modifier = modifier
     ) {
-        SearchField(
-            searchTerm = if (useSpotify) searchTerm else "",
-            label = if (useSpotify)
-                printableEntryName
-            else
-                stringResource(
-                    Res.string.is_turned_off,
-                    stringResource(Res.string.spotify),
-                    stringResource(Res.string.external_metadata),
-                ),
-            onSearchTermChange = { searchTerm = it },
-            enabled = useSpotify,
-            modifier = Modifier.padding(panoContentPadding(bottom = false))
-        )
-
-        EmptyText(
-            text = stringResource(Res.string.not_found),
-            visible = searchResults?.isEmpty() == true,
-        )
-
-        ErrorText(
-            errorText = searchError?.redactedMessage,
-            modifier = Modifier.padding(panoContentPadding(bottom = false)),
-        )
-
-        PanoLazyColumn(
-            modifier = Modifier.fillMaxSize()
-        ) {
-
-            item("buttons") {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.End)
-                ) {
-                    if (existingMappings.isNotEmpty()) {
-                        OutlinedButton(
-                            onClick = {
-                                viewModel.deleteExistingMappings()
-                                onDone()
-                            }
-                        ) {
-                            Text(stringResource(Res.string.reset))
+        item("buttons") {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.End)
+            ) {
+                if (existingMappings.isNotEmpty()) {
+                    OutlinedButton(
+                        shapes = ButtonDefaults.shapes(),
+                        onClick = {
+                            viewModel.deleteExistingMappings()
+                            onDone()
                         }
+                    ) {
+                        Text(stringResource(Res.string.reset))
                     }
+                }
 
-                    if (!PlatformStuff.isTv) {
-                        OutlinedButton(
-                            onClick = {
-                                if (!squarePhotoLearnt) {
-                                    showSquarePhotoDialog = true
-                                } else {
-                                    filePickerShown = true
-                                }
+                if (!PlatformStuff.isTv) {
+                    OutlinedButton(
+                        shapes = ButtonDefaults.shapes(),
+                        onClick = {
+                            if (!squarePhotoLearnt) {
+                                showSquarePhotoDialog = true
+                            } else {
+                                filePickerShown = true
                             }
-                        ) {
-                            Text(stringResource(Res.string.from_gallery))
                         }
+                    ) {
+                        Text(stringResource(Res.string.from_gallery))
                     }
                 }
             }
+        }
 
-            if (searchResults?.isNotEmpty() == true) {
-                items(
-                    searchResults!!,
-                    key = { it.id }
-                ) {
-                    MusicEntryListItem(
-                        when (it) {
-                            is AlbumItem ->
-                                Album(
-                                    name = it.name,
-                                    artist = Artist(it.artists.joinToString { it.name }),
-                                )
+        if (searchResults?.isNotEmpty() == true) {
+            items(
+                searchResults!!,
+                key = { it.id }
+            ) {
+                MusicEntryListItem(
+                    when (it) {
+                        is AlbumItem ->
+                            Album(
+                                name = it.name,
+                                artist = Artist(it.artists.joinToString { it.name }),
+                            )
 
-                            is ArtistItem ->
-                                Artist(it.name)
+                        is ArtistItem ->
+                            Artist(it.name)
 
-                            is TrackItem ->
-                                Track(
-                                    name = it.name,
-                                    artist = Artist(it.artists.joinToString { it.name }),
-                                    album = Album(it.album.name),
-                                )
-                        },
-                        // items have been filtered to have images
-                        imageUrlOverride = when (it) {
-                            is AlbumItem -> it.mediumImageUrl
-                            is ArtistItem -> it.mediumImageUrl
-                            else -> ""
-                        },
-                        forShimmer = false,
-                        onEntryClick = {
-                            viewModel.insertCustomMappings(it, null)
-                            onDone()
-                        },
-                        modifier = Modifier.fillMaxWidth()
-                    )
-                }
-            } else if (searchResults?.isEmpty() == true) {
-                item {
-                    EmptyText(
-                        text = stringResource(Res.string.not_found),
-                        visible = true,
-                    )
-                }
-            } else if (searchError == null && useSpotify) {
-                items(
-                    10,
-                    key = { it }
-                ) {
-                    MusicEntryListItem(
-                        Track(
-                            name = "",
-                            artist = Artist(""),
-                            album = Album(""),
-                        ),
-                        forShimmer = true,
-                        onEntryClick = {},
-                        modifier = Modifier.shimmerWindowBounds()
-                    )
-                }
+                        is TrackItem ->
+                            Track(
+                                name = it.name,
+                                artist = Artist(it.artists.joinToString { it.name }),
+                                album = Album(it.album.name),
+                            )
+                    },
+                    // items have been filtered to have images
+                    imageUrlOverride = when (it) {
+                        is AlbumItem -> it.mediumImageUrl
+                        is ArtistItem -> it.mediumImageUrl
+                        else -> ""
+                    },
+                    forShimmer = false,
+                    onEntryClick = {
+                        viewModel.insertCustomMappings(it, null)
+                        onDone()
+                    },
+                    modifier = Modifier.fillMaxWidth()
+                )
+            }
+        } else if (searchResults?.isEmpty() == true) {
+            item("empty_text") {
+                EmptyText(
+                    text = stringResource(Res.string.not_found),
+                    visible = true,
+                )
+            }
+        } else if (searchError == null && useSpotify) {
+            items(
+                10,
+                key = { it }
+            ) {
+                MusicEntryListItem(
+                    Track(
+                        name = "",
+                        artist = Artist(""),
+                        album = Album(""),
+                    ),
+                    forShimmer = true,
+                    onEntryClick = {},
+                    modifier = Modifier.shimmerWindowBounds()
+                )
+            }
+        } else if (!useSpotify) {
+            item("spotify_off") {
+                EmptyText(
+                    text = stringResource(Res.string.spotify) + " " + stringResource(Res.string.is_turned_off),
+                    visible = true,
+                )
+            }
+        }
+
+        if (searchError != null) {
+            item("error_text") {
+                ErrorText(searchError?.redactedMessage)
             }
         }
     }

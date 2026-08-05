@@ -9,20 +9,16 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.FilterChip
+import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
+import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.OutlinedIconButton
 import androidx.compose.material3.OutlinedToggleButton
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -49,13 +45,15 @@ import com.arn.scrobble.db.mode
 import com.arn.scrobble.icons.Add
 import com.arn.scrobble.icons.Album
 import com.arn.scrobble.icons.ArrowDropDown
-import com.arn.scrobble.icons.Check
+import com.arn.scrobble.icons.Block
 import com.arn.scrobble.icons.ContentCopy
-import com.arn.scrobble.icons.Delete
+import com.arn.scrobble.icons.FindReplace
 import com.arn.scrobble.icons.Icons
 import com.arn.scrobble.icons.Lock
 import com.arn.scrobble.icons.Mic
 import com.arn.scrobble.icons.MusicNote
+import com.arn.scrobble.icons.SwipeLeftAlt
+import com.arn.scrobble.navigation.FabClickedResult
 import com.arn.scrobble.navigation.PanoRoute
 import com.arn.scrobble.navigation.SelectedPackagesResult
 import com.arn.scrobble.navigation.jsonSerializableSaver
@@ -63,12 +61,14 @@ import com.arn.scrobble.panoicons.AlbumArtist
 import com.arn.scrobble.panoicons.PanoIcons
 import com.arn.scrobble.pref.AppItem
 import com.arn.scrobble.pref.AppListSaveType
-import com.arn.scrobble.ui.ButtonWithIcon
 import com.arn.scrobble.ui.DismissableNotice
 import com.arn.scrobble.ui.ErrorText
 import com.arn.scrobble.ui.HighlighterVisualTransformation
 import com.arn.scrobble.ui.LabeledCheckbox
+import com.arn.scrobble.ui.OutlinedToggleButtons
+import com.arn.scrobble.ui.PanoDropdownMenu
 import com.arn.scrobble.ui.PanoOutlinedTextField
+import com.arn.scrobble.ui.PanoToggleButtonsMode
 import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff.collectAsStateWithInitialValue
 import com.arn.scrobble.utils.redactedMessage
@@ -86,7 +86,6 @@ import pano_scrobbler.composeapp.generated.resources.artist
 import pano_scrobbler.composeapp.generated.resources.block
 import pano_scrobbler.composeapp.generated.resources.cache
 import pano_scrobbler.composeapp.generated.resources.copy_from
-import pano_scrobbler.composeapp.generated.resources.delete
 import pano_scrobbler.composeapp.generated.resources.edit_all
 import pano_scrobbler.composeapp.generated.resources.edit_case_sensitive
 import pano_scrobbler.composeapp.generated.resources.edit_continue_regex
@@ -108,7 +107,6 @@ import pano_scrobbler.composeapp.generated.resources.no_apps_enabled
 import pano_scrobbler.composeapp.generated.resources.nothing
 import pano_scrobbler.composeapp.generated.resources.pref_fetch_missing_album
 import pano_scrobbler.composeapp.generated.resources.required_fields_empty
-import pano_scrobbler.composeapp.generated.resources.save
 import pano_scrobbler.composeapp.generated.resources.search
 import pano_scrobbler.composeapp.generated.resources.track
 import java.util.regex.Pattern
@@ -248,6 +246,24 @@ fun RegexEditsAddScreen(
         appItems = res.checked.toSet()
     }
 
+    ResultEffect<FabClickedResult> {
+        val re = buildRegexEdit()
+        val validationResult = validate(re)
+
+        if (validationResult.isFailure) {
+            errorText = validationResult.exceptionOrNull()?.redactedMessage
+        } else if (
+            !isLicenseValid && (re.replacement == null || re.blockPlayerAction != null)
+        ) {
+            onNavigate(PanoRoute.Billing)
+        } else {
+            withContext(Dispatchers.IO) {
+                dao.insert(listOf(re))
+            }
+            onBack()
+        }
+    }
+
     LaunchedEffect(Unit) {
         if (!appItemsInited) {
             appItemsInited = true
@@ -361,365 +377,265 @@ fun RegexEditsAddScreen(
 
     Column(
         modifier = modifier,
+        verticalArrangement = Arrangement.spacedBy(8.dp),
     ) {
-        Column(
-            verticalArrangement = Arrangement.spacedBy(8.dp),
-            modifier = Modifier
-                .weight(1f)
-                .verticalScroll(rememberScrollState())
-        ) {
-            if (!regexLearnt) {
-                DismissableNotice(
-                    title = stringResource(Res.string.edit_regex_warning),
-                    onClick = {
-                        PlatformStuff.openInBrowser("https://www.google.com/search?q=regex+tutorial")
-                    },
-                    onDismiss = {
-                        scope.launch {
-                            PlatformStuff.mainPrefs.updateData { it.copy(regexLearnt = true) }
-                        }
-                    },
+
+        if (!regexLearnt) {
+            DismissableNotice(
+                title = stringResource(Res.string.edit_regex_warning),
+                onClick = {
+                    PlatformStuff.openInBrowser("https://www.google.com/search?q=regex+tutorial")
+                },
+                onDismiss = {
+                    scope.launch {
+                        PlatformStuff.mainPrefs.updateData { it.copy(regexLearnt = true) }
+                    }
+                },
+            )
+        }
+
+        PanoOutlinedTextField(
+            value = name,
+            onValueChange = { name = it },
+            label = { Text(stringResource(Res.string.edit_name)) },
+            enabledOnTv = false,
+            keyboardOptions = KeyboardOptions.Default.copy(
+                imeAction = ImeAction.Next
+            ),
+            modifier = Modifier.fillMaxWidth()
+        )
+
+        val modesMap = mapOf(
+            RegexMode.Replace to stringResource(Res.string.edit_replace),
+            RegexMode.Extract to stringResource(Res.string.edit_extract),
+            RegexMode.Block to stringResource(Res.string.block)
+        )
+
+        val modesIcons = remember(isLicenseValid) {
+            if (isLicenseValid) {
+                listOf(
+                    Icons.FindReplace,
+                    Icons.SwipeLeftAlt,
+                    Icons.Block
+                )
+            } else {
+                listOf(
+                    Icons.FindReplace,
+                    Icons.Lock,
+                    Icons.Lock
                 )
             }
+        }
 
-            PanoOutlinedTextField(
-                value = name,
-                onValueChange = { name = it },
-                label = { Text(stringResource(Res.string.edit_name)) },
-                enabledOnTv = false,
-                keyboardOptions = KeyboardOptions.Default.copy(
-                    imeAction = ImeAction.Next
-                ),
-                modifier = Modifier.fillMaxWidth()
-            )
+        OutlinedToggleButtons(
+            texts = modesMap.values,
+            icons = modesIcons,
+            mode = PanoToggleButtonsMode.Both,
+            selectedIndex = modesMap.values.indexOf(modesMap[regexMode]),
+            onSelected = { index ->
+                regexMode = modesMap.keys.elementAt(index)
 
-            ErrorText(errorText)
-
-            AnimatedVisibility(regexMode == RegexMode.Replace) {
-                Column {
-                    SearchAndReplacePair(
-                        label = stringResource(Res.string.track),
-                        searchRegex = searchTrack,
-                        replacementRegex = replacementTrack,
-                        onSearchChange = { searchTrack = it },
-                        onReplacementChange = { replacementTrack = it },
-                        copyFromField = trackCopyFrom,
-                        onCopyFromSelected = { trackCopyFrom = it }
-                    )
-
-                    SearchAndReplacePair(
-                        label = stringResource(Res.string.artist),
-                        searchRegex = searchArtist,
-                        replacementRegex = replacementArtist,
-                        onSearchChange = { searchArtist = it },
-                        onReplacementChange = { replacementArtist = it },
-                        copyFromField = artistCopyFrom,
-                        onCopyFromSelected = { artistCopyFrom = it }
-                    )
-
-                    SearchAndReplacePair(
-                        label = stringResource(Res.string.album),
-                        searchRegex = searchAlbum,
-                        replacementRegex = replacementAlbum,
-                        onSearchChange = { searchAlbum = it },
-                        onReplacementChange = { replacementAlbum = it },
-                        copyFromField = albumCopyFrom,
-                        onCopyFromSelected = { albumCopyFrom = it },
-                        replacementRegexEnabled = !fetchAlbum
-                    )
-
-                    LabeledCheckbox(
-                        checked = fetchAlbum,
-                        onCheckedChange = { fetchAlbum = it },
-                        enabled = fetchAlbumGlobal,
-                        text = stringResource(
-                            Res.string.pref_fetch_missing_album,
-                            stringResource(Res.string.cache) + " & " +
-                                    stringResource(Res.string.lastfm)
-                        ),
-                        modifier = Modifier.fillMaxWidth()
-                    )
-
-                    if (!fetchAlbumGlobal) {
-                        Text(
-                            stringResource(
-                                Res.string.is_turned_off,
-                                "",
-                                stringResource(Res.string.external_metadata)
-                            ),
-                            color = MaterialTheme.colorScheme.error,
-                            modifier = Modifier.fillMaxWidth()
-                        )
-                    }
-
-                    SearchAndReplacePair(
-                        label = stringResource(Res.string.album_artist),
-                        searchRegex = searchAlbumArtist,
-                        replacementRegex = replacementAlbumArtist,
-                        onSearchChange = { searchAlbumArtist = it },
-                        onReplacementChange = { replacementAlbumArtist = it },
-                        copyFromField = albumArtistCopyFrom,
-                        onCopyFromSelected = { albumArtistCopyFrom = it }
-                    )
-
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(8.dp),
-                    ) {
-                        Text(
-                            stringResource(Res.string.edit_replace),
-                            color = MaterialTheme.colorScheme.secondary,
-                        )
-
-                        FilterChip(
-                            selected = !replaceAll,
-                            onClick = { replaceAll = false },
-                            label = { Text(stringResource(Res.string.edit_first)) },
-                        )
-
-                        FilterChip(
-                            selected = replaceAll,
-                            onClick = { replaceAll = true },
-                            label = { Text(stringResource(Res.string.edit_all)) },
-                        )
-                    }
+                if (!isLicenseValid && (regexMode == RegexMode.Extract || regexMode == RegexMode.Block)) {
+                    onNavigate(PanoRoute.Billing)
                 }
-            }
+            },
+            modifier = Modifier.align(Alignment.CenterHorizontally)
+        )
 
-            AnimatedVisibility(regexMode == RegexMode.Extract) {
-                Column(
-                    verticalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
-                    SearchFields(
-                        headerText = stringResource(Res.string.search),
-                        track = searchTrack,
-                        album = searchAlbum,
-                        artist = searchArtist,
-                        albumArtist = searchAlbumArtist,
-                        onValueChange = { track, album, artist, albumArtist ->
-                            searchTrack = track
-                            searchAlbum = album
-                            searchArtist = artist
-                            searchAlbumArtist = albumArtist
-                        },
-                        enabled = if (regexMode == RegexMode.Extract || regexMode == RegexMode.Block)
-                            isLicenseValid
-                        else
-                            true,
-                        highlightCaptureGroups = true,
-                        modifier = Modifier.fillMaxWidth()
-                    )
+        ErrorText(errorText)
 
-                    ExtractOptions(
-                        modifier = Modifier.fillMaxWidth()
-                    )
-                }
-            }
+        AnimatedVisibility(regexMode == RegexMode.Replace) {
+            Column {
+                SearchAndReplacePair(
+                    label = stringResource(Res.string.track),
+                    searchRegex = searchTrack,
+                    replacementRegex = replacementTrack,
+                    onSearchChange = { searchTrack = it },
+                    onReplacementChange = { replacementTrack = it },
+                    copyFromField = trackCopyFrom,
+                    onCopyFromSelected = { trackCopyFrom = it }
+                )
 
-            AnimatedVisibility(regexMode == RegexMode.Block) {
-                Column(
-                    verticalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
-                    SearchFields(
-                        headerText = stringResource(Res.string.search),
-                        track = searchTrack,
-                        album = searchAlbum,
-                        artist = searchArtist,
-                        albumArtist = searchAlbumArtist,
-                        onValueChange = { track, album, artist, albumArtist ->
-                            searchTrack = track
-                            searchAlbum = album
-                            searchArtist = artist
-                            searchAlbumArtist = albumArtist
-                        },
-                        enabled = if (regexMode == RegexMode.Extract || regexMode == RegexMode.Block)
-                            isLicenseValid
-                        else
-                            true,
-                        highlightCaptureGroups = false,
-                        modifier = Modifier.fillMaxWidth()
-                    )
+                SearchAndReplacePair(
+                    label = stringResource(Res.string.artist),
+                    searchRegex = searchArtist,
+                    replacementRegex = replacementArtist,
+                    onSearchChange = { searchArtist = it },
+                    onReplacementChange = { replacementArtist = it },
+                    copyFromField = artistCopyFrom,
+                    onCopyFromSelected = { artistCopyFrom = it }
+                )
 
-                    BlockPlayerActions(
-                        blockPlayerAction = blockPlayerAction,
-                        onChange = { blockPlayerAction = it },
-                        enabled = isLicenseValid,
-                    )
-                }
-            }
+                SearchAndReplacePair(
+                    label = stringResource(Res.string.album),
+                    searchRegex = searchAlbum,
+                    replacementRegex = replacementAlbum,
+                    onSearchChange = { searchAlbum = it },
+                    onReplacementChange = { replacementAlbum = it },
+                    copyFromField = albumCopyFrom,
+                    onCopyFromSelected = { albumCopyFrom = it },
+                    replacementRegexEnabled = !fetchAlbum
+                )
 
-
-            AppSelector(
-                label = stringResource(Res.string.apps) + (
-                        if (regexMode != RegexMode.Extract && appItems.isEmpty())
-                            ": " + stringResource(Res.string.edit_all)
-                        else ""
-                        ),
-                appItems = appItems,
-                onNavigateToAppList = {
-                    onNavigate(
-                        PanoRoute.AppList(
-                            saveType = AppListSaveType.Callback,
-                            preSelectedPackages = it,
-                            isSingleSelect = false
-                        )
-                    )
-                },
-                onAppItemRemoved = {
-                    appItems = appItems - it
-                }
-            )
-
-            if (regexMode != RegexMode.Block) {
                 LabeledCheckbox(
-                    checked = continueMatching,
-                    onCheckedChange = { continueMatching = it },
-                    text = stringResource(Res.string.edit_continue_regex),
+                    checked = fetchAlbum,
+                    onCheckedChange = { fetchAlbum = it },
+                    enabled = fetchAlbumGlobal,
+                    text = stringResource(
+                        Res.string.pref_fetch_missing_album,
+                        stringResource(Res.string.cache) + " & " +
+                                stringResource(Res.string.lastfm)
+                    ),
+                    modifier = Modifier.fillMaxWidth()
+                )
+
+                if (!fetchAlbumGlobal) {
+                    Text(
+                        stringResource(
+                            Res.string.is_turned_off,
+                            "",
+                            stringResource(Res.string.external_metadata)
+                        ),
+                        color = MaterialTheme.colorScheme.error,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                }
+
+                SearchAndReplacePair(
+                    label = stringResource(Res.string.album_artist),
+                    searchRegex = searchAlbumArtist,
+                    replacementRegex = replacementAlbumArtist,
+                    onSearchChange = { searchAlbumArtist = it },
+                    onReplacementChange = { replacementAlbumArtist = it },
+                    copyFromField = albumArtistCopyFrom,
+                    onCopyFromSelected = { albumArtistCopyFrom = it }
+                )
+
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                ) {
+                    Text(
+                        stringResource(Res.string.edit_replace),
+                        color = MaterialTheme.colorScheme.secondary,
+                    )
+
+                    FilterChip(
+                        selected = !replaceAll,
+                        onClick = { replaceAll = false },
+                        shapes = FilterChipDefaults.shapes(),
+                        label = { Text(stringResource(Res.string.edit_first)) },
+                    )
+
+                    FilterChip(
+                        selected = replaceAll,
+                        onClick = { replaceAll = true },
+                        shapes = FilterChipDefaults.shapes(),
+                        label = { Text(stringResource(Res.string.edit_all)) },
+                    )
+                }
+            }
+        }
+
+        AnimatedVisibility(regexMode == RegexMode.Extract) {
+            Column(
+                verticalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                SearchFields(
+                    headerText = stringResource(Res.string.search),
+                    track = searchTrack,
+                    album = searchAlbum,
+                    artist = searchArtist,
+                    albumArtist = searchAlbumArtist,
+                    onValueChange = { track, album, artist, albumArtist ->
+                        searchTrack = track
+                        searchAlbum = album
+                        searchArtist = artist
+                        searchAlbumArtist = albumArtist
+                    },
+                    enabled = if (regexMode == RegexMode.Extract || regexMode == RegexMode.Block)
+                        isLicenseValid
+                    else
+                        true,
+                    highlightCaptureGroups = true,
+                    modifier = Modifier.fillMaxWidth()
+                )
+
+                ExtractOptions(
                     modifier = Modifier.fillMaxWidth()
                 )
             }
+        }
 
+        AnimatedVisibility(regexMode == RegexMode.Block) {
+            Column(
+                verticalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                SearchFields(
+                    headerText = stringResource(Res.string.search),
+                    track = searchTrack,
+                    album = searchAlbum,
+                    artist = searchArtist,
+                    albumArtist = searchAlbumArtist,
+                    onValueChange = { track, album, artist, albumArtist ->
+                        searchTrack = track
+                        searchAlbum = album
+                        searchArtist = artist
+                        searchAlbumArtist = albumArtist
+                    },
+                    enabled = if (regexMode == RegexMode.Extract || regexMode == RegexMode.Block)
+                        isLicenseValid
+                    else
+                        true,
+                    highlightCaptureGroups = false,
+                    modifier = Modifier.fillMaxWidth()
+                )
+
+                BlockPlayerActions(
+                    blockPlayerAction = blockPlayerAction,
+                    onChange = { blockPlayerAction = it },
+                    enabled = isLicenseValid,
+                )
+            }
+        }
+
+
+        AppSelector(
+            label = stringResource(Res.string.apps) + (
+                    if (regexMode != RegexMode.Extract && appItems.isEmpty())
+                        ": " + stringResource(Res.string.edit_all)
+                    else ""
+                    ),
+            appItems = appItems,
+            onNavigateToAppList = {
+                onNavigate(
+                    PanoRoute.AppList(
+                        saveType = AppListSaveType.Callback,
+                        preSelectedPackages = it,
+                        isSingleSelect = false
+                    )
+                )
+            },
+            onAppItemRemoved = {
+                appItems = appItems - it
+            }
+        )
+
+        if (regexMode != RegexMode.Block) {
             LabeledCheckbox(
-                checked = caseSensitive,
-                onCheckedChange = { caseSensitive = it },
-                text = stringResource(Res.string.edit_case_sensitive),
+                checked = continueMatching,
+                onCheckedChange = { continueMatching = it },
+                text = stringResource(Res.string.edit_continue_regex),
                 modifier = Modifier.fillMaxWidth()
             )
         }
 
-        Surface(
-            tonalElevation = 4.dp,
-            shape = CircleShape,
+        LabeledCheckbox(
+            checked = caseSensitive,
+            onCheckedChange = { caseSensitive = it },
+            text = stringResource(Res.string.edit_case_sensitive),
             modifier = Modifier.fillMaxWidth()
-        ) {
-            Row(
-                modifier = Modifier.fillMaxWidth().padding(8.dp),
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                var dropDownShown by remember { mutableStateOf(false) }
-                val regexModeString = when (regexMode) {
-                    RegexMode.Replace -> stringResource(Res.string.edit_replace)
-                    RegexMode.Extract -> stringResource(Res.string.edit_extract)
-                    RegexMode.Block -> stringResource(Res.string.block)
-                }
-
-                OutlinedToggleButton(
-                    checked = dropDownShown,
-                    onCheckedChange = { dropDownShown = it },
-                ) {
-                    Text(regexModeString)
-                    Spacer(Modifier.size(ButtonDefaults.IconSpacing))
-                    Icon(Icons.ArrowDropDown, contentDescription = null)
-
-                    DropdownMenu(
-                        expanded = dropDownShown,
-                        onDismissRequest = { dropDownShown = false }
-                    ) {
-                        DropdownMenuItem(
-                            onClick = {
-                                regexMode = RegexMode.Replace
-                                dropDownShown = false
-                            },
-                            enabled = regexMode != RegexMode.Replace,
-                            text = {
-                                Text(stringResource(Res.string.edit_replace))
-                            }
-                        )
-                        DropdownMenuItem(
-                            onClick = {
-                                regexMode = RegexMode.Extract
-                                dropDownShown = false
-
-                                if (!isLicenseValid)
-                                    onNavigate(PanoRoute.Billing)
-                            },
-                            enabled = regexMode != RegexMode.Extract,
-                            text = {
-                                Text(stringResource(Res.string.edit_extract))
-                            },
-                            leadingIcon = if (!isLicenseValid) {
-                                {
-                                    Icon(
-                                        Icons.Lock,
-                                        contentDescription = null,
-                                    )
-                                }
-                            } else null
-                        )
-
-                        DropdownMenuItem(
-                            onClick = {
-                                regexMode = RegexMode.Block
-                                dropDownShown = false
-
-                                if (!isLicenseValid)
-                                    onNavigate(PanoRoute.Billing)
-                            },
-                            enabled = regexMode != RegexMode.Block,
-                            text = {
-                                Text(stringResource(Res.string.block))
-                            },
-                            leadingIcon = if (!isLicenseValid) {
-                                {
-                                    Icon(
-                                        Icons.Lock,
-                                        contentDescription = null,
-                                    )
-                                }
-                            } else null
-                        )
-
-                    }
-                }
-
-                Spacer(
-                    modifier = Modifier.weight(1f)
-                )
-
-                if (regexEdit != null) {
-                    IconButton(
-                        onClick = {
-                            scope.launch {
-                                withContext(Dispatchers.IO) {
-                                    dao.delete(regexEdit)
-                                }
-                                onBack()
-                            }
-                        },
-                    ) {
-                        Icon(
-                            imageVector = Icons.Delete,
-                            contentDescription = stringResource(Res.string.delete),
-                            tint = MaterialTheme.colorScheme.error,
-                        )
-                    }
-                }
-
-                ButtonWithIcon(
-                    onClick = {
-                        scope.launch {
-                            val re = buildRegexEdit()
-                            val validationResult = validate(re)
-
-                            if (validationResult.isFailure) {
-                                errorText = validationResult.exceptionOrNull()?.redactedMessage
-                            } else if (
-                                !isLicenseValid && (re.replacement == null || re.blockPlayerAction != null)
-                            ) {
-                                onNavigate(PanoRoute.Billing)
-                            } else {
-                                withContext(Dispatchers.IO) {
-                                    dao.insert(listOf(re))
-                                }
-                                onBack()
-                            }
-                        }
-                    },
-                    icon = Icons.Check,
-                    text = stringResource(Res.string.save),
-                )
-            }
-        }
+        )
     }
 }
 
@@ -940,8 +856,9 @@ private fun CopyFromSelector(
 ) {
     var dropDownShown by remember { mutableStateOf(false) }
 
-    OutlinedButton(
-        onClick = { dropDownShown = true },
+    OutlinedToggleButton(
+        checked = dropDownShown,
+        onCheckedChange = { dropDownShown = it },
         modifier = modifier.padding(end = 8.dp)
     ) {
         if (selected == null) {
@@ -958,7 +875,7 @@ private fun CopyFromSelector(
 
         Icon(Icons.ArrowDropDown, contentDescription = null)
 
-        DropdownMenu(
+        PanoDropdownMenu(
             expanded = dropDownShown,
             onDismissRequest = { dropDownShown = false }
         ) {
@@ -1035,7 +952,8 @@ private fun AppSelector(
             )
         }
 
-        IconButton(
+        OutlinedIconButton(
+            shapes = IconButtonDefaults.shapes(),
             onClick = { onNavigateToAppList(appItems.map { it.appId }) },
         ) {
             Icon(

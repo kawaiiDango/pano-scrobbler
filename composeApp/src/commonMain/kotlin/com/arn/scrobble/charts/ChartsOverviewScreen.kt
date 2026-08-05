@@ -232,9 +232,7 @@ fun ChartsOverviewScreen(
     }
 
     Column(
-        modifier = Modifier
-            .padding(panoContentPadding(sides = false))
-            .then(modifier)
+        modifier = modifier
     ) {
         TimePeriodSelector(
             user = user,
@@ -249,6 +247,7 @@ fun ChartsOverviewScreen(
             modifier = Modifier
                 .weight(1f)
                 .verticalScroll(scrollState)
+                .padding(panoContentPadding(sides = false))
         ) {
             if (!spotifyConsentLearnt) {
                 DismissableNotice(

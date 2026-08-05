@@ -1,7 +1,6 @@
 package com.arn.scrobble.help
 
 import android.os.Build
-import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MenuDefaults
@@ -19,6 +18,7 @@ import com.arn.scrobble.icons.Check
 import com.arn.scrobble.icons.Icons
 import com.arn.scrobble.icons.KeyboardArrowDown
 import com.arn.scrobble.ui.AlertDialogOk
+import com.arn.scrobble.ui.PanoDropdownMenu
 import com.arn.scrobble.utils.AndroidStuff
 import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff.collectAsStateWithInitialValue
@@ -62,7 +62,7 @@ actual fun HelpSaveLogsButton(
             ) {
                 Text(stringResource(Res.string.save_logs))
 
-                DropdownMenu(
+                PanoDropdownMenu(
                     expanded = menuShown,
                     onDismissRequest = { menuShown = false },
                 ) {

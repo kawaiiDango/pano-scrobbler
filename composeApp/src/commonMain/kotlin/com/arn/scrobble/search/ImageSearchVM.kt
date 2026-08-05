@@ -23,6 +23,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.filterNot
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
@@ -56,6 +57,7 @@ class ImageSearchVM : ViewModel() {
 
             _searchTerm
                 .distinctUntilChanged()
+                .filterNot { it.first.isBlank() }
                 .debounce(500)
                 .collectLatest { (term, searchType) ->
                     val results = when (searchType) {

@@ -11,6 +11,7 @@ import androidx.compose.material3.ButtonGroup
 import androidx.compose.material3.FilledTonalIconButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -182,6 +183,7 @@ fun FilePickerScreen(
                     ) {
                         if (currentDir.parentFile != null) {
                             IconButton(
+                                shapes = IconButtonDefaults.shapes(),
                                 onClick = {
                                     // Navigate to parent directory.
                                     currentDir.parentFile?.let { currentDir = it }
@@ -229,6 +231,7 @@ fun FilePickerScreen(
                             )
 
                             FilledTonalIconButton(
+                                shapes = IconButtonDefaults.shapes(),
                                 onClick = {
                                     if (fileName.isNullOrBlank()) {
                                         errorMessage = "File name cannot be empty."

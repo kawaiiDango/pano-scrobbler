@@ -3,6 +3,7 @@ package com.arn.scrobble.updates
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
@@ -31,6 +32,7 @@ fun UpdateAvailableDialog(
         )
 
         OutlinedButton(
+            shapes = ButtonDefaults.shapes(),
             onClick = {
                 runUpdateAction(updateAction)
             },

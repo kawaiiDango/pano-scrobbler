@@ -182,7 +182,7 @@ private fun ColorScheme.withAlpha(alpha: Float, hasBlur: Boolean): ColorScheme {
 
     if (alpha == 1f && !hasBlur) return this
 
-    val midAlpha = boostAlpha(alpha.coerceIn(0.5f, 1f), 0.4f).coerceIn(0.3f, 0.75f)
+    val midAlpha = boostAlpha(alpha.coerceIn(0.5f, 1f), 0.6f)
     val highAlpha = boostAlpha(alpha.coerceIn(0.5f, 1f), 0.8f)
 
     return copy(

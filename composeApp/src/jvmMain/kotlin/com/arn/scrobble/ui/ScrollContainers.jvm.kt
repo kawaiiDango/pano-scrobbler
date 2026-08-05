@@ -20,6 +20,7 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.rememberScrollbarAdapter
 import androidx.compose.material3.FilledTonalIconButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
@@ -123,6 +124,7 @@ actual fun PanoLazyRow(
     ) {
         if (canScroll) {
             FilledTonalIconButton(
+                shapes = IconButtonDefaults.shapes(),
                 enabled = state.canScrollBackward,
                 onClick = {
                     scope.launch {
@@ -169,6 +171,7 @@ actual fun PanoLazyRow(
 
         if (canScroll) {
             FilledTonalIconButton(
+                shapes = IconButtonDefaults.shapes(),
                 enabled = state.canScrollForward,
                 onClick = {
                     scope.launch {

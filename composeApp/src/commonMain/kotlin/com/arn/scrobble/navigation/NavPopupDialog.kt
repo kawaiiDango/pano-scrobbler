@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.OutlinedIconButton
 import androidx.compose.material3.PlainTooltip
 import androidx.compose.material3.Text
@@ -75,24 +76,21 @@ fun NavPopupDialog(
         )
 
         if (!isLicenseValid) {
-            Row(
-                horizontalArrangement = Arrangement.Center,
-                modifier = Modifier.fillMaxWidth(1f)
+            FilledTonalButton(
+                shapes = ButtonDefaults.shapes(),
+                onClick = {
+                    onNavigate(PanoRoute.Billing)
+                },
+                contentPadding = ButtonDefaults.ButtonWithIconContentPadding,
+                modifier = Modifier.align(Alignment.CenterHorizontally)
             ) {
-                FilledTonalButton(
-                    onClick = {
-                        onNavigate(PanoRoute.Billing)
-                    },
-                    contentPadding = ButtonDefaults.ButtonWithIconContentPadding,
-                ) {
-                    Icon(
-                        Icons.WorkspacePremium,
-                        contentDescription = null,
-                        modifier = Modifier.size(ButtonDefaults.IconSize)
-                    )
-                    Spacer(Modifier.size(ButtonDefaults.IconSpacing))
-                    Text(stringResource(Res.string.get_pro), maxLines = 1)
-                }
+                Icon(
+                    Icons.WorkspacePremium,
+                    contentDescription = null,
+                    modifier = Modifier.size(ButtonDefaults.IconSize)
+                )
+                Spacer(Modifier.size(ButtonDefaults.IconSpacing))
+                Text(stringResource(Res.string.get_pro), maxLines = 1)
             }
         }
 
@@ -117,6 +115,7 @@ fun NavPopupDialog(
                     state = rememberTooltipState(),
                 ) {
                     OutlinedIconButton(
+                        shapes = IconButtonDefaults.shapes(),
                         onClick = {
                             onNavigate(PanoRoute.Search)
                         },

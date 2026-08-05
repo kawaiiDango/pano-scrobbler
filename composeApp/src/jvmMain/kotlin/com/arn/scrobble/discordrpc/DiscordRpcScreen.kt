@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -186,6 +187,7 @@ fun DiscordRpcScreen(
             isError = line1Format.trim().isEmpty(),
             trailingIcon = {
                 IconButton(
+                    shapes = IconButtonDefaults.shapes(),
                     enabled = line1Format != defaultSettings.line1Format,
                     onClick = {
                         line1Format = defaultSettings.line1Format
@@ -213,6 +215,7 @@ fun DiscordRpcScreen(
             isError = line2Format.trim().isEmpty(),
             trailingIcon = {
                 IconButton(
+                    shapes = IconButtonDefaults.shapes(),
                     enabled = line2Format != defaultSettings.line2Format,
                     onClick = {
                         line2Format = defaultSettings.line2Format
@@ -239,6 +242,7 @@ fun DiscordRpcScreen(
             visualTransformation = visualTransformation,
             trailingIcon = {
                 IconButton(
+                    shapes = IconButtonDefaults.shapes(),
                     enabled = line3Format != defaultSettings.line3Format,
                     onClick = {
                         line3Format = defaultSettings.line3Format
@@ -265,6 +269,7 @@ fun DiscordRpcScreen(
             visualTransformation = visualTransformation,
             trailingIcon = {
                 IconButton(
+                    shapes = IconButtonDefaults.shapes(),
                     enabled = nameFormat != defaultSettings.nameFormat,
                     onClick = {
                         nameFormat = defaultSettings.nameFormat

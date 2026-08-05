@@ -14,7 +14,7 @@ actual fun EntryProviderScope<PanoRoute>.panoPlatformSpecificNavGraph(
         FixItDialog(
             killedReason = route.killedReason,
             onNavigate = navigate,
-            modifier = Modifier.modalModifier(),
+            modifier = Modifier.navModal(),
         )
     }
 }

@@ -12,7 +12,9 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.InputChip
+import androidx.compose.material3.InputChipDefaults
 import androidx.compose.material3.OutlinedIconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -101,6 +103,7 @@ fun HiddenTagsDialog(modifier: Modifier = Modifier) {
                                 overflow = TextOverflow.Ellipsis
                             )
                         },
+                        shapes = InputChipDefaults.shapes(),
                         selected = false,
                     )
                 }
@@ -129,6 +132,7 @@ fun HiddenTagsDialog(modifier: Modifier = Modifier) {
             onClick = {
                 addTag(tagInput)
             },
+            shapes = IconButtonDefaults.shapes(),
             modifier = Modifier
                 .padding(top = 8.dp)
                 .width(100.dp)

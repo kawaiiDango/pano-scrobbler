@@ -32,10 +32,11 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.selection.toggleable
 import androidx.compose.foundation.shape.ZeroCornerSize
 import androidx.compose.material3.ButtonGroupDefaults
-import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.IconButtonDefaults
+import androidx.compose.material3.IconToggleButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedToggleButton
 import androidx.compose.material3.PlainTooltip
@@ -162,10 +163,11 @@ fun MusicEntryListItem(
     forShimmer: Boolean = false,
     imageUrlOverride: String? = null,
     onImageClick: (() -> Unit)? = null,
-    onMenuClick: (() -> Unit)? = null,
+    menuShown: Boolean = false,
+    onMenuToggle: ((Boolean) -> Unit)? = null,
     menuContent: @Composable () -> Unit = {},
 ) {
-    val hasOnlyOneClickable = onImageClick == null && onMenuClick == null
+    val hasOnlyOneClickable = onImageClick == null && onMenuToggle == null
     var imageMemoryCacheKey by remember(entry) { mutableStateOf<MemoryCache.Key?>(null) }
     val context = LocalPlatformContext.current
     val artInteractionSource = remember { MutableInteractionSource() }
@@ -448,7 +450,7 @@ fun MusicEntryListItem(
                         }
                     }
 
-                    if (onMenuClick != null) {
+                    if (onMenuToggle != null) {
                         Column(
                             horizontalAlignment = Alignment.CenterHorizontally,
                             modifier = Modifier.padding(vertical = 8.dp)
@@ -476,9 +478,12 @@ fun MusicEntryListItem(
                                 }
                             }
 
-                            IconButton(
-                                onClick = onMenuClick,
-                                enabled = !forShimmer
+                            IconToggleButton(
+                                checked = menuShown,
+                                shapes = IconButtonDefaults.toggleableShapes(),
+                                onCheckedChange = onMenuToggle,
+                                enabled = !forShimmer,
+                                colors = IconButtonDefaults.myIconButtonColors()
                             ) {
                                 Icon(
                                     imageVector = Icons.MoreVert,
@@ -826,7 +831,7 @@ fun GoToDetailsHeaderItem(
 ) {
     Surface(
         shape = MaterialTheme.shapes.medium,
-        tonalElevation = 4.dp,
+        tonalElevation = 2.dp,
         modifier = modifier
             .fillMaxWidth()
             .clip(MaterialTheme.shapes.medium)
@@ -936,7 +941,7 @@ fun ExpandableHeaderMenu(
                 tint = MaterialTheme.colorScheme.primary
             )
 
-            DropdownMenu(
+            PanoDropdownMenu(
                 expanded = menuShown,
                 onDismissRequest = { menuShown = false },
             ) {
@@ -968,6 +973,7 @@ fun DismissableNotice(
 
         if (onDismiss != null) {
             IconButton(
+                shapes = IconButtonDefaults.shapes(),
                 onClick = onDismiss,
                 modifier = Modifier
             ) {

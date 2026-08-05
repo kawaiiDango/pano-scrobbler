@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -43,6 +42,7 @@ import com.arn.scrobble.main.MainViewModel
 import com.arn.scrobble.ui.ButtonWithIcon
 import com.arn.scrobble.ui.ErrorText
 import com.arn.scrobble.ui.IconButtonWithTooltip
+import com.arn.scrobble.ui.PanoDropdownMenu
 import com.arn.scrobble.ui.PanoOutlinedTextField
 import com.arn.scrobble.ui.PanoSnackbarVisuals
 import com.arn.scrobble.ui.getActivityOrNull
@@ -219,7 +219,7 @@ fun BillingScreen(
                     },
                 )
 
-                DropdownMenu(
+                PanoDropdownMenu(
                     expanded = purchaseMethodsExpanded,
                     onDismissRequest = { purchaseMethodsExpanded = false }
                 ) {

@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
@@ -258,6 +259,7 @@ fun ImportScreen(
                 Spacer(modifier = Modifier.height(16.dp))
 
                 OutlinedButton(
+                    shapes = ButtonDefaults.shapes(),
                     onClick = {
                         viewModel.import(userImportTypes, selectedWriteMode)
                     },

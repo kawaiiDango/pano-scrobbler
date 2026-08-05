@@ -36,6 +36,7 @@ fun HomePagerScreen(
     pullToRefreshState: PullToRefreshState,
     onSetRefreshing: (Int, PanoPullToRefreshStateForTab) -> Unit,
     getPullToRefreshTrigger: (Int) -> Flow<Unit>,
+    selectSubTabId: (Int) -> Unit,
     mainViewModel: MainViewModel,
     modifier: Modifier = Modifier,
 ) {
@@ -73,13 +74,12 @@ fun HomePagerScreen(
         totalPages = remember(tabsList) { tabsList.count { it !is PanoTab.Profile } },
         modifier = modifier,
     ) { page ->
-        when (val currentTab = tabsList.getOrNull(page)) {
-            is PanoTab.Scrobbles -> ScrobblesScreen(
+        when (tabsList.getOrNull(page)) {
+            is PanoTab.Scrobbles, PanoTab.ScrobblesNoSubtabs -> ScrobblesScreen(
                 user = user,
                 pullToRefreshState = pullToRefreshState,
                 onSetRefreshing = { onSetRefreshing(page, it) },
                 pullToRefreshTriggered = { getPullToRefreshTrigger(page) },
-                showChips = currentTab.showChips,
                 onNavigate = onNavigate,
                 editDataFlow = mainViewModel.editScrobbleUtils.editDataFlow,
                 scrobblerStateFlow = mainViewModel.scrobblerStateFlow,
@@ -87,6 +87,7 @@ fun HomePagerScreen(
                 onTitleChange = {
                     scrobblesTitle = it
                 },
+                selectSubTabId = selectSubTabId,
                 modifier = Modifier.fillMaxSize()
             )
 

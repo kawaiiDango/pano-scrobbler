@@ -1,6 +1,7 @@
 package com.arn.scrobble.billing
 
 import androidx.compose.foundation.layout.Column
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
@@ -33,6 +34,7 @@ fun BillingTroubleshootScreen(
             style = MaterialTheme.typography.bodyLarge,
         )
         OutlinedButton(
+            shapes = ButtonDefaults.shapes(),
             onClick = onBack,
             modifier = Modifier.align(Alignment.CenterHorizontally)
         ) {

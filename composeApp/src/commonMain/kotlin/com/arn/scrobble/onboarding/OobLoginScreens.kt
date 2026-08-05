@@ -5,8 +5,8 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularWavyProgressIndicator
-import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -124,6 +124,7 @@ fun OobLastfmLibrefmLoginScreen(
 
             if (token != null) {
                 OutlinedButton(
+                    shapes = ButtonDefaults.shapes(),
                     onClick = {
                         viewModel.lastfmOobLogin(
                             userAccountTemp,

@@ -83,14 +83,8 @@ actual object PanoTimeFormatter {
             Instant.ofEpochMilli(millis),
             ZoneId.systemDefault()
         )
-        val currentYear = LocalDateTime.now().year
         val dateFormatter = DateTimeFormatterBuilder()
             .append(DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM))
-            .apply {
-                if (dateTime.year != currentYear) {
-                    appendPattern(" yyyy")
-                }
-            }
             .toFormatter(Locale.getDefault())
         return dateTime.format(dateFormatter)
     }

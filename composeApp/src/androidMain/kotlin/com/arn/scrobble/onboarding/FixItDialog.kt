@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
@@ -101,6 +102,7 @@ fun FixItDialog(
                     modifier = Modifier.weight(1f)
                 )
                 OutlinedButton(
+                    shapes = ButtonDefaults.shapes(),
                     onClick = {
                         scope.launch {
                             PlatformStuff.mainPrefs.updateData { it.copy(notiPersistent = true) }
@@ -133,6 +135,7 @@ fun FixItDialog(
                     modifier = Modifier.weight(1f)
                 )
                 OutlinedButton(
+                    shapes = ButtonDefaults.shapes(),
                     onClick = {
                         onNavigate(PanoRoute.Help())
                     },
@@ -156,6 +159,7 @@ fun FixItDialog(
                     modifier = Modifier.weight(1f)
                 )
                 OutlinedButton(
+                    shapes = ButtonDefaults.shapes(),
                     onClick = {
                         scope.launch {
                             context.toast(

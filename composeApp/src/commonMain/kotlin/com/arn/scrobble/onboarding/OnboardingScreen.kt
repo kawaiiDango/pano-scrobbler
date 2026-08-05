@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButtonDefaults
@@ -37,6 +36,7 @@ import com.arn.scrobble.main.MainViewModel
 import com.arn.scrobble.navigation.PanoRoute
 import com.arn.scrobble.panoicons.Nothing
 import com.arn.scrobble.panoicons.PanoIcons
+import com.arn.scrobble.ui.PanoDropdownMenu
 import com.arn.scrobble.ui.accountTypeLabel
 import com.arn.scrobble.ui.horizontalOverscanPadding
 import com.arn.scrobble.ui.testTagsAsResId
@@ -74,11 +74,15 @@ fun ButtonsStepper(
         horizontalArrangement = Arrangement.spacedBy(32.dp, Alignment.End)
     ) {
         if (onSkipClick != null) {
-            TextButton(onClick = onSkipClick) {
+            TextButton(
+                shapes = ButtonDefaults.shapes(),
+                onClick = onSkipClick
+            ) {
                 Text(text = stringResource(Res.string.skip))
             }
         }
         OutlinedButton(
+            shapes = ButtonDefaults.shapes(),
             onClick = onOpenClick,
             modifier = Modifier
                 .testTag("button_stepper_open")
@@ -119,7 +123,7 @@ fun ButtonStepperForLogin(
         Spacer(Modifier.size(ButtonDefaults.IconSpacing))
         Icon(Icons.ArrowDropDown, contentDescription = null)
 
-        DropdownMenu(
+        PanoDropdownMenu(
             expanded = dropDownShown,
             onDismissRequest = { dropDownShown = false }
         ) {
@@ -237,6 +241,7 @@ fun OnboardingTopRow(
     ) {
         if (showProxySettings) {
             TextButton(
+                shapes = ButtonDefaults.shapes(),
                 onClick = {
                     onNavigate(PanoRoute.Modal.ProxyPref)
                 },
@@ -246,6 +251,7 @@ fun OnboardingTopRow(
         }
 
         TextButton(
+            shapes = ButtonDefaults.shapes(),
             onClick = {
                 onNavigate(PanoRoute.PrivacyPolicy)
             },

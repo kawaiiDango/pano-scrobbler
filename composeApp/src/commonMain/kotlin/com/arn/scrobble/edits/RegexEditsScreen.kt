@@ -11,12 +11,14 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
+import androidx.compose.material3.IconButtonDefaults
+import androidx.compose.material3.IconToggleButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.OutlinedIconButton
 import androidx.compose.material3.SplitButtonDefaults
 import androidx.compose.material3.SplitButtonLayout
 import androidx.compose.material3.Text
@@ -61,9 +63,11 @@ import com.arn.scrobble.ui.AppIcon
 import com.arn.scrobble.ui.DraggableItem
 import com.arn.scrobble.ui.EmptyTextWithImportButtonOnTv
 import com.arn.scrobble.ui.LabeledCheckbox
+import com.arn.scrobble.ui.PanoDropdownMenu
 import com.arn.scrobble.ui.PanoLazyColumn
 import com.arn.scrobble.ui.backgroundForShimmer
 import com.arn.scrobble.ui.dragContainer
+import com.arn.scrobble.ui.myIconButtonColors
 import com.arn.scrobble.ui.panoContentPadding
 import com.arn.scrobble.ui.rememberDragDropState
 import com.arn.scrobble.utils.PlatformStuff
@@ -203,6 +207,7 @@ private fun RegexEditsList(
                         .fillMaxWidth(),
                 ) {
                     OutlinedButton(
+                        shapes = ButtonDefaults.shapes(),
                         onClick = {
                             onNavigate(PanoRoute.RegexEditsTest)
                         },
@@ -285,6 +290,7 @@ private fun RegexEditsList(
                     )
                 else
                     TextButton(
+                        shapes = ButtonDefaults.shapes(),
                         onClick = {
                             onNavigate(PanoRoute.Billing)
                         },
@@ -347,7 +353,8 @@ private fun PresetItem(
         )
 
         if (onNavigateSettings != null) {
-            IconButton(
+            OutlinedIconButton(
+                shapes = IconButtonDefaults.shapes(),
                 onClick = onNavigateSettings
             ) {
                 Icon(
@@ -468,16 +475,19 @@ private fun RegexEditItem(
             }
         }
 
-        IconButton(
-            onClick = { dropdownShown = true },
+        IconToggleButton(
+            checked = dropdownShown,
+            onCheckedChange = { dropdownShown = it },
             enabled = !forShimmer,
+            shapes = IconButtonDefaults.toggleableShapes(),
+            colors = IconButtonDefaults.myIconButtonColors()
         ) {
             Icon(
                 imageVector = Icons.MoreVert,
                 contentDescription = stringResource(Res.string.item_options),
             )
 
-            DropdownMenu(
+            PanoDropdownMenu(
                 expanded = dropdownShown,
                 onDismissRequest = { dropdownShown = false },
             ) {

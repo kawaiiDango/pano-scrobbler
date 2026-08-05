@@ -1,6 +1,8 @@
 package com.arn.scrobble.navigation
 
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.text.input.TextFieldState
+import androidx.compose.foundation.text.input.setTextAndPlaceCursorAtEnd
 import androidx.compose.material3.pulltorefresh.PullToRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -10,7 +12,6 @@ import androidx.compose.ui.Modifier
 import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.runtime.result.LocalResultEventBus
 import com.arn.scrobble.api.AccountType
-import com.arn.scrobble.api.DrawerData
 import com.arn.scrobble.api.lastfm.LastfmPeriod
 import com.arn.scrobble.billing.BillingScreen
 import com.arn.scrobble.billing.BillingTroubleshootScreen
@@ -70,6 +71,7 @@ import pano_scrobbler.composeapp.generated.resources.delete_account
 import pano_scrobbler.composeapp.generated.resources.edit
 import pano_scrobbler.composeapp.generated.resources.edit_regex
 import pano_scrobbler.composeapp.generated.resources.edit_regex_test
+import pano_scrobbler.composeapp.generated.resources.faq
 import pano_scrobbler.composeapp.generated.resources.first_artist
 import pano_scrobbler.composeapp.generated.resources.help
 import pano_scrobbler.composeapp.generated.resources.lastfm
@@ -100,9 +102,10 @@ object PanoNavGraph {
         navigate: (PanoRoute) -> Unit,
         onSetOnboardingFinished: () -> Unit,
         goBack: () -> Unit,
+        searchFieldState: TextFieldState,
         pullToRefreshState: () -> PullToRefreshState,
         onSetRefreshing: (Int, PanoPullToRefreshStateForTab) -> Unit,
-        onSetDrawerData: (DrawerData) -> Unit,
+        selectSubTabId: (Int) -> Unit,
         mainViewModel: MainViewModel,
     ) = entryProvider {
 
@@ -156,6 +159,7 @@ object PanoNavGraph {
                     onSetRefreshing = onSetRefreshing,
                     mainViewModel = mainViewModel,
                     getPullToRefreshTrigger = { mainViewModel.getPullToRefreshTrigger(it) },
+                    selectSubTabId = selectSubTabId,
                     modifier = Modifier.navColumn()
                 )
             }
@@ -176,6 +180,7 @@ object PanoNavGraph {
                 onSetRefreshing = onSetRefreshing,
                 mainViewModel = mainViewModel,
                 getPullToRefreshTrigger = { mainViewModel.getPullToRefreshTrigger(it) },
+                selectSubTabId = selectSubTabId,
                 modifier = Modifier.navColumn()
             )
         }
@@ -212,6 +217,7 @@ object PanoNavGraph {
             )
 
             AppListScreen(
+                searchFieldState = searchFieldState,
                 isSingleSelect = route.isSingleSelect,
                 saveType = route.saveType,
                 packagesOverride = route.packagesOverride?.toSet(),
@@ -225,6 +231,7 @@ object PanoNavGraph {
                     )
                 },
                 onNavigate = navigate,
+                onBack = goBack,
                 modifier = Modifier.navColumn()
             )
         }
@@ -268,6 +275,7 @@ object PanoNavGraph {
 
             onSetTitleRes(route, Res.string.settings)
             PrefsScreen(
+                searchFieldState = searchFieldState,
                 onNavigate = navigate,
                 mainViewModel = mainViewModel,
                 modifier = Modifier.navColumn()
@@ -278,6 +286,7 @@ object PanoNavGraph {
 
             onSetTitleRes(route, Res.string.simple_edits)
             SimpleEditsScreen(
+                searchFieldState = searchFieldState,
                 onNavigate = navigate,
                 modifier = Modifier.navColumn()
             )
@@ -295,7 +304,7 @@ object PanoNavGraph {
                 hash = null,
                 key = null,
                 viewModel = mainViewModel,
-                modifier = Modifier.navScrollableColumn()
+                modifier = Modifier.navScrollableColumn(true)
             )
         }
 
@@ -315,7 +324,7 @@ object PanoNavGraph {
                 regexEdit = route.regexEdit,
                 onNavigate = navigate,
                 onBack = goBack,
-                modifier = Modifier.navScrollableColumn()
+                modifier = Modifier.navScrollableColumn(true)
             )
         }
 
@@ -341,6 +350,7 @@ object PanoNavGraph {
 
             onSetTitleRes(route, Res.string.pref_blocked_metadata)
             BlockedMetadatasScreen(
+                searchFieldState = searchFieldState,
                 onNavigate = navigate,
                 modifier = Modifier.navColumn()
             )
@@ -353,6 +363,7 @@ object PanoNavGraph {
             )
 
             ImageSearchScreen(
+                searchFieldState = searchFieldState,
                 onBack = goBack,
                 artist = route.artist,
                 originalArtist = route.originalArtist,
@@ -487,6 +498,7 @@ object PanoNavGraph {
             )
 
             SearchScreen(
+                searchFieldState = searchFieldState,
                 onNavigate = navigate,
                 modifier = Modifier.navColumn()
             )
@@ -569,10 +581,16 @@ object PanoNavGraph {
         }
 
         entry<PanoRoute.Help> { route ->
-            onSetTitleRes(route, Res.string.help)
+            onSetTitleRes(route, Res.string.faq)
+
+            if (route.searchTerm.isNotEmpty()) {
+                LaunchedEffect(Unit) {
+                    searchFieldState.setTextAndPlaceCursorAtEnd(route.searchTerm)
+                }
+            }
 
             HelpScreen(
-                searchTerm = route.searchTerm,
+                searchFieldState = searchFieldState,
                 scrobblerStateFlow = mainViewModel.scrobblerStateFlow,
                 modifier = Modifier.navColumn().padding(panoContentPadding())
             )
@@ -619,7 +637,7 @@ object PanoNavGraph {
             onSetTitleRes(route, Res.string.artist_splitting_exceptions)
 
             ArtistsWithDelimitersScreen(
-                onNavigate = navigate,
+                searchFieldState = searchFieldState,
                 modifier = Modifier.navColumn()
             )
         }
@@ -627,7 +645,6 @@ object PanoNavGraph {
         panoModalNavGraph(
             navigate = navigate,
             goBack = goBack,
-            onSetDrawerData = onSetDrawerData,
             mainViewModel = mainViewModel,
         )
 

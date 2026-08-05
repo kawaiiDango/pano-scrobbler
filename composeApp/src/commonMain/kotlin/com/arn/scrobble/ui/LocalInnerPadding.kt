@@ -28,9 +28,11 @@ private fun Modifier.navBg() = fillMaxSize() then
         }
 
 @Composable
-fun Modifier.navScrollableColumn() = navBg()
+fun Modifier.navScrollableColumn(
+    mayHaveBottomFab: Boolean = false,
+) = navBg()
     .verticalScroll(rememberScrollState())
-    .padding(panoContentPadding())
+    .padding(panoContentPadding(mayHaveBottomFab = mayHaveBottomFab))
     .imePadding()
 
 @Composable

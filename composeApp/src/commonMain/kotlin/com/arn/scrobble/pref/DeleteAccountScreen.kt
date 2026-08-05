@@ -2,6 +2,7 @@ package com.arn.scrobble.pref
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
@@ -32,6 +33,7 @@ fun DeleteAccountScreen(modifier: Modifier = Modifier) {
             style = textStyle,
         )
         OutlinedButton(
+            shapes = ButtonDefaults.shapes(),
             onClick = { PlatformStuff.openInBrowser("https://$lastfmLink") },
         ) {
             Text(text = lastfmLink)
@@ -42,6 +44,7 @@ fun DeleteAccountScreen(modifier: Modifier = Modifier) {
             style = textStyle
         )
         OutlinedButton(
+            shapes = ButtonDefaults.shapes(),
             onClick = { PlatformStuff.openInBrowser("https://$libreLink") },
         ) {
             Text(text = libreLink)
@@ -52,6 +55,7 @@ fun DeleteAccountScreen(modifier: Modifier = Modifier) {
             style = textStyle
         )
         OutlinedButton(
+            shapes = ButtonDefaults.shapes(),
             onClick = { PlatformStuff.openInBrowser("https://$listenBrainzLink") },
         ) {
             Text(text = listenBrainzLink)

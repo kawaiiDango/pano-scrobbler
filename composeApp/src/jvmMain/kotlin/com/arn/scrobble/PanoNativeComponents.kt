@@ -188,7 +188,7 @@ object PanoNativeComponents {
     external fun notify(title: String, body: String)
 
     @JvmStatic
-    external fun setTrayLinux(
+    external fun setTray(
         tooltip: String,
         pngBytes: ByteArray,
         invert: Boolean,

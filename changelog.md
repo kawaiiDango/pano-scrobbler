@@ -1,4 +1,6 @@
 - The Windows installer is now 64-bit
+- Uses the native tray menu on Windows. Does not spin up the entire Compose engine GPU rendering just for the tray menu
 - Pause scrobbling until a specific time
+- UI takes less vertical space
 - Bug fixes
 - Translation updates by the translators on Crowdin

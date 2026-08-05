@@ -16,8 +16,8 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ButtonGroupDefaults
-import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -73,6 +73,7 @@ import com.arn.scrobble.ui.DraggableItem
 import com.arn.scrobble.ui.EmptyText
 import com.arn.scrobble.ui.ListLoadError
 import com.arn.scrobble.ui.MusicEntryListItem
+import com.arn.scrobble.ui.PanoDropdownMenu
 import com.arn.scrobble.ui.PanoLazyColumn
 import com.arn.scrobble.ui.PanoPullToRefreshStateForTab
 import com.arn.scrobble.ui.dragContainer
@@ -407,6 +408,7 @@ fun FriendsScreen(
                             .fillMaxWidth()
                     ) {
                         OutlinedButton(
+                            shapes = ButtonDefaults.shapes(),
                             onClick = {
                                 viewModel.sortByTime(friends.itemSnapshotList.items)
                                 scope.launch { listState.animateScrollToItem(0) }
@@ -567,7 +569,7 @@ private fun FriendItem(
         }
 
         if (detailsShown) {
-            DropdownMenu(
+            PanoDropdownMenu(
                 expanded = true,
                 onDismissRequest = { detailsShown = false },
             ) {

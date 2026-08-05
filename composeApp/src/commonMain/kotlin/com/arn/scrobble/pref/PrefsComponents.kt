@@ -10,10 +10,10 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.selection.toggleable
-import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Slider
 import androidx.compose.material3.SplitButtonDefaults
@@ -45,6 +45,7 @@ import com.arn.scrobble.icons.automirrored.KeyboardArrowRight
 import com.arn.scrobble.navigation.PanoRoute
 import com.arn.scrobble.onboarding.LoginDestinations
 import com.arn.scrobble.ui.AppIcon
+import com.arn.scrobble.ui.PanoDropdownMenu
 import com.arn.scrobble.ui.horizontalOverscanPadding
 import com.arn.scrobble.utils.PlatformStuff
 import kotlinx.coroutines.delay
@@ -221,7 +222,7 @@ fun <T> DropdownPref(
                 )
             }
 
-            DropdownMenu(
+            PanoDropdownMenu(
                 expanded = expanded,
                 onDismissRequest = { expanded = false }
             ) {
@@ -392,6 +393,7 @@ fun SliderPref(
             if (default != null) {
                 IconButton(
                     enabled = enabled && internalValue.roundToInt() != default,
+                    shapes = IconButtonDefaults.shapes(),
                     onClick = {
                         scope.launch { mainPrefs.updateData { it.copyToSave(default) } }
                     }

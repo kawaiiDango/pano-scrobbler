@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.width
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -91,7 +92,7 @@ fun FileLoginScreen(
     ) {
 
         OutlinedToggleButtons(
-            items = FileScrobblable.FileFormat.entries.map { "." + it.name },
+            texts = FileScrobblable.FileFormat.entries.map { "." + it.name },
             selectedIndex = selectedFileFormat?.ordinal ?: -1,
             onSelected = {
                 selectedFileFormat = FileScrobblable.FileFormat.entries[it]
@@ -104,6 +105,7 @@ fun FileLoginScreen(
                 modifier = Modifier.width(IntrinsicSize.Max)
             ) {
                 OutlinedButton(
+                    shapes = ButtonDefaults.shapes(),
                     onClick = {
                         convert = false
                         filePickerMode =
@@ -115,6 +117,7 @@ fun FileLoginScreen(
                 ) { Text(stringResource(Res.string.create)) }
 
                 OutlinedButton(
+                    shapes = ButtonDefaults.shapes(),
                     onClick = {
                         convert = false
                         filePickerMode = FilePickerMode.Open()
@@ -132,6 +135,7 @@ fun FileLoginScreen(
                     }
 
                 OutlinedButton(
+                    shapes = ButtonDefaults.shapes(),
                     onClick = {
                         convert = true
                         filePickerMode = FilePickerMode.Open()

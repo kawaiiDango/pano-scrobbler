@@ -160,6 +160,7 @@ fun ExportScreen(
 
                         mdnsStatus.services.forEach {
                             TextButton(
+                                shapes = ButtonDefaults.shapes(),
                                 onClick = {
                                     confirmed = true
                                     viewModel.exportToServer(it)
@@ -242,7 +243,7 @@ fun ImExportModeSelector(
         )
     } else {
         OutlinedToggleButtons(
-            items = listOf(
+            texts = listOf(
                 stringResource(Res.string.scrobble_to_file),
                 stringResource(Res.string.pref_imexport_network),
             ),

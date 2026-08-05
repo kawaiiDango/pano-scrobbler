@@ -7,9 +7,9 @@ import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material3.AssistChip
 import androidx.compose.material3.Icon
 import androidx.compose.material3.InputChip
+import androidx.compose.material3.InputChipDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -164,6 +164,7 @@ fun RegexEditsTestScreen(
                         contentDescription = stringResource(Res.string.add)
                     )
                 },
+                shapes = InputChipDefaults.shapes(),
                 selected = false,
             )
         }
@@ -230,7 +231,9 @@ fun RegexEditsTestScreen(
                         Text(stringResource(Res.string.edit_regex_rules_matched))
 
                         matchedRegexEdits.forEach { regexEdit ->
-                            AssistChip(
+                            InputChip(
+                                selected = false,
+                                shapes = InputChipDefaults.shapes(),
                                 onClick = {
                                     onNavigateToRegexEditsAdd(regexEdit)
                                 },

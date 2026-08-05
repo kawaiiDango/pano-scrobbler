@@ -15,11 +15,13 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.material3.FilledTonalIconToggleButton
 import androidx.compose.material3.FilterChip
+import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconToggleButtonShapes
+import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.ToggleButtonDefaults
@@ -34,8 +36,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import com.arn.scrobble.BuildKonfig
 import com.arn.scrobble.billing.LocalLicenseValidState
 import com.arn.scrobble.icons.Casino
 import com.arn.scrobble.icons.Check
@@ -46,7 +48,6 @@ import com.arn.scrobble.pref.MainPrefs
 import com.arn.scrobble.pref.SliderPref
 import com.arn.scrobble.themes.colors.ThemeVariants
 import com.arn.scrobble.ui.ButtonWithIcon
-import com.arn.scrobble.ui.LabeledCheckbox
 import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff.collectAsStateWithInitialValue
 import kotlinx.coroutines.launch
@@ -86,6 +87,7 @@ fun ThemeChooserScreen(
     val blurSubWindow by PlatformStuff.mainPrefs.data.collectAsStateWithInitialValue { it.themeBlurSubWindow }
     val isAppInNightMode = LocalThemeAttributes.current.isDark
     val scope = rememberCoroutineScope()
+    val enableAlpha = false // todo testing only
 
     fun save(block: MainPrefs.() -> MainPrefs) {
         scope.launch {
@@ -126,6 +128,7 @@ fun ThemeChooserScreen(
         FlowRow(
             horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterHorizontally),
             verticalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterVertically),
+            itemVerticalAlignment = Alignment.CenterVertically,
             modifier = Modifier
                 .fillMaxWidth()
         ) {
@@ -188,6 +191,7 @@ fun ThemeChooserScreen(
                     label = { it.Label() },
                     selected = dayNightMode == it,
                     enabled = isLicenseValid,
+                    shapes = FilterChipDefaults.shapes(),
                     onClick = {
                         save {
                             copy(themeDayNight = it)
@@ -214,6 +218,7 @@ fun ThemeChooserScreen(
                     label = { it.Label() },
                     enabled = !dynamic && isLicenseValid,
                     selected = contrastMode == it,
+                    shapes = FilterChipDefaults.shapes(),
                     onClick = {
                         save {
                             copy(themeContrast = it)
@@ -223,9 +228,7 @@ fun ThemeChooserScreen(
             }
         }
 
-        if (BuildKonfig.DEBUG && !PlatformStuff.isTv) {
-            // looks ass right now
-
+        if (enableAlpha && !PlatformStuff.isTv) {
             if (PlatformStuff.supportsBlur) {
                 Column(
                     modifier = Modifier
@@ -243,29 +246,50 @@ fun ThemeChooserScreen(
                             modifier = Modifier.padding(end = 16.dp)
                         )
 
-                        LabeledCheckbox(
-                            text = stringResource(Res.string.blur_main_window),
-                            maxLines = 1,
-                            checked = blurMainWindow,
+                        FilterChip(
+                            label = { Text(stringResource(Res.string.blur_main_window)) },
+                            selected = blurMainWindow,
                             enabled = isLicenseValid,
-                            onCheckedChange = {
+                            leadingIcon = if (blurMainWindow) {
+                                {
+                                    Icon(
+                                        imageVector = Icons.Check,
+                                        contentDescription = null
+                                    )
+                                }
+                            } else null,
+                            shapes = FilterChipDefaults.shapes(),
+                            onClick = {
+                                val newState = !blurMainWindow
                                 save {
                                     copy(
-                                        themeBlurMainWindow = it,
-                                        themeAlpha = if (themeAlpha == 1f) MainPrefs.PREF_MID_ALPHA else themeAlpha
+                                        themeBlurMainWindow = newState,
+                                        themeAlpha = if (themeAlpha == 1f && newState)
+                                            MainPrefs.PREF_MID_ALPHA
+                                        else
+                                            themeAlpha
                                     )
                                 }
                             },
                         )
 
-                        LabeledCheckbox(
-                            text = stringResource(Res.string.blur_sub_window),
-                            maxLines = 1,
-                            checked = blurSubWindow,
+                        FilterChip(
+                            label = { Text(stringResource(Res.string.blur_sub_window)) },
+                            selected = blurSubWindow,
                             enabled = isLicenseValid,
-                            onCheckedChange = {
+                            leadingIcon = if (blurSubWindow) {
+                                {
+                                    Icon(
+                                        imageVector = Icons.Check,
+                                        contentDescription = null
+                                    )
+                                }
+                            } else null,
+                            shapes = FilterChipDefaults.shapes(),
+                            onClick = {
+                                val newState = !blurSubWindow
                                 save {
-                                    copy(themeBlurSubWindow = it)
+                                    copy(themeBlurSubWindow = newState)
                                 }
                             },
                         )
@@ -354,13 +378,9 @@ private fun ThemeSwatch(
 
     FilledTonalIconToggleButton(
         checked = selected,
+        shapes = IconButtonDefaults.toggleableShapes(),
         onCheckedChange = { onClick() },
         interactionSource = interactionSource,
-        shapes = IconToggleButtonShapes(
-            toggleButtonShapes.shape,
-            toggleButtonShapes.pressedShape,
-            toggleButtonShapes.checkedShape
-        ),
         enabled = enabled,
         modifier = modifier
             .size(72.dp)
@@ -434,7 +454,13 @@ private fun ThemeSwatchLikeButton(
                 contentDescription = null
             )
             Spacer(modifier = Modifier.height(4.dp))
-            Text(text = text, style = MaterialTheme.typography.labelSmall)
+            Text(
+                text = text,
+                maxLines = 2,
+                textAlign = TextAlign.Center,
+                style = MaterialTheme.typography.labelSmall,
+                modifier = Modifier.widthIn(max = 96.dp)
+            )
         }
     }
 }

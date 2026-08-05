@@ -16,11 +16,6 @@ import kotlinx.coroutines.withContext
 class SimpleEditsVM : ViewModel() {
     private val dao = PanoDb.db.getSimpleEditsDao()
     private val _searchTerm = MutableStateFlow("")
-    val count = dao.count().stateIn(
-        viewModelScope,
-        SharingStarted.Lazily,
-        0
-    )
     private var inited = false
     val simpleEditsFiltered = _searchTerm
         .debounce {

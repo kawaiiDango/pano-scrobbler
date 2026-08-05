@@ -44,7 +44,6 @@ import kotlinx.coroutines.launch
 fun EntryProviderScope<PanoRoute>.panoModalNavGraph(
     navigate: (PanoRoute) -> Unit,
     goBack: () -> Unit,
-    onSetDrawerData: (DrawerData) -> Unit,
     mainViewModel: MainViewModel,
 ) {
     modalEntry<PanoRoute.Modal.NavPopup> { route ->
@@ -54,39 +53,43 @@ fun EntryProviderScope<PanoRoute>.panoModalNavGraph(
             PlatformStuff.mainPrefs.data
                 .collectAsStateWithInitialValue { it.currentAccount?.user }
 
+        val currentUser = user
+
         NavPopupDialog(
-            user = user ?: return@modalEntry,
-            initialDrawerData = route.initialDrawerData,
+            user = currentUser ?: return@modalEntry,
+            initialDrawerData = mainViewModel.drawerDataMap.getOrElse(currentUser) { DrawerData(0) },
             drawSnowfall = mainViewModel.isItChristmas,
-            onSetDrawerData = onSetDrawerData,
+            onSetDrawerData = {
+                mainViewModel.drawerDataMap[currentUser] = it
+            },
             onNavigate = navigate,
-            modifier = Modifier.modalModifier()
+            modifier = Modifier.fillMaxWidth()
         )
     }
 
     modalEntry<PanoRoute.Modal.Changelog> { route ->
         ChangelogDialog(
             text = route.text,
-            modifier = Modifier.modalModifier()
+            modifier = Modifier.navModal()
         )
     }
 
     modalEntry<PanoRoute.Modal.ChartsLegend> {
         ChartsLegendDialog(
-            modifier = Modifier.modalModifier()
+            modifier = Modifier.navModal()
         )
     }
 
     modalEntry<PanoRoute.Modal.UpdateAvailable> { route ->
         UpdateAvailableDialog(
             updateAction = route.updateAction,
-            modifier = Modifier.modalModifier()
+            modifier = Modifier.navModal()
         )
     }
 
     modalEntry<PanoRoute.Modal.HiddenTags> {
         HiddenTagsDialog(
-            modifier = Modifier.modalModifier()
+            modifier = Modifier.navModal()
         )
     }
 
@@ -100,7 +103,7 @@ fun EntryProviderScope<PanoRoute>.panoModalNavGraph(
             onAskForReview = {
                 VariantStuff.reviewPrompter.showIfNeeded(activity)
             },
-            modifier = Modifier.modalModifier()
+            modifier = Modifier.navModal()
         )
     }
 
@@ -112,7 +115,7 @@ fun EntryProviderScope<PanoRoute>.panoModalNavGraph(
             user = route.user,
             onNavigate = navigate,
             scrollState = scrollState,
-            modifier = Modifier.modalModifier(padding = false)
+            modifier = Modifier.navModal(padding = false)
         )
     }
 
@@ -121,26 +124,26 @@ fun EntryProviderScope<PanoRoute>.panoModalNavGraph(
         TagInfoDialog(
             tag = route.tag,
             scrollState = scrollState,
-            modifier = Modifier.modalModifier()
+            modifier = Modifier.navModal()
         )
     }
 
     modalEntry<PanoRoute.Modal.ShowLink> { route ->
         ShowLinkDialog(
             url = route.url,
-            modifier = Modifier.modalModifier(),
+            modifier = Modifier.navModal(),
         )
     }
 
     modalEntry<PanoRoute.Modal.MediaSearchPref> {
         MediaSearchPrefDialog(
-            modifier = Modifier.modalModifier(),
+            modifier = Modifier.navModal(),
         )
     }
 
     modalEntry<PanoRoute.Modal.ProxyPref> {
         ProxyPrefDialog(
-            modifier = Modifier.modalModifier(),
+            modifier = Modifier.navModal(),
         )
     }
 
@@ -153,7 +156,7 @@ fun EntryProviderScope<PanoRoute>.panoModalNavGraph(
             onNavigateToBilling = {
                 navigate(PanoRoute.Billing)
             },
-            modifier = Modifier.modalModifier()
+            modifier = Modifier.navModal()
         )
     }
 
@@ -191,7 +194,7 @@ fun EntryProviderScope<PanoRoute>.panoModalNavGraph(
             },
             // this viewmodel should be scoped to the main viewmodel store owner
             viewModel = mainViewModel,
-            modifier = Modifier.modalModifier()
+            modifier = Modifier.navModal()
         )
     }
 
@@ -244,7 +247,7 @@ fun EntryProviderScope<PanoRoute>.panoModalNavGraph(
 
 
 @Composable
-fun Modifier.modalModifier(
+fun Modifier.navModal(
     padding: Boolean = true,
     scrollState: ScrollState = rememberScrollState()
 ) = fillMaxWidth()

@@ -20,7 +20,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material3.AssistChip
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuAnchorType
@@ -29,6 +28,7 @@ import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.InputChip
+import androidx.compose.material3.InputChipDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -571,12 +571,14 @@ private fun ColumnScope.InfoTags(
         modifier = modifier
     ) {
         tags.forEach { tag ->
-            AssistChip(
+            InputChip(
+                selected = false,
                 label = {
                     Text(
                         text = tag.name,
                     )
                 },
+                shapes = InputChipDefaults.shapes(),
                 onClick = { onTagClick(tag) }
             )
         }
@@ -595,6 +597,7 @@ private fun ColumnScope.InfoTags(
                         contentDescription = stringResource(Res.string.delete),
                     )
                 },
+                shapes = InputChipDefaults.shapes(),
                 onClick = { onUserTagDelete(tagName) },
             )
         }

@@ -8,7 +8,7 @@ import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.aspectRatio
@@ -17,10 +17,10 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedIconToggleButton
 import androidx.compose.material3.Text
@@ -54,6 +54,7 @@ import com.arn.scrobble.icons.PlayArrow
 import com.arn.scrobble.icons.Today
 import com.arn.scrobble.icons.automirrored.Help
 import com.arn.scrobble.ui.AvatarOrInitials
+import com.arn.scrobble.ui.PanoDropdownMenu
 import com.arn.scrobble.ui.TextWithIcon
 import com.arn.scrobble.ui.accountTypeLabel
 import com.arn.scrobble.ui.drawSnowflake
@@ -75,13 +76,12 @@ import pano_scrobbler.composeapp.generated.resources.reports
 
 
 @Composable
-fun ProfileHeader(
+fun ColumnScope.ProfileHeader(
     user: UserCached?,
     drawerData: DrawerData?,
     compact: Boolean,
     drawSnowfall: Boolean,
     onNavigate: (PanoRoute) -> Unit,
-    modifier: Modifier = Modifier,
 ) {
     val currentAccountType by
     PlatformStuff.mainPrefs.data.collectAsStateWithInitialValue { it.currentAccountType }
@@ -97,172 +97,169 @@ fun ProfileHeader(
 
     val profilePicUrl by remember(user) { mutableStateOf(user?.largeImage) }
 
-    Column(
-        horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = modifier
-    ) {
-        if (compact) {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceBetween,
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                AvatarOrInitials(
-                    avatarUrl = profilePicUrl,
-                    avatarName = userName,
-                    modifier = Modifier
-                        .padding(8.dp)
-                        .size(48.dp)
-                        .clip(CircleShape)
-                )
-
-                Text(
-                    text = displayText,
-                    style = MaterialTheme.typography.titleMedium,
-                    maxLines = 2,
-                    modifier = Modifier.weight(1f)
-                )
-
-                if (user?.isSelf == true) {
-                    ProfileHeaderDropdown(
-                        currentUser = user,
-                        accountType = currentAccountType,
-                        onNavigate = onNavigate,
-                    )
-                }
-            }
-
-        } else {
+    if (compact) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween,
+            modifier = Modifier.fillMaxWidth()
+        ) {
             AvatarOrInitials(
                 avatarUrl = profilePicUrl,
                 avatarName = userName,
-                textStyle = MaterialTheme.typography.displayLarge,
                 modifier = Modifier
-                    .heightIn(max = 240.dp)
-                    .aspectRatio(1f, true)
-                    .clip(MaterialTheme.shapes.large)
-                    .then(
-                        if (drawSnowfall) {
-                            val snowflakes = remember { List(25) { generateRandomSnowflake() } }
-                            val infiniteTransition =
-                                rememberInfiniteTransition(label = "SnowfallTransition")
-                            var size by remember { mutableStateOf(IntSize.Zero) }
-                            val offsetY by infiniteTransition.animateFloat(
-                                initialValue = 0f,
-                                targetValue = 1000f,
-                                animationSpec = infiniteRepeatable(
-                                    animation = tween(
-                                        durationMillis = 60000,
-                                        easing = LinearEasing
-                                    ),
-                                    repeatMode = RepeatMode.Restart
-                                ),
-                                label = "Snowfall"
-                            )
-
-                            Modifier
-                                .onSizeChanged {
-                                    size = it
-                                }
-                                .drawWithContent {
-                                    drawContent()
-                                    snowflakes.forEach { snowflake ->
-                                        drawSnowflake(
-                                            snowflake,
-                                            offsetY % size.height,
-                                            size.width,
-                                            size.height
-                                        )
-                                    }
-                                }
-                        } else
-                            Modifier
-                    )
+                    .padding(8.dp)
+                    .size(48.dp)
+                    .clip(CircleShape)
             )
 
+            Text(
+                text = displayText,
+                style = MaterialTheme.typography.titleMedium,
+                maxLines = 2,
+                modifier = Modifier.weight(1f)
+            )
 
-            Row(
-                horizontalArrangement = Arrangement.SpaceEvenly,
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier
-                    .align(Alignment.CenterHorizontally)
-                    .padding(vertical = 8.dp)
-            ) {
-
-                Text(
-                    text = displayText,
-                    style = MaterialTheme.typography.titleLargeEmphasized,
-                    color = MaterialTheme.colorScheme.primary,
-                    maxLines = 1,
-                    overflow = TextOverflow.MiddleEllipsis,
-                    textAlign = TextAlign.End,
-                    modifier = Modifier
-                        .weight(1f, false)
+            if (user?.isSelf == true) {
+                ProfileHeaderDropdown(
+                    currentUser = user,
+                    accountType = currentAccountType,
+                    onNavigate = onNavigate,
                 )
-
-                if (user?.isSelf == true) {
-                    ProfileHeaderDropdown(
-                        currentUser = user,
-                        accountType = currentAccountType,
-                        onNavigate = onNavigate,
-                    )
-                }
-
-                if (drawerData != null && drawerData.scrobblesToday > 0) {
-                    TextWithIcon(
-                        icon = Icons.Today,
-                        text = pluralStringResource(
-                            Res.plurals.num_scrobbles_today,
-                            drawerData.scrobblesToday,
-                            drawerData.scrobblesToday.format()
-                        ),
-                        style = MaterialTheme.typography.bodyMedium,
-                        modifier = Modifier
-                            .padding(horizontal = 8.dp)
-                            .weight(1f, false)
-                    )
-                }
             }
         }
 
-        drawerData?.let { drawerData ->
-            FlowRow(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(16.dp, Alignment.CenterHorizontally),
-                verticalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
+    } else {
+        AvatarOrInitials(
+            avatarUrl = profilePicUrl,
+            avatarName = userName,
+            textStyle = MaterialTheme.typography.displayLarge,
+            modifier = Modifier
+                .align(Alignment.CenterHorizontally)
+                .heightIn(min = 24.dp, max = 240.dp)
+                .weight(1f, fill = false)
+                .aspectRatio(1f, true)
+                .clip(MaterialTheme.shapes.large)
+                .then(
+                    if (drawSnowfall) {
+                        val snowflakes = remember { List(25) { generateRandomSnowflake() } }
+                        val infiniteTransition =
+                            rememberInfiniteTransition(label = "SnowfallTransition")
+                        var size by remember { mutableStateOf(IntSize.Zero) }
+                        val offsetY by infiniteTransition.animateFloat(
+                            initialValue = 0f,
+                            targetValue = 1000f,
+                            animationSpec = infiniteRepeatable(
+                                animation = tween(
+                                    durationMillis = 60000,
+                                    easing = LinearEasing
+                                ),
+                                repeatMode = RepeatMode.Restart
+                            ),
+                            label = "Snowfall"
+                        )
 
-                if (drawerData.scrobblesTotal > 0) {
-                    TextWithIcon(
-                        icon = Icons.PlayArrow,
-                        text = drawerData.scrobblesTotal.format(),
-                        style = MaterialTheme.typography.bodyMedium
-                    )
-                }
+                        Modifier
+                            .onSizeChanged {
+                                size = it
+                            }
+                            .drawWithContent {
+                                drawContent()
+                                snowflakes.forEach { snowflake ->
+                                    drawSnowflake(
+                                        snowflake,
+                                        offsetY % size.height,
+                                        size.width,
+                                        size.height
+                                    )
+                                }
+                            }
+                    } else
+                        Modifier
+                )
+        )
 
-                if (drawerData.artistCount > 0) {
-                    TextWithIcon(
-                        icon = Icons.Mic,
-                        text = drawerData.artistCount.format(),
-                        style = MaterialTheme.typography.bodyMedium
-                    )
-                }
 
-                if (drawerData.albumCount > 0) {
-                    TextWithIcon(
-                        icon = Icons.Album,
-                        text = drawerData.albumCount.format(),
-                        style = MaterialTheme.typography.bodyMedium
-                    )
-                }
+        Row(
+            horizontalArrangement = Arrangement.SpaceEvenly,
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier
+                .align(Alignment.CenterHorizontally)
+                .padding(vertical = 8.dp)
+        ) {
 
-                if (drawerData.trackCount > 0) {
-                    TextWithIcon(
-                        icon = Icons.MusicNote,
-                        text = drawerData.trackCount.format(),
-                        style = MaterialTheme.typography.bodyMedium
-                    )
-                }
+            Text(
+                text = displayText,
+                style = MaterialTheme.typography.titleLargeEmphasized,
+                color = MaterialTheme.colorScheme.primary,
+                maxLines = 1,
+                overflow = TextOverflow.MiddleEllipsis,
+                textAlign = TextAlign.End,
+                modifier = Modifier
+                    .weight(1f, false)
+            )
+
+            if (user?.isSelf == true) {
+                ProfileHeaderDropdown(
+                    currentUser = user,
+                    accountType = currentAccountType,
+                    onNavigate = onNavigate,
+                )
+            }
+
+            if (drawerData != null && drawerData.scrobblesToday > 0) {
+                TextWithIcon(
+                    icon = Icons.Today,
+                    text = pluralStringResource(
+                        Res.plurals.num_scrobbles_today,
+                        drawerData.scrobblesToday,
+                        drawerData.scrobblesToday.format()
+                    ),
+                    style = MaterialTheme.typography.bodyMedium,
+                    modifier = Modifier
+                        .padding(horizontal = 8.dp)
+                        .weight(1f, false)
+                )
+            }
+        }
+    }
+
+    drawerData?.let { drawerData ->
+        FlowRow(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(16.dp, Alignment.CenterHorizontally),
+            verticalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+
+            if (drawerData.scrobblesTotal > 0) {
+                TextWithIcon(
+                    icon = Icons.PlayArrow,
+                    text = drawerData.scrobblesTotal.format(),
+                    style = MaterialTheme.typography.bodyMedium
+                )
+            }
+
+            if (drawerData.artistCount > 0) {
+                TextWithIcon(
+                    icon = Icons.Mic,
+                    text = drawerData.artistCount.format(),
+                    style = MaterialTheme.typography.bodyMedium
+                )
+            }
+
+            if (drawerData.albumCount > 0) {
+                TextWithIcon(
+                    icon = Icons.Album,
+                    text = drawerData.albumCount.format(),
+                    style = MaterialTheme.typography.bodyMedium
+                )
+            }
+
+            if (drawerData.trackCount > 0) {
+                TextWithIcon(
+                    icon = Icons.MusicNote,
+                    text = drawerData.trackCount.format(),
+                    style = MaterialTheme.typography.bodyMedium
+                )
             }
         }
     }
@@ -289,6 +286,7 @@ fun ProfileHeaderDropdown(
         modifier = modifier
     ) {
         OutlinedIconToggleButton(
+            shapes = IconButtonDefaults.toggleableShapes(),
             checked = dropDownShown,
             onCheckedChange = { dropDownShown = it },
         ) {
@@ -297,7 +295,7 @@ fun ProfileHeaderDropdown(
                 contentDescription = stringResource(Res.string.item_options)
             )
         }
-        DropdownMenu(
+        PanoDropdownMenu(
             expanded = dropDownShown,
             onDismissRequest = { dropDownShown = false },
         ) {

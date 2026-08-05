@@ -1,27 +1,13 @@
 package com.arn.scrobble.recents
 
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.material3.ButtonGroupDefaults
-import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
-import androidx.compose.material3.OutlinedToggleButton
-import androidx.compose.material3.PlainTooltip
 import androidx.compose.material3.Text
-import androidx.compose.material3.ToggleButtonDefaults
-import androidx.compose.material3.TooltipAnchorPosition
-import androidx.compose.material3.TooltipBox
-import androidx.compose.material3.TooltipDefaults
 import androidx.compose.material3.pulltorefresh.PullToRefreshState
-import androidx.compose.material3.rememberTooltipState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
@@ -33,7 +19,6 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.LifecycleResumeEffect
@@ -52,23 +37,20 @@ import com.arn.scrobble.charts.TimePeriodsGenerator
 import com.arn.scrobble.charts.getPeriodTypeIcon
 import com.arn.scrobble.charts.getPeriodTypePluralRes
 import com.arn.scrobble.db.PendingScrobble
-import com.arn.scrobble.icons.ArrowDropDown
-import com.arn.scrobble.icons.Casino
-import com.arn.scrobble.icons.Favorite
-import com.arn.scrobble.icons.History
 import com.arn.scrobble.icons.HourglassEmpty
 import com.arn.scrobble.icons.Icons
-import com.arn.scrobble.icons.Refresh
 import com.arn.scrobble.main.PanoPullToRefresh
 import com.arn.scrobble.main.ScrobblerState
 import com.arn.scrobble.navigation.DatePickerResult
 import com.arn.scrobble.navigation.PanoRoute
+import com.arn.scrobble.navigation.PanoTab
+import com.arn.scrobble.navigation.SubTabClickedResult
 import com.arn.scrobble.ui.AutoRefreshEffect
 import com.arn.scrobble.ui.DismissableNotice
 import com.arn.scrobble.ui.EmptyText
+import com.arn.scrobble.ui.PanoDropdownMenu
 import com.arn.scrobble.ui.PanoLazyColumn
 import com.arn.scrobble.ui.PanoPullToRefreshStateForTab
-import com.arn.scrobble.ui.combineImageVectors
 import com.arn.scrobble.utils.PanoTimeFormatter
 import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff
@@ -90,25 +72,17 @@ import pano_scrobbler.composeapp.generated.resources.loved
 import pano_scrobbler.composeapp.generated.resources.no_scrobbles
 import pano_scrobbler.composeapp.generated.resources.not_running
 import pano_scrobbler.composeapp.generated.resources.pending_scrobbles
-import pano_scrobbler.composeapp.generated.resources.random_text
 import pano_scrobbler.composeapp.generated.resources.recents
-import pano_scrobbler.composeapp.generated.resources.reload
 import pano_scrobbler.composeapp.generated.resources.scrobbler_off
 import pano_scrobbler.composeapp.generated.resources.scrobbles
 import pano_scrobbler.composeapp.generated.resources.time_jump
 import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.Duration.Companion.seconds
 
-private enum class ScrobblesType {
-    RECENTS,
-    LOVED,
-    TIME_JUMP,
-}
 
 @Composable
 fun ScrobblesScreen(
     user: UserCached,
-    showChips: Boolean,
     pullToRefreshState: PullToRefreshState,
     onSetRefreshing: (PanoPullToRefreshStateForTab) -> Unit,
     pullToRefreshTriggered: () -> Flow<Unit>,
@@ -117,11 +91,12 @@ fun ScrobblesScreen(
     editDataFlow: Flow<Pair<String, Track>>,
     scrobblerStateFlow: StateFlow<ScrobblerState>,
     updateScrobblerState: () -> Unit,
+    selectSubTabId: (Int) -> Unit,
     modifier: Modifier = Modifier,
     viewModel: ScrobblesVM = viewModel(key = user.key<ScrobblesVM>()) { ScrobblesVM(user, null) },
 ) {
     val listState = rememberLazyListState()
-    var selectedType by rememberSaveable { mutableStateOf(ScrobblesType.RECENTS) }
+    var selectedType by rememberSaveable { mutableStateOf(PanoTab.Scrobbles.ScrobblesType.RECENTS) }
     var timeJumpMillis by rememberSaveable { mutableStateOf<Long?>(null) }
     val tracks = viewModel.tracks.collectAsLazyPagingItems()
     val firstPageLoadedTime by viewModel.firstPageLoadedTime.collectAsStateWithLifecycle()
@@ -147,6 +122,7 @@ fun ScrobblesScreen(
     var pendingScrobblesExpanded by rememberSaveable { mutableStateOf(false) }
     var expandedKey by rememberSaveable { mutableStateOf<String?>(null) }
     var canExpandNowPlaying by rememberSaveable { mutableStateOf(true) }
+    var timeJumpMenuShown by rememberSaveable { mutableStateOf(false) }
     val pendingScrobblesHeader =
         stringResource(Res.string.pending_scrobbles) + ": " + pendingScrobblesCount
     val canLove = accountType != AccountType.PLEROMA
@@ -168,7 +144,7 @@ fun ScrobblesScreen(
     val canEditOrDelete by remember(selectedType, accountType) {
         mutableStateOf(
             !PlatformStuff.isTv &&
-                    selectedType != ScrobblesType.LOVED &&
+                    selectedType != PanoTab.Scrobbles.ScrobblesType.LOVED &&
                     accountType !in arrayOf(AccountType.FILE, AccountType.PLEROMA)
         )
     }
@@ -178,9 +154,15 @@ fun ScrobblesScreen(
         onNavigate(PanoRoute.Modal.MusicEntryInfo(user = user, track = track, appId = appId))
     }
 
-    LaunchedEffect(user, selectedType, timeJumpMillis, total) {
+    LaunchedEffect(user, selectedType, timeJumpMillis, total, timeJumpMenuShown) {
+        if (timeJumpMenuShown) {
+            onTitleChange(getString(Res.string.time_jump))
+            selectSubTabId(PanoTab.Scrobbles.ScrobblesType.TIME_JUMP.ordinal)
+            return@LaunchedEffect
+        }
+
         when (selectedType) {
-            ScrobblesType.LOVED -> {
+            PanoTab.Scrobbles.ScrobblesType.LOVED -> {
                 viewModel.setScrobblesInput(
                     ScrobblesInput(
                         showScrobbleSources = showScrobbleSources,
@@ -196,10 +178,13 @@ fun ScrobblesScreen(
                                 ""
                 )
                 expandedKey = null
+                selectSubTabId(selectedType.ordinal)
             }
 
-            ScrobblesType.TIME_JUMP -> {
-                if (timeJumpMillis != null)
+            PanoTab.Scrobbles.ScrobblesType.TIME_JUMP -> {
+                val timeJumpMillis = timeJumpMillis
+
+                if (timeJumpMillis != null) {
                     viewModel.setScrobblesInput(
                         ScrobblesInput(
                             showScrobbleSources = showScrobbleSources,
@@ -207,24 +192,27 @@ fun ScrobblesScreen(
                         )
                     )
 
-                onTitleChange(getString(Res.string.time_jump))
+                    onTitleChange(PanoTimeFormatter.day(timeJumpMillis))
+                } else
+                    onTitleChange(getString(Res.string.time_jump))
                 expandedKey = null
+                selectSubTabId(selectedType.ordinal)
             }
 
-            ScrobblesType.RECENTS -> {
+            PanoTab.Scrobbles.ScrobblesType.RECENTS -> {
                 viewModel.setScrobblesInput(
                     ScrobblesInput(showScrobbleSources = showScrobbleSources)
                 )
 
-                onTitleChange(
-                    getString(Res.string.scrobbles) +
-                            if (total != null)
-                                ": " + total!!.format()
-                            else
-                                ""
-                )
+                if (total != null)
+                    onTitleChange(getString(Res.string.scrobbles) + ": " + total!!.format())
+                else
+                    onTitleChange(getString(Res.string.recents))
                 canExpandNowPlaying = true
+                selectSubTabId(selectedType.ordinal)
             }
+
+            else -> {}
         }
     }
 
@@ -296,7 +284,7 @@ fun ScrobblesScreen(
         firstPageLoadedTime = firstPageLoadedTime,
         interval = Stuff.RECENTS_REFRESH_INTERVAL_S.seconds,
         doRefresh = {
-            if (selectedType == ScrobblesType.RECENTS && listState.firstVisibleItemIndex < 4) {
+            if (selectedType == PanoTab.Scrobbles.ScrobblesType.RECENTS && listState.firstVisibleItemIndex < 4) {
                 tracks.refresh()
                 true
             } else {
@@ -311,6 +299,48 @@ fun ScrobblesScreen(
         editDataFlow
     )
 
+    ResultEffect<SubTabClickedResult> { res ->
+        when (res.id) {
+            PanoTab.Scrobbles.ScrobblesType.REFRESH.ordinal -> {
+                if (tracks.loadState.refresh is LoadState.NotLoading) {
+                    tracks.refresh()
+                    scope.launch {
+                        listState.animateScrollToItem(0)
+                    }
+                }
+            }
+
+            PanoTab.Scrobbles.ScrobblesType.RECENTS.ordinal -> {
+                selectedType = PanoTab.Scrobbles.ScrobblesType.RECENTS
+                timeJumpMillis = null
+                scope.launch {
+                    listState.animateScrollToItem(0)
+                }
+            }
+
+            PanoTab.Scrobbles.ScrobblesType.LOVED.ordinal -> {
+                selectedType = PanoTab.Scrobbles.ScrobblesType.LOVED
+                timeJumpMillis = null
+                scope.launch {
+                    listState.animateScrollToItem(0)
+                }
+            }
+
+            PanoTab.Scrobbles.ScrobblesType.TIME_JUMP.ordinal -> {
+                timeJumpMenuShown = true
+            }
+
+            PanoTab.Scrobbles.ScrobblesType.RANDOM.ordinal -> {
+                onNavigate(PanoRoute.Random(user))
+            }
+        }
+    }
+
+    ResultEffect<DatePickerResult> { res ->
+        selectedType = PanoTab.Scrobbles.ScrobblesType.TIME_JUMP
+        timeJumpMillis = res.dateMillis.timeToLocal().plus((24 * 60 * 60 - 1) * 1000)
+    }
+
     PanoPullToRefresh(
         isRefreshing = tracks.loadState.refresh is LoadState.Loading,
         state = pullToRefreshState,
@@ -322,373 +352,202 @@ fun ScrobblesScreen(
             text = stringResource(Res.string.no_scrobbles)
         )
 
-        Column(
-            modifier = modifier,
-            verticalArrangement = Arrangement.spacedBy(8.dp, Alignment.Top)
-        ) {
-            if (showChips) {
-                ScrobblesTypeSelector(
-                    selectedType = selectedType,
+        if (timeJumpMenuShown) {
+            Box(modifier = Modifier.align(Alignment.TopCenter)) {
+                TimeJumpMenu(
                     timeJumpMillis = timeJumpMillis,
                     registeredTime = user.registeredTime,
-                    onTypeSelected = { type, timeJumpMillisp ->
-                        when (type) {
-                            ScrobblesType.RECENTS,
-                            ScrobblesType.LOVED,
-                                -> {
-                                selectedType = type
-                                timeJumpMillis = null
-                            }
-
-                            ScrobblesType.TIME_JUMP -> {
-                                timeJumpMillis = timeJumpMillisp
-                                selectedType = type
-                            }
-                        }
-
-                        scope.launch {
-                            listState.animateScrollToItem(0)
-                        }
-                    },
-                    onRefresh = {
-                        if (tracks.loadState.refresh is LoadState.NotLoading) {
-                            tracks.refresh()
-                        }
-                    },
-                    onNavigateToRandom = {
-                        onNavigate(PanoRoute.Random(user))
-                    },
                     onNavigate = onNavigate,
-                    modifier = Modifier.fillMaxWidth()
+                    onDismiss = { timeJumpMenuShown = false },
+                    onTimeJumpSelected = {
+                        selectedType = PanoTab.Scrobbles.ScrobblesType.TIME_JUMP
+                        timeJumpMillis = it
+                    },
                 )
             }
+        }
 
-            PanoLazyColumn(
-                state = listState,
-                modifier = Modifier.fillMaxWidth().weight(1f)
-            ) {
+        PanoLazyColumn(
+            state = listState,
+            modifier = modifier
+        ) {
 
-                if (user.isSelf) {
-                    when (val scrobblerState = scrobblerState) {
-                        ScrobblerState.Disabled, ScrobblerState.NLSDisabled -> {
+            if (user.isSelf) {
+                when (val scrobblerState = scrobblerState) {
+                    ScrobblerState.Disabled, ScrobblerState.NLSDisabled -> {
+                        item("notice") {
+                            val innerScope = rememberCoroutineScope()
+                            DismissableNotice(
+                                title = stringResource(Res.string.scrobbler_off),
+                                onClick = {
+                                    updateScrobblerState()
+
+                                    innerScope.launch {
+                                        delay(500.milliseconds)
+                                        if (scrobblerState == ScrobblerState.Disabled)
+                                            onNavigate(PanoRoute.Prefs)
+                                        else
+                                            onNavigate(PanoRoute.Onboarding)
+
+                                    }
+                                },
+                                modifier = Modifier.animateItem()
+                            )
+                        }
+                    }
+
+                    is ScrobblerState.Killed -> {
+                        item("notice") {
+                            DismissableNotice(
+                                title = stringResource(Res.string.not_running) + ": " +
+                                        scrobblerState.reason?.shortText().orEmpty(),
+                                onClick = { onNavigate(PanoRoute.Modal.FixIt(scrobblerState.reason)) },
+                                modifier = Modifier.animateItem()
+                            )
+                        }
+                    }
+
+                    ScrobblerState.Unknown,
+                    ScrobblerState.Running -> {
+                        // todo remove canEditOrDelete
+                        if (!otherPlatformsLearnt && canEditOrDelete && !PlatformStuff.isTv && !PlatformStuff.isDesktop) {
                             item("notice") {
-                                val innerScope = rememberCoroutineScope()
                                 DismissableNotice(
-                                    title = stringResource(Res.string.scrobbler_off),
+                                    title = stringResource(
+                                        Res.string.also_available_on,
+                                        stringResource(Res.string.desktop)
+                                    ),
                                     onClick = {
-                                        updateScrobblerState()
-
-                                        innerScope.launch {
-                                            delay(500.milliseconds)
-                                            if (scrobblerState == ScrobblerState.Disabled)
-                                                onNavigate(PanoRoute.Prefs)
-                                            else
-                                                onNavigate(PanoRoute.Onboarding)
-
+                                        onNavigate(PanoRoute.Modal.ShowLink(Stuff.HOMEPAGE_URL))
+                                    },
+                                    onDismiss = {
+                                        scope.launch {
+                                            PlatformStuff.mainPrefs.updateData {
+                                                it.copy(desktopAppLearnt = true)
+                                            }
                                         }
                                     },
                                     modifier = Modifier.animateItem()
                                 )
                             }
                         }
-
-                        is ScrobblerState.Killed -> {
-                            item("notice") {
-                                DismissableNotice(
-                                    title = stringResource(Res.string.not_running) + ": " +
-                                            scrobblerState.reason?.shortText().orEmpty(),
-                                    onClick = { onNavigate(PanoRoute.Modal.FixIt(scrobblerState.reason)) },
-                                    modifier = Modifier.animateItem()
-                                )
-                            }
-                        }
-
-                        ScrobblerState.Unknown,
-                        ScrobblerState.Running -> {
-                            // todo remove canEditOrDelete
-                            if (!otherPlatformsLearnt && canEditOrDelete && !PlatformStuff.isTv && !PlatformStuff.isDesktop) {
-                                item("notice") {
-                                    DismissableNotice(
-                                        title = stringResource(
-                                            Res.string.also_available_on,
-                                            stringResource(Res.string.desktop)
-                                        ),
-                                        onClick = {
-                                            onNavigate(PanoRoute.Modal.ShowLink(Stuff.HOMEPAGE_URL))
-                                        },
-                                        onDismiss = {
-                                            scope.launch {
-                                                PlatformStuff.mainPrefs.updateData {
-                                                    it.copy(desktopAppLearnt = true)
-                                                }
-                                            }
-                                        },
-                                        modifier = Modifier.animateItem()
-                                    )
-                                }
-                            }
-                        }
                     }
                 }
+            }
 
-                if (selectedType == ScrobblesType.RECENTS && user.isSelf) {
-                    pendingScrobblesListItems(
-                        headerText = pendingScrobblesHeader,
-                        headerIcon = Icons.HourglassEmpty,
-                        items = pendingScrobbles,
-                        lastErrored = pendingScrobbleLastErrored,
-                        expanded = if (pendingScrobblesCount <= viewModel.pendingScrobblesPreviewCount)
-                            null
-                        else
-                            pendingScrobblesExpanded,
-                        onToggle = {
-                            pendingScrobblesExpanded = it
-                        },
-                        showScrobbleSources = showScrobbleSources,
-                        onItemClick = {
-                            onTrackClick(it as Track, null)
-                        },
-                        viewModel = viewModel,
-                    )
-
-                    if (pendingScrobbles.isNotEmpty()) {
-                        item("pending_divider") {
-                            HorizontalDivider(
-                                modifier = Modifier.animateItem().padding(vertical = 8.dp)
-                            )
-                        }
-                    }
-                }
-
-                scrobblesListItems(
-                    tracks = tracks,
-                    user = user,
-                    pkgMap = pkgMap,
-                    fetchAlbumImageIfMissing = selectedType == ScrobblesType.LOVED,
-                    showScrobbleSources = showScrobbleSources,
-                    canLove = canLove,
-                    canEdit = canEditOrDelete,
-                    canDelete = canEditOrDelete,
-                    canHate = accountType == AccountType.LISTENBRAINZ,
-                    expandedKey = { expandedKey },
-                    onExpand = {
-                        canExpandNowPlaying = !(expandedKey != null && it == null)
-
-                        expandedKey = it
+            if (selectedType == PanoTab.Scrobbles.ScrobblesType.RECENTS && user.isSelf) {
+                pendingScrobblesListItems(
+                    headerText = pendingScrobblesHeader,
+                    headerIcon = Icons.HourglassEmpty,
+                    items = pendingScrobbles,
+                    lastErrored = pendingScrobbleLastErrored,
+                    expanded = if (pendingScrobblesCount <= viewModel.pendingScrobblesPreviewCount)
+                        null
+                    else
+                        pendingScrobblesExpanded,
+                    onToggle = {
+                        pendingScrobblesExpanded = it
                     },
-                    onNavigate = onNavigate,
-                    animateListItemContentSize = animateListItemContentSize,
-                    maxHeight = listViewportHeight,
+                    showScrobbleSources = showScrobbleSources,
+                    onItemClick = {
+                        onTrackClick(it as Track, null)
+                    },
                     viewModel = viewModel,
                 )
 
-                scrobblesPlaceholdersAndErrors(tracks = tracks)
+                if (pendingScrobbles.isNotEmpty()) {
+                    item("pending_divider") {
+                        HorizontalDivider(
+                            modifier = Modifier.animateItem().padding(vertical = 8.dp)
+                        )
+                    }
+                }
             }
+
+            scrobblesListItems(
+                tracks = tracks,
+                user = user,
+                pkgMap = pkgMap,
+                fetchAlbumImageIfMissing = selectedType == PanoTab.Scrobbles.ScrobblesType.LOVED,
+                showScrobbleSources = showScrobbleSources,
+                canLove = canLove,
+                canEdit = canEditOrDelete,
+                canDelete = canEditOrDelete,
+                canHate = accountType == AccountType.LISTENBRAINZ,
+                expandedKey = { expandedKey },
+                onExpand = {
+                    canExpandNowPlaying = !(expandedKey != null && it == null)
+
+                    expandedKey = it
+                },
+                onNavigate = onNavigate,
+                animateListItemContentSize = animateListItemContentSize,
+                maxHeight = listViewportHeight,
+                viewModel = viewModel,
+            )
+
+            scrobblesPlaceholdersAndErrors(tracks = tracks)
         }
     }
 }
 
 @Composable
-private fun ScrobblesTypeSelectorButton(
-    type: ScrobblesType?,
-    checked: Boolean,
-    text: String,
-    imageVector: ImageVector,
-    onTypeSelected: (ScrobblesType?) -> Unit,
-    isFirst: Boolean = false,
-    isLast: Boolean = false,
-) {
-    TooltipBox(
-        positionProvider = TooltipDefaults.rememberTooltipPositionProvider(TooltipAnchorPosition.Above),
-        tooltip = { PlainTooltip { Text(text) } },
-        state = rememberTooltipState(),
-        enableUserInput = !checked,
-    ) {
-        OutlinedToggleButton(
-            checked = checked,
-            onCheckedChange = {
-                if (it)
-                    onTypeSelected(type)
-            },
-            shapes = when {
-                isFirst -> ButtonGroupDefaults.connectedLeadingButtonShapes()
-                isLast -> ButtonGroupDefaults.connectedTrailingButtonShapes()
-                else -> ButtonGroupDefaults.connectedMiddleButtonShapes()
-            },
-        ) {
-            if (checked) {
-                Icon(imageVector, contentDescription = text)
-                Spacer(Modifier.size(ToggleButtonDefaults.IconSpacing))
-                Text(text = text, maxLines = 1)
-            } else {
-                Icon(
-                    imageVector,
-                    contentDescription = text
-                )
-            }
-        }
-    }
-}
-
-@Composable
-private fun ScrobblesTypeSelector(
-    selectedType: ScrobblesType,
+private fun TimeJumpMenu(
     timeJumpMillis: Long?,
     registeredTime: Long,
-    onTypeSelected: (ScrobblesType, Long?) -> Unit,
-    onRefresh: () -> Unit,
-    onNavigateToRandom: () -> Unit,
+    onDismiss: () -> Unit,
+    onTimeJumpSelected: (Long) -> Unit,
     onNavigate: (PanoRoute) -> Unit,
-    modifier: Modifier = Modifier,
 ) {
-    var timeJumpMenuShown by remember { mutableStateOf(false) }
     val firstDayOfWeek by PlatformStuff.mainPrefs.data.collectAsStateWithInitialValue { it.firstDayOfWeek }
 
-    ResultEffect<DatePickerResult> { res ->
-        onTypeSelected(
-            ScrobblesType.TIME_JUMP,
-            res.dateMillis.timeToLocal().plus((24 * 60 * 60 - 1) * 1000)
-        )
-    }
-
-    Row(
-        modifier = modifier.padding(horizontal = 8.dp),
-        horizontalArrangement = Arrangement.spacedBy(
-            ButtonGroupDefaults.ConnectedSpaceBetween,
-            Alignment.CenterHorizontally
-        ),
+    PanoDropdownMenu(
+        expanded = true,
+        onDismissRequest = onDismiss,
     ) {
-        if (PlatformStuff.isDesktop || PlatformStuff.isTv) {
-            ScrobblesTypeSelectorButton(
-                type = null,
-                checked = false,
-                text = stringResource(Res.string.reload),
-                imageVector = Icons.Refresh,
-                onTypeSelected = {
-                    onRefresh()
+        val timeJumpEntries = remember(registeredTime, timeJumpMillis) {
+            TimePeriodsGenerator(
+                registeredTime,
+                timeJumpMillis ?: System.currentTimeMillis(),
+                firstDayOfWeek
+            ).recentsTimeJumps
+        }
+
+        timeJumpEntries.forEach {
+            DropdownMenuItem(
+                onClick = {
+                    onTimeJumpSelected(it.timeMillis)
+                    onDismiss()
                 },
-                isFirst = true
+                leadingIcon = {
+                    Icon(getPeriodTypeIcon(it.type), contentDescription = null)
+                },
+                text = {
+                    val name = pluralStringResource(
+                        getPeriodTypePluralRes(it.type),
+                        1,
+                        (if (it.addsTime) "+1" else "-1")
+                    )
+                    Text(text = name)
+                }
             )
         }
-
-        ScrobblesTypeSelectorButton(
-            type = ScrobblesType.RECENTS,
-            checked = selectedType == ScrobblesType.RECENTS,
-            text = stringResource(Res.string.recents),
-            imageVector = Icons.History,
-            onTypeSelected = {
-                if (it != null)
-                    onTypeSelected(it, null)
-            },
-            isFirst = !(PlatformStuff.isDesktop || PlatformStuff.isTv)
-        )
-        ScrobblesTypeSelectorButton(
-            type = ScrobblesType.LOVED,
-            checked = selectedType == ScrobblesType.LOVED,
-            text = stringResource(Res.string.loved),
-            imageVector = Icons.Favorite,
-            onTypeSelected = {
-                if (it != null)
-                    onTypeSelected(it, null)
-            }
-        )
-        TooltipBox(
-            positionProvider = TooltipDefaults.rememberTooltipPositionProvider(TooltipAnchorPosition.Above),
-            tooltip = { PlainTooltip { Text(stringResource(Res.string.time_jump)) } },
-            state = rememberTooltipState(),
-            enableUserInput = selectedType != ScrobblesType.TIME_JUMP,
-        ) {
-            OutlinedToggleButton(
-                checked = selectedType == ScrobblesType.TIME_JUMP || timeJumpMenuShown,
-                onCheckedChange = {
-                    if ((it && selectedType != ScrobblesType.TIME_JUMP) ||
-                        (!it && selectedType == ScrobblesType.TIME_JUMP)
-                    )
-                        timeJumpMenuShown = true
-                },
-                shapes = ButtonGroupDefaults.connectedMiddleButtonShapes()
-            ) {
-                val painter = combineImageVectors(
-                    getPeriodTypeIcon(TimePeriodType.CUSTOM),
-                    Icons.ArrowDropDown
+        DropdownMenuItem(
+            onClick = {
+                val route = PanoRoute.Modal.DatePicker(
+                    selectedDate = timeJumpMillis,
+                    allowedRange = registeredTime to System.currentTimeMillis(),
+                    weeksOnly = false,
                 )
-
-                if (selectedType == ScrobblesType.TIME_JUMP) {
-                    Icon(painter, contentDescription = stringResource(Res.string.time_jump))
-
-                    Spacer(Modifier.size(ToggleButtonDefaults.IconSpacing))
-                    Text(
-                        if (timeJumpMillis == null)
-                            stringResource(Res.string.time_jump)
-                        else
-                            PanoTimeFormatter.relative(timeJumpMillis, null),
-                        maxLines = 1
-                    )
-                } else {
-                    Icon(painter, contentDescription = stringResource(Res.string.time_jump))
-                }
-            }
-
-            DropdownMenu(
-                expanded = timeJumpMenuShown,
-                onDismissRequest = { timeJumpMenuShown = false },
-            ) {
-                val timeJumpEntries = remember(registeredTime, timeJumpMillis) {
-                    TimePeriodsGenerator(
-                        registeredTime,
-                        timeJumpMillis ?: System.currentTimeMillis(),
-                        firstDayOfWeek
-                    ).recentsTimeJumps
-                }
-
-                timeJumpEntries.forEach {
-                    DropdownMenuItem(
-                        onClick = {
-                            onTypeSelected(ScrobblesType.TIME_JUMP, it.timeMillis)
-                            timeJumpMenuShown = false
-                        },
-                        leadingIcon = {
-                            Icon(getPeriodTypeIcon(it.type), contentDescription = null)
-                        },
-                        text = {
-                            val name = pluralStringResource(
-                                getPeriodTypePluralRes(it.type),
-                                1,
-                                (if (it.addsTime) "+1" else "-1")
-                            )
-                            Text(text = name)
-                        }
-                    )
-                }
-                DropdownMenuItem(
-                    onClick = {
-                        val route = PanoRoute.Modal.DatePicker(
-                            selectedDate = timeJumpMillis,
-                            allowedRange = registeredTime to System.currentTimeMillis(),
-                            weeksOnly = false,
-                        )
-                        onNavigate(route)
-                        timeJumpMenuShown = false
-                    },
-                    leadingIcon = {
-                        Icon(getPeriodTypeIcon(TimePeriodType.CUSTOM), contentDescription = null)
-                    },
-                    text = {
-                        Text(text = stringResource(Res.string.charts_custom))
-                    }
-                )
-            }
-        }
-
-        ScrobblesTypeSelectorButton(
-            type = null,
-            checked = false,
-            text = stringResource(Res.string.random_text),
-            imageVector = Icons.Casino,
-            onTypeSelected = {
-                onNavigateToRandom()
+                onNavigate(route)
+                onDismiss()
             },
-            isLast = true
+            leadingIcon = {
+                Icon(getPeriodTypeIcon(TimePeriodType.CUSTOM), contentDescription = null)
+            },
+            text = {
+                Text(text = stringResource(Res.string.charts_custom))
+            }
         )
     }
 }

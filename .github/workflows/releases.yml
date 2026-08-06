@@ -106,7 +106,7 @@ jobs:
         if: matrix.resources-dir == 'windows-x64'
         shell: bash
         run: |
-          winget install --id JRSoftware.InnoSetup --accept-package-agreements --accept-source-agreements --disable-interactivity
+          winget install --id JRSoftware.InnoSetup.7 --accept-package-agreements --accept-source-agreements --disable-interactivity
 
       - name: Build desktop jar and native image
         shell: bash

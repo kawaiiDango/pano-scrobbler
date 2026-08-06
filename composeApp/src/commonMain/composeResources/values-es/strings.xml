@@ -388,6 +388,10 @@
     <string name="edit_extract_track_example" formatted="true" comment="%1$s is the regex pattern">ej. Para extraer metadatos del campo de la pista, si la pista contiene "Artista - Pista", establezca la regex de la pista a %1$s</string>
     <string name="search_in_media_player" comment="This launches and searches in the media player app directly instead of opening a browser">Buscar en el reproductor de medios directamente</string>
     <string name="forget_unchecked_apps" comment="Shown in the 'Scrobble From' apps list on desktop">Olvidar aplicaciones sin marcar</string>
+    <string name="discord_app_name" comment="usually the media player app name, shown in discord rich presence">HF PLAYER</string>
+    <string name="convert_file" formatted="true" comment="%1$s is the file extension, used in the context of converting from one file format to another">Flac </string>
+    <string name="system" comment="system default settings">System</string>
+    <string name="missing_local_network_permission">This feature needs permission to connect to the local network</string>
     <string name="get_pro">Apoya esta aplicación</string>
     <string name="one_time_purchase">Una vez</string>
     <string name="help">Ayuda</string>
@@ -402,7 +406,8 @@ Google Play administra tus compras. Están enlazadas con una cuenta de Google Pl
 • Desinstalar esta aplicación.
 • Abrir la página web de Google Play desde su ordenador.
 • Iniciar sesión con la cuenta propietaria de la compra.
-• Instalar esta aplicación directamente desde la página web de Google Play.</string>
+• Instalar esta aplicación directamente desde la página web de Google Play.
+</string>
     <string name="billing_block">Bloquear artistas/canciones y omitir o silenciar automáticamente</string>
     <string name="billing_pin_friends" formatted="true" comment="%1= number of pins, always 10 or more">Fija hasta %1$d amigos y reordenalos</string>
     <string name="billing_sharing">Eliminar el nombre de la aplicación al compartir</string>

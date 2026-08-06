@@ -101,7 +101,7 @@
     <string name="state_scrobbling">Dabar skrobolinama…</string>
     <string name="state_scrobbled">Nuskrobolinta</string>
     <string name="state_unscrobbled">Nenuskrobolinta</string>
-    <string name="tap_to_edit">(Palieskite, kad redaguotumėte)</string>
+    <string name="tap_to_edit">(Palieskite norint redaguoti)</string>
     <string name="recents" comment="Short for recently scrobbled">Naujausi</string>
     <string name="first_scrobbled_on" formatted="true" comment="%1= date">Pirmą kartą nuskrobolinta %1$s</string>
     <string name="auto" comment="automatic or default setting">Automatinis</string>
@@ -242,7 +242,7 @@
     <string name="edit_max_patterns" formatted="true" comment="%1= max pattern count">Pasiekta šablono riba (%1$d).</string>
     <string name="edit_drag_handle" comment="screen reader text for drag and drop button">Nutempimo rankenėlė</string>
     <string name="edit_regex_warning" comment="shown before adding a custom pattern edit">⚠ Prieš naudojant įsitikinkite, kad suprantate <a href="https://www.google.com/search?q=regex+tutorial">Javos reguliarųjį reiškinį</a>, arba naudokite vieną iš pateiktų <b>išankstinių nustatymų</b>. Reguliariaus reiškinio atitikimai bandomi iš viršaus į apačią.</string>
-    <string name="blocked_metadata_noti" comment="to block and skip a track from scrobbling and playing">Palieskite, kad blokuoti ir praleisti</string>
+    <string name="blocked_metadata_noti" comment="to block and skip a track from scrobbling and playing">Palieskite norint blokuoti ir praleisti</string>
     <string name="player_actions" comment="music player actions such as skip/mute">Leistuvės veiksmai</string>
     <string name="skip" comment="skip to next track">Praleisti</string>
     <string name="mute" comment="mute the sound">Nutildyti garsą</string>
@@ -258,7 +258,7 @@
     <string name="regex_edits_suggestion" formatted="true" comment="%1= the preset name (e.g. Remastered)">Ar norite įjungti šablono redagavimo taisyklę „%1$s“?</string>
     <string name="show_persistent_noti">Rodyti nuolatinį pranešimą</string>
     <string name="fix_it_desc">Tai gali padėti išlaikyti skroboklio veikimą fone kai kuriuose įrenginiuose.</string>
-    <string name="persistent_noti_text">Palieskite, kad paslėpti šį</string>
+    <string name="persistent_noti_text">Palieskite norint paslėpti šį</string>
     <string name="scrobbler_off">Skroboklis išjungtas</string>
     <string name="scrobbler_on">Skroboklis aktyvius</string>
     <string name="duration">Trukmė</string>
@@ -272,8 +272,8 @@
     <string name="captions" comment="Collage image captions such as artist names, play counts">Vaizdų antraštės</string>
     <string name="username" comment="last.fm Username">Naudotojo vardas</string>
     <string name="pref_master">Skrobolinti muziką</string>
-    <string name="pref_master_qs_add">Pridėti sparčiųjų nustatymų plytelę</string>
-    <string name="pref_master_qs_already_addded">Sparčiųjų nustatymų plytelė jau pridėta.</string>
+    <string name="pref_master_qs_add">Pridėti sparčiojo nustatymo plytelę</string>
+    <string name="pref_master_qs_already_addded">Sparčiojo nustatymo plytelė jau pridėta.</string>
     <string name="pref_noti">Pranešimai</string>
     <string name="pref_offline_info">ℹ️ Neprisijungus skroblai ir mėgstami bus išsaugoti, kad būtų išsiųsti vėliau.</string>
     <string name="pref_scrobble_from" comment="Scrobble from (these apps)">Skrobolinti iš</string>
@@ -451,7 +451,8 @@ Jūsų pirkinius tvarko „Google Play“. Jie susieti su „Google Play“ pask
 • Išdiegkite šią programą.
 • Atverkite „Google Play“ tinklalapį iš kompiuterio.
 • Prisijunkite su paskyra, kuriai priklauso pirkinys.
-• Diegkite šią programą tiesiogiai iš „Google Play“ tinklalapio.</string>
+• Diegkite šią programą tiesiogiai iš „Google Play“ tinklalapio.
+</string>
     <string name="billing_block">Blokuoti atlikėjus / takelius ir automatiškai praleisti arba nutildyti.</string>
     <string name="billing_pin_friends" formatted="true" comment="%1= number of pins, always 10 or more">Prisegti iki %1$d draugų ir pertvarkyti juos.</string>
     <string name="billing_sharing">Šalinti programos pavadinimą bendrinant.</string>

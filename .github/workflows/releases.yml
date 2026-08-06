@@ -102,10 +102,15 @@ jobs:
           # Download artifacts from that run (filter by name if provided)
           gh run download "$RUN_ID" -R "kawaiiDango/pano-native-components" -n "libs-${{ matrix.resources-dir }}" -D composeApp/resources/${{ matrix.resources-dir }}
 
-      - name: Build desktop jar and native image
+      - name: Install Inno Setup
+        if: matrix.resources-dir == 'windows-x64'
         shell: bash
         run: |
           winget install --id JRSoftware.InnoSetup --accept-package-agreements --accept-source-agreements --disable-interactivity
+
+      - name: Build desktop jar and native image
+        shell: bash
+        run: |
           ./gradlew composeApp:exportLibraryDefinitions composeApp:packageUberJarForCurrentOS -PaboutLibraries.exportVariant=jvm --no-daemon
 
       - name: Upload desktop binary

@@ -332,13 +332,14 @@ tasks.register<Exec>("packageInno") {
     val scriptFile = file("inno/installer.iss")
     val iconFile = file("app-icons/pano-scrobbler.ico")
     val isccPath = System.getenv("PROGRAMFILES") + "\\Inno Setup 7\\ISCC.exe"
+    val isccPathUser = System.getenv("LOCALAPPDATA") + "\\Programs\\Inno Setup 7\\ISCC.exe"
 
     doFirst {
         distDir.mkdirs()
     }
 
     commandLine(
-        isccPath,
+        if (File(isccPath).exists()) isccPath else isccPathUser,
         "/DOUT_DIR=" + distDir.absolutePath,
         "/DAPP_DIR=" + executableDir.absolutePath,
         "/DVERSION=$VER_NAME",

@@ -388,7 +388,7 @@
     <string name="reload" comment="Reload or refresh">Обновить</string>
     <string name="pref_tray_icon_theme">Тема иконки в трее</string>
     <string name="min_track_duration">Скробблить треки дольше чем</string>
-    <string name="automation">Управление Pano Scrobbler через приложения для автоматизации</string>
+    <string name="automation">Управлять Pano Scrobbler через приложения для автоматизации</string>
     <string name="country_for_api" formatted="true" comment="%1$s is the name of the streaming service, like Spotify, Apple Music">Страна для метаданных %1$s</string>
     <string name="login_in_browser">Завершите вход в окне браузера</string>
     <string name="edit_no_save">Это не будет сохранено для будущих скробблов</string>
@@ -454,9 +454,9 @@
 • Установите это приложение прямо с веб-страницы Google Play.
 </string>
     <string name="billing_block">Блокировать исполнителей/треки и автоматически пропускать или отключать звук</string>
-    <string name="billing_pin_friends" formatted="true" comment="%1= number of pins, always 10 or more">Закрепить до %1$d друзей и изменить их порядок</string>
+    <string name="billing_pin_friends" formatted="true" comment="%1= number of pins, always 10 or more">Закреплять до %1$d друзей и изменять их порядок</string>
     <string name="billing_sharing">Удалить имя приложения при шеринге</string>
-    <string name="billing_scrobble_source">Запомнить и просмотреть приложения, из которых вы скробблили, и искать прямо в них</string>
-    <string name="billing_regex_extract">Напишите правила извлечения пользовательских метаданных с помощью регулярных выражений</string>
+    <string name="billing_scrobble_source">Запоминать и просматривать приложения, из которых вы скробблили, и искать прямо в них</string>
+    <string name="billing_regex_extract">Писать собственные правила извлечения метаданных с помощью регулярных выражений</string>
     <string name="billing_max_devices_reached" formatted="true">Этот код уже используется на максимальном числе устройств (%1$d).</string>
 </resources>

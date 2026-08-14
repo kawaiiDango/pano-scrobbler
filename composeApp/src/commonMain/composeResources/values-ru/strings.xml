@@ -270,7 +270,7 @@
     <string name="skip_missing_images" comment="(while generating a collage)">Пропустить отсутствующие изображения</string>
     <string name="create_collage">Создать коллаж</string>
     <string name="captions" comment="Collage image captions such as artist names, play counts">Подписи изображений</string>
-    <string name="username" comment="last.fm Username">Имя пользователя</string>
+    <string name="username" comment="last.fm Username">Пользователь</string>
     <string name="pref_master">Скробблинг музыки</string>
     <string name="pref_master_qs_add">Добавить плитку быстрых настроек</string>
     <string name="pref_master_qs_already_addded">Плитка быстрых настроек уже добавлена</string>
@@ -317,7 +317,7 @@
     <string name="pref_search_in_source">Поиск и воспроизведение в приложении, из которого вы скробблили</string>
     <string name="pref_search_in_source_desc" comment="This is a continuation of the string: Search &amp; play on the app you scrobbled from">Для поддерживаемых приложений</string>
     <string name="pref_lists" comment="Such as edits list and block lists">Списки</string>
-    <string name="regex_rules">Правила Regex</string>
+    <string name="regex_rules">Регулярные выражения</string>
     <string name="pref_blocked_metadata" comment="Block things from scrobbling">Заблокированные метаданные</string>
     <string name="any_value" comment="as in any value, starts with lowercase in english because it will be enclosed in angle brackets">что угодно</string>
     <string name="existing_value" comment="starts with lowercase in english because it will be enclosed in angle brackets">имеющиеся данные</string>
@@ -427,8 +427,16 @@
     <string name="missing_local_network_permission">Этой функции требуется разрешение на подключение к локальной сети</string>
     <string name="artist_splitting_exceptions" comment="exceptions for the use first artist feature">Исключения в разделении исполнителей</string>
     <string name="add_exception" comment="as in adding an exception to a rule or setting">Добавить исключение</string>
+    <string name="upto_n" formatted="true">До %1$d</string>
+    <string name="add_to_app_launcher">Добавить ярлык в панель запуска приложений</string>
+    <string name="persistent_noti_fgs">Оставлять скробблер включенным в фоновом режиме</string>
     <string name="empty_apps_list">Приложения появятся здесь, когда вы воспроизведете что-либо в них</string>
+    <string name="supports_ambient_apps" formatted="true" comment="%1 = comma-separated list of music recognition apps">Также поддерживает распознавание музыки из %1$s</string>
+    <string name="persistent_noti_desc" formatted="true" comment="%1 = some names of phone manufacturers">Требуется для OEM, которые принудительно останавливают фоновые приложения, такие как %1$s и т.д.</string>
     <string name="cache" comment="as a noun">Кэш</string>
+    <string name="random_on_start" comment="currently used as a toggle in the themes screen to pick a random theme when the app starts">Случайная при запуске</string>
+    <string name="edit_continue_simple" comment="a toggle in the normal edits screen">Если найдено, продолжить редактирование с регулярными выражениями &amp; предустановками</string>
+    <string name="edit_continue_regex" comment="a toggle in the regex edits screen">Если найдено, продолжить редактирование с другими регулярными выражениями &amp; предустановками</string>
     <string name="get_pro">Поддержите приложение</string>
     <string name="one_time_purchase">Разово</string>
     <string name="help">Помощь</string>
@@ -443,7 +451,8 @@
 • Удалите это приложение.
 • Откройте веб-страницу Google Play со своего компьютера.
 • Войдите в систему с учетной записью, которой принадлежит покупка.
-• Установите это приложение прямо с веб-страницы Google Play.</string>
+• Установите это приложение прямо с веб-страницы Google Play.
+</string>
     <string name="billing_block">Блокировать исполнителей/треки и автоматически пропускать или отключать звук</string>
     <string name="billing_pin_friends" formatted="true" comment="%1= number of pins, always 10 or more">Закрепить до %1$d друзей и изменить их порядок</string>
     <string name="billing_sharing">Удалить имя приложения при шеринге</string>

@@ -47,7 +47,7 @@
     <string name="parse_error" comment="Title parsing error for Youtube etc">无法解析标题</string>
     <string name="network_error">网络异常</string>
     <string name="scrobble_ignored" comment="Will be prefixed by Lastfm: (e.g. Lastfm: Scrobble ignored)">已忽略记录</string>
-    <string name="scrobble_ignored_save_edit">可能由于此记录时间过久，Last.fm忽略了此次编辑，是否保存此次编辑的以备将来歌曲记录？</string>
+    <string name="scrobble_ignored_save_edit">可能由于此记录时间过于久远，Last.fm 忽略了此次编辑。是否需要保存此次编辑，以便用于后续歌曲记录？</string>
     <string name="required_fields_empty" comment="Shown on filling a form">必填字段不能为空</string>
     <string name="artist">艺术家</string>
     <string name="artists">艺术家</string>
@@ -351,7 +351,7 @@
     <string name="needs_plugin" comment="Used for some desktop media players">某些应用需要插件</string>
     <string name="reload" comment="Reload or refresh">重载</string>
     <string name="pref_tray_icon_theme">托盘图标主题</string>
-    <string name="min_track_duration">滚动曲目时间超过</string>
+    <string name="min_track_duration">记录歌曲的最短时长</string>
     <string name="automation">从自动化应用控制Pano Scrobbler</string>
     <string name="country_for_api" formatted="true" comment="%1$s is the name of the streaming service, like Spotify, Apple Music">%1$s 元数据区域</string>
     <string name="login_in_browser">在浏览器窗口完成登录</string>
@@ -415,7 +415,8 @@
 • 首先请卸载此应用程序
 • 在电脑上打开 Google Play 页面
 • 登录关联了购买记录的账户
-• 通过 Google Play 网页端直接安装应用</string>
+• 通过 Google Play 网页端直接安装应用
+</string>
     <string name="billing_block">屏蔽艺术家/曲目并自动跳过至下一曲或静音</string>
     <string name="billing_pin_friends" formatted="true" comment="%1= number of pins, always 10 or more">最多钉选 %1$d 位朋友并且支持手动排序</string>
     <string name="billing_sharing">分享时移除应用名称</string>

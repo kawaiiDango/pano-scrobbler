@@ -393,7 +393,7 @@
     <string name="add_exception" comment="as in adding an exception to a rule or setting">添加例外</string>
     <string name="upto_n" formatted="true">最多 %1$d</string>
     <string name="add_to_app_launcher">向应用程序启动器添加快捷方式</string>
-    <string name="persistent_noti_fgs">在后台保持 scrobbler 运行</string>
+    <string name="persistent_noti_fgs">在后台保持记录器运行</string>
     <string name="empty_apps_list">当您在应用中播放内容时，应用将出现在这里</string>
     <string name="supports_ambient_apps" formatted="true" comment="%1 = comma-separated list of music recognition apps">同时支持 %1$s 等音乐识别应用</string>
     <string name="persistent_noti_desc" formatted="true" comment="%1 = some names of phone manufacturers">在激进地终止后台应用（如 %1$s 等）的 OEM 上需要</string>

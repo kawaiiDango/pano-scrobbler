@@ -5,9 +5,9 @@ import androidx.lifecycle.viewModelScope
 import com.arn.scrobble.api.UserCached
 import com.arn.scrobble.api.lastfm.LastfmPeriod
 import com.arn.scrobble.api.listenbrainz.ListenBrainzRange
+import com.arn.scrobble.charts.TimePeriodsGenerator.Companion.toTimePeriod
 import com.arn.scrobble.utils.PanoTimeFormatter
 import com.arn.scrobble.utils.PlatformStuff
-import com.arn.scrobble.utils.Stuff.toInverseMap
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -34,7 +34,7 @@ class ChartsPeriodVM(
     private val _customPeriodInput =
         MutableStateFlow(TimePeriod(1577836800000L, 1609459200000L)) // 2020
 
-    val timePeriods: StateFlow<Map<TimePeriod, Int>> = periodType
+    val timePeriods: StateFlow<List<TimePeriod>> = periodType
         .filterNotNull()
         .combine(
             _customPeriodInput
@@ -56,7 +56,6 @@ class ChartsPeriodVM(
 
             val timePeriods = when (periodType) {
                 TimePeriodType.CONTINUOUS -> TimePeriodsGenerator.getContinuousPeriods()
-                    .toInverseMap()
 
                 TimePeriodType.CUSTOM -> {
                     val selPeriod = customPeriod
@@ -67,15 +66,15 @@ class ChartsPeriodVM(
                             start, end,
                             name = PanoTimeFormatter.dateRange(start, end)
                         )
-                    ).toInverseMap()
+                    )
                 }
 
-                TimePeriodType.WEEK -> timePeriodsGenerator.weeks().toInverseMap()
+                TimePeriodType.WEEK -> timePeriodsGenerator.weeks()
 
-                TimePeriodType.MONTH -> timePeriodsGenerator.months().toInverseMap()
+                TimePeriodType.MONTH -> timePeriodsGenerator.months()
 
-                TimePeriodType.YEAR -> timePeriodsGenerator.years().toInverseMap()
-                TimePeriodType.LISTENBRAINZ -> timePeriodsGenerator.listenBrainz().toInverseMap()
+                TimePeriodType.YEAR -> timePeriodsGenerator.years()
+                TimePeriodType.LISTENBRAINZ -> timePeriodsGenerator.listenBrainz()
                 else -> throw IllegalArgumentException("Unknown period type: $periodType")
             }
 
@@ -84,7 +83,7 @@ class ChartsPeriodVM(
         .stateIn(
             viewModelScope,
             SharingStarted.Lazily,
-            emptyMap()
+            emptyList()
         )
 
     private val _selectedPeriod = MutableStateFlow<TimePeriod?>(null)
@@ -95,12 +94,12 @@ class ChartsPeriodVM(
 
             if (prevDigestPeriod != null && periodType.value == TimePeriodType.CONTINUOUS) {
                 digestPeriod = null
-                timePeriods.firstNotNullOfOrNull { (k, v) ->
-                    if (k.lastfmPeriod == prevDigestPeriod) k else null
+                timePeriods.firstNotNullOfOrNull {
+                    if (it.lastfmPeriod == prevDigestPeriod) it else null
                 }
             } else if (prevDigestPeriod != null && periodType.value == TimePeriodType.LISTENBRAINZ) {
                 digestPeriod = null
-                timePeriods.firstNotNullOfOrNull { (k, v) ->
+                timePeriods.firstNotNullOfOrNull {
                     val listenBrainzPeriod = when (prevDigestPeriod) {
                         LastfmPeriod.WEEK -> ListenBrainzRange.week
                         LastfmPeriod.MONTH -> ListenBrainzRange.month
@@ -108,12 +107,38 @@ class ChartsPeriodVM(
                         else -> null
                     }
 
-                    if (k.listenBrainzRange == listenBrainzPeriod) k else null
+                    if (it.listenBrainzRange == listenBrainzPeriod) it else null
+                }
+            } else if (
+                selectedPeriod != null &&
+                (periodType.value == TimePeriodType.WEEK ||
+                        periodType.value == TimePeriodType.MONTH ||
+                        periodType.value == TimePeriodType.YEAR ||
+                        periodType.value == TimePeriodType.CONTINUOUS && selectedPeriod.lastfmPeriod == null)
+            ) {
+                val selectedPeriodStart =
+                    selectedPeriod.lastfmPeriod?.toTimePeriod()?.start ?: selectedPeriod.start
+                val insertionIdx = timePeriods.binarySearch { period ->
+                    // list is descending, compare in reverse
+                    val periodStart = period.lastfmPeriod?.toTimePeriod()?.start ?: period.start
+                    selectedPeriodStart.compareTo(periodStart)
+                }
+
+                if (insertionIdx >= 0) {
+                    timePeriods[insertionIdx]
+                } else {
+                    val hi = -insertionIdx - 1
+                    val lo = hi - 1
+
+                    timePeriods.getOrNull(hi)
+                        ?: timePeriods.getOrNull(lo)
+                        ?: timePeriods.firstOrNull()
                 }
             } else if (selectedPeriod !in timePeriods) {
-                timePeriods.firstNotNullOf { (k, v) -> k } // just select the first
-            } else
+                timePeriods.firstOrNull() // just select the first
+            } else {
                 selectedPeriod
+            }
         }
         .onEach { period ->
             // mark as non-refresh request

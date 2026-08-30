@@ -22,13 +22,13 @@ actual fun WebViewVM.platformInit() {
     } else {
         val proxy = Requesters.proxy.value
         when (proxy.type) {
-            MainPrefs.ProxySettings.Type.SOCKS5 if !proxy.hasAuth ->
+            MainPrefs.ProxyPrefs.Type.SOCKS5 if !proxy.hasAuth ->
                 WebViewProxyOverride.setProxy(true, proxy.host, proxy.port)
 
-            MainPrefs.ProxySettings.Type.SOCKS5 if proxy.hasAuth ->
+            MainPrefs.ProxyPrefs.Type.SOCKS5 if proxy.hasAuth ->
                 WebViewProxyOverride.setProxy(true, "127.0.0.1", startProxyRelay(proxy))
 
-            MainPrefs.ProxySettings.Type.HTTP ->
+            MainPrefs.ProxyPrefs.Type.HTTP ->
                 WebViewProxyOverride.setProxy(false, proxy.host, proxy.port)
 
             else ->

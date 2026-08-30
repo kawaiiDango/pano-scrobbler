@@ -35,8 +35,8 @@ import com.arn.scrobble.navigation.enumSaver
 import com.arn.scrobble.ui.ErrorText
 import com.arn.scrobble.ui.InlineCheckButton
 import com.arn.scrobble.ui.LabeledCheckbox
-import com.arn.scrobble.ui.OutlinedToggleButtons
 import com.arn.scrobble.ui.PanoOutlinedTextField
+import com.arn.scrobble.ui.PanoToggleButtonGroup
 import com.arn.scrobble.ui.PanoToggleButtonsMode
 import com.arn.scrobble.utils.PlatformStuff
 import kotlinx.coroutines.Dispatchers
@@ -258,7 +258,7 @@ fun ColumnScope.BlockPlayerActions(
         color = MaterialTheme.colorScheme.secondary,
     )
 
-    OutlinedToggleButtons(
+    PanoToggleButtonGroup(
         texts = listOf(
             stringResource(Res.string.skip),
             stringResource(Res.string.mute),

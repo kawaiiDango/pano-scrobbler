@@ -1,10 +1,15 @@
 package com.arn.scrobble.pref
 
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
+import androidx.compose.material3.ListItem
+import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Text
@@ -16,10 +21,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import com.arn.scrobble.ui.HighlighterVisualTransformation
 import com.arn.scrobble.ui.PanoOutlinedTextField
+import com.arn.scrobble.ui.myCheckableItemColors
 import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff
 import com.arn.scrobble.utils.Stuff.collectAsStateWithInitialValue
@@ -37,9 +42,11 @@ import pano_scrobbler.composeapp.generated.resources.spotify
 import pano_scrobbler.composeapp.generated.resources.tidal
 import pano_scrobbler.composeapp.generated.resources.yt_music
 
+@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun MediaSearchPrefDialog(modifier: Modifier = Modifier) {
     Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
         modifier = modifier.padding(vertical = 16.dp)
     ) {
         val usePlayFromSearch by PlatformStuff.mainPrefs.data.collectAsStateWithInitialValue { it.usePlayFromSearchP }
@@ -82,70 +89,43 @@ fun MediaSearchPrefDialog(modifier: Modifier = Modifier) {
             }
         }
 
-        if (!PlatformStuff.isDesktop)
-            RadioButtonEntry(
-                text = stringResource(Res.string.search_in_media_player),
-                selected = searchUrlTemplateText == null,
-                onSelect = {
-                    searchUrlTemplateText = null
+        val textToUrls = listOfNotNull(
+            if (!PlatformStuff.isDesktop)
+                stringResource(Res.string.search_in_media_player) to null
+            else
+                null,
+            stringResource(Res.string.spotify) to Stuff.SPOTIFY_SEARCH_URL,
+            stringResource(Res.string.apple_music) to Stuff.APPLE_MUSIC_SEARCH_URL,
+            stringResource(Res.string.deezer) to Stuff.DEEZER_SEARCH_URL,
+            stringResource(Res.string.tidal) to Stuff.TIDAL_SEARCH_URL,
+            stringResource(Res.string.yt_music) to Stuff.YT_MUSIC_SEARCH_URL,
+            stringResource(Res.string.bandcamp) to Stuff.BANDCAMP_SEARCH_URL,
+            stringResource(Res.string.genius) to Stuff.GENIUS_SEARCH_URL
+        )
+
+        Column(
+            modifier = Modifier
+                .weight(1f, fill = false)
+                .width(IntrinsicSize.Max)
+                .verticalScroll(rememberScrollState())
+        ) {
+            textToUrls.forEach { (text, url) ->
+                ListItem(
+                    selected = searchUrlTemplateText == url,
+                    onClick = { searchUrlTemplateText = url },
+                    colors = ListItemDefaults.myCheckableItemColors(),
+                    leadingContent = {
+                        RadioButton(
+                            selected = searchUrlTemplateText == url,
+                            onClick = null,
+                        )
+                    },
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text(text)
                 }
-            )
-
-        RadioButtonEntry(
-            text = stringResource(Res.string.spotify),
-            selected = searchUrlTemplateText == Stuff.SPOTIFY_SEARCH_URL,
-            onSelect = {
-                searchUrlTemplateText = Stuff.SPOTIFY_SEARCH_URL
             }
-        )
-
-        RadioButtonEntry(
-            text = stringResource(Res.string.apple_music),
-            selected = searchUrlTemplateText == Stuff.APPLE_MUSIC_SEARCH_URL,
-            onSelect = {
-                searchUrlTemplateText = Stuff.APPLE_MUSIC_SEARCH_URL
-            }
-        )
-
-        RadioButtonEntry(
-            text = stringResource(Res.string.deezer),
-            selected = searchUrlTemplateText == Stuff.DEEZER_SEARCH_URL,
-            onSelect = {
-                searchUrlTemplateText = Stuff.DEEZER_SEARCH_URL
-            }
-        )
-
-        RadioButtonEntry(
-            text = stringResource(Res.string.tidal),
-            selected = searchUrlTemplateText == Stuff.TIDAL_SEARCH_URL,
-            onSelect = {
-                searchUrlTemplateText = Stuff.TIDAL_SEARCH_URL
-            }
-        )
-
-        RadioButtonEntry(
-            text = stringResource(Res.string.yt_music),
-            selected = searchUrlTemplateText == Stuff.YT_MUSIC_SEARCH_URL,
-            onSelect = {
-                searchUrlTemplateText = Stuff.YT_MUSIC_SEARCH_URL
-            }
-        )
-
-        RadioButtonEntry(
-            text = stringResource(Res.string.bandcamp),
-            selected = searchUrlTemplateText == Stuff.BANDCAMP_SEARCH_URL,
-            onSelect = {
-                searchUrlTemplateText = Stuff.BANDCAMP_SEARCH_URL
-            }
-        )
-
-        RadioButtonEntry(
-            text = stringResource(Res.string.genius),
-            selected = searchUrlTemplateText == Stuff.GENIUS_SEARCH_URL,
-            onSelect = {
-                searchUrlTemplateText = Stuff.GENIUS_SEARCH_URL
-            }
-        )
+        }
 
         PanoOutlinedTextField(
             value = searchUrlTemplateText ?: "",
@@ -158,32 +138,7 @@ fun MediaSearchPrefDialog(modifier: Modifier = Modifier) {
             },
             visualTransformation = visualTransformation,
             isError = isError(),
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 8.dp, vertical = 8.dp)
+            modifier = Modifier.fillMaxWidth()
         )
-    }
-}
-
-@Composable
-private fun RadioButtonEntry(
-    text: String,
-    selected: Boolean,
-    onSelect: () -> Unit,
-) {
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
-        modifier = Modifier
-            .fillMaxWidth()
-            .clip(MaterialTheme.shapes.medium)
-            .clickable(onClick = onSelect)
-            .padding(horizontal = 8.dp, vertical = 8.dp)
-    ) {
-        RadioButton(
-            selected = selected,
-            onClick = null,
-            modifier = Modifier.padding(end = 16.dp)
-        )
-        Text(text)
     }
 }

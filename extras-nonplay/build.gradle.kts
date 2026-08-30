@@ -14,7 +14,7 @@ kotlin {
         namespace = "com.arn.scrobble.extras.nonplay"
         compileSdk {
             version = release(libs.versions.targetSdk.get().toInt()) {
-                minorApiLevel = libs.versions.sdkMinor.get().toInt()
+//                minorApiLevel = libs.versions.sdkMinor.get().toInt()
             }
         }
         minSdk = libs.versions.minSdk.get().toInt()

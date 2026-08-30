@@ -33,18 +33,18 @@
     <string name="automation_cp" translatable="false">ContentProvider URIs</string>
     <string name="discord_rich_presence" translatable="false">Discord Rich Presence</string>
     <string name="log_to_file" translatable="false">Persist scrobble logs</string>
-    <string name="affect_performance">Will affect performance</string>
     <string name="proxy_socks5" translatable="false">SOCKS5</string>
     <string name="proxy_http" translatable="false">HTTP</string>
     <string name="desktop" translatable="false">Windows &amp; Linux</string>
     <string name="android" translatable="false">Android</string>
     <string name="persistent_noti_oems" translatable="false">Xiaomi, Samsung, Huawei</string>
     <string name="ambient_apps" translatable="false">Shazam, Audile, Ambient Music Mod</string>
-    <string name="experimental" translatable="false">(Experimental)</string>
+    <string name="experimental" translatable="false">Experimental options</string>
 
     <!--  strings for unfinalized stuff  -->
 
-    <string name="blur_notice" comment="blur effect in theme">Needs Windows 11, KDE or Android 12+ on supported hardware</string>
+    <string name="alpha_notice" comment="transparency and blur effect in theme">Looks best with higher contrast and blur.</string>
+    <string name="blur_notice" comment="transparency and blur effect in theme">Blur needs Windows 11, KDE or Android 12+ on supported hardware</string>
     <string name="blur" comment="blur effect in theme">Blur</string>
     <string name="blur_main_window" comment="os level blur effect behind the main window">Cross-app</string>
     <string name="blur_sub_window" comment="blur effect within the app">In-app</string>
@@ -65,6 +65,10 @@
     <string name="automation_cp_info">For Tasker, use Action > SQL Query. Set the mode to "URI Formatted", put any name in "Variable Array" and URI to one of these.</string>
     <string name="automation_replace_app_id" formatted="true" comment="%1$s is the literal text package_name on Android, APP_ID or MPRIS_ID on desktop">Replace %1$s with that of the app.</string>
 
+    <string name="billing_troubleshoot_non_play_purchases" translatable="false" formatted="true">Already paid without using Google Play?
+
+They cannot be used on this Google Play version, according to Google's policies. Back up or export your settings and edits, uninstall this and switch to the other version.
+</string>
     <string name="billing_troubleshoot_github" translatable="false" formatted="true">Already donated?
 
 If you had donated $%1$d or more before %2$s, or did not get the automated email for some reason (check your spam folder too), send me a message on Ko-Fi or BuyMeACoffee and I will manually DM the code to you.

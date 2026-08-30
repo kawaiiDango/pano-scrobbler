@@ -6,8 +6,8 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.input.TextFieldState
-import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
+import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -56,7 +56,6 @@ import com.arn.scrobble.ui.SimpleHeaderItem
 import com.arn.scrobble.ui.accountTypeLabel
 import com.arn.scrobble.ui.accountTypeStringRes
 import com.arn.scrobble.ui.getActivityOrNull
-import com.arn.scrobble.ui.horizontalOverscanPadding
 import com.arn.scrobble.utils.LocaleUtils
 import com.arn.scrobble.utils.PanoNotifications
 import com.arn.scrobble.utils.PlatformStuff
@@ -77,6 +76,7 @@ import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.getString
+import org.jetbrains.compose.resources.pluralStringResource
 import org.jetbrains.compose.resources.stringResource
 import pano_scrobbler.composeapp.generated.resources.Res
 import pano_scrobbler.composeapp.generated.resources.album_art
@@ -103,6 +103,7 @@ import pano_scrobbler.composeapp.generated.resources.lastfm
 import pano_scrobbler.composeapp.generated.resources.light
 import pano_scrobbler.composeapp.generated.resources.min_track_duration
 import pano_scrobbler.composeapp.generated.resources.notification_channel_blocked
+import pano_scrobbler.composeapp.generated.resources.num_hours
 import pano_scrobbler.composeapp.generated.resources.pause_for
 import pano_scrobbler.composeapp.generated.resources.pref_about
 import pano_scrobbler.composeapp.generated.resources.pref_auto_detect
@@ -363,6 +364,8 @@ fun PrefsScreen(
                     SimpleHeaderItem(
                         text = stringResource(titleRes),
                         icon = imageVector,
+                        modifier = Modifier
+                            .fillMaxWidth()
                     )
                 }
             }
@@ -423,7 +426,7 @@ fun PrefsScreen(
                     expanded = dropdownShown,
                     onDismissRequest = { dropdownShown = false },
                 ) {
-                    DropdownMenuItem(
+                    item(
                         leadingIcon = {
                             Icon(
                                 imageVector = Icons.ToggleOff,
@@ -453,11 +456,18 @@ fun PrefsScreen(
                         2.hours,
                         4.hours,
                     ).forEach {
-                        DropdownMenuItem(
+                        item(
                             text = {
+                                val formattedDuration = if (it.inWholeHours >= 1)
+                                    pluralStringResource(
+                                        Res.plurals.num_hours,
+                                        it.inWholeHours.toInt(),
+                                        it.inWholeHours.toInt()
+                                    )
+                                else
+                                    Stuff.humanReadableDuration(it.inWholeMilliseconds)
                                 Text(
-                                    stringResource(Res.string.pause_for) + ": " +
-                                            Stuff.humanReadableDuration(it.inWholeMilliseconds)
+                                    stringResource(Res.string.pause_for) + ": " + formattedDuration
                                 )
                             },
                             onClick = {
@@ -474,7 +484,7 @@ fun PrefsScreen(
                         )
                     }
 
-                    DropdownMenuItem(
+                    item(
                         leadingIcon = {
                             Icon(
                                 imageVector = Icons.Timer,
@@ -523,9 +533,7 @@ fun PrefsScreen(
                 Text(
                     text = "ⓘ " + stringResource(Res.string.pref_enabled_apps_summary),
                     style = MaterialTheme.typography.bodyMedium,
-                    modifier = Modifier.padding(
-                        horizontal = horizontalOverscanPadding()
-                    ).padding(bottom = 16.dp)
+                    modifier = Modifier.padding(ListItemDefaults.ContentPadding)
                 )
             }
         }
@@ -545,7 +553,7 @@ fun PrefsScreen(
             }
         }
 
-        if (!PlatformStuff.isDesktop && !PlatformStuff.isTv) {
+        if (PlatformStuff.supportsSpotifyRemote) {
             filteredItem(
                 MainPrefs::scrobbleSpotifyRemoteP.name,
                 Res.string.pref_spotify_remote
@@ -637,12 +645,40 @@ fun PrefsScreen(
                         text = "ⓘ " + stringResource(Res.string.rate_limit_warn),
                         color = MaterialTheme.colorScheme.error,
                         style = MaterialTheme.typography.titleSmall,
-                        modifier = Modifier.padding(
-                            horizontal = horizontalOverscanPadding()
-                        ).padding(bottom = 16.dp)
+                        modifier = Modifier.padding(ListItemDefaults.ContentPadding)
                     )
                 }
             }
+        }
+
+        filteredHeader("lists", Res.string.simple_edits, Icons.EditNote)
+
+        filteredItem("simple_edits", Res.string.simple_edits) { title ->
+            TextPref(
+                text = title + ": " + numSimpleEdits.format(),
+                onClick = {
+                    onNavigate(PanoRoute.SimpleEdits)
+                }
+            )
+        }
+
+        filteredItem("regex_edits", Res.string.regex_rules) { title ->
+            TextPref(
+                text = title + ": " + numRegexEdits.format(),
+                onClick = {
+                    onNavigate(PanoRoute.RegexEdits)
+                }
+            )
+        }
+
+        filteredItem("blocked_metadata", Res.string.pref_blocked_metadata) { title ->
+            TextPref(
+                text = title + ": " + numBlockedMetadata.format(),
+                onClick = {
+                    onNavigate(PanoRoute.BlockedMetadatas)
+                },
+                locked = !isLicenseValid,
+            )
         }
 
         filteredHeader("personalization", Res.string.pref_personalization, Icons.Person)
@@ -650,7 +686,6 @@ fun PrefsScreen(
         filteredItem(MainPrefs::themeName.name, Res.string.pref_themes) { title ->
             TextPref(
                 text = title,
-                locked = !isLicenseValid,
                 onClick = {
                     onNavigate(PanoRoute.ThemeChooser)
                 }
@@ -777,36 +812,6 @@ fun PrefsScreen(
         }
 
         PlatformSpecificPrefs.prefNotifications(::filteredItem)
-
-        filteredHeader("lists", Res.string.simple_edits, Icons.EditNote)
-
-        filteredItem("simple_edits", Res.string.simple_edits) { title ->
-            TextPref(
-                text = title + ": " + numSimpleEdits.format(),
-                onClick = {
-                    onNavigate(PanoRoute.SimpleEdits)
-                }
-            )
-        }
-
-        filteredItem("regex_edits", Res.string.regex_rules) { title ->
-            TextPref(
-                text = title + ": " + numRegexEdits.format(),
-                onClick = {
-                    onNavigate(PanoRoute.RegexEdits)
-                }
-            )
-        }
-
-        filteredItem("blocked_metadata", Res.string.pref_blocked_metadata) { title ->
-            TextPref(
-                text = title + ": " + numBlockedMetadata.format(),
-                onClick = {
-                    onNavigate(PanoRoute.BlockedMetadatas)
-                },
-                locked = !isLicenseValid,
-            )
-        }
 
         filteredHeader("additional_metatadata", Res.string.external_metadata, Icons.Api)
 
@@ -999,9 +1004,9 @@ fun PrefsScreen(
             TextPref(
                 text = title,
                 summary = when (proxy.type) {
-                    MainPrefs.ProxySettings.Type.HTTP -> "http://$proxyText"
-                    MainPrefs.ProxySettings.Type.SOCKS5 -> "socks5://$proxyText"
-                    MainPrefs.ProxySettings.Type.SYSTEM -> stringResource(Res.string.system)
+                    MainPrefs.ProxyPrefs.Type.HTTP -> "http://$proxyText"
+                    MainPrefs.ProxyPrefs.Type.SOCKS5 -> "socks5://$proxyText"
+                    MainPrefs.ProxyPrefs.Type.SYSTEM -> stringResource(Res.string.system)
                 },
                 onClick = {
                     onNavigate(PanoRoute.Modal.ProxyPref)

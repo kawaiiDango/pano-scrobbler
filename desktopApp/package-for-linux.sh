@@ -9,13 +9,13 @@ else
     resourcesDirName="linux-x64"
 fi
 appNameWithoutSpaces="pano-scrobbler"
-nativeImageDir="$scriptDir/composeApp/build/compose/native/$resourcesDirName"
+nativeImageDir="$scriptDir/build/native/$resourcesDirName"
 appDir="/tmp/PanoScrobbler.AppDir"
 libExecDir="$appDir/usr/libexec/pano-scrobbler"
-distDir="$scriptDir/dist"
+distDir="$scriptDir/../dist"
 
 # Read version code from version.txt
-verCode=$(cat "$(dirname "$0")/version.txt")
+verCode=$(cat "$scriptDir/../version.txt")
 verName="$((verCode / 100)).$((verCode % 100))"
 
 # Clean and create AppDir

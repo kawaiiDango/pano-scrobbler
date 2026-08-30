@@ -43,8 +43,8 @@ import com.arn.scrobble.R
 import com.arn.scrobble.api.AccountType
 import com.arn.scrobble.navigation.enumSaver
 import com.arn.scrobble.pref.WidgetPrefs
-import com.arn.scrobble.ui.ButtonWithSpinner
-import com.arn.scrobble.ui.LabeledSwitch
+import com.arn.scrobble.ui.ButtonWithDropdown
+import com.arn.scrobble.ui.LabeledCheckbox
 import com.arn.scrobble.ui.accountTypeLabel
 import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff
@@ -137,7 +137,7 @@ fun ChartsWidgetConfigScreen(
                 .weight(1f)
         ) {
             Column(
-                verticalArrangement = Arrangement.spacedBy(16.dp),
+                verticalArrangement = Arrangement.spacedBy(4.dp),
                 modifier = Modifier
                     .fillMaxSize()
                     .verticalScroll(scrollState)
@@ -152,7 +152,7 @@ fun ChartsWidgetConfigScreen(
                         style = MaterialTheme.typography.titleMedium,
                     )
 
-                    ButtonWithSpinner(
+                    ButtonWithDropdown(
                         prefixText = null,
                         itemToTexts = accountTypesWithLabels,
                         selected = accountType,
@@ -162,7 +162,6 @@ fun ChartsWidgetConfigScreen(
 
                 FlowRow(
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
-                    verticalArrangement = Arrangement.spacedBy(8.dp),
                     itemVerticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
@@ -193,19 +192,19 @@ fun ChartsWidgetConfigScreen(
                     )
                 }
 
-                LabeledSwitch(
+                LabeledCheckbox(
                     text = stringResource(Res.string.album_art),
                     checked = images,
                     onCheckedChange = { images = it },
-                    textStyle = MaterialTheme.typography.titleMedium,
+                    isSwitch = true,
                     modifier = Modifier.fillMaxWidth(),
                 )
 
-                LabeledSwitch(
+                LabeledCheckbox(
                     text = stringResource(Res.string.appwidget_shadow),
                     checked = shadow,
                     onCheckedChange = { shadow = it },
-                    textStyle = MaterialTheme.typography.titleMedium,
+                    isSwitch = true,
                     modifier = Modifier.fillMaxWidth(),
                 )
 
@@ -218,6 +217,7 @@ fun ChartsWidgetConfigScreen(
                             Stuff.CHARTS_WIDGET_REFRESH_INTERVAL_HOURS,
                         )
                     ),
+                    modifier = Modifier.padding(vertical = 8.dp)
                 )
             }
         }

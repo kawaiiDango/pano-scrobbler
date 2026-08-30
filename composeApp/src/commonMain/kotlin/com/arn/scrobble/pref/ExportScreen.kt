@@ -32,7 +32,7 @@ import com.arn.scrobble.ui.ErrorText
 import com.arn.scrobble.ui.FilePicker
 import com.arn.scrobble.ui.FilePickerMode
 import com.arn.scrobble.ui.FileType
-import com.arn.scrobble.ui.OutlinedToggleButtons
+import com.arn.scrobble.ui.PanoToggleButtonGroup
 import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff
 import com.arn.scrobble.utils.redactedMessage
@@ -242,7 +242,7 @@ fun ImExportModeSelector(
             style = MaterialTheme.typography.titleLarge,
         )
     } else {
-        OutlinedToggleButtons(
+        PanoToggleButtonGroup(
             texts = listOf(
                 stringResource(Res.string.scrobble_to_file),
                 stringResource(Res.string.pref_imexport_network),

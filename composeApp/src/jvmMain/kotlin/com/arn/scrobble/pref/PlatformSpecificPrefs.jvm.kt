@@ -41,7 +41,7 @@ actual object PlatformSpecificPrefs {
 
     actual fun prefAutostart(filteredItem: FilteredItem) {
         // only implemented for Linux
-        if (DesktopStuff.os == DesktopStuff.Os.Linux) {
+        if (DesktopStuff.IS_LINUX) {
             filteredItem("startup", Res.string.run_on_start, null) { title ->
                 val doneString = stringResource(Res.string.done)
 
@@ -69,7 +69,7 @@ actual object PlatformSpecificPrefs {
 
     actual fun prefAddToAppLauncher(filteredItem: FilteredItem) {
         // only implemented for Linux AppImage
-        if (DesktopStuff.os == DesktopStuff.Os.Linux && System.getenv("APPIMAGE") != null) {
+        if (DesktopStuff.IS_LINUX && System.getenv("APPIMAGE") != null) {
             filteredItem(
                 "app_launcher",
                 Res.string.add_to_app_launcher,
@@ -99,7 +99,7 @@ actual object PlatformSpecificPrefs {
 
 
     actual fun tidalSteelSeries(filteredItem: FilteredItem, enabled: Boolean) {
-        if (DesktopStuff.os == DesktopStuff.Os.Windows) {
+        if (DesktopStuff.IS_WINDOWS) {
             filteredItem(
                 MainPrefs::tidalSteelSeriesApi.name,
                 Res.string.pref_fetch_missing_album,
@@ -119,7 +119,7 @@ actual object PlatformSpecificPrefs {
     }
 
     actual fun deezerApi(filteredItem: FilteredItem, enabled: Boolean) {
-        if (DesktopStuff.os == DesktopStuff.Os.Windows) {
+        if (DesktopStuff.IS_WINDOWS) {
             filteredItem(
                 MainPrefs::deezerApi.name,
                 Res.string.pref_fetch_missing_album,

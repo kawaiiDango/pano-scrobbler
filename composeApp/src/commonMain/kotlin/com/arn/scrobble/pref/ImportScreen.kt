@@ -26,7 +26,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.arn.scrobble.navigation.enumSaver
-import com.arn.scrobble.ui.ButtonWithSpinner
+import com.arn.scrobble.ui.ButtonWithDropdown
 import com.arn.scrobble.ui.ErrorText
 import com.arn.scrobble.ui.FilePicker
 import com.arn.scrobble.ui.FilePickerMode
@@ -160,7 +160,7 @@ fun ImportScreen(
                 )
 
                 if (canStartServer && serverAddress != null) {
-                    ButtonWithSpinner(
+                    ButtonWithDropdown(
                         prefixText = "IP",
                         itemToTexts = remember {
                             viewModel.localIps.associateWith { it }
@@ -248,7 +248,7 @@ fun ImportScreen(
                     ImExporter.ImportTypes.blocked_metadata in userImportTypes ||
                     ImExporter.ImportTypes.artists_with_delimiters in userImportTypes
                 ) {
-                    ButtonWithSpinner(
+                    ButtonWithDropdown(
                         prefixText = null,
                         itemToTexts = writeModesMap,
                         selected = selectedWriteMode,

@@ -1,6 +1,5 @@
 package com.arn.scrobble.ui
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.calculateEndPadding
 import androidx.compose.foundation.layout.calculateStartPadding
@@ -9,7 +8,6 @@ import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.ui.Modifier
@@ -19,21 +17,23 @@ import androidx.compose.ui.unit.max
 import com.arn.scrobble.navigation.LocalNavigationType
 import com.arn.scrobble.navigation.PanoNavigationType
 
-val LocalInnerPadding = compositionLocalOf { PaddingValues(0.dp) }
+val LocalInnerPadding = compositionLocalOf { PaddingValues.Zero }
 
 @Composable
-private fun Modifier.navBg() = fillMaxSize() then
-        MaterialTheme.colorScheme.surface.let {
-            if (it.alpha == 1f) Modifier.background(it) else Modifier
-        }
+fun Modifier.navBg() = fillMaxSize()
+//    .then(
+//        MaterialTheme.colorScheme.surface.let {
+//            if (it.alpha == 1f) Modifier.background(it) else Modifier
+//        }
+//    )
 
 @Composable
 fun Modifier.navScrollableColumn(
     mayHaveBottomFab: Boolean = false,
 ) = navBg()
+    .imePadding()
     .verticalScroll(rememberScrollState())
     .padding(panoContentPadding(mayHaveBottomFab = mayHaveBottomFab))
-    .imePadding()
 
 @Composable
 fun Modifier.navColumn() = navBg().imePadding()

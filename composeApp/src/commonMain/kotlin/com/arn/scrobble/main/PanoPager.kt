@@ -9,6 +9,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.saveable.rememberSaveableStateHolder
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import com.arn.scrobble.utils.PlatformStuff
@@ -29,6 +30,8 @@ fun PanoPager(
     if (!PlatformStuff.isTv) {
         var firstPageChange by rememberSaveable { mutableStateOf(false) }
 
+        // rememberSaveable does not work with items scrolled away in HorizontalPager, so
+        val pageStateHolder = rememberSaveableStateHolder()
         val pagerState = rememberPagerState(
             initialPage = initialPage,
             pageCount = { totalPages }
@@ -51,7 +54,9 @@ fun PanoPager(
             modifier = modifier,
             userScrollEnabled = !PlatformStuff.isDesktop,
         ) { page ->
-            content(page)
+            pageStateHolder.SaveableStateProvider(page) {
+                content(page)
+            }
         }
     } else {
         LaunchedEffect(validSelectedPage) {

@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -15,6 +16,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.material3.FilledTonalIconToggleButton
 import androidx.compose.material3.FilterChip
@@ -48,11 +50,13 @@ import com.arn.scrobble.pref.MainPrefs
 import com.arn.scrobble.pref.SliderPref
 import com.arn.scrobble.themes.colors.ThemeVariants
 import com.arn.scrobble.ui.ButtonWithIcon
+import com.arn.scrobble.ui.LabeledCheckbox
 import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff.collectAsStateWithInitialValue
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
 import pano_scrobbler.composeapp.generated.resources.Res
+import pano_scrobbler.composeapp.generated.resources.alpha_notice
 import pano_scrobbler.composeapp.generated.resources.appwidget_alpha
 import pano_scrobbler.composeapp.generated.resources.auto
 import pano_scrobbler.composeapp.generated.resources.blur
@@ -97,8 +101,35 @@ fun ThemeChooserScreen(
 
     Column(
         verticalArrangement = Arrangement.spacedBy(16.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
         modifier = modifier
     ) {
+
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(16.dp),
+            modifier = Modifier
+                .alpha(if (dynamic) 0.5f else 1f)
+        ) {
+            Text(
+                text = stringResource(Res.string.contrast),
+                style = MaterialTheme.typography.bodyLarge,
+            )
+
+            ContrastMode.entries.forEach {
+                FilterChip(
+                    label = { it.Label() },
+                    enabled = !dynamic,
+                    selected = contrastMode == it,
+                    shapes = FilterChipDefaults.shapes(),
+                    onClick = {
+                        save {
+                            copy(themeContrast = it)
+                        }
+                    }
+                )
+            }
+        }
 
         if (!isLicenseValid) {
             Row(
@@ -121,6 +152,24 @@ fun ThemeChooserScreen(
                 HorizontalDivider(
                     modifier = Modifier
                         .weight(1f)
+                )
+            }
+        }
+
+        Row(
+            horizontalArrangement = Arrangement.spacedBy(16.dp),
+        ) {
+            DayNightMode.entries.forEach {
+                FilterChip(
+                    label = { it.Label() },
+                    selected = dayNightMode == it,
+                    enabled = isLicenseValid,
+                    shapes = FilterChipDefaults.shapes(),
+                    onClick = {
+                        save {
+                            copy(themeDayNight = it)
+                        }
+                    }
                 )
             }
         }
@@ -183,83 +232,36 @@ fun ThemeChooserScreen(
             )
         }
 
-        Row(
-            horizontalArrangement = Arrangement.spacedBy(16.dp),
-        ) {
-            DayNightMode.entries.forEach {
-                FilterChip(
-                    label = { it.Label() },
-                    selected = dayNightMode == it,
-                    enabled = isLicenseValid,
-                    shapes = FilterChipDefaults.shapes(),
-                    onClick = {
-                        save {
-                            copy(themeDayNight = it)
-                        }
-                    }
-                )
-            }
-        }
-
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(16.dp),
-            modifier = Modifier
-                .fillMaxWidth()
-                .alpha(if (dynamic) 0.5f else 1f)
-        ) {
-            Text(
-                text = stringResource(Res.string.contrast),
-                style = MaterialTheme.typography.bodyLarge,
-            )
-
-            ContrastMode.entries.forEach {
-                FilterChip(
-                    label = { it.Label() },
-                    enabled = !dynamic && isLicenseValid,
-                    selected = contrastMode == it,
-                    shapes = FilterChipDefaults.shapes(),
-                    onClick = {
-                        save {
-                            copy(themeContrast = it)
-                        }
-                    }
-                )
-            }
-        }
-
         if (enableAlpha && !PlatformStuff.isTv) {
-            if (PlatformStuff.supportsBlur) {
-                Column(
+            Column(
+                modifier = Modifier
+                    .align(Alignment.Start)
+            ) {
+                Text(
+                    text = "ⓘ " + stringResource(Res.string.experimental) + ":",
                     modifier = Modifier
-                        .fillMaxWidth()
-                ) {
+                        .padding(horizontal = 16.dp)
+                )
+
+                if (PlatformStuff.supportsBlur) {
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.spacedBy(16.dp),
                         modifier = Modifier
-                            .fillMaxWidth()
+//                            .fillMaxWidth()
+                            .padding(horizontal = 16.dp)
                     ) {
                         Text(
                             text = stringResource(Res.string.blur),
                             style = MaterialTheme.typography.bodyLarge,
-                            modifier = Modifier.padding(end = 16.dp)
                         )
 
-                        FilterChip(
-                            label = { Text(stringResource(Res.string.blur_main_window)) },
-                            selected = blurMainWindow,
+                        LabeledCheckbox(
+                            text = stringResource(Res.string.blur_main_window),
+                            checked = blurMainWindow,
                             enabled = isLicenseValid,
-                            leadingIcon = if (blurMainWindow) {
-                                {
-                                    Icon(
-                                        imageVector = Icons.Check,
-                                        contentDescription = null
-                                    )
-                                }
-                            } else null,
-                            shapes = FilterChipDefaults.shapes(),
-                            onClick = {
+                            maxLines = 1,
+                            onCheckedChange = {
                                 val newState = !blurMainWindow
                                 save {
                                     copy(
@@ -271,55 +273,52 @@ fun ThemeChooserScreen(
                                     )
                                 }
                             },
+                            modifier = Modifier
+                                .width(IntrinsicSize.Max)
                         )
 
-                        FilterChip(
-                            label = { Text(stringResource(Res.string.blur_sub_window)) },
-                            selected = blurSubWindow,
+                        LabeledCheckbox(
+                            text = stringResource(Res.string.blur_sub_window),
+                            checked = blurSubWindow,
                             enabled = isLicenseValid,
-                            leadingIcon = if (blurSubWindow) {
-                                {
-                                    Icon(
-                                        imageVector = Icons.Check,
-                                        contentDescription = null
-                                    )
-                                }
-                            } else null,
-                            shapes = FilterChipDefaults.shapes(),
-                            onClick = {
+                            maxLines = 1,
+                            onCheckedChange = {
                                 val newState = !blurSubWindow
                                 save {
                                     copy(themeBlurSubWindow = newState)
                                 }
                             },
+                            modifier = Modifier
+                                .width(IntrinsicSize.Max)
                         )
                     }
                 }
 
+                SliderPref(
+                    text = stringResource(Res.string.appwidget_alpha),
+                    value = alphaIntPercent.toFloat(),
+                    copyToSave = {
+                        val a = it / 100f
+                        copy(
+                            themeAlpha = a,
+                            themeBlurMainWindow = a != 1f && themeBlurMainWindow,
+                        )
+                    },
+                    default = null,
+                    min = (MainPrefs.PREF_MIN_ALPHA * 100).toInt(),
+                    max = (MainPrefs.PREF_MAX_ALPHA * 100).toInt(),
+                    increments = 5,
+                    stringRepresentation = { "$it%" },
+                    enabled = isLicenseValid,
+                )
+
                 Text(
-                    text = "ⓘ " + stringResource(Res.string.experimental) + " " + stringResource(Res.string.blur_notice),
+                    text = stringResource(Res.string.alpha_notice) + "\n" + stringResource(Res.string.blur_notice),
                     style = MaterialTheme.typography.bodyMedium,
+                    modifier = Modifier
+                        .padding(horizontal = 16.dp)
                 )
             }
-
-            SliderPref(
-                text = stringResource(Res.string.appwidget_alpha) + " " + stringResource(Res.string.experimental),
-                value = alphaIntPercent.toFloat(),
-                copyToSave = {
-                    val a = it / 100f
-                    copy(
-                        themeAlpha = a,
-                        themeBlurMainWindow = if (a == 1f) false else themeBlurMainWindow,
-                    )
-                },
-                default = null,
-                min = (MainPrefs.PREF_MIN_ALPHA * 100).toInt(),
-                max = (MainPrefs.PREF_MAX_ALPHA * 100).toInt(),
-                increments = 5,
-                stringRepresentation = { "$it%" },
-                enabled = isLicenseValid
-            )
-
         }
     }
 }

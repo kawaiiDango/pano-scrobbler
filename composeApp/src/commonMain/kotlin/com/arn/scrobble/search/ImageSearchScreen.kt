@@ -28,10 +28,11 @@ import com.arn.scrobble.api.lastfm.Track
 import com.arn.scrobble.api.spotify.AlbumItem
 import com.arn.scrobble.api.spotify.ArtistItem
 import com.arn.scrobble.api.spotify.TrackItem
+import com.arn.scrobble.icons.Icons
+import com.arn.scrobble.icons.Search
 import com.arn.scrobble.imageloader.MusicEntryImageReq
 import com.arn.scrobble.imageloader.PanoImageLoader
 import com.arn.scrobble.ui.AlertDialogOk
-import com.arn.scrobble.ui.EmptyText
 import com.arn.scrobble.ui.ErrorText
 import com.arn.scrobble.ui.FilePicker
 import com.arn.scrobble.ui.FilePickerMode
@@ -39,6 +40,8 @@ import com.arn.scrobble.ui.FileType
 import com.arn.scrobble.ui.MusicEntryListItem
 import com.arn.scrobble.ui.PanoLazyColumn
 import com.arn.scrobble.ui.SearchEffect
+import com.arn.scrobble.ui.SimpleHeaderItem
+import com.arn.scrobble.ui.emptyText
 import com.arn.scrobble.ui.shimmerWindowBounds
 import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff
@@ -47,6 +50,7 @@ import com.arn.scrobble.utils.redactedMessage
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
 import pano_scrobbler.composeapp.generated.resources.Res
+import pano_scrobbler.composeapp.generated.resources.from
 import pano_scrobbler.composeapp.generated.resources.from_gallery
 import pano_scrobbler.composeapp.generated.resources.is_turned_off
 import pano_scrobbler.composeapp.generated.resources.not_found
@@ -157,6 +161,14 @@ fun ImageSearchScreen(
         }
 
         if (searchResults?.isNotEmpty() == true) {
+            item("results_header") {
+                SimpleHeaderItem(
+                    text = stringResource(Res.string.from, stringResource(Res.string.spotify)),
+                    icon = Icons.Search,
+                    modifier = Modifier.fillMaxWidth()
+                )
+            }
+
             items(
                 searchResults!!,
                 key = { it.id }
@@ -194,12 +206,7 @@ fun ImageSearchScreen(
                 )
             }
         } else if (searchResults?.isEmpty() == true) {
-            item("empty_text") {
-                EmptyText(
-                    text = stringResource(Res.string.not_found),
-                    visible = true,
-                )
-            }
+            emptyText { stringResource(Res.string.not_found) }
         } else if (searchError == null && useSpotify) {
             items(
                 10,
@@ -217,12 +224,7 @@ fun ImageSearchScreen(
                 )
             }
         } else if (!useSpotify) {
-            item("spotify_off") {
-                EmptyText(
-                    text = stringResource(Res.string.spotify) + " " + stringResource(Res.string.is_turned_off),
-                    visible = true,
-                )
-            }
+            emptyText { stringResource(Res.string.spotify) + " " + stringResource(Res.string.is_turned_off) }
         }
 
         if (searchError != null) {

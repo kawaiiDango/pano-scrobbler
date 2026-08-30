@@ -12,14 +12,6 @@ plugins {
     alias(libs.plugins.crashlytics)
 }
 
-val requestedTasks = gradle.startParameter.taskNames.map { it.lowercase() }
-
-val aboutLibrariesVariant = when {
-    requestedTasks.any { it.contains("releasegithub") } -> "releaseGithub"
-    requestedTasks.any { it.contains("release") } -> "release"
-    else -> null
-}
-
 val APP_ID = rootProject.extra["APP_ID"] as String
 val VER_CODE = rootProject.extra["VER_CODE"] as Int
 val VER_NAME = rootProject.extra["VER_NAME"] as String
@@ -30,12 +22,16 @@ val localProperties = gradleLocalProperties(rootDir, project.providers)
     .map { it.key to it.value.toString() }
     .toMap()
 
+kotlin {
+    jvmToolchain(25)
+}
+
 android {
-    buildToolsVersion = "37.0.0"
+//    buildToolsVersion = "37.0.0"
 
     compileSdk {
         version = release(libs.versions.targetSdk.get().toInt()) {
-            minorApiLevel = libs.versions.sdkMinor.get().toInt()
+//            minorApiLevel = libs.versions.sdkMinor.get().toInt()
         }
     }
 
@@ -122,13 +118,13 @@ android {
 
     signingConfigs {
         if (
-            localProperties["release.keystore"] != null &&
+            localProperties["release.keystorePath"] != null &&
             localProperties["release.storePassword"] != null &&
             localProperties["release.alias"] != null &&
             localProperties["release.password"] != null
         ) {
             register("release") {
-                storeFile = file(localProperties["release.keystore"]!!)
+                storeFile = file(localProperties["release.keystorePath"]!!)
                 storePassword = localProperties["release.storePassword"]
                 keyAlias = localProperties["release.alias"]
                 keyPassword = localProperties["release.password"]
@@ -136,13 +132,13 @@ android {
         }
 
         if (
-            localProperties["releaseGithub.keystore"] != null &&
+            localProperties["releaseGithub.keystorePath"] != null &&
             localProperties["releaseGithub.storePassword"] != null &&
             localProperties["releaseGithub.alias"] != null &&
             localProperties["releaseGithub.password"] != null
         ) {
             register("releaseGithub") {
-                storeFile = file(localProperties["releaseGithub.keystore"]!!)
+                storeFile = file(localProperties["releaseGithub.keystorePath"]!!)
                 storePassword = localProperties["releaseGithub.storePassword"]
                 keyAlias = localProperties["releaseGithub.alias"]
                 keyPassword = localProperties["releaseGithub.password"]
@@ -207,20 +203,9 @@ aboutLibraries {
             "developerConnection"
         )
 
-        variant = aboutLibrariesVariant
+        outputFile =
+            file("../composeApp/src/androidMain/composeResources/files/aboutlibraries.json")
     }
-
-    exports {
-        create("release") {
-            outputFile =
-                file("../composeApp/src/androidMain/composeResources/files/aboutlibraries.json")
-        }
-        create("releaseGithub") {
-            outputFile =
-                file("../composeApp/src/androidMain/composeResources/files/aboutlibraries.json")
-        }
-    }
-
 }
 
 tasks.register<Copy>("copyGithubReleaseApk") {
@@ -234,7 +219,18 @@ tasks.register<Copy>("copyGithubReleaseApk") {
 }
 
 tasks.configureEach {
-    if (name == "packageReleaseGithub") {
-        finalizedBy("copyGithubReleaseApk")
+    when (name) {
+        "packageReleaseGithub" -> {
+            finalizedBy("copyGithubReleaseApk")
+        }
+
+        "exportLibraryDefinitions" -> {
+            finalizedBy(":composeApp:copyNonXmlValueResourcesForAndroidMain")
+        }
+
+        "packageReleaseGithubResources", "packageReleaseResources" -> {
+            finalizedBy("exportLibraryDefinitions")
+        }
+
     }
 }

@@ -5,9 +5,5 @@ expect class PlatformPlaybackInfo
 expect fun transformPlaybackState(
     trackInfo: PlayingTrackInfo,
     playbackInfo: PlatformPlaybackInfo,
-    options: TransformMetadataOptions
+    scrobbleSpotifyRemote: Boolean,
 ): Pair<PlaybackInfo, Boolean>
-
-data class TransformMetadataOptions(
-    val scrobbleSpotifyRemote: Boolean = false,
-)

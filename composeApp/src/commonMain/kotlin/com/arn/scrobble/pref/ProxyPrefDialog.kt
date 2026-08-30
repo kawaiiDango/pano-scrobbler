@@ -22,8 +22,8 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import com.arn.scrobble.navigation.enumSaver
-import com.arn.scrobble.ui.OutlinedToggleButtons
 import com.arn.scrobble.ui.PanoOutlinedTextField
+import com.arn.scrobble.ui.PanoToggleButtonGroup
 import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff
 import com.arn.scrobble.utils.Stuff.collectAsStateWithInitialValue
@@ -56,7 +56,7 @@ fun ProxyPrefDialog(modifier: Modifier = Modifier) {
         var passEditable by rememberSaveable { mutableStateOf(proxy.pass) }
 
         var isValid by remember { mutableStateOf(true) }
-        val isEnabled = typeEditable != MainPrefs.ProxySettings.Type.SYSTEM
+        val isEnabled = typeEditable != MainPrefs.ProxyPrefs.Type.SYSTEM
 
         fun validate(): Boolean {
             val portInt = portEditable.toIntOrNull() ?: return false
@@ -86,7 +86,7 @@ fun ProxyPrefDialog(modifier: Modifier = Modifier) {
                     Stuff.appScope.launch {
                         PlatformStuff.mainPrefs.updateData {
                             it.copy(
-                                proxy = MainPrefs.ProxySettings(
+                                proxy = MainPrefs.ProxyPrefs(
                                     type = typeEditable,
                                     host = hostEditable,
                                     port = portEditable.toInt(),
@@ -100,7 +100,7 @@ fun ProxyPrefDialog(modifier: Modifier = Modifier) {
             }
         }
 
-        OutlinedToggleButtons(
+        PanoToggleButtonGroup(
             listOf(
                 stringResource(Res.string.system),
                 stringResource(Res.string.proxy_http),
@@ -109,9 +109,9 @@ fun ProxyPrefDialog(modifier: Modifier = Modifier) {
             selectedIndex = typeEditable.ordinal,
             onSelected = { index ->
                 typeEditable = when (index) {
-                    MainPrefs.ProxySettings.Type.SOCKS5.ordinal -> MainPrefs.ProxySettings.Type.SOCKS5
-                    MainPrefs.ProxySettings.Type.HTTP.ordinal -> MainPrefs.ProxySettings.Type.HTTP
-                    else -> MainPrefs.ProxySettings.Type.SYSTEM
+                    MainPrefs.ProxyPrefs.Type.SOCKS5.ordinal -> MainPrefs.ProxyPrefs.Type.SOCKS5
+                    MainPrefs.ProxyPrefs.Type.HTTP.ordinal -> MainPrefs.ProxyPrefs.Type.HTTP
+                    else -> MainPrefs.ProxyPrefs.Type.SYSTEM
                 }
             },
             modifier = Modifier

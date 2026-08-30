@@ -50,6 +50,8 @@ sealed interface PanoRoute : NavKey {
         val user: UserCached?
     }
 
+    sealed interface HasTimePeriods
+
     @Serializable
     data class SelfHomePager(val digestTypeStr: String? = null) :
         PanoRoute, DeepLinkable, HasTabs, HasUser {
@@ -218,10 +220,10 @@ sealed interface PanoRoute : NavKey {
     @Serializable
     data class MusicEntryInfoPager(
         val artist: Artist,
-        val user: UserCached,
+        override val user: UserCached,
         val entryType: Int,
         val appId: String? = null,
-    ) : PanoRoute, DeepLinkable, HasTabs {
+    ) : PanoRoute, DeepLinkable, HasTabs, HasUser {
 
         override fun getTabsList(accountType: AccountType) = listOf(
             PanoTab.TopArtists,
@@ -232,9 +234,9 @@ sealed interface PanoRoute : NavKey {
 
     @Serializable
     data class ChartsPager(
-        val user: UserCached,
+        override val user: UserCached,
         val chartsType: Int,
-    ) : PanoRoute, HasTabs {
+    ) : PanoRoute, HasTabs, HasUser, HasTimePeriods {
 
         override fun getTabsList(accountType: AccountType) = listOf(
             PanoTab.TopArtists,
@@ -246,15 +248,16 @@ sealed interface PanoRoute : NavKey {
     @Serializable
     data class SimilarTracks(
         val track: Track,
-        val user: UserCached,
+        override val user: UserCached,
         val appId: String? = null,
-    ) : PanoRoute, DeepLinkable
+    ) : PanoRoute, DeepLinkable, HasUser
 
     @Serializable
-    data class Random(val user: UserCached) : PanoRoute
+    data class Random(override val user: UserCached) : PanoRoute, HasUser, HasTimePeriods
 
     @Serializable
-    data class TrackHistory(val track: Track, val user: UserCached) : PanoRoute, DeepLinkable
+    data class TrackHistory(val track: Track, override val user: UserCached) : PanoRoute,
+        DeepLinkable, HasUser
 
 
     @Serializable
@@ -279,7 +282,10 @@ sealed interface PanoRoute : NavKey {
     sealed interface Modal : PanoRoute {
 
         @Serializable
-        data class NavPopup(val otherUser: UserCached?) : Modal
+        sealed interface CanExpand : Modal {
+            val isExpanded: Boolean
+            fun copyExpanded(): Modal
+        }
 
         @Serializable
         data class Changelog(val text: String) : Modal
@@ -304,7 +310,13 @@ sealed interface PanoRoute : NavKey {
         ) : Modal, DeepLinkable
 
         @Serializable
-        data class TagInfo(val tag: Tag) : Modal
+        data class TagInfo(
+            val tag: Tag,
+            override val isExpanded: Boolean = false
+        ) : Modal, CanExpand {
+
+            override fun copyExpanded() = copy(isExpanded = true)
+        }
 
         @Serializable
         data class MusicEntryInfo(
@@ -313,7 +325,10 @@ sealed interface PanoRoute : NavKey {
             val track: Track? = null,
             val user: UserCached,
             val appId: String? = null,
-        ) : Modal, DeepLinkable
+            override val isExpanded: Boolean = false
+        ) : Modal, DeepLinkable, CanExpand {
+            override fun copyExpanded() = copy(isExpanded = true)
+        }
 
 
         @Serializable
@@ -336,7 +351,17 @@ sealed interface PanoRoute : NavKey {
             val msid: String? = null,
             val hash: Int? = null, // from notification
             val key: String? = null, // from main ui
-        ) : Modal, DeepLinkable
+            override val isExpanded: Boolean = false,
+        ) : Modal, DeepLinkable, CanExpand, HasFab {
+            override fun copyExpanded() = copy(isExpanded = true)
+
+            override fun getFabData() = PanoFabData(
+                Res.string.done,
+                Icons.Check,
+                true,
+                null
+            )
+        }
 
         @Serializable
         data object MediaSearchPref : Modal
@@ -394,4 +419,9 @@ sealed interface PanoRoute : NavKey {
             )
         }
     }
+
+    fun isModal() = if (this is Modal.CanExpand)
+        !isExpanded
+    else
+        this is Modal
 }

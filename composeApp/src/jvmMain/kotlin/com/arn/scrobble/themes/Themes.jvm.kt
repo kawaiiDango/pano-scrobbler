@@ -12,7 +12,10 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.State
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.remember
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.unit.Density
 import com.arn.scrobble.PanoNativeComponents
+import com.arn.scrobble.utils.DesktopStuff
 import kotlinx.coroutines.flow.filterNotNull
 
 @Composable
@@ -37,12 +40,30 @@ actual fun AddAdditionalProviders(content: @Composable () -> Unit) {
         LightDefaultContextMenuRepresentation
     }
 
+    val linuxSystemPropDensity = remember {
+        System.getProperty("sun.java2d.uiScale")
+            ?.takeIf { DesktopStuff.IS_LINUX }
+            ?.toFloatOrNull()
+            ?.let { Density(density = it, fontScale = 1f) }
+        // fontScale is hardcoded to 1f with t'odo comments in LayoutConfiguration.desktop.kt
+        // sun.java2d.uiScale is correctly set to a fraction from skiko, but java rounds it off
+    }
+
+    val density = LocalDensity.current.let {
+        if (linuxSystemPropDensity != null && linuxSystemPropDensity.density != it.density) {
+            linuxSystemPropDensity
+        } else {
+            it
+        }
+    }
+
     CompositionLocalProvider(
         LocalScrollbarStyle provides defaultScrollbarStyle.copy(
             unhoverColor = scrollbarColor.copy(alpha = defaultScrollbarStyle.unhoverColor.alpha),
             hoverColor = scrollbarColor.copy(alpha = defaultScrollbarStyle.hoverColor.alpha),
         ),
-        LocalContextMenuRepresentation provides contextMenuRepresentation
+        LocalContextMenuRepresentation provides contextMenuRepresentation,
+        LocalDensity provides density
     ) {
         content()
     }

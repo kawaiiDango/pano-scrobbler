@@ -1,14 +1,19 @@
 package com.arn.scrobble.ui
 
 import androidx.compose.foundation.HorizontalScrollbar
+import androidx.compose.foundation.LocalScrollbarStyle
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.VerticalScrollbar
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.plus
+import androidx.compose.foundation.layout.requiredSize
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.LazyListState
@@ -21,10 +26,12 @@ import androidx.compose.foundation.rememberScrollbarAdapter
 import androidx.compose.material3.FilledTonalIconButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButtonDefaults
+import androidx.compose.material3.IconButtonDefaults.IconButtonWidthOption
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import com.arn.scrobble.icons.Icons
 import com.arn.scrobble.icons.automirrored.KeyboardArrowLeft
@@ -37,7 +44,6 @@ import pano_scrobbler.composeapp.generated.resources.move_right
 import kotlin.math.max
 import kotlin.math.min
 
-private val scrollbarSize = 12.dp
 
 @Composable
 actual fun PanoLazyColumn(
@@ -49,6 +55,8 @@ actual fun PanoLazyColumn(
     modifier: Modifier,
     content: LazyListScope.() -> Unit,
 ) {
+    val scrollbarSize = LocalScrollbarStyle.current.thickness
+
     Box(
         modifier = modifier
     ) {
@@ -82,6 +90,8 @@ actual fun PanoLazyVerticalGrid(
     modifier: Modifier,
     content: LazyGridScope.() -> Unit,
 ) {
+    val scrollbarSize = LocalScrollbarStyle.current.thickness
+
     Box(
         modifier = modifier
     ) {
@@ -117,91 +127,92 @@ actual fun PanoLazyRow(
 ) {
     val scope = rememberCoroutineScope()
     val canScroll = state.canScrollForward || state.canScrollBackward
-    val scrollButtonsPadding = if (canScroll) 50.dp else 0.dp
+    val scrollButtonSize = if (canScroll)
+        IconButtonDefaults.extraSmallContainerSize(IconButtonWidthOption.Wide)
+    else
+        DpSize.Zero
+
+    fun scroll(forward: Boolean) {
+        val lastFullyVisibleIdx =
+            state.layoutInfo.visibleItemsInfo.findLast {
+                it.offset + it.size <= state.layoutInfo.viewportEndOffset
+            }?.index
+                ?: 0
+
+        val targetIdx = if (forward) {
+            min(lastFullyVisibleIdx + 1, state.layoutInfo.totalItemsCount - 1)
+        } else {
+            val firstFullyVisibleIdx =
+                state.layoutInfo.visibleItemsInfo.find { it.offset >= state.layoutInfo.viewportStartOffset }?.index
+                    ?: 0
+            max(
+                firstFullyVisibleIdx - (lastFullyVisibleIdx - firstFullyVisibleIdx) - 1,
+                0
+            )
+        }
+
+        scope.launch {
+            state.animateScrollToItem(targetIdx)
+        }
+    }
 
     Box(
         modifier = modifier
     ) {
-        if (canScroll) {
-            FilledTonalIconButton(
-                shapes = IconButtonDefaults.shapes(),
-                enabled = state.canScrollBackward,
-                onClick = {
-                    scope.launch {
-                        val lastFullyVisibleIdx =
-                            state.layoutInfo.visibleItemsInfo.findLast {
-                                it.offset + it.size <= state.layoutInfo.viewportEndOffset
-                            }?.index
-                                ?: 0
-
-                        val firstFullyVisibleIdx =
-                            state.layoutInfo.visibleItemsInfo.find { it.offset >= state.layoutInfo.viewportStartOffset }?.index
-                                ?: 0
-
-                        val targetIdx =
-                            max(
-                                firstFullyVisibleIdx - (lastFullyVisibleIdx - firstFullyVisibleIdx) - 1,
-                                0
-                            )
-
-                        state.animateScrollToItem(targetIdx)
-                    }
-                },
-                modifier = Modifier.align(Alignment.CenterStart)
-            ) {
-                Icon(
-                    imageVector = Icons.AutoMirrored.KeyboardArrowLeft,
-                    contentDescription = stringResource(Res.string.move_left),
-                )
-            }
-        }
-
         LazyRow(
             state = state,
-            contentPadding = contentPadding,
+            contentPadding = contentPadding + PaddingValues(
+                bottom = scrollButtonSize.height
+            ),
             reverseLayout = reverseLayout,
             horizontalArrangement = horizontalArrangement,
             verticalAlignment = verticalAlignment,
-            modifier = Modifier.padding(
-                vertical = scrollbarSize,
-                horizontal = scrollButtonsPadding
-            ),
             content = content
         )
 
         if (canScroll) {
-            FilledTonalIconButton(
-                shapes = IconButtonDefaults.shapes(),
-                enabled = state.canScrollForward,
-                onClick = {
-                    scope.launch {
-                        val lastFullyVisibleIdx =
-                            state.layoutInfo.visibleItemsInfo.findLast {
-                                it.offset + it.size <= state.layoutInfo.viewportEndOffset
-                            }?.index
-                                ?: 0
-
-                        val targetIdx =
-                            min(lastFullyVisibleIdx + 1, state.layoutInfo.totalItemsCount - 1)
-
-                        state.animateScrollToItem(targetIdx)
-                    }
-                },
-                modifier = Modifier.align(Alignment.CenterEnd)
+            Row(
+                modifier = Modifier.align(Alignment.BottomCenter),
+                verticalAlignment = Alignment.CenterVertically,
             ) {
-                Icon(
-                    imageVector = Icons.AutoMirrored.KeyboardArrowRight,
-                    contentDescription = stringResource(Res.string.move_right),
+                FilledTonalIconButton(
+                    shapes = IconButtonDefaults.shapes(),
+                    enabled = state.canScrollBackward,
+                    onClick = {
+                        scroll(false)
+                    },
+                    modifier = Modifier
+                        .requiredSize(scrollButtonSize)
+                        .padding(horizontal = 4.dp)
+                ) {
+                    Icon(
+                        imageVector = Icons.AutoMirrored.KeyboardArrowLeft,
+                        contentDescription = stringResource(Res.string.move_left),
+                    )
+                }
+
+                HorizontalScrollbar(
+                    modifier = Modifier.weight(1f),
+                    adapter = rememberScrollbarAdapter(state)
                 )
+
+                FilledTonalIconButton(
+                    shapes = IconButtonDefaults.shapes(),
+                    enabled = state.canScrollForward,
+                    onClick = {
+                        scroll(true)
+                    },
+                    modifier = Modifier
+                        .size(scrollButtonSize)
+                        .padding(horizontal = 4.dp)
+                ) {
+                    Icon(
+                        imageVector = Icons.AutoMirrored.KeyboardArrowRight,
+                        contentDescription = stringResource(Res.string.move_right),
+                    )
+                }
             }
         }
-
-        HorizontalScrollbar(
-            modifier = Modifier.align(Alignment.BottomStart)
-                .padding(horizontal = scrollButtonsPadding)
-                .fillMaxWidth(),
-            adapter = rememberScrollbarAdapter(state)
-        )
     }
 }
 

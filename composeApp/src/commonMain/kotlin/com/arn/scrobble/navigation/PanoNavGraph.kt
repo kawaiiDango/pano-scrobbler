@@ -53,6 +53,7 @@ import com.arn.scrobble.search.SearchScreen
 import com.arn.scrobble.themes.ThemeChooserScreen
 import com.arn.scrobble.ui.PanoPullToRefreshStateForTab
 import com.arn.scrobble.ui.accountTypeLabel
+import com.arn.scrobble.ui.navBg
 import com.arn.scrobble.ui.navColumn
 import com.arn.scrobble.ui.navScrollableColumn
 import com.arn.scrobble.ui.panoContentPadding
@@ -104,7 +105,8 @@ object PanoNavGraph {
         goBack: () -> Unit,
         searchFieldState: TextFieldState,
         pullToRefreshState: () -> PullToRefreshState,
-        onSetRefreshing: (Int, PanoPullToRefreshStateForTab) -> Unit,
+        onSetRefreshing: (PanoTab, PanoPullToRefreshStateForTab) -> Unit,
+        onExpandModal: (PanoRoute.Modal.CanExpand) -> Unit,
         selectSubTabId: (Int) -> Unit,
         mainViewModel: MainViewModel,
     ) = entryProvider {
@@ -158,9 +160,8 @@ object PanoNavGraph {
                     pullToRefreshState = pullToRefreshState(),
                     onSetRefreshing = onSetRefreshing,
                     mainViewModel = mainViewModel,
-                    getPullToRefreshTrigger = { mainViewModel.getPullToRefreshTrigger(it) },
                     selectSubTabId = selectSubTabId,
-                    modifier = Modifier.navColumn()
+                    modifier = Modifier.navBg()
                 )
             }
         }
@@ -179,9 +180,8 @@ object PanoNavGraph {
                 pullToRefreshState = pullToRefreshState(),
                 onSetRefreshing = onSetRefreshing,
                 mainViewModel = mainViewModel,
-                getPullToRefreshTrigger = { mainViewModel.getPullToRefreshTrigger(it) },
                 selectSubTabId = selectSubTabId,
-                modifier = Modifier.navColumn()
+                modifier = Modifier.navBg()
             )
         }
 
@@ -303,6 +303,8 @@ object PanoNavGraph {
                 msid = null,
                 hash = null,
                 key = null,
+                isExpanded = true,
+                onExpand = {},
                 viewModel = mainViewModel,
                 modifier = Modifier.navScrollableColumn(true)
             )
@@ -556,7 +558,6 @@ object PanoNavGraph {
                     onSetTabIdx(route, tab)
                 },
                 tabsList = getTabData(route),
-                onSetTitle = { title -> onSetTitle(route, title) },
                 onNavigate = navigate,
                 modifier = Modifier.navColumn()
             )
@@ -643,8 +644,10 @@ object PanoNavGraph {
         }
 
         panoModalNavGraph(
+            onSetTitle = onSetTitle,
             navigate = navigate,
             goBack = goBack,
+            onExpandModal = onExpandModal,
             mainViewModel = mainViewModel,
         )
 

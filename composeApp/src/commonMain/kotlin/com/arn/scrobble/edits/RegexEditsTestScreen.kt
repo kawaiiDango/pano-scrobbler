@@ -39,8 +39,8 @@ import com.arn.scrobble.navigation.jsonSerializableSaver
 import com.arn.scrobble.panoicons.AlbumArtist
 import com.arn.scrobble.panoicons.PanoIcons
 import com.arn.scrobble.pref.AppItem
-import com.arn.scrobble.ui.InfoText
 import com.arn.scrobble.ui.PanoOutlinedTextField
+import com.arn.scrobble.ui.TextWithIcon
 import org.jetbrains.compose.resources.pluralStringResource
 import org.jetbrains.compose.resources.stringResource
 import pano_scrobbler.composeapp.generated.resources.Res
@@ -187,7 +187,7 @@ fun RegexEditsTestScreen(
             Column {
                 if (regexMatches?.blockPlayerAction != null) {
                     val blockPlayerAction = regexMatches!!.blockPlayerAction!!
-                    InfoText(
+                    TextWithIcon(
                         icon = Icons.Block,
                         text = stringResource(Res.string.block) +
                                 " (${blockPlayerAction.name})",
@@ -196,22 +196,22 @@ fun RegexEditsTestScreen(
                 } else if (regexMatches?.scrobbleData != null) {
                     val scrobbleData = regexMatches!!.scrobbleData!!
 
-                    InfoText(
+                    TextWithIcon(
                         text = scrobbleData.artist,
                         icon = Icons.Mic
                     )
 
-                    InfoText(
+                    TextWithIcon(
                         text = scrobbleData.track,
                         icon = Icons.MusicNote
                     )
 
-                    InfoText(
+                    TextWithIcon(
                         text = scrobbleData.album ?: "",
                         icon = Icons.Album
                     )
 
-                    InfoText(
+                    TextWithIcon(
                         text = scrobbleData.albumArtist ?: "",
                         icon = PanoIcons.AlbumArtist
                     )

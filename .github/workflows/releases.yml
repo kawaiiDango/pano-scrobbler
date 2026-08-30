@@ -49,7 +49,7 @@ jobs:
         name: Build APK
         shell: bash
         run: |
-          export JAVA_HOME=$JAVA_HOME_21_X64
+          export JAVA_HOME=$JAVA_HOME_25_X64
           $ANDROID_HOME/cmdline-tools/**/bin/sdkmanager --update
           $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --list_installed
           ./gradlew androidApp:assembleReleaseGithub --no-daemon
@@ -64,7 +64,7 @@ jobs:
       - name: Install GraalVM CE
         uses: graalvm/setup-graalvm@v1
         with:
-          version: '25.2'
+          version: '25.3'
           distribution: 'graalvm-community'
           github-token: ${{ github.token }}
 
@@ -100,7 +100,7 @@ jobs:
           fi
 
           # Download artifacts from that run (filter by name if provided)
-          gh run download "$RUN_ID" -R "kawaiiDango/pano-native-components" -n "libs-${{ matrix.resources-dir }}" -D composeApp/resources/${{ matrix.resources-dir }}
+          gh run download "$RUN_ID" -R "kawaiiDango/pano-native-components" -n "libs-${{ matrix.resources-dir }}" -D desktopApp/resources/${{ matrix.resources-dir }}
 
       - name: Install Inno Setup
         if: matrix.resources-dir == 'windows-x64'
@@ -111,7 +111,7 @@ jobs:
       - name: Build desktop jar and native image
         shell: bash
         run: |
-          ./gradlew composeApp:exportLibraryDefinitions composeApp:packageUberJarForCurrentOS -PaboutLibraries.exportVariant=jvm --no-daemon
+          ./gradlew desktopApp:packageNativeImage --no-daemon
 
       - name: Upload desktop binary
         uses: actions/upload-artifact@v7

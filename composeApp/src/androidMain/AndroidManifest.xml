@@ -121,7 +121,7 @@
             android:excludeFromRecents="true"
             android:exported="false"
             android:launchMode="singleInstancePerTask"
-            android:theme="@style/AppThemeDialog"
+            android:theme="@style/AppTheme.Dialog"
             android:windowSoftInputMode="adjustResize" />
 
         <activity

@@ -1,10 +1,9 @@
 package com.arn.scrobble.navigation
 
 import androidx.compose.ui.graphics.vector.ImageVector
-import com.arn.scrobble.charts.TimePeriodType
-import com.arn.scrobble.charts.getPeriodTypeIcon
 import com.arn.scrobble.icons.Album
 import com.arn.scrobble.icons.BarChart4Bars
+import com.arn.scrobble.icons.CalendarToday
 import com.arn.scrobble.icons.Casino
 import com.arn.scrobble.icons.Favorite
 import com.arn.scrobble.icons.Group
@@ -27,7 +26,6 @@ import pano_scrobbler.composeapp.generated.resources.random_text
 import pano_scrobbler.composeapp.generated.resources.recents
 import pano_scrobbler.composeapp.generated.resources.reload
 import pano_scrobbler.composeapp.generated.resources.scrobbles
-import pano_scrobbler.composeapp.generated.resources.time_jump
 import pano_scrobbler.composeapp.generated.resources.tracks
 
 sealed class PanoTab(
@@ -38,42 +36,43 @@ sealed class PanoTab(
         val id: Int,
         val icon: ImageVector,
         val titleRes: StringResource,
+        val isDropdown: Boolean = false
     )
 
-    interface HasSubtabs {
+    sealed interface HasSubtabs {
         val subTabs: List<Subtab>
     }
 
     data object Scrobbles : PanoTab(titleRes = Res.string.scrobbles, icon = Icons.History),
         HasSubtabs {
-        enum class ScrobblesType {
+        enum class ScrobblesSubTabType {
             REFRESH,
-            RECENTS,
+            SCROBBLES,
             LOVED,
-            TIME_JUMP,
             RANDOM,
         }
 
         override val subTabs = listOfNotNull(
             if (PlatformStuff.isDesktop || PlatformStuff.isTv)
-                Subtab(ScrobblesType.REFRESH.ordinal, Icons.Refresh, Res.string.reload)
+                Subtab(ScrobblesSubTabType.REFRESH.ordinal, Icons.Refresh, Res.string.reload)
             else
                 null,
-            Subtab(ScrobblesType.RECENTS.ordinal, Icons.History, Res.string.recents),
-            Subtab(ScrobblesType.LOVED.ordinal, Icons.Favorite, Res.string.loved),
             Subtab(
-                ScrobblesType.TIME_JUMP.ordinal,
-                getPeriodTypeIcon(TimePeriodType.CUSTOM),
-                Res.string.time_jump
+                ScrobblesSubTabType.SCROBBLES.ordinal,
+                Icons.CalendarToday,
+                Res.string.recents,
+                true
             ),
-            Subtab(ScrobblesType.RANDOM.ordinal, Icons.Casino, Res.string.random_text)
+            Subtab(ScrobblesSubTabType.LOVED.ordinal, Icons.Favorite, Res.string.loved),
+            Subtab(ScrobblesSubTabType.RANDOM.ordinal, Icons.Casino, Res.string.random_text)
         )
     }
 
     data object ScrobblesNoSubtabs : PanoTab(titleRes = Res.string.scrobbles, icon = Icons.History)
-
     data object Following : PanoTab(titleRes = Res.string.following, icon = Icons.Group)
-    data object Charts : PanoTab(titleRes = Res.string.charts, icon = Icons.BarChart4Bars)
+    data object Charts : PanoTab(titleRes = Res.string.charts, icon = Icons.BarChart4Bars),
+        PanoRoute.HasTimePeriods
+
     data object Profile : PanoTab(titleRes = Res.string.pref_user_label, icon = Icons.Person)
     data object TopArtists : PanoTab(titleRes = Res.string.artists, icon = Icons.Mic)
     data object TopAlbums : PanoTab(titleRes = Res.string.albums, icon = Icons.Album)

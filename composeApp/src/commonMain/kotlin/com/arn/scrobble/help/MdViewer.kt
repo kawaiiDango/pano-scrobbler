@@ -42,7 +42,7 @@ fun MdText(
             val annotated = remember(block, markdownStyle) {
                 block.toAnnotatedString(markdownStyle)
             }
-            
+
             val interactionSource = remember { MutableInteractionSource() }
             val itemModifier = Modifier
                 .fillMaxWidth()
@@ -58,7 +58,7 @@ fun MdText(
                     SelectionContainer(
                         modifier = itemModifier
                             .padding(vertical = 4.dp)
-                            .background(MaterialTheme.colorScheme.surfaceContainerHigh)
+                            .background(MaterialTheme.colorScheme.surfaceContainerHigh.copy(alpha = 0.5f))
                             .padding(12.dp)
                     ) {
                         Text(

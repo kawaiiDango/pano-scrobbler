@@ -36,24 +36,16 @@
         <item name="android:windowShowWallpaper">true</item>
     </style>
 
-    <style name="AppThemeDialog" parent="android:Theme.DeviceDefault.Dialog.Alert">
-        <item name="android:windowSoftInputMode">adjustResize</item>
-        <item name="android:windowActionBar">false</item>
-        <item name="android:windowNoTitle">true</item>
+    <style name="AppTheme.Dialog">
         <item name="android:windowIsTranslucent">true</item>
-        <item name="android:windowMinWidthMajor">60%</item>
-        <item name="android:windowMinWidthMinor">95%</item>
-        <item name="android:windowEnterTransition">@android:transition/fade</item>
-        <item name="android:windowExitTransition">@android:transition/fade</item>
-        <item name="android:windowActivityTransitions">true</item>
-        <item name="android:windowSplashScreenAnimatedIcon">@drawable/avd_splash_icon</item>
+        <item name="android:windowIsFloating">false</item>
 
         <item name="android:windowBackground">@android:color/transparent</item>
         <item name="android:windowContentOverlay">@null</item>
-
-        <item name="android:windowIsFloating">true</item>
         <item name="android:backgroundDimEnabled">false</item>
         <item name="android:windowAnimationStyle">@null</item>
+        <item name="android:windowDisablePreview">true</item>
+        <item name="android:windowClipToOutline">false</item>
     </style>
 
     <!--  todo: remove when it arrives in cmp  -->

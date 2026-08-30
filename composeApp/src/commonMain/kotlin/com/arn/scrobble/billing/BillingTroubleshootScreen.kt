@@ -13,6 +13,7 @@ import org.jetbrains.compose.resources.stringResource
 import pano_scrobbler.composeapp.generated.resources.Res
 import pano_scrobbler.composeapp.generated.resources.billing_troubleshoot
 import pano_scrobbler.composeapp.generated.resources.billing_troubleshoot_github
+import pano_scrobbler.composeapp.generated.resources.billing_troubleshoot_non_play_purchases
 import pano_scrobbler.composeapp.generated.resources.close
 
 @Composable
@@ -26,7 +27,7 @@ fun BillingTroubleshootScreen(
         val text = if (VariantStuff.billingRepository.needsActivationCode) {
             stringResource(Res.string.billing_troubleshoot_github, 5, "July 2025")
         } else {
-            stringResource(Res.string.billing_troubleshoot)
+            stringResource(Res.string.billing_troubleshoot) + "\n" + stringResource(Res.string.billing_troubleshoot_non_play_purchases)
         }
 
         Text(

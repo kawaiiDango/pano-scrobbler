@@ -1,7 +1,9 @@
 package com.arn.scrobble.themes
 
 import androidx.compose.material3.ColorScheme
+import androidx.compose.material3.LocalRippleThemeConfiguration
 import androidx.compose.material3.MaterialExpressiveTheme
+import androidx.compose.material3.RippleThemeConfiguration
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
@@ -11,6 +13,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.graphics.lerp
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.arn.scrobble.billing.LicenseState
 import com.arn.scrobble.billing.LocalLicenseValidState
@@ -113,8 +117,8 @@ fun AppTheme(
                 blurMainWindow = blurMainWindow,
                 blurSubWindow = blurSubWindow,
                 contrastMode = contrastMode,
-                allOnSecondaryContainerColors = otherColorSchemes.map { it.onSecondaryContainer },
-                allSecondaryContainerColors = otherColorSchemes.map { it.secondaryContainer },
+                avatarColors = otherColorSchemes.map { it.onSecondaryContainer },
+                avatarContainerColors = otherColorSchemes.map { it.secondaryContainer },
             )
         }
 
@@ -123,7 +127,7 @@ fun AppTheme(
             getColorScheme(
                 theme = ThemeUtils.defaultTheme,
                 isDark = true,
-                contrastMode = ContrastMode.LOW,
+                contrastMode = contrastMode,
             )
         }
 
@@ -145,10 +149,23 @@ fun AppTheme(
         }
     }
 
+
     MaterialExpressiveTheme(
         colorScheme = colorScheme,
     ) {
+        val rippleConfig = remember {
+            RippleThemeConfiguration(
+                focus = RippleThemeConfiguration.Focus.InsetRing(
+                    outerStrokeInset = 0.dp,
+                    outerStrokeWidth = 3.dp, // default is 2.dp — bumped for visibility on TV
+                    innerStrokeInset = 1.dp,
+                    innerStrokeWidth = 4.dp, // default is 3.dp
+                )
+            )
+        }
+
         CompositionLocalProvider(
+            LocalRippleThemeConfiguration provides rippleConfig,
             LocalThemeAttributes provides themeAttributes,
             LocalLicenseValidState provides (licenseState == LicenseState.VALID),
         ) {
@@ -190,10 +207,15 @@ private fun ColorScheme.withAlpha(alpha: Float, hasBlur: Boolean): ColorScheme {
         surface = surface.copy(alpha = alpha),
         surfaceContainerLow = surfaceContainerLow.copy(alpha = if (hasBlur) midAlpha else highAlpha),
         surfaceContainerHigh = surfaceContainerHigh.copy(alpha = if (hasBlur) midAlpha else highAlpha),
-        surfaceContainer = surfaceContainer.copy(alpha = highAlpha),
-        secondaryContainer = secondaryContainer.copy(alpha = highAlpha),
-        tertiaryContainer = tertiaryContainer.copy(alpha = highAlpha),
-        inverseSurface = inverseSurface.copy(alpha = highAlpha),
+        surfaceContainerHighest = surfaceContainerHighest.copy(alpha = if (hasBlur) midAlpha else highAlpha),
+        surfaceContainer = surfaceContainer.copy(alpha = if (hasBlur) midAlpha else highAlpha),
+        outlineVariant = if (alpha < 1f)
+            lerp(outlineVariant, outline, alpha.coerceAtLeast(0.65f)) // fix for bad contrast
+        else
+            outlineVariant,
+//        secondaryContainer = secondaryContainer.copy(alpha = highAlpha),
+//        tertiaryContainer = tertiaryContainer.copy(alpha = highAlpha),
+//        inverseSurface = inverseSurface.copy(alpha = highAlpha),
     )
 }
 

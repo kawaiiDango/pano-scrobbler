@@ -113,7 +113,7 @@ class WebViewVM(
     }
 
     fun startProxyRelay(
-        upstreamProxy: MainPrefs.ProxySettings,
+        upstreamProxy: MainPrefs.ProxyPrefs,
     ): Int {
         tunnel?.close()
 

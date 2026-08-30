@@ -51,9 +51,11 @@ actual object PlatformStuff {
 
     actual const val hasSystemLocaleStore = false
 
+    actual val supportsSpotifyRemote = DesktopStuff.IS_WINDOWS
+
     actual val appIdPlaceholder
         get() =
-            if (DesktopStuff.os == DesktopStuff.Os.Linux)
+            if (DesktopStuff.IS_LINUX)
                 "<MPRIS_ID>"
             else
                 "<AUMID>"
@@ -84,7 +86,7 @@ actual object PlatformStuff {
         val isMailTo = url.startsWith("mailto:", ignoreCase = true)
 
         var desktop: Desktop? = null
-        if (DesktopStuff.os == DesktopStuff.Os.Linux && Desktop.isDesktopSupported())
+        if (DesktopStuff.IS_LINUX && Desktop.isDesktopSupported())
             desktop = Desktop.getDesktop().takeIf {
                 if (isMailTo)
                     it.isSupported(Desktop.Action.MAIL)

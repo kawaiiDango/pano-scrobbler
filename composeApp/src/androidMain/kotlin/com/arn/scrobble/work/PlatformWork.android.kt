@@ -74,7 +74,7 @@ class PlatformWorker(
         .createForegroundInfo(workName)
 
     override suspend fun doWork(): Result {
-        Stuff.initializeMainPrefsCache() // todo: maybe not do this
+        Stuff.initializeMainPrefsCache()
 
         val result = worker.doWork()
         return when (result) {

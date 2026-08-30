@@ -1,6 +1,6 @@
 package com.arn.scrobble.edits
 
-import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.AnimatedContent
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.FlowRow
@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.Icon
@@ -65,9 +64,9 @@ import com.arn.scrobble.ui.DismissableNotice
 import com.arn.scrobble.ui.ErrorText
 import com.arn.scrobble.ui.HighlighterVisualTransformation
 import com.arn.scrobble.ui.LabeledCheckbox
-import com.arn.scrobble.ui.OutlinedToggleButtons
 import com.arn.scrobble.ui.PanoDropdownMenu
 import com.arn.scrobble.ui.PanoOutlinedTextField
+import com.arn.scrobble.ui.PanoToggleButtonGroup
 import com.arn.scrobble.ui.PanoToggleButtonsMode
 import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff.collectAsStateWithInitialValue
@@ -427,7 +426,7 @@ fun RegexEditsAddScreen(
             }
         }
 
-        OutlinedToggleButtons(
+        PanoToggleButtonGroup(
             texts = modesMap.values,
             icons = modesIcons,
             mode = PanoToggleButtonsMode.Both,
@@ -444,161 +443,163 @@ fun RegexEditsAddScreen(
 
         ErrorText(errorText)
 
-        AnimatedVisibility(regexMode == RegexMode.Replace) {
-            Column {
-                SearchAndReplacePair(
-                    label = stringResource(Res.string.track),
-                    searchRegex = searchTrack,
-                    replacementRegex = replacementTrack,
-                    onSearchChange = { searchTrack = it },
-                    onReplacementChange = { replacementTrack = it },
-                    copyFromField = trackCopyFrom,
-                    onCopyFromSelected = { trackCopyFrom = it }
-                )
+        AnimatedContent(
+            regexMode,
+        ) { regexMode ->
+            when (regexMode) {
+                RegexMode.Replace -> {
+                    Column {
+                        SearchAndReplacePair(
+                            label = stringResource(Res.string.track),
+                            searchRegex = searchTrack,
+                            replacementRegex = replacementTrack,
+                            onSearchChange = { searchTrack = it },
+                            onReplacementChange = { replacementTrack = it },
+                            copyFromField = trackCopyFrom,
+                            onCopyFromSelected = { trackCopyFrom = it }
+                        )
 
-                SearchAndReplacePair(
-                    label = stringResource(Res.string.artist),
-                    searchRegex = searchArtist,
-                    replacementRegex = replacementArtist,
-                    onSearchChange = { searchArtist = it },
-                    onReplacementChange = { replacementArtist = it },
-                    copyFromField = artistCopyFrom,
-                    onCopyFromSelected = { artistCopyFrom = it }
-                )
+                        SearchAndReplacePair(
+                            label = stringResource(Res.string.artist),
+                            searchRegex = searchArtist,
+                            replacementRegex = replacementArtist,
+                            onSearchChange = { searchArtist = it },
+                            onReplacementChange = { replacementArtist = it },
+                            copyFromField = artistCopyFrom,
+                            onCopyFromSelected = { artistCopyFrom = it }
+                        )
 
-                SearchAndReplacePair(
-                    label = stringResource(Res.string.album),
-                    searchRegex = searchAlbum,
-                    replacementRegex = replacementAlbum,
-                    onSearchChange = { searchAlbum = it },
-                    onReplacementChange = { replacementAlbum = it },
-                    copyFromField = albumCopyFrom,
-                    onCopyFromSelected = { albumCopyFrom = it },
-                    replacementRegexEnabled = !fetchAlbum
-                )
+                        SearchAndReplacePair(
+                            label = stringResource(Res.string.album),
+                            searchRegex = searchAlbum,
+                            replacementRegex = replacementAlbum,
+                            onSearchChange = { searchAlbum = it },
+                            onReplacementChange = { replacementAlbum = it },
+                            copyFromField = albumCopyFrom,
+                            onCopyFromSelected = { albumCopyFrom = it },
+                            replacementRegexEnabled = !fetchAlbum
+                        )
 
-                LabeledCheckbox(
-                    checked = fetchAlbum,
-                    onCheckedChange = { fetchAlbum = it },
-                    enabled = fetchAlbumGlobal,
-                    text = stringResource(
-                        Res.string.pref_fetch_missing_album,
-                        stringResource(Res.string.cache) + " & " +
-                                stringResource(Res.string.lastfm)
-                    ),
-                    modifier = Modifier.fillMaxWidth()
-                )
+                        LabeledCheckbox(
+                            checked = fetchAlbum,
+                            onCheckedChange = { fetchAlbum = it },
+                            enabled = fetchAlbumGlobal,
+                            text = stringResource(
+                                Res.string.pref_fetch_missing_album,
+                                stringResource(Res.string.cache) + " & " +
+                                        stringResource(Res.string.lastfm)
+                            ),
+                            textStyle = MaterialTheme.typography.bodyMedium,
+                            modifier = Modifier.fillMaxWidth()
+                        )
 
-                if (!fetchAlbumGlobal) {
-                    Text(
-                        stringResource(
-                            Res.string.is_turned_off,
-                            "",
-                            stringResource(Res.string.external_metadata)
-                        ),
-                        color = MaterialTheme.colorScheme.error,
-                        modifier = Modifier.fillMaxWidth()
-                    )
+                        if (!fetchAlbumGlobal) {
+                            Text(
+                                stringResource(
+                                    Res.string.is_turned_off,
+                                    "",
+                                    stringResource(Res.string.external_metadata)
+                                ),
+                                color = MaterialTheme.colorScheme.error,
+                                modifier = Modifier
+                                    .padding(start = 16.dp)
+                                    .fillMaxWidth()
+                            )
+                        }
+
+                        SearchAndReplacePair(
+                            label = stringResource(Res.string.album_artist),
+                            searchRegex = searchAlbumArtist,
+                            replacementRegex = replacementAlbumArtist,
+                            onSearchChange = { searchAlbumArtist = it },
+                            onReplacementChange = { replacementAlbumArtist = it },
+                            copyFromField = albumArtistCopyFrom,
+                            onCopyFromSelected = { albumArtistCopyFrom = it }
+                        )
+
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(8.dp),
+                        ) {
+                            Text(
+                                stringResource(Res.string.edit_replace),
+                                color = MaterialTheme.colorScheme.secondary,
+                            )
+
+                            FilterChip(
+                                selected = !replaceAll,
+                                onClick = { replaceAll = false },
+                                shapes = FilterChipDefaults.shapes(),
+                                label = { Text(stringResource(Res.string.edit_first)) },
+                            )
+
+                            FilterChip(
+                                selected = replaceAll,
+                                onClick = { replaceAll = true },
+                                shapes = FilterChipDefaults.shapes(),
+                                label = { Text(stringResource(Res.string.edit_all)) },
+                            )
+                        }
+                    }
                 }
 
-                SearchAndReplacePair(
-                    label = stringResource(Res.string.album_artist),
-                    searchRegex = searchAlbumArtist,
-                    replacementRegex = replacementAlbumArtist,
-                    onSearchChange = { searchAlbumArtist = it },
-                    onReplacementChange = { replacementAlbumArtist = it },
-                    copyFromField = albumArtistCopyFrom,
-                    onCopyFromSelected = { albumArtistCopyFrom = it }
-                )
+                RegexMode.Extract -> {
+                    Column(
+                        verticalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        SearchFields(
+                            headerText = stringResource(Res.string.search),
+                            track = searchTrack,
+                            album = searchAlbum,
+                            artist = searchArtist,
+                            albumArtist = searchAlbumArtist,
+                            onValueChange = { track, album, artist, albumArtist ->
+                                searchTrack = track
+                                searchAlbum = album
+                                searchArtist = artist
+                                searchAlbumArtist = albumArtist
+                            },
+                            enabled = isLicenseValid,
+                            highlightCaptureGroups = true,
+                            modifier = Modifier.fillMaxWidth()
+                        )
 
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
-                ) {
-                    Text(
-                        stringResource(Res.string.edit_replace),
-                        color = MaterialTheme.colorScheme.secondary,
-                    )
+                        ExtractOptions(
+                            modifier = Modifier.fillMaxWidth()
+                        )
+                    }
+                }
 
-                    FilterChip(
-                        selected = !replaceAll,
-                        onClick = { replaceAll = false },
-                        shapes = FilterChipDefaults.shapes(),
-                        label = { Text(stringResource(Res.string.edit_first)) },
-                    )
+                RegexMode.Block -> {
+                    Column(
+                        verticalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        SearchFields(
+                            headerText = stringResource(Res.string.search),
+                            track = searchTrack,
+                            album = searchAlbum,
+                            artist = searchArtist,
+                            albumArtist = searchAlbumArtist,
+                            onValueChange = { track, album, artist, albumArtist ->
+                                searchTrack = track
+                                searchAlbum = album
+                                searchArtist = artist
+                                searchAlbumArtist = albumArtist
+                            },
+                            enabled = isLicenseValid,
+                            highlightCaptureGroups = false,
+                            modifier = Modifier.fillMaxWidth()
+                        )
 
-                    FilterChip(
-                        selected = replaceAll,
-                        onClick = { replaceAll = true },
-                        shapes = FilterChipDefaults.shapes(),
-                        label = { Text(stringResource(Res.string.edit_all)) },
-                    )
+                        BlockPlayerActions(
+                            blockPlayerAction = blockPlayerAction,
+                            onChange = { blockPlayerAction = it },
+                            enabled = isLicenseValid,
+                        )
+                    }
                 }
             }
         }
-
-        AnimatedVisibility(regexMode == RegexMode.Extract) {
-            Column(
-                verticalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                SearchFields(
-                    headerText = stringResource(Res.string.search),
-                    track = searchTrack,
-                    album = searchAlbum,
-                    artist = searchArtist,
-                    albumArtist = searchAlbumArtist,
-                    onValueChange = { track, album, artist, albumArtist ->
-                        searchTrack = track
-                        searchAlbum = album
-                        searchArtist = artist
-                        searchAlbumArtist = albumArtist
-                    },
-                    enabled = if (regexMode == RegexMode.Extract || regexMode == RegexMode.Block)
-                        isLicenseValid
-                    else
-                        true,
-                    highlightCaptureGroups = true,
-                    modifier = Modifier.fillMaxWidth()
-                )
-
-                ExtractOptions(
-                    modifier = Modifier.fillMaxWidth()
-                )
-            }
-        }
-
-        AnimatedVisibility(regexMode == RegexMode.Block) {
-            Column(
-                verticalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                SearchFields(
-                    headerText = stringResource(Res.string.search),
-                    track = searchTrack,
-                    album = searchAlbum,
-                    artist = searchArtist,
-                    albumArtist = searchAlbumArtist,
-                    onValueChange = { track, album, artist, albumArtist ->
-                        searchTrack = track
-                        searchAlbum = album
-                        searchArtist = artist
-                        searchAlbumArtist = albumArtist
-                    },
-                    enabled = if (regexMode == RegexMode.Extract || regexMode == RegexMode.Block)
-                        isLicenseValid
-                    else
-                        true,
-                    highlightCaptureGroups = false,
-                    modifier = Modifier.fillMaxWidth()
-                )
-
-                BlockPlayerActions(
-                    blockPlayerAction = blockPlayerAction,
-                    onChange = { blockPlayerAction = it },
-                    enabled = isLicenseValid,
-                )
-            }
-        }
-
 
         AppSelector(
             label = stringResource(Res.string.apps) + (
@@ -625,6 +626,7 @@ fun RegexEditsAddScreen(
             LabeledCheckbox(
                 checked = continueMatching,
                 onCheckedChange = { continueMatching = it },
+                textStyle = MaterialTheme.typography.bodyMedium,
                 text = stringResource(Res.string.edit_continue_regex),
                 modifier = Modifier.fillMaxWidth()
             )
@@ -633,6 +635,7 @@ fun RegexEditsAddScreen(
         LabeledCheckbox(
             checked = caseSensitive,
             onCheckedChange = { caseSensitive = it },
+            textStyle = MaterialTheme.typography.bodyMedium,
             text = stringResource(Res.string.edit_case_sensitive),
             modifier = Modifier.fillMaxWidth()
         )
@@ -879,7 +882,7 @@ private fun CopyFromSelector(
             expanded = dropDownShown,
             onDismissRequest = { dropDownShown = false }
         ) {
-            DropdownMenuItem(
+            item(
                 onClick = {
                     onItemSelected(null)
                     dropDownShown = false
@@ -891,7 +894,7 @@ private fun CopyFromSelector(
             )
 
             itemToTexts.forEach { (item, text) ->
-                DropdownMenuItem(
+                item(
                     onClick = {
                         onItemSelected(item)
                         dropDownShown = false

@@ -1,21 +1,16 @@
 package com.arn.scrobble.ui
 
-import androidx.compose.animation.core.animateDpAsState
-import androidx.compose.foundation.LocalIndication
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.focusable
-import androidx.compose.foundation.indication
-import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.interaction.collectIsFocusedAsState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.calculateEndPadding
+import androidx.compose.foundation.layout.calculateStartPadding
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -29,14 +24,17 @@ import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.selection.toggleable
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.ZeroCornerSize
 import androidx.compose.material3.ButtonGroupDefaults
-import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.IconToggleButton
+import androidx.compose.material3.ListItem
+import androidx.compose.material3.ListItemDefaults
+import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedToggleButton
 import androidx.compose.material3.PlainTooltip
@@ -45,34 +43,35 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TooltipAnchorPosition
 import androidx.compose.material3.TooltipBox
 import androidx.compose.material3.TooltipDefaults
+import androidx.compose.material3.contentColorFor
 import androidx.compose.material3.rememberTooltipState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.drawWithCache
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.Group
+import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.graphics.drawscope.DrawScope
+import androidx.compose.ui.graphics.drawscope.translate
+import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.graphics.vector.RenderVectorGroup
 import androidx.compose.ui.graphics.vector.VectorPainter
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
+import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.util.lerp
-import androidx.compose.ui.zIndex
-import androidx.lifecycle.compose.LifecycleResumeEffect
 import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.itemKey
@@ -85,6 +84,7 @@ import com.arn.scrobble.api.lastfm.Album
 import com.arn.scrobble.api.lastfm.Artist
 import com.arn.scrobble.api.lastfm.MusicEntry
 import com.arn.scrobble.api.lastfm.Track
+import com.arn.scrobble.charts.ChartsCount
 import com.arn.scrobble.icons.Album
 import com.arn.scrobble.icons.AllOut
 import com.arn.scrobble.icons.AutoAwesomeMosaic
@@ -111,7 +111,7 @@ import com.arn.scrobble.icons.filled.Favorite
 import com.arn.scrobble.imageloader.MusicEntryImageReq
 import com.arn.scrobble.panoicons.Nothing
 import com.arn.scrobble.panoicons.PanoIcons
-import com.arn.scrobble.panoicons.RectFilledTranslucent
+import com.arn.scrobble.panoicons.RectFilled
 import com.arn.scrobble.panoicons.StonksNew
 import com.arn.scrobble.pref.AppItem
 import com.arn.scrobble.themes.LocalThemeAttributes
@@ -141,7 +141,6 @@ import pano_scrobbler.composeapp.generated.resources.num_scrobbles_noti
 import pano_scrobbler.composeapp.generated.resources.show_all
 import pano_scrobbler.composeapp.generated.resources.time_just_now
 import kotlin.math.abs
-import kotlin.random.Random
 
 enum class GridMode {
     HERO, LIST, GRID
@@ -170,8 +169,6 @@ fun MusicEntryListItem(
     val hasOnlyOneClickable = onImageClick == null && onMenuToggle == null
     var imageMemoryCacheKey by remember(entry) { mutableStateOf<MemoryCache.Key?>(null) }
     val context = LocalPlatformContext.current
-    val artInteractionSource = remember { MutableInteractionSource() }
-    val isArtFocused by artInteractionSource.collectIsFocusedAsState()
     val isNowPlaying = (entry as? Track)?.isNowPlaying == true
     val accountType by PlatformStuff.mainPrefs.data.collectAsStateWithInitialValue { it.currentAccountType }
 
@@ -179,6 +176,20 @@ fun MusicEntryListItem(
         PanoTimeFormatter.relative(entry.date, stringResource(Res.string.time_just_now))
     else
         null
+
+    val smallerCornerSize = if (isColumn) ZeroCornerSize else MaterialTheme.shapes.large.bottomEnd
+    val contentColor = if (isNowPlaying)
+        MaterialTheme.colorScheme.contentColorFor(MaterialTheme.colorScheme.primaryContainer)
+    else
+        LocalContentColor.current
+
+    val artShape = if (isColumn)
+        MaterialTheme.shapes.large.copy(
+            bottomEnd = smallerCornerSize,
+            bottomStart = smallerCornerSize
+        )
+    else
+        MaterialTheme.shapes.medium
 
     val firstText = when (entry) {
         is Album -> entry.name
@@ -209,290 +220,279 @@ fun MusicEntryListItem(
         else -> null
     }
 
-    Box(
+    RowOrColumnLayout(
+        isColumnMode = isColumn,
         modifier = modifier
+            .clip(
+                if (isColumn)
+                    MaterialTheme.shapes.large
+                else
+                    MaterialTheme.shapes.medium
+            )
+            .nowPlayingAnim(
+                nowPlaying = isNowPlaying,
+                colorA = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.7f),
+                colorB = MaterialTheme.colorScheme.secondaryContainer.copy(alpha = 0.7f),
+            )
             .then(
-                if (isNowPlaying)
-                    Modifier.zIndex(1f) // to fix the animation
+                if (hasOnlyOneClickable)
+                    Modifier
+                        .shapedClickable(
+                            shape = artShape,
+                            enabled = !forShimmer,
+                            onClick = onEntryClick
+                        )
                 else
                     Modifier
-            ),
-        contentAlignment = Alignment.Center,
-    ) {
-        NowPlayingSurface(
-            nowPlaying = isNowPlaying,
-        ) { childModifier ->
-            RowOrColumnLayout(
-                isColumnMode = isColumn,
-                modifier = childModifier.then(
-                    if (hasOnlyOneClickable)
-                        Modifier
-                            .clip(MaterialTheme.shapes.medium)
-                            .clickable(enabled = !forShimmer) { onEntryClick() }
-                    else
-                        Modifier
+            )
+            .padding(
+                horizontal = 8.dp,
+                vertical = if (!fixedImageHeight ||
+                    listOfNotNull(topText, secondText, thirdText, progress).size <= 3
                 )
-                    .padding(
-                        horizontal = 8.dp,
-                        vertical = if (isColumn)
-                            8.dp
-                        else if (listOfNotNull(topText, secondText, thirdText, progress).size < 3)
-                            4.dp // add extra space
-                        else
-                            0.dp // the inner row is high enough
+                    8.dp // add extra space
+                else
+                    0.dp // the inner row is high enough
+            )
+    ) {
+        CompositionLocalProvider(LocalContentColor provides contentColor) {
+            Box(
+                modifier = Modifier
+                    .then(
+                        if (fixedImageHeight)
+                            Modifier
+                                .size(72.dp)
+                        else if (!isColumn) // height is bounded in my use case
+                            Modifier.aspectRatio(1f, true)
+                        else // unbounded height, let the custom layout handle it
+                            Modifier.aspectRatio(1f, false)
                     )
+                    .backgroundForShimmer(forShimmer)
             ) {
-                BoxWithConstraints(
-                    modifier = Modifier
-                        .then(
-                            if (fixedImageHeight)
-                                Modifier
-                                    .size(72.dp)
-                            else if (!isColumn) // height is bounded in my use case
-                                Modifier.aspectRatio(1f, true)
-                            else // unbounded height, let the custom layout handle it
-                                Modifier
-                        )
-                        .backgroundForShimmer(forShimmer)
-                ) {
-                    val imageDim by animateDpAsState(targetValue = maxWidth)
-
-                    AsyncImage(
-                        model = remember(
-                            forShimmer,
-                            entry,
-                            isColumn,
-                            fetchAlbumImageIfMissing
-                        ) {
-                            if (forShimmer)
-                                null
-                            else
-                                ImageRequest.Builder(context)
-                                    .data(
-                                        imageUrlOverride
-                                            ?: MusicEntryImageReq(
-                                                entry,
-                                                accountType = accountType,
-                                                isHeroImage = !fixedImageHeight,
-                                                fetchAlbumInfoIfMissing = fetchAlbumImageIfMissing
-                                            )
-                                    )
-                                    .placeholderMemoryCacheKey(imageMemoryCacheKey)
-                                    .size(SizeResolver.ORIGINAL)
-                                    .build()
-                        },
-                        fallback = placeholderImageVectorPainter(null),
-                        error = if (!isPending)
-                            placeholderImageVectorPainter(entry)
-                        else
-                            placeholderImageVectorPainter(entry, Icons.HourglassEmpty),
-                        // this placeholder overrides the one set in model
-                        placeholder = if (imageMemoryCacheKey != null)
+                AsyncImage(
+                    model = remember(
+                        forShimmer,
+                        entry,
+                        isColumn,
+                        fetchAlbumImageIfMissing
+                    ) {
+                        if (forShimmer)
                             null
                         else
-                            placeholderPainter(),
-                        onSuccess = {
-                            imageMemoryCacheKey = it.result.memoryCacheKey
-                        },
-                        contentDescription = stringResource(Res.string.album_art),
-                        modifier = Modifier
-                            .clip(MaterialTheme.shapes.medium)
-                            .size(imageDim)
-                            .then(
-                                if (onImageClick != null)
-                                    Modifier.clickable(
-                                        enabled = !forShimmer,
-                                        interactionSource = artInteractionSource
-                                    ) { onImageClick() }
-                                        .then(
-                                            if (isArtFocused)
-                                                Modifier
-                                                    .border(
-                                                        width = 2.dp,
-                                                        color = MaterialTheme.colorScheme.inverseSurface,
-                                                        shape = MaterialTheme.shapes.medium
-                                                    )
-                                                    .border(
-                                                        width = 4.dp,
-                                                        color = MaterialTheme.colorScheme.surface,
-                                                        shape = MaterialTheme.shapes.medium
-                                                    )
-                                            else
-                                                Modifier
-
+                            ImageRequest.Builder(context)
+                                .data(
+                                    imageUrlOverride
+                                        ?: MusicEntryImageReq(
+                                            entry,
+                                            accountType = accountType,
+                                            isHeroImage = !fixedImageHeight,
+                                            fetchAlbumInfoIfMissing = fetchAlbumImageIfMissing
                                         )
-                                else
-                                    Modifier
-                            )
-                    )
-
-                    if (entry is Track && (entry.userloved == true || entry.userHated == true)) {
-                        val loveHateModifier = Modifier
-                            .align(Alignment.TopEnd)
-                            .rotate(11.25f)
-                            .offset(x = 6.dp, y = (-6).dp)
-
-                        Icon(
-                            imageVector = if (entry.userloved == true) Icons.Filled.Favorite else Icons.HeartBroken,
-                            contentDescription = stringResource(if (entry.userloved == true) Res.string.loved else Res.string.hate),
-                            tint = MaterialTheme.colorScheme.secondary,
-                            modifier = loveHateModifier
-                        )
-
-                        Icon(
-                            imageVector = Icons.Favorite,
-                            contentDescription = null,
-                            tint = MaterialTheme.colorScheme.onSecondary,
-                            modifier = loveHateModifier
-                        )
-                    }
-                }
-
-                Row(
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
-                    verticalAlignment = Alignment.CenterVertically,
+                                )
+                                .placeholderMemoryCacheKey(imageMemoryCacheKey)
+                                .size(SizeResolver.ORIGINAL)
+                                .build()
+                    },
+                    fallback = placeholderImageVectorPainter(null),
+                    error = if (!isPending)
+                        placeholderImageVectorPainter(entry)
+                    else
+                        placeholderImageVectorPainter(entry, Icons.HourglassEmpty),
+                    // this placeholder overrides the one set in model
+                    placeholder = if (imageMemoryCacheKey != null)
+                        null
+                    else
+                        placeholderPainter(),
+                    onSuccess = {
+                        imageMemoryCacheKey = it.result.memoryCacheKey
+                    },
+                    contentDescription = stringResource(Res.string.album_art),
                     modifier = Modifier
-                        .widthIn(200.dp)
+                        .clip(artShape)
+                        .fillMaxSize()
                         .then(
-                            if (isColumn)
-                                Modifier.padding(top = 8.dp)
-                            else
-                                Modifier.padding(start = 8.dp)
-                        )
-                        .then(
-                            if (isColumn)
-                                Modifier.border(
-                                    1.dp,
-                                    if (isNowPlaying)
-                                        MaterialTheme.colorScheme.onPrimaryContainer
-                                    else
-                                        MaterialTheme.colorScheme.outline,
-                                    MaterialTheme.shapes.medium
+                            if (onImageClick != null)
+                                Modifier.shapedClickable(
+                                    shape = artShape,
+                                    enabled = !forShimmer,
+                                    onClick = onImageClick,
                                 )
                             else
                                 Modifier
                         )
-                ) {
-                    Column(
-                        modifier = Modifier
-                            .weight(1f)
-                            .then(
-                                if (!hasOnlyOneClickable)
-                                    Modifier
-                                        .clip(MaterialTheme.shapes.medium)
-                                        .clickable(enabled = !forShimmer) { onEntryClick() }
-                                else
-                                    Modifier
-                            )
-                            .padding(8.dp)
-                            .backgroundForShimmer(forShimmer)
-                    ) {
+                )
 
-                        if (topText != null) {
-                            Text(
-                                text = if (forShimmer) "" else topText,
-                                style = MaterialTheme.typography.labelMedium,
-                                modifier = Modifier
-                                    .align(Alignment.End)
-                                    .backgroundForShimmer(forShimmer)
-                            )
-                        }
+                if (entry is Track && (entry.userloved == true || entry.userHated == true)) {
+                    val loveHateModifier = Modifier
+                        .align(Alignment.TopEnd)
+                        .rotate(11.25f)
+                        .offset(x = 6.dp, y = (-6).dp)
 
-                        Text(
-                            text = if (forShimmer)
-                                ""
-                            else if (index != null)
-                                "${index + 1}. $firstText"
+                    Icon(
+                        imageVector = if (entry.userloved == true) Icons.Filled.Favorite else Icons.HeartBroken,
+                        contentDescription = stringResource(if (entry.userloved == true) Res.string.loved else Res.string.hate),
+                        tint = MaterialTheme.colorScheme.secondary,
+                        modifier = loveHateModifier
+                    )
+
+                    Icon(
+                        imageVector = Icons.Favorite,
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.onSecondary,
+                        modifier = loveHateModifier
+                    )
+                }
+            }
+
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(4.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier
+                    .widthIn(min = 200.dp)
+                    .padding(
+                        start = if (isColumn || fixedImageHeight) 0.dp else 8.dp,
+                    )
+                    .then(
+                        if (!fixedImageHeight)
+                            Modifier.background(
+                                color = MaterialTheme.colorScheme.inverseSurface.copy(alpha = 0.07f),
+                                shape = MaterialTheme.shapes.large.copy(
+                                    topStart = smallerCornerSize,
+                                    topEnd = smallerCornerSize
+                                )
+                            )
+                        else
+                            Modifier
+                    )
+                    .padding(
+                        vertical = if (isColumn) 8.dp else 0.dp,
+                        horizontal = if (isColumn) 8.dp else 0.dp
+                    )
+            ) {
+                Column(
+                    modifier = Modifier
+                        .weight(1f)
+                        .then(
+                            if (!hasOnlyOneClickable)
+                                Modifier
+                                    .shapedClickable(
+                                        shape = MaterialTheme.shapes.large,
+                                        enabled = !forShimmer,
+                                        onClick = onEntryClick
+                                    )
                             else
-                                firstText,
-                            style = MaterialTheme.typography.titleMediumEmphasized,
+                                Modifier
+                        )
+                        .padding(vertical = 4.dp, horizontal = 8.dp)
+                        .backgroundForShimmer(forShimmer)
+                ) {
+
+                    if (topText != null) {
+                        Text(
+                            text = if (forShimmer) "" else topText,
+                            style = MaterialTheme.typography.labelMedium,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis,
+                            modifier = Modifier
+                                .align(Alignment.End)
+                                .backgroundForShimmer(forShimmer)
+                        )
+                    }
+
+                    Text(
+                        text = if (forShimmer)
+                            ""
+                        else if (index != null)
+                            "${index + 1}. $firstText"
+                        else
+                            firstText,
+                        style = MaterialTheme.typography.titleMediumEmphasized,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                    )
+
+                    if (secondText != null)
+                        Text(
+                            text = if (forShimmer) "" else secondText,
+                            style = MaterialTheme.typography.bodyLargeEmphasized,
                             maxLines = 1,
                             overflow = TextOverflow.Ellipsis,
                         )
 
-                        if (secondText != null)
-                            Text(
-                                text = if (forShimmer) "" else secondText,
-                                style = MaterialTheme.typography.bodyLargeEmphasized,
-                                maxLines = 1,
-                                overflow = TextOverflow.Ellipsis,
-                            )
-
-                        if (thirdText != null) {
-                            Row(
-                                horizontalArrangement = Arrangement.spacedBy(2.dp),
-                                verticalAlignment = Alignment.CenterVertically,
-                            ) {
-                                if (stonksDelta != null) {
-                                    stonksIconForDelta(stonksDelta)?.let { (icon, color) ->
-                                        Icon(
-                                            imageVector = icon,
-                                            tint = color,
-                                            contentDescription = stonksDelta.toString(),
-                                            modifier = Modifier
-                                                .size(16.dp)
-                                                .offset((-2).dp)
-                                        )
-                                    }
-                                }
-
-                                Text(
-                                    text = if (forShimmer) "" else thirdText,
-                                    style = MaterialTheme.typography.bodyMedium,
-                                    maxLines = 1,
-                                    overflow = TextOverflow.Ellipsis,
-                                )
-                            }
-                        }
-
-                        if (progress != null) {
-                            ScrobblesCountProgress(progress)
-                        }
-                    }
-
-                    if (onMenuToggle != null) {
-                        Column(
-                            horizontalAlignment = Alignment.CenterHorizontally,
-                            modifier = Modifier.padding(vertical = 8.dp)
+                    if (thirdText != null) {
+                        Row(
+                            horizontalArrangement = Arrangement.spacedBy(2.dp),
+                            verticalAlignment = Alignment.CenterVertically,
                         ) {
-                            if (entry is Track && entry.isNowPlaying) {
-                                Icon(
-                                    imageVector = Icons.PlayArrow,
-                                    contentDescription = stringResource(Res.string.time_just_now),
-                                    modifier = Modifier
-                                        .size(22.dp)
-                                )
-                            } else if (appItem != null) {
-                                TooltipBox(
-                                    positionProvider = TooltipDefaults.rememberTooltipPositionProvider(
-                                        TooltipAnchorPosition.Above
-                                    ),
-                                    tooltip = { PlainTooltip { Text(appItem.friendlyLabel) } },
-                                    state = rememberTooltipState(),
-                                ) {
-                                    AppIcon(
-                                        appItem = appItem,
+                            if (stonksDelta != null) {
+                                stonksIconForDelta(stonksDelta)?.let { (icon, color) ->
+                                    Icon(
+                                        imageVector = icon,
+                                        tint = color,
+                                        contentDescription = stonksDelta.toString(),
                                         modifier = Modifier
-                                            .size(22.dp)
+                                            .size(16.dp)
+                                            .offset((-2).dp)
                                     )
                                 }
                             }
 
-                            IconToggleButton(
-                                checked = menuShown,
-                                shapes = IconButtonDefaults.toggleableShapes(),
-                                onCheckedChange = onMenuToggle,
-                                enabled = !forShimmer,
-                                colors = IconButtonDefaults.myIconButtonColors()
+                            Text(
+                                text = if (forShimmer) "" else thirdText,
+                                style = MaterialTheme.typography.bodyMedium,
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis,
+                            )
+                        }
+                    }
+
+                    if (progress != null) {
+                        ScrobblesCountProgress(progress)
+                    }
+                }
+
+                if (onMenuToggle != null) {
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        modifier = Modifier.padding(vertical = 8.dp)
+                    ) {
+                        if (entry is Track && entry.isNowPlaying) {
+                            Icon(
+                                imageVector = Icons.PlayArrow,
+                                contentDescription = stringResource(Res.string.time_just_now),
+                                modifier = Modifier
+                                    .size(22.dp)
+                            )
+                        } else if (appItem != null) {
+                            TooltipBox(
+                                positionProvider = TooltipDefaults.rememberTooltipPositionProvider(
+                                    TooltipAnchorPosition.Above
+                                ),
+                                tooltip = { PlainTooltip { Text(appItem.friendlyLabel) } },
+                                state = rememberTooltipState(),
                             ) {
-                                Icon(
-                                    imageVector = Icons.MoreVert,
-                                    contentDescription = stringResource(Res.string.item_options)
+                                AppIcon(
+                                    appItem = appItem,
+                                    modifier = Modifier
+                                        .size(22.dp)
                                 )
                             }
-
-                            menuContent()
                         }
+
+                        IconToggleButton(
+                            checked = menuShown,
+                            shapes = IconButtonDefaults.toggleableShapes(),
+                            onCheckedChange = onMenuToggle,
+                            enabled = !forShimmer,
+                            colors = IconButtonDefaults.myIconButtonColors()
+                        ) {
+                            Icon(
+                                imageVector = Icons.MoreVert,
+                                contentDescription = stringResource(Res.string.item_options)
+                            )
+                        }
+
+                        menuContent()
                     }
                 }
             }
@@ -500,113 +500,7 @@ fun MusicEntryListItem(
     }
 }
 
-@Composable
-private fun NowPlayingSurface(
-    nowPlaying: Boolean,
-    modifier: Modifier = Modifier,
-    content: @Composable (Modifier) -> Unit,
-) {
-    var isResumed by remember { mutableStateOf(false) }
-
-    LifecycleResumeEffect(Unit) {
-        isResumed = true
-
-        onPauseOrDispose {
-            isResumed = false
-        }
-    }
-
-    // Random initial phases, bounded to [0, 1), remembered across recompositions and
-    // navigation/process-death via rememberSaveable.
-    val initialPhase1 by rememberSaveable { mutableFloatStateOf(Random.nextFloat()) }
-    val initialPhase2 by rememberSaveable { mutableFloatStateOf(Random.nextFloat()) }
-    val reverseColors by rememberSaveable { mutableStateOf(Random.nextBoolean()) }
-
-    // Gradient 1: top-left corner, ~20s cycle
-    val anim1 = customFpsInfiniteAnimation(
-        initialValue = initialPhase1,
-        targetValue = initialPhase1 + 1f,   // one full cycle from wherever we started
-        durationMillis = 20_000,
-        enabled = isResumed && nowPlaying,
-    )
-
-    // Gradient 2: bottom-right corner, ~27s cycle (different prime-ish period for organic feel)
-    val anim2 = customFpsInfiniteAnimation(
-        initialValue = initialPhase2,
-        targetValue = initialPhase2 + 1f,
-        durationMillis = 27_000,
-        enabled = isResumed && nowPlaying,
-    )
-
-    // Map the raw [0,∞) playhead to a [0,1] ping-pong value so each gradient breathes
-    // independently. fract() gives the fractional part; mirroring gives the smooth bounce.
-    fun pingPong(raw: Float): Float {
-        val t = raw % 1f          // wrap into [0, 1)
-        return if (t < 0.5f) t * 2f else (1f - t) * 2f   // triangle wave → smooth breath
-    }
-
-    val fgColor1 = MaterialTheme.colorScheme.onSecondaryContainer.copy(alpha = 0.45f)
-    val fgColor2 = MaterialTheme.colorScheme.tertiaryContainer.copy(alpha = 0.4f)
-
-    Surface(
-        color = if (nowPlaying)
-            MaterialTheme.colorScheme.primaryContainer
-        else
-            Color.Unspecified,
-        shape = MaterialTheme.shapes.large,
-        modifier = modifier
-            .clip(MaterialTheme.shapes.large)
-    ) {
-        val childModifier = if (nowPlaying) {
-            Modifier.drawWithCache {
-                // Radius: large enough to bleed well past the opposite corner
-                val radius = size.maxDimension * 0.9f
-
-                val (finalFgColor1, finalFgColor2) = if (reverseColors)
-                    fgColor2 to fgColor1
-                else
-                    fgColor1 to fgColor2
-
-                // Gradient 1 — anchored top-left, breathes in-and-out
-                val breath1 = pingPong(anim1.value)
-                val center1 = Offset(
-                    x = size.width * lerp(-0.1f, 0.4f, breath1),
-                    y = size.height * lerp(-0.1f, 0.4f, breath1),
-                )
-                val brush1 = Brush.radialGradient(
-                    0f to finalFgColor1,
-                    0.6f to finalFgColor1.copy(alpha = finalFgColor1.alpha * 0.4f),
-                    1f to Color.Transparent,
-                    center = center1,
-                    radius = radius,
-                )
-
-                // Gradient 2 — anchored bottom-right, breathes at a different rate/phase
-                val breath2 = pingPong(anim2.value)
-                val center2 = Offset(
-                    x = size.width * lerp(0.6f, 1.1f, breath2),
-                    y = size.height * lerp(0.6f, 1.1f, breath2),
-                )
-                val brush2 = Brush.radialGradient(
-                    0f to finalFgColor2,
-                    0.6f to finalFgColor2.copy(alpha = finalFgColor2.alpha * 0.4f),
-                    1f to Color.Transparent,
-                    center = center2,
-                    radius = radius,
-                )
-
-                onDrawBehind {
-                    drawRect(brush = brush1)
-                    drawRect(brush = brush2)
-                }
-            }
-        } else
-            Modifier
-
-        content(childModifier)
-    }
-}
-
+@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun MusicEntryGridItem(
     entry: MusicEntry,
@@ -622,12 +516,111 @@ fun MusicEntryGridItem(
     forShimmer: Boolean = false,
 ) {
     val accountType by PlatformStuff.mainPrefs.data.collectAsStateWithInitialValue { it.currentAccountType }
-    Column(
-        modifier = modifier
-            .fillMaxWidth()
-            .clip(MaterialTheme.shapes.medium)
-            .clickable(enabled = !forShimmer, onClick = onClick)
-            .padding(8.dp)
+    val colors = ListItemDefaults.colors(
+        containerColor = MaterialTheme.colorScheme.inverseSurface.copy(alpha = 0.07f)
+    )
+
+    ListItem(
+        modifier = modifier.padding(8.dp),
+        enabled = !forShimmer,
+        onClick = onClick,
+        contentPadding = PaddingValues.Zero,
+        colors = colors,
+        shapes = ListItemDefaults.myBigImageShapes(),
+        supportingContent = {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 2.dp, start = 8.dp, end = 8.dp, bottom = 8.dp)
+            ) {
+
+                val firstText = when (entry) {
+                    is Album -> entry.name
+                    is Track -> (if (entry.userloved == true) "❤️ " else "") + entry.name
+                    is Artist -> entry.name
+                }
+
+                val secondText = if (showArtist) {
+                    when (entry) {
+                        is Album -> entry.artist?.name
+                        is Track -> entry.artist.name
+                        else -> null
+                    }
+                } else null
+
+                val playCount = entry.userplaycount ?: entry.playcount
+                val scrobbleDateText = if (entry is Track && entry.date != null)
+                    " | " + PanoTimeFormatter.relative(
+                        entry.date,
+                        stringResource(Res.string.time_just_now)
+                    )
+                else
+                    ""
+                val thirdText = if (playCount != null) {
+                    pluralStringResource(
+                        Res.plurals.num_scrobbles_noti,
+                        playCount.toInt(),
+                        playCount.format()
+                    ) + scrobbleDateText
+                } else
+                    null
+
+                Text(
+                    text = if (forShimmer)
+                        ""
+                    else if (index != null)
+                        "${index + 1}. $firstText"
+                    else
+                        firstText,
+                    style = MaterialTheme.typography.titleMediumEmphasized,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .backgroundForShimmer(forShimmer)
+
+                )
+
+                if (secondText != null)
+                    Text(
+                        text = if (forShimmer) "" else secondText,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .backgroundForShimmer(forShimmer)
+                    )
+
+                if (thirdText != null) {
+                    Row(
+                        horizontalArrangement = Arrangement.spacedBy(2.dp),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .backgroundForShimmer(forShimmer)
+                    ) {
+                        if (stonksDelta != null) {
+                            stonksIconForDelta(stonksDelta)?.let { (icon, color) ->
+                                Icon(
+                                    imageVector = icon,
+                                    tint = color,
+                                    contentDescription = stonksDelta.toString(),
+                                    modifier = Modifier.size(16.dp)
+                                )
+                            }
+                        }
+
+                        Text(
+                            text = if (forShimmer) "" else thirdText,
+                            style = MaterialTheme.typography.bodyMedium,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis,
+                        )
+                    }
+                }
+
+                ScrobblesCountProgress(progress)
+            }
+        }
     ) {
         AsyncImage(
             model = if (forShimmer)
@@ -646,115 +639,8 @@ fun MusicEntryGridItem(
             modifier = Modifier
                 .fillMaxWidth()
                 .aspectRatio(1f)
-                .clip(
-                    MaterialTheme.shapes.medium.copy(
-                        bottomEnd = ZeroCornerSize,
-                        bottomStart = ZeroCornerSize
-                    )
-                )
                 .backgroundForShimmer(forShimmer)
         )
-        Column(
-            modifier = Modifier
-                .border(
-                    1.dp,
-                    MaterialTheme.colorScheme.outline,
-                    MaterialTheme.shapes.medium.copy(
-                        topEnd = ZeroCornerSize,
-                        topStart = ZeroCornerSize
-                    )
-                )
-                .padding(8.dp)
-        ) {
-
-            val firstText = when (entry) {
-                is Album -> entry.name
-                is Track -> (if (entry.userloved == true) "❤️ " else "") + entry.name
-                is Artist -> entry.name
-            }
-
-            val secondText = if (showArtist) {
-                when (entry) {
-                    is Album -> entry.artist?.name
-                    is Track -> entry.artist.name
-                    else -> null
-                }
-            } else null
-
-            val playCount = entry.userplaycount ?: entry.playcount
-            val scrobbleDateText = if (entry is Track && entry.date != null)
-                " | " + PanoTimeFormatter.relative(
-                    entry.date,
-                    stringResource(Res.string.time_just_now)
-                )
-            else
-                ""
-            val thirdText = if (playCount != null) {
-                pluralStringResource(
-                    Res.plurals.num_scrobbles_noti,
-                    playCount.toInt(),
-                    playCount.format()
-                ) + scrobbleDateText
-            } else
-                null
-
-            Text(
-                text = if (forShimmer)
-                    ""
-                else if (index != null)
-                    "${index + 1}. $firstText"
-                else
-                    firstText,
-                style = MaterialTheme.typography.titleMediumEmphasized,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .backgroundForShimmer(forShimmer)
-
-            )
-
-            if (secondText != null)
-                Text(
-                    text = if (forShimmer) "" else secondText,
-                    style = MaterialTheme.typography.bodyMedium,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .backgroundForShimmer(forShimmer)
-                )
-
-            if (thirdText != null) {
-                Row(
-                    horizontalArrangement = Arrangement.spacedBy(2.dp),
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .backgroundForShimmer(forShimmer)
-                ) {
-                    if (stonksDelta != null) {
-                        stonksIconForDelta(stonksDelta)?.let { (icon, color) ->
-                            Icon(
-                                imageVector = icon,
-                                tint = color,
-                                contentDescription = stonksDelta.toString(),
-                                modifier = Modifier.size(16.dp)
-                            )
-                        }
-                    }
-
-                    Text(
-                        text = if (forShimmer) "" else thirdText,
-                        style = MaterialTheme.typography.bodySmall,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis,
-
-                        )
-                }
-            }
-
-            ScrobblesCountProgress(progress)
-        }
     }
 }
 
@@ -779,181 +665,136 @@ private fun ScrobblesCountProgress(
     )
 }
 
+@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun ExpandableHeaderItem(
-    title: String,
+    text: String,
     icon: ImageVector,
     expanded: Boolean,
     onToggle: (Boolean) -> Unit,
     modifier: Modifier = Modifier,
-    enabled: Boolean = true,
+    collapsedImage: @Composable (() -> Unit)? = null,
+    canExpand: Boolean = true,
 ) {
-    Row(
-        horizontalArrangement = Arrangement.spacedBy(8.dp),
-        verticalAlignment = Alignment.CenterVertically,
+    if (!canExpand) {
+        SimpleHeaderItem(
+            text = text,
+            icon = icon,
+            modifier = modifier
+        )
+
+        return
+    }
+
+    val isLtr = LocalLayoutDirection.current == LayoutDirection.Ltr
+    val rotationState by animateFloatAsState(
+        targetValue = when {
+            expanded && isLtr -> 90f
+            expanded && !isLtr -> -90f
+            else -> 0f
+        },
+    )
+
+    val colors = ListItemDefaults.myTogglableHeaderItemColors()
+
+    ListItem(
+        enabled = canExpand,
+        checked = expanded,
+        onCheckedChange = onToggle,
+        colors = colors,
+        contentPadding = ListItemDefaults.ContentPadding.let {
+            // make some room for the collapsedImage while still maintaining min interactive height
+            PaddingValues(
+                start = it.calculateStartPadding(LayoutDirection.Ltr),
+                top = 0.dp,
+                end = it.calculateEndPadding(LayoutDirection.Ltr),
+                bottom = 0.dp,
+            )
+        },
+        leadingContent = {
+            Surface(
+                tonalElevation = 6.dp,
+                shape = CircleShape,
+                modifier = Modifier
+                    .fillMaxHeight()
+            ) {
+                Icon(
+                    imageVector = Icons.AutoMirrored.KeyboardArrowRight,
+                    contentDescription = if (expanded && canExpand)
+                        stringResource(Res.string.collapse)
+                    else
+                        stringResource(Res.string.expand),
+                    modifier = Modifier
+                        .rotate(rotationState)
+                )
+            }
+        },
         modifier = modifier
-            .fillMaxWidth()
-            .clip(MaterialTheme.shapes.medium)
-            .toggleable(enabled = enabled, value = expanded, onValueChange = onToggle)
-            .padding(16.dp)
     ) {
-        if (enabled)
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            if (collapsedImage != null) {
+                AnimatedVisibility(
+                    visible = !expanded
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .padding(end = 8.dp)
+                    ) {
+                        collapsedImage()
+                    }
+                }
+            }
+
             Icon(
-                imageVector = if (expanded) Icons.KeyboardArrowDown else Icons.AutoMirrored.KeyboardArrowRight,
-                contentDescription = if (expanded)
-                    stringResource(Res.string.collapse)
-                else
-                    stringResource(Res.string.expand),
-                tint = MaterialTheme.colorScheme.primary
+                imageVector = icon,
+                contentDescription = null,
+                modifier = Modifier
+                    .padding(end = 8.dp)
             )
 
-        Icon(
-            imageVector = icon,
-            contentDescription = null,
-            tint = MaterialTheme.colorScheme.primary
-        )
-
-        Text(
-            text = title,
-            style = MaterialTheme.typography.titleMedium,
-            modifier = Modifier.weight(1f)
-        )
+            Text(
+                text = text,
+                style = MaterialTheme.typography.titleMedium,
+            )
+        }
     }
 }
 
+@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
-fun GoToDetailsHeaderItem(
+fun HeaderItemWithAction(
     title: String,
     icon: ImageVector,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
+    trailingIcon: ImageVector = Icons.AutoMirrored.ArrowRightAlt,
+    trailingIconContentDescription: String = stringResource(Res.string.show_all),
     enabled: Boolean = true,
 ) {
-    Surface(
-        shape = MaterialTheme.shapes.medium,
-        tonalElevation = 2.dp,
-        modifier = modifier
-            .fillMaxWidth()
-            .clip(MaterialTheme.shapes.medium)
-            .clickable(enabled = enabled, onClick = onClick)
-    ) {
-        Row(
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier
-                .padding(16.dp)
-                .padding(end = horizontalOverscanPadding())
-        ) {
+    ListItem(
+        enabled = enabled,
+        onClick = onClick,
+        colors = ListItemDefaults.myTogglableHeaderItemColors(),
+        leadingContent = {
             Icon(
                 imageVector = icon,
                 contentDescription = null,
-                tint = MaterialTheme.colorScheme.primary
             )
-
-            Text(
-                text = title,
-                style = MaterialTheme.typography.titleMedium,
-                modifier = Modifier.weight(1f)
-            )
-
+        },
+        trailingContent = {
             Icon(
-                imageVector = Icons.AutoMirrored.ArrowRightAlt,
-                contentDescription = stringResource(Res.string.show_all),
-                tint = MaterialTheme.colorScheme.primary
+                imageVector = trailingIcon,
+                contentDescription = trailingIconContentDescription,
             )
-        }
-    }
-}
-
-@Composable
-fun TextHeaderItem(
-    title: String,
-    icon: ImageVector,
-    modifier: Modifier = Modifier,
-) {
-    val interactionSource = remember { MutableInteractionSource() }
-
-    Row(
-        horizontalArrangement = Arrangement.spacedBy(8.dp),
-        verticalAlignment = Alignment.CenterVertically,
+        },
         modifier = modifier
-            .fillMaxWidth()
-            .clip(MaterialTheme.shapes.medium)
-            .indication(
-                interactionSource = interactionSource,
-                indication = LocalIndication.current
-            )
-            .focusable(interactionSource = interactionSource)
-            .padding(16.dp)
     ) {
-        Icon(
-            imageVector = icon,
-            contentDescription = null,
-            tint = MaterialTheme.colorScheme.primary
-        )
-
         Text(
             text = title,
             style = MaterialTheme.typography.titleMedium,
-            modifier = Modifier.weight(1f)
         )
-    }
-}
-
-
-@Composable
-fun ExpandableHeaderMenu(
-    title: String,
-    icon: ImageVector,
-    menuItemText: String,
-    onMenuItemClick: () -> Unit,
-    modifier: Modifier = Modifier,
-    enabled: Boolean = true,
-) {
-    var menuShown by remember { mutableStateOf(false) }
-
-    Row(
-        horizontalArrangement = Arrangement.spacedBy(8.dp),
-        verticalAlignment = Alignment.CenterVertically,
-        modifier = modifier
-            .fillMaxWidth()
-            .clip(MaterialTheme.shapes.medium)
-            .clickable(enabled = enabled, onClick = {
-                menuShown = true
-            })
-            .padding(16.dp)
-    ) {
-        Icon(
-            imageVector = icon,
-            contentDescription = null,
-            tint = MaterialTheme.colorScheme.primary
-        )
-        Text(
-            text = title,
-            style = MaterialTheme.typography.titleMedium,
-            modifier = Modifier.weight(1f)
-        )
-
-        Box {
-            Icon(
-                imageVector = Icons.MoreVert,
-                contentDescription = null,
-                tint = MaterialTheme.colorScheme.primary
-            )
-
-            PanoDropdownMenu(
-                expanded = menuShown,
-                onDismissRequest = { menuShown = false },
-            ) {
-                DropdownMenuItem(
-                    text = { Text(menuItemText) },
-                    onClick = {
-                        onMenuItemClick()
-                        menuShown = false
-                    }
-                )
-            }
-        }
     }
 }
 
@@ -990,8 +831,7 @@ fun DismissableNotice(
             modifier = Modifier
                 .fillMaxHeight()
                 .weight(1f)
-                .clip(MaterialTheme.shapes.medium)
-                .clickable(onClick = onClick)
+                .shapedClickable(onClick = onClick)
                 .padding(16.dp)
         ) {
             Text(
@@ -1027,10 +867,10 @@ fun LazyListScope.expandableSublist(
             tonalElevation = 4.dp,
         ) {
             ExpandableHeaderItem(
-                title = headerText,
+                text = headerText,
                 icon = headerIcon,
                 expanded = expanded || items.size <= minItems,
-                enabled = items.size > minItems,
+                canExpand = items.size > minItems,
                 onToggle = onToggle,
                 modifier = Modifier.animateItem(),
             )
@@ -1075,10 +915,10 @@ fun EntriesRow(
     val maxCount by remember(entries.loadState) { mutableFloatStateOf(maxCountEvaluater()) }
     val shimmer by remember(entries.loadState.refresh) { mutableStateOf(entries.loadState.refresh is LoadState.Loading) }
 
-    GoToDetailsHeaderItem(
+    HeaderItemWithAction(
         icon = headerIcon,
         title = title,
-        enabled = !shimmer,
+        enabled = !shimmer && entries.itemCount > 0,
         onClick = onHeaderClick,
     )
 
@@ -1089,9 +929,9 @@ fun EntriesRow(
                 .fillMaxWidth()
                 .height(150.dp)
         ) {
-            EmptyText(
+            Text(
                 text = stringResource(emptyStringRes),
-                visible = true,
+                style = MaterialTheme.typography.titleLarge,
             )
         }
     } else {
@@ -1151,9 +991,9 @@ fun EntriesRow(
                     item {
                         ListLoadError(
                             modifier = Modifier
+                                .animateItem()
                                 .height(150.dp)
-                                .fillParentMaxWidth()
-                                .animateItem(),
+                                .fillParentMaxWidth(),
                             throwable = error.error,
                             onRetry = { entries.retry() })
                     }
@@ -1280,6 +1120,7 @@ fun EntriesGridOrList(
     modifier: Modifier = Modifier,
     onCollageClick: (() -> Unit)? = null,
     onLegendClick: (() -> Unit)? = null,
+    titleText: String? = null,
     maxCountEvaluater: () -> Float = {
         if (entries.itemCount > 0)
             entries.peek(0)?.playcount?.toFloat() ?: 0f
@@ -1314,7 +1155,10 @@ fun EntriesGridOrList(
             modifier = modifier.fillMaxSize()
                 .then(if (shimmer) Modifier.shimmerWindowBounds() else Modifier)
         ) {
-            item(span = { GridItemSpan(maxLineSpan) }) {
+            item(
+                key = "buttons_bar",
+                span = { GridItemSpan(maxLineSpan) }
+            ) {
 
                 ButtonsBarForCharts(
                     gridMode = gridMode,
@@ -1323,6 +1167,21 @@ fun EntriesGridOrList(
                     modifier = Modifier
                         .fillMaxWidth()
                 )
+            }
+
+            if (titleText != null) {
+                item(
+                    key = "charts_count",
+                    span = { GridItemSpan(maxLineSpan) }
+                ) {
+                    Box(
+                        contentAlignment = Alignment.Center,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                    ) {
+                        ChartsCount(titleText)
+                    }
+                }
             }
 
             if (shimmer) {
@@ -1416,7 +1275,11 @@ fun EntriesGridOrList(
     }
 }
 
-fun getMusicEntryPlaceholderItem(type: Int, showScrobbleCount: Boolean = true): MusicEntry {
+fun getMusicEntryPlaceholderItem(
+    type: Int,
+    showScrobbleCount: Boolean = true,
+    showDate: Boolean = false,
+): MusicEntry {
     val count = if (showScrobbleCount) 10L else 0L
 
     return when (type) {
@@ -1429,6 +1292,7 @@ fun getMusicEntryPlaceholderItem(type: Int, showScrobbleCount: Boolean = true): 
                 name = "Artist",
             ),
             playcount = count,
+            date = if (showDate) Stuff.TIME_2002 else null
         )
 
         Stuff.TYPE_ALBUMS -> Album(
@@ -1463,10 +1327,12 @@ fun stonksIconForDelta(delta: Int?) = when {
 }
 
 fun MusicEntry.generateKey(): String {
+    val sep = "\u001F"
+
     val str = when (this) {
-        is Track -> "Track" + "\n" + date + "\n" + artist.name + "\n" + album?.name + "\n" + name
-        is Album -> "Album" + "\n" + artist?.name + "\n" + name
-        is Artist -> "Artist" + "\n" + name
+        is Track -> "Track" + sep + date + sep + artist.name + sep + album?.name + sep + name
+        is Album -> "Album" + sep + artist?.name + sep + name
+        is Artist -> "Artist" + sep + name
     }
 
     return str
@@ -1491,30 +1357,54 @@ fun placeholderImageVectorPainter(
         else -> PanoIcons.Nothing
     },
     scaleFactor: Float = 0.6f,
-): VectorPainter {
+): Painter {
+    val containerColors = LocalThemeAttributes.current.avatarContainerColors
+    val containerColor = containerColors[abs(musicEntry.colorSeed()) % containerColors.size]
+        .copy(alpha = 0.6f)
 
-    val colors = LocalThemeAttributes.current.allSecondaryContainerColors
-    val color = colors[abs(musicEntry.colorSeed()) % colors.size]
+    val colors = LocalThemeAttributes.current.avatarColors
+    val color = colors[abs(musicEntry.colorSeed()) % colors.size].copy(alpha = 0.5f)
 
-    return rememberVectorPainter(
-        defaultWidth = imageVector.defaultWidth,
-        defaultHeight = imageVector.defaultHeight,
-        viewportWidth = imageVector.viewportWidth,
-        viewportHeight = imageVector.viewportHeight,
-        name = imageVector.name,
-        tintColor = color,
-        tintBlendMode = imageVector.tintBlendMode,
-        autoMirror = imageVector.autoMirror
-    ) { viewportWidth, viewportHeight ->
-        RenderVectorGroup(group = PanoIcons.RectFilledTranslucent.root)
-        Group(
-            name = imageVector.root.name + "_scaled",
-            scaleX = scaleFactor,
-            scaleY = scaleFactor,
-            translationX = (viewportWidth - imageVector.viewportWidth * scaleFactor) / 2,
-            translationY = (viewportHeight - imageVector.viewportHeight * scaleFactor) / 2,
-        ) {
-            RenderVectorGroup(group = imageVector.root)
+    val bg = rememberVectorPainter(PanoIcons.RectFilled)
+    val fg = rememberVectorPainter(imageVector)
+
+    return remember(bg, fg, containerColor, color, scaleFactor) {
+        CombinedVectorPainter(
+            background = bg,
+            backgroundTint = containerColor,
+            foreground = fg,
+            foregroundTint = color,
+            foregroundScale = scaleFactor,
+        )
+    }
+}
+
+private class CombinedVectorPainter(
+    private val background: VectorPainter,
+    private val backgroundTint: Color,
+    private val foreground: VectorPainter,
+    private val foregroundTint: Color,
+    private val foregroundScale: Float,
+) : Painter() {
+
+    override val intrinsicSize: Size
+        get() = background.intrinsicSize
+
+    override fun DrawScope.onDraw() {
+        with(background) {
+            draw(size, colorFilter = ColorFilter.tint(backgroundTint))
+        }
+
+        val fgSize = size * foregroundScale
+        val offset = Offset(
+            x = (size.width - fgSize.width) / 2f,
+            y = (size.height - fgSize.height) / 2f
+        )
+
+        translate(left = offset.x, top = offset.y) {
+            with(foreground) {
+                draw(fgSize, colorFilter = ColorFilter.tint(foregroundTint))
+            }
         }
     }
 }

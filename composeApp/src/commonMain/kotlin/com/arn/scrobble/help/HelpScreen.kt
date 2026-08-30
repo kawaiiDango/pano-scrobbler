@@ -5,6 +5,8 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.text.input.TextFieldState
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -20,7 +22,6 @@ import com.arn.scrobble.icons.BugReport
 import com.arn.scrobble.icons.Icons
 import com.arn.scrobble.main.ScrobblerState
 import com.arn.scrobble.ui.ButtonWithIcon
-import com.arn.scrobble.ui.EmptyText
 import com.arn.scrobble.ui.FilePicker
 import com.arn.scrobble.ui.FilePickerMode
 import com.arn.scrobble.ui.FileType
@@ -62,10 +63,11 @@ fun HelpScreen(
     }
 
     Column(modifier = modifier) {
-        EmptyText(
-            visible = mdItems?.isEmpty() == true,
-            text = stringResource(Res.string.not_found),
-        )
+        if (mdItems?.isEmpty() == true)
+            Text(
+                text = stringResource(Res.string.not_found),
+                style = MaterialTheme.typography.titleLarge
+            )
 
         mdItems?.let { mdItems ->
             MdText(

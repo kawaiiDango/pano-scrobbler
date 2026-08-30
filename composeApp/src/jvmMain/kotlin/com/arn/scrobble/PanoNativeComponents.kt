@@ -117,14 +117,19 @@ object PanoNativeComponents {
         uniqueAppId: String,
         state: String,
         position: Long,
-        canSkip: Boolean
+        canSkip: Boolean,
+        canChangeChannel: Boolean,
     ) {
         val playbackInfo = PlaybackInfo(
             state = CommonPlaybackState.valueOf(state),
             position = position,
-            canSkip = canSkip
+            canSkip = canSkip,
         )
-        desktopMediaListener?.platformPlaybackStateChanged(uniqueAppId, playbackInfo)
+        desktopMediaListener?.platformPlaybackStateChanged(
+            uniqueAppId,
+            playbackInfo,
+            canChangeChannel
+        )
     }
 
     @JvmStatic

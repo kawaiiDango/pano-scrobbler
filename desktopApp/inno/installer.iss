@@ -14,7 +14,7 @@
   #define OUT_DIR "..\..\dist"
 #endif
 #ifndef APP_DIR
-  #define APP_DIR "..\build\compose\native\windows-x64"
+  #define APP_DIR "..\build\native\windows-x64"
 #endif
 #ifndef ICON_FILE
   #define ICON_FILE "..\app-icons\pano-scrobbler.ico"

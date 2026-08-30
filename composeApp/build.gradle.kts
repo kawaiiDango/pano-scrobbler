@@ -3,9 +3,6 @@ import com.codingfeline.buildkonfig.compiler.FieldSpec.Type.BOOLEAN
 import com.codingfeline.buildkonfig.compiler.FieldSpec.Type.INT
 import com.codingfeline.buildkonfig.compiler.FieldSpec.Type.STRING
 import com.google.gson.Gson
-import com.mikepenz.aboutlibraries.plugin.DuplicateMode
-import com.mikepenz.aboutlibraries.plugin.StrictMode
-import org.jetbrains.compose.reload.gradle.ComposeHotRun
 import java.io.IOException
 import java.net.HttpURLConnection
 import java.net.URI
@@ -20,29 +17,14 @@ plugins {
     alias(libs.plugins.compose.compiler)
     alias(libs.plugins.ksp)
     alias(libs.plugins.room)
-    alias(libs.plugins.aboutlibraries)
     alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.buildkonfig)
 }
 
-val os = org.gradle.internal.os.OperatingSystem.current()!!
-val arch = System.getProperty("os.arch")!!
-
-val archAmd64 = arrayOf("amd64", "x86_64")
-val archArm64 = arrayOf("aarch64", "arm64")
-
 val isReleaseBuild = gradle.startParameter.taskNames.any {
-    it.contains("proguard", ignoreCase = true) || it.contains("release", ignoreCase = true) ||
-            it.contains("packageUberJarForCurrentOS", ignoreCase = true)
-}
-val resourcesDirName = when {
-    os.isMacOsX && arch in archAmd64 -> "macos-x64"
-    os.isMacOsX && arch in archArm64 -> "macos-arm64"
-    os.isLinux && arch in archAmd64 -> "linux-x64"
-    os.isLinux && arch in archArm64 -> "linux-arm64"
-    os.isWindows && arch in archAmd64 -> "windows-x64"
-    os.isWindows && arch in archArm64 -> "windows-arm64"
-    else -> throw IllegalStateException("Unsupported platform: $os $arch")
+    it.contains("release", ignoreCase = true) ||
+            it.contains("packageUberJarForCurrentOS", ignoreCase = true) ||
+            it.contains("packageNativeImage", ignoreCase = true)
 }
 
 val APP_ID = rootProject.extra["APP_ID"] as String
@@ -50,29 +32,13 @@ val VER_CODE = rootProject.extra["VER_CODE"] as Int
 val VER_NAME = rootProject.extra["VER_NAME"] as String
 val APP_NAME = rootProject.extra["APP_NAME"] as String
 val APP_NAME_NO_SPACES = rootProject.extra["APP_NAME_NO_SPACES"] as String
+val RESOURCES_DIR_NAME = rootProject.extra["RESOURCES_DIR_NAME"] as String
+val IS_WINDOWS = rootProject.extra["IS_WINDOWS"] as Boolean
+val IS_LINUX = rootProject.extra["IS_LINUX"] as Boolean
 
 val localProperties = gradleLocalProperties(rootDir, project.providers)
     .map { it.key to it.value.toString() }
     .toMap()
-
-fun commonJvmArgs(): List<String> {
-    val libPath = File(
-        project.layout.projectDirectory.dir("resources").asFile,
-        resourcesDirName
-    ).absolutePath
-
-    return listOfNotNull(
-        "-Dpano.native.components.path=$libPath",
-        "--enable-native-access=ALL-UNNAMED",
-        if (os.isLinux) "--add-opens=java.desktop/sun.awt.X11=ALL-UNNAMED" else null,
-        "-Dfile.encoding=UTF-8",
-        "-Dnative.encoding=UTF-8",
-//        "-XX:+UseSerialGC",
-//        "-Xms32m",
-//        "-Xmx512m",
-//        "-XX:NativeMemoryTracking=detail",
-    )
-}
 
 kotlin {
     compilerOptions {
@@ -82,7 +48,7 @@ kotlin {
     android {
         compileSdk {
             version = release(libs.versions.targetSdk.get().toInt()) {
-                minorApiLevel = libs.versions.sdkMinor.get().toInt()
+//                minorApiLevel = libs.versions.sdkMinor.get().toInt()
             }
         }
         namespace = APP_ID
@@ -244,326 +210,10 @@ buildkonfig {
         }
 
         create("jvm") {
-            buildConfigField(
-                INT, "OS_ORDINAL",
-                when {
-                    os.isWindows -> "0"
-                    os.isMacOsX -> "1"
-                    os.isLinux -> "2"
-                    else -> throw IllegalStateException("Unsupported OS: $os")
-                }, const = true
-            )
-
-            buildConfigField(STRING, "OS_ARCH", resourcesDirName, const = true)
+            buildConfigField(BOOLEAN, "IS_WINDOWS", IS_WINDOWS.toString(), const = true)
+            buildConfigField(BOOLEAN, "IS_LINUX", IS_LINUX.toString(), const = true)
+            buildConfigField(STRING, "OS_ARCH", RESOURCES_DIR_NAME, const = true)
         }
-    }
-}
-
-aboutLibraries {
-    offlineMode = true
-    collect {
-        configPath = File("../aboutLibsConfig")
-        fetchRemoteLicense = false
-        fetchRemoteFunding = false
-        license.strictMode = StrictMode.WARN
-        library.duplicationMode = DuplicateMode.MERGE
-    }
-
-    export {
-        excludeFields = listOf(
-            "developers",
-            "funding",
-            "description",
-            "organization",
-            "content",
-            "connection",
-            "developerConnection"
-        )
-    }
-
-    exports {
-        create("jvm") {
-            outputFile = file("src/jvmMain/composeResources/files/aboutlibraries.json")
-        }
-    }
-
-}
-
-compose.desktop {
-    application {
-        mainClass = "com.arn.scrobble.main.MainKt"
-        jvmArgs += commonJvmArgs()
-//        args += "-m"
-
-        nativeDistributions {
-            packageVersion = VER_NAME
-            vendor = "kawaiiDango"
-            packageName = APP_NAME_NO_SPACES
-        }
-    }
-}
-
-tasks.withType<ComposeHotRun>().configureEach {
-    isAutoReloadEnabled = true
-    mainClass = "com.arn.scrobble.main.MainKt"
-    jvmArgs = commonJvmArgs()
-
-    val appDataRoot = when {
-        os.isWindows -> {
-            System.getenv("APPDATA")?.ifEmpty { null }
-                ?: System.getProperty("user.home")
-        }
-
-        os.isLinux -> {
-            System.getenv("XDG_DATA_HOME")?.ifEmpty { null }
-                ?: (System.getProperty("user.home") + "/.local/share")
-        }
-
-        else -> throw IllegalStateException("unsupported os")
-    }
-
-    val appDataDir = File(appDataRoot, "$APP_NAME_NO_SPACES-debug").absolutePath
-    args = listOf("--data-dir", appDataDir)
-}
-
-tasks.register<Exec>("packageInno") {
-    val executableDir = file("build/compose/native/$resourcesDirName")
-    val distDir = file("../dist")
-    val scriptFile = file("inno/installer.iss")
-    val iconFile = file("app-icons/pano-scrobbler.ico")
-    val isccPath = System.getenv("PROGRAMFILES") + "\\Inno Setup 7\\ISCC.exe"
-    val isccPathUser = System.getenv("LOCALAPPDATA") + "\\Programs\\Inno Setup 7\\ISCC.exe"
-
-    doFirst {
-        distDir.mkdirs()
-    }
-
-    commandLine(
-        if (File(isccPath).exists()) isccPath else isccPathUser,
-        "/DOUT_DIR=" + distDir.absolutePath,
-        "/DAPP_DIR=" + executableDir.absolutePath,
-        "/DVERSION=$VER_NAME",
-        "/DICON_FILE=" + iconFile.absolutePath,
-        scriptFile.absolutePath
-    )
-}
-
-tasks.register<Exec>("packageLinuxAppImageAndTarball") {
-    commandLine(
-        "bash",
-        "../package-for-linux.sh",
-    )
-}
-
-tasks.register<Exec>("generateRc") {
-    if (!os.isWindows) return@register
-
-    val rcTemplateFile = file("rc-template.txt")
-    val rcOutputDir = project.layout.buildDirectory.dir("generated-rc").get().asFile
-    val icoFilePath = file("app-icons/pano-scrobbler.ico").absolutePath
-        .replace("\\", "\\\\") // escape backslashes for rc compiler
-    val outputFileName = "$APP_NAME_NO_SPACES.exe"
-    val rcOut = File(rcOutputDir, "$outputFileName.rc")
-    val versionMajor = VER_NAME.substringBefore(".")
-    val versionMinor = VER_NAME.substringAfter(".")
-
-    // find rc.exe
-    val rcExe = File(System.getenv("PROGRAMFILES(x86)") + "\\Windows Kits\\10\\bin")
-        .listFiles()
-        ?.filter { it.isDirectory && it.name.startsWith("10.") }
-        ?.maxByOrNull { it.lastModified() }
-        ?.let { File(it, "x64\\rc.exe") }
-        ?.absolutePath
-
-    if (rcExe == null)
-        throw GradleException("rc.exe not found. Please install Windows 10 SDK.")
-
-    // compile rc to res
-    val command = listOf(
-        rcExe,
-        "/nologo",
-        rcOut.absolutePath
-    )
-
-    commandLine(command)
-
-    doFirst {
-        val fileType = "0x1"
-
-        val iconInfo = "IDI_ICON_1 ICON \"$icoFilePath\""
-
-        val rcContent = rcTemplateFile
-            .readText()
-            .replace("\$versionMajor", versionMajor)
-            .replace("\$versionMinor", versionMinor)
-            .replace("\$fileName", outputFileName)
-            .replace("\$fileType", fileType)
-            .replace("\$iconInfo", iconInfo)
-
-        rcOutputDir.mkdirs()
-        rcOut.writeText(rcContent)
-    }
-}
-
-val copyReachabilityMetadata = tasks.register<Copy>("copyReachabilityMetadata") {
-    val osDir = if (os.isWindows) "windows" else "linux"
-    from("rechability-metadata/$osDir")
-    into(layout.buildDirectory.dir("generated/reachability-metadata/META-INF/native-image/$APP_ID/$APP_NAME_NO_SPACES"))
-}
-
-kotlin.sourceSets.getByName("jvmMain").resources.srcDir(
-    copyReachabilityMetadata.map {
-        it.destinationDir.parentFile.parentFile.parentFile.parentFile
-        // points to: generated/reachability-metadata/
-    }
-)
-// graalvm plugin doesn't seem to support this project structure, so directly use the command
-tasks.register<Exec>("buildNativeImage") {
-    val graalvmHome = System.getenv("GRAALVM_HOME")
-    val javaHome = System.getenv("JAVA_HOME")
-    val copyDesktopAndIcon = os.isLinux
-
-    val jarFile =
-        file("build/compose/jars/$APP_NAME_NO_SPACES-$resourcesDirName-$VER_NAME.jar")
-    val jarTree = zipTree(jarFile)
-    val jarFilesToExtract = if (os.isWindows && arch in archAmd64)
-        arrayOf("skiko-windows-x64.dll", "icudtl.dat", "natives/windows_x64/sqliteJni.dll")
-    else if (os.isLinux && arch in archAmd64)
-        arrayOf("libskiko-linux-x64.so", "natives/linux_x64/libsqliteJni.so")
-    else if (os.isLinux && arch in archArm64)
-        arrayOf("libskiko-linux-arm64.so", "natives/linux_arm64/libsqliteJni.so")
-    else
-        arrayOf()
-
-    val filesToDelete = arrayOf(
-        "libjsound.so",
-        "jsound.dll",
-        "libjavajpeg.so",
-        "javajpeg.dll",
-        "liblcms.so",
-        "lcms.dll",
-    )
-
-    val outputDir = file("build/compose/native/$resourcesDirName")
-    val outputFile = File(outputDir, APP_NAME_NO_SPACES)
-
-    val jawtDirName = if (os.isWindows)
-        "bin"
-    else
-        "lib"
-    val jawtDir = File(outputDir, jawtDirName)
-    val jawtFile = when {
-        os.isWindows -> file("$graalvmHome/bin/jawt.dll")
-        os.isLinux -> file("$graalvmHome/lib/libjawt.so")
-        else -> throw IllegalStateException("Unsupported OS: $os")
-    }
-
-    val winAppResFile =
-        project.layout.buildDirectory.file("generated-rc/$APP_NAME_NO_SPACES.exe.res")
-
-    val localesTextFile = file("locales.txt")
-
-    val nativeLibsDir = file("resources/$resourcesDirName/")
-    val iconFile = file("src/jvmMain/composeResources/drawable/ic_launcher_with_bg.svg")
-    val desktopFile = file("$APP_NAME_NO_SPACES.desktop")
-    val licenseFile = file("../LICENSE")
-    val distDir = file("../dist")
-
-    inputs.file(jarFile)
-    inputs.dir(nativeLibsDir)
-    inputs.file(licenseFile)
-
-    outputs.dir(outputDir)
-
-    val command = listOfNotNull(
-        if (os.isWindows)
-            "$graalvmHome\\bin\\native-image.cmd"
-        else
-            "$graalvmHome/bin/native-image",
-//        "-march=" + if (arch in archArm64) "armv8.1-a" else "x86-64-v2",
-        if (arch in archAmd64) "-march=x86-64-v2" else null,
-        if (os.isLinux && arch in archArm64) "-H:PageSize=16384" else null,
-        if (os.isLinux) "--add-opens=java.desktop/sun.awt.X11=ALL-UNNAMED" else null,
-        "-H:+UnlockExperimentalVMOptions",
-        "-J-Djava.awt.headless=false",
-        "-J-Dfile.encoding=UTF-8",
-        "-J-Dnative.encoding=UTF-8",
-        "-J-Dsun.java2d.dpiaware=true",
-        "--exact-reachability-metadata",
-        "-H:MissingRegistrationReportingMode=Warn",
-        "-R:MaxHeapSize=300M",
-        "--initialize-at-build-time=kotlin.text.Charsets",
-//        "--future-defaults=all",
-        "-H:+AddAllCharsets",
-        "-H:+ReportExceptionStackTraces",
-//        "-g",
-//        "--enable-monitoring=nmt",
-        "--enable-native-access=ALL-UNNAMED",
-        "--include-locales",
-        "-H:IncludeLocales=" + localesTextFile.readText().trim().replace("\n", ","),
-//        "--install-exit-handlers",
-        // I use trustStoreType=Windows-ROOT at runtime
-        if (os.isWindows) "-J-Djavax.net.ssl.trustStore=NONE" else null,
-        if (os.isWindows) "-H:NativeLinkerOption=/SUBSYSTEM:WINDOWS" else null,
-        if (os.isWindows) "-H:NativeLinkerOption=/ENTRY:mainCRTStartup" else null,
-        if (os.isWindows) "-H:NativeLinkerOption=\"${winAppResFile.get().asFile.absolutePath}\"" else null,
-        "-jar",
-        jarFile.absolutePath,
-        "-o",
-        outputFile.absolutePath,
-    )
-
-    commandLine(command)
-
-    doFirst {
-        // env check
-        if (graalvmHome.isNullOrEmpty() || graalvmHome != javaHome) {
-            throw GradleException("GRAALVM_HOME should be set and should be equal to JAVA_HOME")
-        }
-        outputDir.mkdirs()
-        distDir.mkdirs()
-    }
-
-    doLast {
-//        println("Executing command:")
-//        println(command.joinToString(" "))
-        // copy jawt
-        jawtDir.mkdirs()
-        jawtFile.copyTo(File(jawtDir, jawtFile.name), overwrite = true)
-
-        val otherJawtFile = File(outputDir, jawtFile.name)
-        if (otherJawtFile.exists())
-            otherJawtFile.delete()
-
-        // copy native components
-        nativeLibsDir.copyRecursively(
-            outputDir,
-            overwrite = true
-        )
-
-        // extract jni libraries from .jar
-        jarTree.matching {
-            include(*jarFilesToExtract)
-        }.forEach { file ->
-            file.copyTo(File(jawtDir, file.name), overwrite = true)
-        }
-
-        licenseFile.copyTo(File(outputDir, licenseFile.name), overwrite = true)
-
-        // copy icon and desktop file on linux
-        if (copyDesktopAndIcon) {
-            iconFile.copyTo(File(outputDir, "pano-scrobbler.svg"), overwrite = true)
-            desktopFile.copyTo(File(outputDir, desktopFile.name), overwrite = true)
-        }
-
-        // delete unnecessary files
-        filesToDelete.forEach { fileName ->
-            File(outputDir, fileName).takeIf { it.exists() }?.delete()
-        }
-    }
-
-    if (os.isWindows) {
-        dependsOn("generateRc")
     }
 }
 
@@ -634,12 +284,12 @@ tasks.register<Exec>("convertMaterialSymbols") {
     val outputDir = file("src/commonMain/kotlin/com/arn/scrobble/icons")
     val cliPath = file(
         "valkyrie-cli/bin/valkyrie" +
-                (if (os.isWindows) ".bat" else "")
+                (if (IS_WINDOWS) ".bat" else "")
     )
 
     val pkgName = APP_ID + ".icons"
 
-    val shellCmd = if (os.isWindows)
+    val shellCmd = if (IS_WINDOWS)
         listOf(
             "cmd.exe",
             "/c",
@@ -963,41 +613,8 @@ tasks.register<Copy>("copyMds") {
 
 tasks.configureEach {
     when (name) {
-        "packageUberJarForCurrentOS" -> {
-            if (os.isLinux) {
-                finalizedBy("packageLinuxAppImageAndTarball")
-            } else if (os.isWindows) {
-                finalizedBy("packageInno")
-            }
-        }
-
-        "buildNativeImage" -> {
-            // Explicitly declare dependency to fix the "implicit dependency" error
-            mustRunAfter("packageUberJarForCurrentOS")
-            dependsOn("packageUberJarForCurrentOS")
-        }
-
-        "packageLinuxAppImageAndTarball" -> {
-            dependsOn("buildNativeImage")
-        }
-
-        "packageInno" -> {
-            dependsOn("buildNativeImage")
-        }
-
-        "copyNonXmlValueResourcesForAndroidMain" -> {
-            // Ensure AboutLibraries export runs first
-            dependsOn(":androidApp:exportLibraryDefinitions")
-            // Optional ordering guard
-            mustRunAfter(":androidApp:exportLibraryDefinitions")
-        }
-
-        "copyNonXmlValueResourcesForJvmMain" -> {
-            mustRunAfter(":composeApp:exportLibraryDefinitions")
-        }
-
         "copyNonXmlValueResourcesForCommonMain" -> {
-            dependsOn(":composeApp:copyMds")
+            dependsOn("copyMds")
         }
 
         "updateMaterialSymbols" -> {

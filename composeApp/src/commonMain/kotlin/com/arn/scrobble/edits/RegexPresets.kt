@@ -62,10 +62,7 @@ object RegexPresets {
 
     val filteredPresets by lazy {
         RegexPreset.entries.filterNot {
-            if (System.getProperty("os.name").startsWith("windows", ignoreCase = true))
-                it in applyOncePresets
-            else
-                false
+            System.getProperty("os.name").startsWith("windows", ignoreCase = true) && it in applyOncePresets
         }
     }
 

@@ -32,7 +32,7 @@ actual suspend fun AppListVM.load(
     val musicPlayers = selectedList + unselectedList
     onSetAppList(AppList(musicPlayers, emptyList()))
 
-    if (DesktopStuff.os == DesktopStuff.Os.Linux) {
+    if (DesktopStuff.IS_LINUX) {
         val blockedHostnames = PlatformStuff.mainPrefs.data.map { it.blockedHostnames }.first()
         val seenHostnames = PlatformStuff.mainPrefs.data.map { it.seenHostnames }.first()
             // sort in alphabetical order, but put blocked hostnames at the end
@@ -50,7 +50,7 @@ actual suspend fun AppListVM.load(
 }
 
 actual val AppListVM.pluginsNeeded: List<Pair<String, String>>
-    get() = if (DesktopStuff.os == DesktopStuff.Os.Windows)
+    get() = if (DesktopStuff.IS_WINDOWS)
         listOf(
             "AIMP (plugin does not report albums)" to "https://www.aimp.ru/forum/index.php?topic=63341",
             "foobar2000" to "https://github.com/ungive/foo_mediacontrol",

@@ -3,33 +3,56 @@ package com.arn.scrobble.charts
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
+import androidx.compose.foundation.layout.IntrinsicSize
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerState
 import androidx.compose.material3.DateRangePicker
 import androidx.compose.material3.DateRangePickerState
+import androidx.compose.material3.DropdownMenuGroup
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.DropdownMenuPopup
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MenuAnchorPosition
+import androidx.compose.material3.MenuDefaults
 import androidx.compose.material3.SelectableDates
+import androidx.compose.material3.Text
 import androidx.compose.material3.TimePicker
 import androidx.compose.material3.rememberTimePickerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import com.arn.scrobble.icons.Check
 import com.arn.scrobble.icons.Icons
 import com.arn.scrobble.navigation.DatePickerResult
 import com.arn.scrobble.navigation.DateRangePickerResult
 import com.arn.scrobble.navigation.TimePickerResult
+import com.arn.scrobble.ui.myGroupStandardContainerColor
 import com.arn.scrobble.ui.rememberLocaleWithCustomWeekday
+import com.arn.scrobble.utils.Stuff.setMidnight
 import org.jetbrains.compose.resources.stringResource
 import pano_scrobbler.composeapp.generated.resources.Res
 import pano_scrobbler.composeapp.generated.resources.done
+import java.text.DateFormat
+import java.text.SimpleDateFormat
 import java.util.Calendar
+import java.util.Locale
 import java.util.TimeZone
+import kotlin.math.max
+import kotlin.math.min
+import kotlin.time.Duration.Companion.days
 
 private fun millisRangeToYears(range: Pair<Long, Long>): IntRange {
     val cal = Calendar.getInstance()
@@ -55,7 +78,7 @@ fun DateDialog(
     val selectableDates = remember {
         object : SelectableDates {
             val cal = Calendar.getInstance(TimeZone.getTimeZone("UTC"), locale)
-            
+
             override fun isSelectableDate(utcTimeMillis: Long): Boolean {
                 if (utcTimeMillis < allowedRange.first || utcTimeMillis > allowedRange.second)
                     return false
@@ -157,7 +180,7 @@ fun DateRangeDialog(
                     onDateRangeSelected(
                         DateRangePickerResult(
                             start,
-                            end.plus(24 * 60 * 60 * 1000 - 1)
+                            end + (1.days.inWholeMilliseconds - 1)
                         )
                     )
                 }
@@ -193,6 +216,162 @@ fun TimeDialog(
                 onTimeSelected(TimePickerResult(state.hour, state.minute))
             }
         )
+    }
+}
+
+private fun monthPickerYears(
+    start: Long,
+    end: Long,
+    formatter: DateFormat
+): List<Pair<Int, String>> {
+    val cal by lazy { Calendar.getInstance() }
+
+    val years = mutableListOf<Pair<Int, String>>()
+    cal.timeInMillis = end
+    val startYear = cal[Calendar.YEAR]
+    cal.timeInMillis = start
+    val endYear = cal[Calendar.YEAR]
+
+    for (year in startYear downTo endYear) {
+        val millis = cal.apply { set(Calendar.YEAR, year) }.timeInMillis
+        years += year to formatter.format(millis)
+    }
+    return years
+}
+
+private fun monthPickerMonths(
+    selectedYear: Int,
+    start: Long,
+    end: Long,
+    formatter: DateFormat,
+): List<Pair<Int, String>> {
+    val cal by lazy { Calendar.getInstance() }
+    val months = mutableListOf<Pair<Int, String>>()
+    cal[Calendar.YEAR] = selectedYear
+    cal[Calendar.MONTH] = cal.getActualMinimum(Calendar.MONTH)
+    val startMonthTime = max(cal.timeInMillis, start)
+    cal[Calendar.MONTH] = cal.getActualMaximum(Calendar.MONTH)
+    val endMonthTime = min(cal.timeInMillis, end - 1)
+    cal.timeInMillis = startMonthTime
+    val startMonth = cal[Calendar.MONTH]
+    cal.timeInMillis = endMonthTime
+    val endMonth = cal[Calendar.MONTH]
+
+    for (month in startMonth..endMonth) {
+        val millis = cal.apply { set(Calendar.MONTH, month) }.timeInMillis
+        months += month to formatter.format(millis)
+    }
+
+    return months
+}
+
+@Composable
+fun MonthPickerPopup(
+    offset: DpOffset,
+    selectedMillis: Long,
+    allowedRange: Pair<Long, Long>,
+    onDismissRequest: () -> Unit,
+    onMonthMillisSelected: (Long) -> Unit,
+) {
+    val cal = remember {
+        Calendar.getInstance().apply {
+            timeInMillis = selectedMillis
+            setMidnight()
+        }
+    }
+
+    val yearFormatter = remember { SimpleDateFormat("yyyy", Locale.getDefault()) }
+    val monthFormatter = remember { SimpleDateFormat("MMM", Locale.getDefault()) }
+
+    var selectedYear by remember { mutableIntStateOf(cal.get(Calendar.YEAR)) }
+    var selectedMonth by remember { mutableIntStateOf(cal.get(Calendar.MONTH)) }
+
+    val yearsList = remember {
+        monthPickerYears(allowedRange.first, allowedRange.second, yearFormatter)
+    }
+    val monthsList = remember(selectedYear) {
+        monthPickerMonths(
+            selectedYear,
+            allowedRange.first,
+            allowedRange.second,
+            monthFormatter
+        ).also {
+            if (!it.any { (month, _) -> month == selectedMonth })
+                selectedMonth = Calendar.JANUARY
+        }
+    }
+
+    DropdownMenuPopup(
+        popupPositionProvider = MenuDefaults.rememberDropdownMenuPopupPositionProvider(
+            MenuAnchorPosition.Below,
+            offset
+        ),
+        expanded = true,
+        onDismissRequest = onDismissRequest
+    ) {
+        Row(
+            horizontalArrangement = Arrangement.spacedBy(MenuDefaults.GroupSpacing),
+        ) {
+            DropdownMenuGroup(
+                shapes = MenuDefaults.groupShapes(),
+                containerColor = MenuDefaults.myGroupStandardContainerColor,
+                modifier = Modifier
+                    .width(IntrinsicSize.Min)
+                    .verticalScroll(rememberScrollState())
+            ) {
+                yearsList.forEachIndexed { index, (year, text) ->
+                    DropdownMenuItem(
+                        selected = year == selectedYear,
+                        shapes = MenuDefaults.itemShape(index, yearsList.size),
+                        onClick = {
+                            selectedYear = year
+
+                            cal.apply {
+                                set(Calendar.YEAR, selectedYear)
+                                set(Calendar.MONTH, selectedMonth)
+                                set(Calendar.DAY_OF_MONTH, 1)
+                            }
+
+                            onMonthMillisSelected(cal.timeInMillis)
+                        },
+                        text = {
+                            Text(text)
+                        },
+                    )
+                }
+            }
+
+            DropdownMenuGroup(
+                shapes = MenuDefaults.groupShapes(),
+                containerColor = MenuDefaults.myGroupStandardContainerColor,
+                modifier = Modifier
+                    .width(IntrinsicSize.Min)
+                    .verticalScroll(rememberScrollState())
+            ) {
+                monthsList.forEachIndexed { index, (month, text) ->
+
+                    DropdownMenuItem(
+                        selected = month == selectedMonth,
+                        shapes = MenuDefaults.itemShape(index, monthsList.size),
+                        onClick = {
+                            selectedMonth = month
+
+                            cal.apply {
+                                set(Calendar.YEAR, selectedYear)
+                                set(Calendar.MONTH, selectedMonth)
+                                set(Calendar.DAY_OF_MONTH, 1)
+                            }
+
+                            onMonthMillisSelected(cal.timeInMillis)
+                            onDismissRequest()
+                        },
+                        text = {
+                            Text(text)
+                        },
+                    )
+                }
+            }
+        }
     }
 }
 

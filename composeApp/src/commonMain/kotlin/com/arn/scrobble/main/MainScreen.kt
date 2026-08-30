@@ -1,35 +1,43 @@
 package com.arn.scrobble.main
 
-import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ContentTransform
-import androidx.compose.animation.SizeTransform
+import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.expandIn
+import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.scaleIn
 import androidx.compose.animation.scaleOut
 import androidx.compose.animation.shrinkOut
+import androidx.compose.animation.shrinkVertically
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
+import androidx.compose.foundation.border
 import androidx.compose.foundation.focusGroup
 import androidx.compose.foundation.gestures.awaitEachGesture
 import androidx.compose.foundation.gestures.awaitFirstDown
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.consumeWindowInsets
+import androidx.compose.foundation.layout.exclude
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.imePadding
+import androidx.compose.foundation.layout.ime
+import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeContentPadding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.union
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.layout.wrapContentWidth
@@ -40,10 +48,10 @@ import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.foundation.text.input.clearText
 import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.foundation.text.input.setTextAndPlaceCursorAtEnd
-import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
+import androidx.compose.material3.FilledTonalIconButton
 import androidx.compose.material3.FloatingActionButton
-import androidx.compose.material3.FloatingActionButtonDefaults
 import androidx.compose.material3.FloatingToolbarDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -57,7 +65,6 @@ import androidx.compose.material3.ShortNavigationBar
 import androidx.compose.material3.ShortNavigationBarDefaults
 import androidx.compose.material3.ShortNavigationBarItem
 import androidx.compose.material3.SmallExtendedFloatingActionButton
-import androidx.compose.material3.SmallFloatingActionButton
 import androidx.compose.material3.Snackbar
 import androidx.compose.material3.SnackbarDefaults
 import androidx.compose.material3.SnackbarHost
@@ -68,9 +75,11 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.ToggleButtonDefaults
+import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.material3.WideNavigationRail
+import androidx.compose.material3.WideNavigationRailDefaults
 import androidx.compose.material3.WideNavigationRailItem
 import androidx.compose.material3.WideNavigationRailItemDefaults
 import androidx.compose.material3.WideNavigationRailValue
@@ -89,14 +98,25 @@ import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.blur
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusProperties
 import androidx.compose.ui.focus.focusRequester
-import androidx.compose.ui.graphics.TransformOrigin
+import androidx.compose.ui.focus.onFocusChanged
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.DefaultShadowColor
+import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.input.key.Key
+import androidx.compose.ui.input.key.KeyEventType
+import androidx.compose.ui.input.key.key
+import androidx.compose.ui.input.key.onPreviewKeyEvent
+import androidx.compose.ui.input.key.type
 import androidx.compose.ui.input.pointer.PointerEventPass
 import androidx.compose.ui.input.pointer.PointerIcon
 import androidx.compose.ui.input.pointer.pointerHoverIcon
@@ -108,21 +128,29 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.coerceAtLeast
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDecorator
 import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
+import androidx.navigation3.runtime.result.ResultEffect
 import androidx.navigation3.runtime.result.ResultEventBus
 import androidx.navigation3.runtime.result.ResultEventBusNavEntryDecorator
+import androidx.navigation3.scene.Scene
 import androidx.navigation3.scene.SinglePaneSceneStrategy
 import androidx.navigation3.ui.NavDisplay
+import androidx.navigationevent.NavigationEvent
 import androidx.savedstate.serialization.SavedStateConfiguration
 import androidx.window.core.layout.WindowSizeClass.Companion.WIDTH_DP_EXPANDED_LOWER_BOUND
 import androidx.window.core.layout.WindowSizeClass.Companion.WIDTH_DP_MEDIUM_LOWER_BOUND
 import coil3.compose.setSingletonImageLoaderFactory
+import com.arn.scrobble.BuildKonfig
+import com.arn.scrobble.api.DrawerData
 import com.arn.scrobble.api.UserCached
+import com.arn.scrobble.charts.TimePeriodSelectorRow
 import com.arn.scrobble.icons.Close
 import com.arn.scrobble.icons.Fullscreen
 import com.arn.scrobble.icons.Icons
@@ -130,6 +158,7 @@ import com.arn.scrobble.icons.Minimize
 import com.arn.scrobble.icons.Search
 import com.arn.scrobble.icons.automirrored.ArrowBack
 import com.arn.scrobble.imageloader.PanoImageLoader
+import com.arn.scrobble.navigation.BottomSheetDialogParent
 import com.arn.scrobble.navigation.BottomSheetSceneStrategy
 import com.arn.scrobble.navigation.FabClickedResult
 import com.arn.scrobble.navigation.LocalNavigationType
@@ -140,15 +169,19 @@ import com.arn.scrobble.navigation.PanoNavigationType
 import com.arn.scrobble.navigation.PanoRoute
 import com.arn.scrobble.navigation.PanoTab
 import com.arn.scrobble.navigation.PanoTab.Subtab
+import com.arn.scrobble.navigation.ProfileDialogContent
+import com.arn.scrobble.navigation.ProfilePopup
+import com.arn.scrobble.navigation.PullToRefreshResult
 import com.arn.scrobble.navigation.SubTabClickedResult
+import com.arn.scrobble.navigation.TimePeriodDataResult
 import com.arn.scrobble.navigation.rememberPanoNavBackStack
 import com.arn.scrobble.themes.LocalThemeAttributes
 import com.arn.scrobble.ui.AvatarOrInitials
-import com.arn.scrobble.ui.LocalAppBarBg
 import com.arn.scrobble.ui.LocalInnerPadding
-import com.arn.scrobble.ui.OutlinedToggleButtons
+import com.arn.scrobble.ui.LocalModalShownTracker
 import com.arn.scrobble.ui.PanoPullToRefreshStateForTab
 import com.arn.scrobble.ui.PanoSnackbarVisuals
+import com.arn.scrobble.ui.PanoToggleButtonGroup
 import com.arn.scrobble.ui.PanoToggleButtonsMode
 import com.arn.scrobble.ui.horizontalOverscanPadding
 import com.arn.scrobble.updates.runUpdateAction
@@ -185,8 +218,10 @@ fun PanoAppContent(
     draggableWrapper: @Composable (content: @Composable (windowTitleActions: WindowTitleActions?) -> Unit) -> Unit = {
         it(null)
     },
+    onCloseLastDialog: (() -> Unit)? = null,
     viewModel: MainViewModel = viewModel { MainViewModel() },
 ) {
+    val isDialogActivity = onCloseLastDialog != null
     val sizeClass = currentWindowAdaptiveInfoV2().windowSizeClass
     val navigationType = when {
         sizeClass.isWidthAtLeastBreakpoint(WIDTH_DP_EXPANDED_LOWER_BOUND)
@@ -209,6 +244,7 @@ fun PanoAppContent(
     val titlesMap = remember { mutableStateMapOf<PanoRoute, String>() }
     val tabIdxMap = remember { mutableStateMapOf<PanoRoute.HasTabs, Int>() }
     val searchTextMap = remember { mutableStateMapOf<PanoRoute.HasSearch, String>() }
+    val modalShownCount = rememberSaveable { mutableIntStateOf(0) }
 
 //    val topBarScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(
 //        state = rememberTopAppBarState(
@@ -216,8 +252,8 @@ fun PanoAppContent(
 //        )
 //    )
     val pullToRefreshState = rememberPullToRefreshState()
-    val pullToRefreshStateForSelfHomePager =
-        remember { mutableStateMapOf<Int, PanoPullToRefreshStateForTab>() }
+    val pullToRefreshStateForHomePager =
+        remember { mutableStateMapOf<PanoTab, PanoPullToRefreshStateForTab>() }
 
     val currentAccountType by PlatformStuff.mainPrefs.data.collectAsStateWithInitialValue { it.currentAccountType }
     val userSelf by PlatformStuff.mainPrefs.data
@@ -240,21 +276,22 @@ fun PanoAppContent(
             }
         },
         when {
+            isDialogActivity -> PanoRoute.Blank
             userSelf == null -> PanoRoute.Onboarding
             else -> PanoRoute.SelfHomePager()
         }
     )
 
-    val currentUser = remember(backStack.lastOrNull()) {
-        val withUser = backStack.lastOrNull { it is PanoRoute.HasUser } as? PanoRoute.HasUser
-        if (withUser != null)
-            withUser.user ?: userSelf
-        else
-            null
+    val currentPanoRoute = remember(backStack.lastOrNull()) {
+        backStack.lastOrNull { !it.isModal() }
     }
 
-    val currentPanoRoute = remember(backStack.lastOrNull()) {
-        backStack.lastOrNull { it !is PanoRoute.Modal }
+    val currentUser = remember(currentPanoRoute, currentAccountType) {
+        backStack
+            .filterIsInstance<PanoRoute.HasUser>()
+            .lastOrNull()
+            ?.user
+            ?: userSelf
     }
 
     val fabData = remember(currentPanoRoute) {
@@ -269,7 +306,32 @@ fun PanoAppContent(
         tabData?.getOrNull(tabIdxMap.getOrDefault(currentPanoRoute, -1)) as? PanoTab.HasSubtabs
     }
 
+    val hasTimePeriods = remember(currentPanoRoute, tabIdxMap[currentPanoRoute]) {
+        tabData?.getOrNull(
+            tabIdxMap.getOrDefault(currentPanoRoute, -1)
+        ) is PanoRoute.HasTimePeriods ||
+                currentPanoRoute is PanoRoute.HasTimePeriods
+    }
+
+    var profilePopupShown by rememberSaveable { mutableStateOf(false) }
+    val drawerDataMap = viewModel.drawerDataMap
+
+    val needsTransparentBg = isDialogActivity &&
+            (backStack.size <= 1 ||
+                    backStack.lastOrNull()?.isModal() == true &&
+                    currentPanoRoute == PanoRoute.Blank)
+
+    var lastTimePeriodDataResult by remember { mutableStateOf<TimePeriodDataResult?>(null) }
     var selectedSubTabId by remember { mutableIntStateOf(-1) }
+    val title = titlesMap[currentPanoRoute].orEmpty()
+    val subtitle = if (
+        currentPanoRoute is PanoRoute.HasUser &&
+        navigationType == PanoNavigationType.BOTTOM_NAVIGATION &&
+        currentUser?.isSelf == false
+    )
+        currentUser.name
+    else
+        null
 
     fun goBack(): PanoRoute? {
         if (backStack.size <= 1)
@@ -277,7 +339,7 @@ fun PanoAppContent(
 
         val route = backStack.lastOrNull()
 
-        if (backStack.count { it is PanoRoute.Modal } == 1 && route is PanoRoute.Modal) {
+        if (backStack.count { it.isModal() } == 1 && route?.isModal() == true) {
             scope.launch {
                 bottomSheetState.hide()
                 backStack.remove(route)
@@ -299,7 +361,7 @@ fun PanoAppContent(
     }
 
     fun removeAllModals() {
-        backStack.removeAll { it is PanoRoute.Modal }
+        backStack.removeAll { it.isModal() }
     }
 
     fun navigate(route: PanoRoute) {
@@ -308,12 +370,17 @@ fun PanoAppContent(
             if (last != route) {
                 if (last is PanoRoute.HasSearch)
                     searchTextMap[last] = searchFieldState.text.toString()
-                backStack.add(route)
+
+                // expand the whole chain
+                if (last is PanoRoute.Modal.CanExpand && last.isExpanded && route is PanoRoute.Modal.CanExpand)
+                    backStack.add(route.copyExpanded())
+                else
+                    backStack.add(route)
             }
         }
 
 
-        if (route !is PanoRoute.Modal && backStack.any { it is PanoRoute.Modal }) {
+        if (!route.isModal() && backStack.any { it.isModal() }) {
             modalTransitionJob = scope.launch {
                 bottomSheetState.hide()
                 removeAllModals()
@@ -339,14 +406,34 @@ fun PanoAppContent(
         }
     }
 
-    val bottomSheetStrategy =
-        remember {
-            BottomSheetSceneStrategy<PanoRoute>(
-                false,
-                bottomSheetState,
-                ::removeAllModals
-            )
+    fun expandModal(route: PanoRoute.Modal.CanExpand) {
+        if (route.isExpanded) return
+
+        // expand the whole chain
+        var routeFound = false
+        for (i in backStack.indices.reversed()) {
+            val item = backStack[i]
+            if (item == route) {
+                routeFound = true
+            } else if (!routeFound) {
+                continue
+            }
+
+            if (item is PanoRoute.Modal.CanExpand && !item.isExpanded) {
+                backStack[i] = item.copyExpanded()
+            } else
+                break
         }
+
+        scope.launch { bottomSheetState.hide() }
+    }
+
+    val bottomSheetStrategy = remember {
+        BottomSheetSceneStrategy<PanoRoute>(
+            sheetState = bottomSheetState,
+            onDismiss = ::removeAllModals
+        )
+    }
     val singlePaneStrategy = remember { SinglePaneSceneStrategy<PanoRoute>() }
 
     LaunchedEffect(currentPanoRoute) {
@@ -361,6 +448,17 @@ fun PanoAppContent(
                     searchFieldFocusRequester.requestFocus()
                 else
                     searchFieldFocusRequester.freeFocus()
+            }
+        } else if (!hasTimePeriods) {
+            lastTimePeriodDataResult = null
+        }
+    }
+
+    if (onCloseLastDialog != null) {
+        LaunchedEffect(backStack.lastOrNull()) {
+            val route = backStack.lastOrNull()
+            if (route == null || route == PanoRoute.Blank) {
+                onCloseLastDialog()
             }
         }
     }
@@ -421,83 +519,113 @@ fun PanoAppContent(
         }
     }
 
+    LaunchedEffect(profilePopupShown) {
+        if (profilePopupShown && currentUser != null) {
+            viewModel.loadDrawerData(currentUser)
+        }
+    }
+
     NavFromOutsideEffect(
         onNavigate = {
             // disable deeplinks if logged out
             if (currentUser != null)
                 navigate(it)
         },
-        isAndroidDialogActivity = false
+        isAndroidDialogActivity = isDialogActivity
     )
+
+    ResultEffect<TimePeriodDataResult>(resultEventBus) { res ->
+        lastTimePeriodDataResult = res
+    }
 
     setSingletonImageLoaderFactory { context ->
         PanoImageLoader.newImageLoader(context)
     }
 
-    CompositionLocalProvider(LocalNavigationType provides navigationType) {
-        val currentNavType = LocalNavigationType.current
+    key(locale) {
+        val needsRoundedCorners = PlatformStuff.isDesktop &&
+                !LocalThemeAttributes.current.blurMainWindow &&
+                MaterialTheme.colorScheme.background.alpha < 1f
 
-        key(locale) {
-            val needsRoundedCorners = PlatformStuff.isDesktop &&
-                    !LocalThemeAttributes.current.blurMainWindow &&
-                    MaterialTheme.colorScheme.background.alpha < 1f
+        val needsBackdropBlur = PlatformStuff.isDesktop &&
+                PlatformStuff.supportsBlur &&
+                LocalThemeAttributes.current.blurSubWindow &&
+                modalShownCount.intValue > 0
 
-            val needsBackdropBlur = PlatformStuff.isDesktop &&
-                    PlatformStuff.supportsBlur &&
-                    LocalThemeAttributes.current.blurSubWindow &&
-                    bottomSheetState.isVisible
-
+        CompositionLocalProvider(
+            LocalNavigationType provides navigationType,
+            LocalModalShownTracker provides modalShownCount,
+        ) {
             Scaffold(
+                containerColor = if (needsTransparentBg)
+                    Color.Transparent
+                else
+                    MaterialTheme.colorScheme.background,
                 modifier = Modifier
                     .fillMaxSize()
                     .pullToRefresh(
                         state = pullToRefreshState,
-                        isRefreshing = pullToRefreshStateForSelfHomePager.values.any { it == PanoPullToRefreshStateForTab.Refreshing },
-                        enabled = (!PlatformStuff.isDesktop && !PlatformStuff.isTv) && !pullToRefreshStateForSelfHomePager.values.all { it == PanoPullToRefreshStateForTab.Disabled },
+                        isRefreshing = pullToRefreshStateForHomePager.values.any { it == PanoPullToRefreshStateForTab.Refreshing },
+                        enabled = (!PlatformStuff.isDesktop && !PlatformStuff.isTv) && !pullToRefreshStateForHomePager.values.all { it == PanoPullToRefreshStateForTab.Disabled },
                         onRefresh = {
                             // find the right tab
-                            pullToRefreshStateForSelfHomePager.entries
+                            pullToRefreshStateForHomePager.entries
                                 .find { it.value == PanoPullToRefreshStateForTab.NotRefreshing }
                                 ?.key
-                                ?.let { id ->
-                                    viewModel.notifyPullToRefresh(id)
+                                ?.let {
+                                    resultEventBus.sendResult(PullToRefreshResult(it))
                                 }
                         }
                     )
 //                    .nestedScroll(topBarScrollBehavior.nestedScrollConnection)
-                    .focusGroup()
                     .then(
                         if (needsRoundedCorners) Modifier.clip(MaterialTheme.shapes.medium) else Modifier
                     ).then(
                         if (needsBackdropBlur) Modifier.blur(radius = Stuff.BLUR_BACKDROP_RADIUS_DP.dp) else Modifier
                     ),
                 topBar = {
-                    draggableWrapper { windowTitleActions ->
-                        PanoTopAppBar(
-                            titlesMap[currentPanoRoute] ?: "",
-//                            scrollBehavior = topBarScrollBehavior,
-                            scrollBehavior = null,
-                            innerPaddingStart = if (currentNavType != PanoNavigationType.BOTTOM_NAVIGATION) navRailWidth else 0.dp,
-                            searchTextFieldState = if (currentPanoRoute is PanoRoute.HasSearch) searchFieldState else null,
-                            searchFieldFocusRequester = searchFieldFocusRequester,
-                            windowTitleActions = windowTitleActions,
-                            showBack = !PlatformStuff.isTv && backStack.count { it !is PanoRoute.Modal } > 1,
-                            subTabs = subTabData,
-                            selectedSubTabId = selectedSubTabId,
-                            resultEventBus = resultEventBus,
-                            onBack = ::goBack,
-                        )
+                    if (!needsTransparentBg) {
+                        draggableWrapper { windowTitleActions ->
+                            PanoTopAppBar(
+                                titleContent = when {
+                                    currentPanoRoute is PanoRoute.HasSearch -> TitleContent.Search(
+                                        searchFieldState,
+                                        searchFieldFocusRequester,
+                                        title
+                                    )
+
+                                    subTabData != null -> TitleContent.SubTabs(
+                                        subTabData.subTabs,
+                                        selectedSubTabId,
+                                        title
+                                    )
+
+                                    hasTimePeriods && lastTimePeriodDataResult != null ->
+                                        TitleContent.TimePeriods(lastTimePeriodDataResult!!)
+
+                                    else -> TitleContent.Text(title)
+                                },
+                                subtitle = subtitle,
+                                //                            scrollBehavior = topBarScrollBehavior,
+                                scrollBehavior = null,
+                                innerPaddingStart = if (navigationType != PanoNavigationType.BOTTOM_NAVIGATION) navRailWidth else 0.dp,
+                                windowTitleActions = windowTitleActions,
+                                showBack = !PlatformStuff.isTv && backStack.count { !it.isModal() } > 1,
+                                resultEventBus = resultEventBus,
+                                onBack = ::goBack,
+                            )
+                        }
                     }
                 },
                 bottomBar = {
                     val showBottomBar =
-                        currentNavType == PanoNavigationType.BOTTOM_NAVIGATION && tabData != null && currentUser != null
+                        navigationType == PanoNavigationType.BOTTOM_NAVIGATION && tabData != null && currentUser != null
 
                     if (currentUser != null) {
                         AnimatedVisibility(
                             visible = showBottomBar,
-                            enter = fadeIn() + slideInVertically { it / 2 },
-                            exit = slideOutVertically { it / 2 } + fadeOut(),
+                            enter = fadeIn() + expandVertically(expandFrom = Alignment.Top) + slideInVertically { it / 2 },
+                            exit = fadeOut() + shrinkVertically(shrinkTowards = Alignment.Top) + slideOutVertically { it / 2 },
                         ) {
                             // to show at least something in the animation
                             var capturedTabData by remember { mutableStateOf(tabData.orEmpty()) }
@@ -519,25 +647,24 @@ fun PanoAppContent(
                                     }
                                 },
                                 user = currentUser,
+//                                profilePopupShown = profilePopupShown,
                                 onProfileClicked = {
-                                    navigate(
-                                        PanoRoute.Modal.NavPopup(
-                                            otherUser = currentUser.takeIf { currentUser != userSelf }
-                                        )
-                                    )
+                                    profilePopupShown = true
                                 },
                             )
                         }
                     }
                 },
                 floatingActionButton = {
-                    if (currentNavType == PanoNavigationType.BOTTOM_NAVIGATION) {
+                    if (navigationType == PanoNavigationType.BOTTOM_NAVIGATION) {
                         fabData?.let { fabData ->
                             PanoFab(
                                 fabData,
                                 resultEventBus,
                                 onNavigate = ::navigate,
-                                modifier = Modifier.imePadding()
+                                modifier = Modifier.windowInsetsPadding(
+                                    WindowInsets.ime.exclude(WindowInsets.navigationBars)
+                                )
                             )
                         }
                     }
@@ -556,51 +683,28 @@ fun PanoAppContent(
                     }
                 },
             ) { innerPadding ->
-                val topAppBarColors = TopAppBarDefaults.topAppBarColors()
-                val appBarBg = topAppBarColors.containerColor
-                /*
-                val appBarBg by remember {
-                    derivedStateOf {
-                        val overlappingFraction = topBarScrollBehavior.state.overlappedFraction
-
-                        if (overlappingFraction > 0.01f)
-                            topAppBarColors.scrolledContainerColor.copy(
-                                alpha = topAppBarColors.containerColor.alpha
-                            )
-                        else
-                            topAppBarColors.containerColor
-                    }
-                }
-                 */
-
                 CompositionLocalProvider(
                     LocalInnerPadding provides innerPadding,
-                    LocalAppBarBg provides appBarBg
                 ) {
                     val topPadding =
                         PaddingValues(top = innerPadding.calculateTopPadding())
-                    val offsetDenominator = 4
-                    val scaleFactor = 0.95f
 
-                    val scaleInTransformOrigin = remember {
-                        TransformOrigin(
-                            0.15f,
-                            0.75f,
-                        )
-                    }
-
-                    val scaleOutTransformOrigin = remember {
-                        TransformOrigin(
-                            0.85f,
-                            0.75f,
-                        )
-                    }
+                    val navContentFocusRequester = remember { FocusRequester() }
 
                     Row(
                         modifier = Modifier
                             .fillMaxSize()
+                            .then(
+                                if (PlatformStuff.isTv) {
+                                    Modifier.focusProperties {
+                                        onEnter = {
+                                            navContentFocusRequester.requestFocus()
+                                        }
+                                    }
+                                } else Modifier
+                            )
                     ) {
-                        if (currentNavType != PanoNavigationType.BOTTOM_NAVIGATION) {
+                        if (navigationType != PanoNavigationType.BOTTOM_NAVIGATION && !needsTransparentBg) {
                             PanoNavigationRail(
                                 tabs = tabData.orEmpty(),
                                 selectedTabIdx = tabIdxMap.getOrDefault(currentPanoRoute, 0),
@@ -612,12 +716,21 @@ fun PanoAppContent(
                                         tabIdxMap[it] = pos
                                     }
                                 },
-                                onProfileClicked = {
+                                onProfilePopupShown = {
                                     if (currentUser != null) {
-                                        navigate(
-                                            PanoRoute.Modal.NavPopup(
-                                                otherUser = currentUser.takeIf { currentUser != userSelf }
-                                            )
+                                        profilePopupShown = true
+                                    }
+                                },
+                                profilePopupSlot = {
+                                    if (currentUser != null && profilePopupShown) {
+                                        ProfilePopup(
+                                            shown = true,
+                                            onDismiss = { profilePopupShown = false },
+                                            user = currentUser,
+                                            drawerData = drawerDataMap.getOrElse(currentUser) {
+                                                DrawerData(0)
+                                            },
+                                            onNavigate = ::navigate
                                         )
                                     }
                                 },
@@ -636,6 +749,44 @@ fun PanoAppContent(
                                 .weight(1f)
                         )
 
+                        fun <T : Any> AnimatedContentTransitionScope<Scene<T>>.navTransition(towards: AnimatedContentTransitionScope.SlideDirection):
+                                ContentTransform {
+                            val enterOffsetDenominator = 4
+                            val exitOffsetDenominator = 4
+                            val scaleFactor = 0.95f
+                            val enterStiffness = Spring.StiffnessMediumLow
+                            val exitStiffness = Spring.StiffnessHigh
+
+                            return ContentTransform(
+                                targetContentEnter = fadeIn(
+                                    animationSpec = spring(
+                                        stiffness = enterStiffness
+                                    )
+                                ) + scaleIn(
+                                    initialScale = scaleFactor,
+                                    animationSpec = spring(
+                                        stiffness = enterStiffness
+                                    )
+                                ) + slideIntoContainer(
+                                    towards = towards,
+                                    initialOffset = { it / enterOffsetDenominator }
+                                ),
+                                initialContentExit = fadeOut(
+                                    animationSpec = spring(
+                                        stiffness = exitStiffness
+                                    )
+                                ) + scaleOut(
+                                    targetScale = scaleFactor,
+                                    animationSpec = spring(
+                                        stiffness = exitStiffness
+                                    )
+                                ) + slideOutOfContainer(
+                                    towards = towards,
+                                    targetOffset = { it / exitOffsetDenominator }
+                                ),
+                            )
+                        }
+
                         NavDisplay(
                             backStack = backStack,
                             onBack = ::goBack,
@@ -649,71 +800,20 @@ fun PanoAppContent(
                                 singlePaneStrategy
                             ),
                             transitionSpec = {
-                                ContentTransform(
-                                    fadeIn() +
-                                            scaleIn(
-                                                initialScale = scaleFactor,
-                                                transformOrigin = scaleInTransformOrigin
-                                            ) +
-                                            slideIntoContainer(
-                                                towards = AnimatedContentTransitionScope.SlideDirection.End,
-                                                initialOffset = { -it / offsetDenominator }
-                                            ),
-                                    fadeOut() +
-                                            scaleOut(
-                                                targetScale = scaleFactor,
-                                                transformOrigin = scaleOutTransformOrigin
-                                            ) +
-                                            slideOutOfContainer(
-                                                towards = AnimatedContentTransitionScope.SlideDirection.Start,
-                                                targetOffset = { it / offsetDenominator }
-                                            )
-                                )
+                                navTransition(AnimatedContentTransitionScope.SlideDirection.End)
                             },
                             popTransitionSpec = {
-                                ContentTransform(
-                                    fadeIn() +
-                                            scaleIn(
-                                                initialScale = scaleFactor,
-                                                transformOrigin = scaleInTransformOrigin
-                                            ) +
-                                            slideIntoContainer(
-                                                towards = AnimatedContentTransitionScope.SlideDirection.Start,
-                                                animationSpec = spring(),
-                                                initialOffset = { -it / offsetDenominator }
-                                            ),
-                                    fadeOut() +
-                                            scaleOut(
-                                                targetScale = scaleFactor,
-                                                transformOrigin = scaleOutTransformOrigin
-                                            ) +
-                                            slideOutOfContainer(
-                                                towards = AnimatedContentTransitionScope.SlideDirection.End,
-                                                targetOffset = { it / offsetDenominator }
-                                            ),
-                                )
+                                navTransition(AnimatedContentTransitionScope.SlideDirection.End)
+
                             },
-                            predictivePopTransitionSpec = {
-                                ContentTransform(
-                                    fadeIn() +
-                                            scaleIn(
-                                                initialScale = scaleFactor,
-                                                transformOrigin = scaleInTransformOrigin
-                                            ) +
-                                            slideIntoContainer(
-                                                towards = AnimatedContentTransitionScope.SlideDirection.Start,
-                                                initialOffset = { -it / offsetDenominator }
-                                            ),
-                                    fadeOut() +
-                                            scaleOut(
-                                                targetScale = scaleFactor,
-                                                transformOrigin = scaleOutTransformOrigin
-                                            ) +
-                                            slideOutOfContainer(
-                                                towards = AnimatedContentTransitionScope.SlideDirection.End,
-                                                targetOffset = { it / offsetDenominator }
-                                            ),
-                                )
+                            predictivePopTransitionSpec = { edge ->
+                                val towards = when (edge) {
+                                    NavigationEvent.EDGE_LEFT -> AnimatedContentTransitionScope.SlideDirection.Right
+                                    NavigationEvent.EDGE_RIGHT -> AnimatedContentTransitionScope.SlideDirection.Left
+                                    else -> AnimatedContentTransitionScope.SlideDirection.End
+                                }
+
+                                navTransition(towards)
                             },
                             entryProvider = PanoNavGraph.panoNavEntryProvider(
                                 onSetTitle = { route, title ->
@@ -727,12 +827,13 @@ fun PanoAppContent(
                                 },
                                 navigate = ::navigate,
                                 goBack = ::goBack,
+                                onExpandModal = ::expandModal,
                                 onSetOnboardingFinished = {
                                     replaceRoutes(listOf(PanoRoute.SelfHomePager()))
                                 },
                                 pullToRefreshState = { pullToRefreshState },
-                                onSetRefreshing = { id, prState ->
-                                    pullToRefreshStateForSelfHomePager[id] = prState
+                                onSetRefreshing = { tab, prState ->
+                                    pullToRefreshStateForHomePager[tab] = prState
                                 },
                                 selectSubTabId = {
                                     selectedSubTabId = it
@@ -743,7 +844,9 @@ fun PanoAppContent(
                             modifier = Modifier
                                 .widthIn(max = 1020.dp)
                                 .padding(topPadding)
-                                .consumeWindowInsets(topPadding),
+                                .consumeWindowInsets(topPadding)
+                                .focusRequester(navContentFocusRequester)
+                                .focusGroup(),
                         )
 
 
@@ -752,16 +855,36 @@ fun PanoAppContent(
                                 .weight(1f)
                         )
                     }
-                }
 
-//            if (BuildKonfig.DEBUG && PlatformStuff.isTv) {
-//                Box(
-//                    modifier = Modifier
-//                        .fillMaxSize()
-//                        .padding(vertical = 27.dp, horizontal = 48.dp)
-//                        .border(1.dp, MaterialTheme.colorScheme.error)
-//                )
-//            }
+                    if (profilePopupShown && currentUser != null && navigationType == PanoNavigationType.BOTTOM_NAVIGATION) {
+                        BottomSheetDialogParent(
+                            sheetState = rememberBottomSheetState(
+                                initialValue = SheetValue.Hidden,
+                                enabledValues = setOf(SheetValue.Hidden, SheetValue.Expanded),
+                            ),
+                            onDismissRequest = { profilePopupShown = false },
+                            onBack = null,
+                        ) {
+                            ProfileDialogContent(
+                                onDismiss = { profilePopupShown = false },
+                                user = currentUser,
+                                drawerData = drawerDataMap.getOrElse(currentUser) { DrawerData(0) },
+                                onNavigate = ::navigate,
+                                modifier = Modifier
+                                    .safeContentPadding()
+                            )
+                        }
+                    }
+                }
+            }
+
+            if (BuildKonfig.DEBUG && PlatformStuff.isTv) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(vertical = 27.dp, horizontal = 48.dp)
+                        .border(1.dp, MaterialTheme.colorScheme.error)
+                )
             }
         }
     }
@@ -815,32 +938,30 @@ private fun PanoFab(
     }
 }
 
+@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 private fun PanoTopAppBar(
-    title: String,
+    titleContent: TitleContent,
+    subtitle: String?,
     windowTitleActions: WindowTitleActions?,
     showBack: Boolean,
     onBack: () -> Unit,
     scrollBehavior: TopAppBarScrollBehavior?,
-    searchTextFieldState: TextFieldState?,
-    searchFieldFocusRequester: FocusRequester,
     innerPaddingStart: Dp,
-    selectedSubTabId: Int,
-    subTabs: PanoTab.HasSubtabs?,
     resultEventBus: ResultEventBus,
     modifier: Modifier = Modifier,
 ) {
-    val colors = TopAppBarDefaults.topAppBarColors().let {
-        if (it.containerColor.alpha == 1f)
-            it.copy(titleContentColor = MaterialTheme.colorScheme.primary)
-        else
-            it.copy(
-                titleContentColor = MaterialTheme.colorScheme.primary,
-                scrolledContainerColor = it.scrolledContainerColor.copy(
-                    alpha = it.containerColor.alpha
-                )
-            )
-    }
+    val colors = TopAppBarDefaults.topAppBarColors().copy(
+        titleContentColor = MaterialTheme.colorScheme.primary,
+        containerColor = Color.Transparent
+    )
+
+    val startPadding = if (showBack)
+        (innerPaddingStart - IconButtonDefaults.smallContainerSize().width + (2 * 4).dp)
+            .coerceAtLeast(0.dp)
+    // TopAppBarHorizontalPadding is 4.dp
+    else
+        innerPaddingStart
 
     @Composable
     fun NavIconContent() {
@@ -922,44 +1043,44 @@ private fun PanoTopAppBar(
 
     val outerTextStyle = LocalTextStyle.current
 
-    CenterAlignedTopAppBar(
+    TopAppBar(
         modifier = modifier,
+        titleHorizontalAlignment = Alignment.CenterHorizontally,
+        subtitle = {
+            // does not reserve space if null
+            if (subtitle != null) {
+                Text(
+                    subtitle,
+                    modifier = Modifier
+                        .padding(start = startPadding)
+                )
+            }
+        },
         title = {
-            val titleContent = when {
-                searchTextFieldState != null -> TitleContent.Search(searchTextFieldState, title)
-                subTabs != null -> TitleContent.SubTabs(subTabs.subTabs)
-                else -> TitleContent.Text(title)
+            // AnimatedContent has issues due to TopAppBar's own animations
+            val alpha = remember(titleContent::class) { Animatable(0f) }
+
+            LaunchedEffect(titleContent::class) {
+                alpha.animateTo(1f, tween())
             }
 
-            AnimatedContent(
-                titleContent,
-                contentAlignment = Alignment.Center,
-                label = "TitleContent",
-                transitionSpec = {
-                    // same default but with clip = false
-                    ContentTransform(
-                        fadeIn(animationSpec = tween(220, delayMillis = 90)) +
-                                scaleIn(
-                                    initialScale = 0.92f,
-                                    animationSpec = tween(220, delayMillis = 90)
-                                ),
-                        fadeOut(animationSpec = tween(90)),
-                        sizeTransform = SizeTransform(clip = false)
-                    )
-                },
-                contentKey = { it::class },
+            Box(
                 modifier = Modifier
                     .padding(
                         top = if (PlatformStuff.isTv) 8.dp else 0.dp, // for TV overscan
-                        start = innerPaddingStart
+                        start = startPadding
                     )
-            ) { titleContent ->
+                    .graphicsLayer { this.alpha = alpha.value }
+            ) {
                 when (titleContent) {
                     is TitleContent.Search -> {
+                        var isEditable by rememberSaveable { mutableStateOf(!PlatformStuff.isTv) }
+
                         TextField(
                             state = titleContent.searchState,
                             lineLimits = TextFieldLineLimits.SingleLine,
                             shape = CircleShape,
+                            readOnly = !isEditable,
                             textStyle = outerTextStyle,
                             colors = TextFieldDefaults.tonalColors().copy(
                                 focusedContainerColor = MaterialTheme.colorScheme.surfaceContainerHighest,
@@ -1009,46 +1130,78 @@ private fun PanoTopAppBar(
                                 imeAction = ImeAction.Search
                             ),
                             modifier = Modifier
-                                .focusRequester(searchFieldFocusRequester)
                                 .padding(horizontal = horizontalOverscanPadding())
                                 .widthIn(max = 720.dp)
                                 .fillMaxWidth()
+                                .focusRequester(titleContent.focusRequester)
+                                .then(
+                                    if (PlatformStuff.isTv) {
+                                        Modifier
+                                            .onFocusChanged {
+                                                if (!it.isFocused)
+                                                    isEditable = false
+                                            }
+                                            .onPreviewKeyEvent { e ->
+                                                when {
+                                                    e.type != KeyEventType.KeyUp -> false
+                                                    !isEditable && (e.key == Key.DirectionCenter || e.key == Key.Enter) -> {
+                                                        isEditable = true
+                                                        true
+                                                    }
+
+                                                    isEditable && (e.key == Key.Back || e.key == Key.Escape) -> {
+                                                        isEditable = false
+//                                                        searchFieldFocusRequester.freeFocus()
+                                                        true
+                                                    }
+
+                                                    else -> false
+                                                }
+                                            }
+                                    } else
+                                        Modifier
+                                )
                         )
                     }
 
                     is TitleContent.SubTabs -> {
-                        val colors = ToggleButtonDefaults.outlinedToggleButtonColors(
-                            checkedContainerColor = MaterialTheme.colorScheme.secondary,
-                        )
-
-                        OutlinedToggleButtons(
-                            texts = titleContent.subTabsList.map { subtab ->
-                                if (subtab.id == selectedSubTabId)
-                                    title
+                        PanoToggleButtonGroup(
+                            texts = titleContent.subTabs.map { subtab ->
+                                if (subtab.id == titleContent.selectedId)
+                                    titleContent.title
                                 else
                                     stringResource(subtab.titleRes)
                             },
-                            icons = titleContent.subTabsList.map { it.icon },
-                            selectedIndex = titleContent.subTabsList.indexOfFirst { it.id == selectedSubTabId },
+                            icons = titleContent.subTabs.map { it.icon },
+                            chevronAt = titleContent.subTabs.indexOfFirst { it.id == titleContent.selectedId && it.isDropdown },
+                            selectedIndex = titleContent.subTabs.indexOfFirst { it.id == titleContent.selectedId },
                             onSelected = { index ->
-                                val subtab = titleContent.subTabsList.getOrNull(index)
+                                val subtab = titleContent.subTabs.getOrNull(index)
                                 if (subtab != null) {
                                     resultEventBus.sendResult(SubTabClickedResult(subtab.id))
                                 }
                             },
                             mode = PanoToggleButtonsMode.Icon,
-                            colors = colors,
-                            horizontalArrangement = Arrangement.spacedBy(
-                                2.dp,
-                                Alignment.CenterHorizontally
-                            ),
-                            canReClick = true,
+                            modifier = Modifier.pointerHoverIcon(PointerIcon.Default)
+                        )
+                    }
+
+                    is TitleContent.TimePeriods -> {
+                        TimePeriodSelectorRow(
+                            typeSelectorShown = titleContent.data.typeSelectorShown,
+                            periodType = titleContent.data.periodType,
+                            selectedPeriod = titleContent.data.selectedPeriod,
+                            timePeriodsList = titleContent.data.timePeriodsList,
+                            enabled = titleContent.data.enabled,
+                            resultEventBus = resultEventBus,
+                            modifier = Modifier
+                                .pointerHoverIcon(PointerIcon.Default)
                         )
                     }
 
                     is TitleContent.Text -> {
                         TitleText(
-                            text = titleContent.text
+                            text = titleContent.title
                         )
                     }
                 }
@@ -1071,10 +1224,15 @@ private fun PanoNavigationRail(
     resultEventBus: ResultEventBus,
     onNavigate: (PanoRoute) -> Unit,
     onTabClicked: (pos: Int) -> Unit,
-    onProfileClicked: () -> Unit,
+    onProfilePopupShown: () -> Unit,
+    profilePopupSlot: @Composable () -> Unit,
     user: UserCached?,
     modifier: Modifier = Modifier,
 ) {
+    val profileTab = if (tabs.contains(PanoTab.Profile) || user != null) PanoTab.Profile else null
+    val hasFooter = profileTab != null && user != null
+    val otherTabs = tabs.filter { it !is PanoTab.Profile }
+
     val expandedByDefault = when (LocalNavigationType.current) {
         PanoNavigationType.PERMANENT_NAVIGATION_DRAWER -> true
         PanoNavigationType.NAVIGATION_RAIL,
@@ -1088,6 +1246,55 @@ private fun PanoNavigationRail(
             WideNavigationRailValue.Collapsed
     )
 
+    val colors = WideNavigationRailDefaults.colors().copy(
+        containerColor = Color.Transparent
+    )
+
+    val itemColors = if (state.targetValue == WideNavigationRailValue.Expanded)
+        WideNavigationRailItemDefaults.colors(
+            selectedTextColor = MaterialTheme.colorScheme.onSecondaryContainer
+        )
+    else
+        WideNavigationRailItemDefaults.colors()
+
+
+    val centerWithPinnedFooter = object : Arrangement.Vertical {
+        override fun Density.arrange(totalSize: Int, sizes: IntArray, outPositions: IntArray) {
+            if (sizes.isEmpty()) return
+
+            if (hasFooter) {
+                val footerIndex = sizes.lastIndex
+                val footerSize = sizes[footerIndex]
+
+                // Sum the height of everything except the footer.
+                var itemsHeight = 0
+                for (i in 0 until footerIndex) {
+                    itemsHeight += sizes[i]
+                }
+
+                // Center that group within the space above the footer.
+                var y = ((totalSize - footerSize - itemsHeight) / 2).coerceAtLeast(0)
+                for (i in 0 until footerIndex) {
+                    outPositions[i] = y
+                    y += sizes[i]
+                }
+
+                // Pin the footer to the bottom, but never let it overlap the items above.
+                outPositions[footerIndex] = (totalSize - footerSize).coerceAtLeast(y)
+            } else {
+                // No footer — just center everything as a group.
+                var itemsHeight = 0
+                for (size in sizes) itemsHeight += size
+
+                var y = ((totalSize - itemsHeight) / 2).coerceAtLeast(0)
+                for (i in sizes.indices) {
+                    outPositions[i] = y
+                    y += sizes[i]
+                }
+            }
+        }
+    }
+
     LaunchedEffect(expandedByDefault) {
         if (expandedByDefault) {
             state.expand()
@@ -1098,6 +1305,7 @@ private fun PanoNavigationRail(
 
     WideNavigationRail(
         state = state,
+        colors = colors,
         header =
             if (fabData != null && (fabData.showOnTv && PlatformStuff.isTv || !PlatformStuff.isTv)) {
                 {
@@ -1112,76 +1320,74 @@ private fun PanoNavigationRail(
                 }
             } else
                 null,
-        arrangement = Arrangement.aligned(Alignment.CenterVertically),
+        arrangement = centerWithPinnedFooter,
+        contentPadding = PaddingValues(
+            // below top bar now
+            bottom = WideNavigationRailDefaults.ContentPadding.calculateBottomPadding(),
+        ),
         modifier = modifier
-            .widthIn(max = 200.dp)
+            .widthIn(max = 220.dp)
     ) {
-        (
-                tabs +
-                        if (tabs.find { it is PanoTab.Profile } == null) {
-                            listOf(PanoTab.Profile)
-                        } else {
-                            emptyList()
-                        }
+
+        otherTabs.forEachIndexed { index, tabMetadata ->
+            WideNavigationRailItem(
+                selected = index == selectedTabIdx,
+                onClick = {
+                    onTabClicked(index)
+                },
+                railExpanded = state.targetValue == WideNavigationRailValue.Expanded,
+                icon = {
+                    Icon(
+                        imageVector = tabMetadata.icon,
+                        contentDescription = stringResource(tabMetadata.titleRes)
+                    )
+                },
+                label = {
+                    Text(
+                        stringResource(tabMetadata.titleRes),
+                        maxLines = 1,
+                        overflow = TextOverflow.MiddleEllipsis,
+                    )
+                },
+                colors = itemColors,
+                modifier = Modifier.fillMaxWidth()
+            )
+        }
+
+        if (hasFooter) {
+            Row {
+                WideNavigationRailItem(
+                    selected = false,
+                    onClick = {
+                        onProfilePopupShown()
+                    },
+                    railExpanded = state.targetValue == WideNavigationRailValue.Expanded,
+                    icon = {
+                        AvatarOrInitials(
+                            avatarUrl = user.largeImage,
+                            avatarName = user.name,
+                            modifier = Modifier
+                                .size(24.dp)
+                                .clip(CircleShape)
+                        )
+                    },
+                    label = {
+                        Text(
+                            text = if (Stuff.isInDemoMode)
+                                "me"
+                            else
+                                user.name,
+                            maxLines = 1,
+                            overflow = TextOverflow.MiddleEllipsis,
+                        )
+                    },
+                    colors = itemColors,
+                    modifier = Modifier.fillMaxWidth()
                 )
-            .forEachIndexed { index, tabMetadata ->
 
-                if (tabMetadata is PanoTab.Profile) {
-                    Spacer(
-                        modifier = Modifier
-                            .height(4.dp)
-                    )
-                }
-
-                if (user != null) {
-                    WideNavigationRailItem(
-                        selected = index == selectedTabIdx,
-                        onClick = {
-                            if (tabMetadata is PanoTab.Profile) {
-                                onProfileClicked()
-                            } else if (index != selectedTabIdx) {
-                                onTabClicked(index)
-                            }
-                        },
-                        railExpanded = state.targetValue == WideNavigationRailValue.Expanded,
-                        icon = {
-                            if (tabMetadata is PanoTab.Profile) {
-                                AvatarOrInitials(
-                                    avatarUrl = user.largeImage,
-                                    avatarName = user.name,
-                                    modifier = Modifier
-                                        .size(24.dp)
-                                        .clip(CircleShape)
-                                )
-                            } else
-                                Icon(
-                                    imageVector = tabMetadata.icon,
-                                    contentDescription = stringResource(tabMetadata.titleRes)
-                                )
-                        },
-                        label = {
-                            Text(
-                                text = if (tabMetadata is PanoTab.Profile)
-                                    if (Stuff.isInDemoMode)
-                                        "me"
-                                    else
-                                        user.name
-                                else
-                                    stringResource(tabMetadata.titleRes),
-                                maxLines = 1,
-                                overflow = TextOverflow.MiddleEllipsis,
-                            )
-                        },
-                        colors = if (state.targetValue == WideNavigationRailValue.Expanded)
-                            WideNavigationRailItemDefaults.colors(
-                                selectedTextColor = MaterialTheme.colorScheme.onSecondaryContainer
-                            )
-                        else
-                            WideNavigationRailItemDefaults.colors(),
-                        modifier = Modifier.fillMaxWidth()
-                    )
-                }
+                profilePopupSlot()
             }
+        }
     }
 }
 
@@ -1263,6 +1469,11 @@ private fun PanoBottomAppBar(
             )
     }
 
+    val shadowColor = if (LocalThemeAttributes.current.isDark)
+        Color.Gray
+    else
+        DefaultShadowColor
+
     val modifier = Modifier
         .fillMaxWidth()
         .wrapContentWidth()
@@ -1273,7 +1484,15 @@ private fun PanoBottomAppBar(
                 if (!down.isConsumed) down.consume()
             }
         }
-        .windowInsetsPadding(ShortNavigationBarDefaults.windowInsets)
+        .windowInsetsPadding(
+            ShortNavigationBarDefaults.windowInsets.union(
+                WindowInsets(
+                    left = 16.dp,
+                    right = 16.dp,
+                    bottom = 16.dp
+                )
+            )
+        )
 
     Row(
         verticalAlignment = Alignment.CenterVertically,
@@ -1284,18 +1503,24 @@ private fun PanoBottomAppBar(
             color = colors.toolbarContainerColor,
             contentColor = colors.toolbarContentColor,
             shape = FloatingToolbarDefaults.ContainerShape,
-            shadowElevation = FloatingToolbarDefaults.ContainerExpandedElevationWithFab,
+            modifier = Modifier.shadow(
+                elevation = FloatingToolbarDefaults.ContainerExpandedElevationWithFab,
+                shape = FloatingToolbarDefaults.ContainerShape,
+                clip = false,
+                ambientColor = shadowColor,
+                spotColor = shadowColor
+            )
         ) {
-            OutlinedToggleButtons(
+            PanoToggleButtonGroup(
                 texts = otherTabs.map { stringResource(it.titleRes) },
                 icons = otherTabs.map { it.icon },
                 selectedIndex = selectedTabIdx,
                 horizontalArrangement = Arrangement.Start,
                 onSelected = onTabClicked,
-                textStyle = MaterialTheme.typography.labelSmall,
+                textStyle = MaterialTheme.typography.labelMedium,
                 border = false,
                 mode = PanoToggleButtonsMode.BothVertical,
-                colors = ToggleButtonDefaults.outlinedToggleButtonColors(
+                colors = ToggleButtonDefaults.toggleButtonColors(
                     checkedContainerColor = MaterialTheme.colorScheme.secondaryContainer,
                     checkedContentColor = MaterialTheme.colorScheme.onSecondaryContainer,
                 ),
@@ -1303,19 +1528,27 @@ private fun PanoBottomAppBar(
         }
 
         if (profileTab != null) {
-            SmallFloatingActionButton(
+            val shape = CircleShape
+
+            FilledTonalIconButton(
                 onClick = onProfileClicked,
-                shape = CircleShape,
-                containerColor = MaterialTheme.colorScheme.inversePrimary,
-                elevation = FloatingActionButtonDefaults.loweredElevation()
+                shapes = IconButtonDefaults.shapes(),
+                modifier = Modifier
+                    .size(56.dp) // normal fab size
+                    .shadow(
+                        elevation = FloatingToolbarDefaults.ContainerExpandedElevationWithFab,
+                        shape = FloatingToolbarDefaults.ContainerShape,
+                        clip = false,
+                        ambientColor = shadowColor,
+                        spotColor = shadowColor
+                    )
             ) {
                 AvatarOrInitials(
                     avatarUrl = user.largeImage,
                     avatarName = user.name,
                     modifier = Modifier
-                        .padding(4.dp)
-                        .size(40.dp)
-                        .clip(CircleShape)
+                        .size(40.dp) // small fab size
+                        .clip(shape)
                 )
             }
         }
@@ -1329,7 +1562,18 @@ private fun <T : Any> rememberPanoResultEventBusNavEntryDecorator(resultEventBus
     }
 
 private sealed interface TitleContent {
-    data class Text(val text: String) : TitleContent
-    data class Search(val searchState: TextFieldState, val placeholder: String) : TitleContent
-    data class SubTabs(val subTabsList: List<Subtab>) : TitleContent
+    data class Text(
+        val title: String,
+    ) : TitleContent
+
+    data class Search(
+        val searchState: TextFieldState,
+        val focusRequester: FocusRequester,
+        val placeholder: String
+    ) : TitleContent
+
+    data class SubTabs(val subTabs: List<Subtab>, val selectedId: Int, val title: String) :
+        TitleContent
+
+    data class TimePeriods(val data: TimePeriodDataResult) : TitleContent
 }

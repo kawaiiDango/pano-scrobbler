@@ -13,7 +13,7 @@ actual fun WebViewVM.platformClear() {
 
 actual fun WebViewVM.platformInit() {
     val proxy = Requesters.proxy.value
-    if (proxy.type == MainPrefs.ProxySettings.Type.SOCKS5 && proxy.hasAuth && DesktopStuff.os != DesktopStuff.Os.Linux) {
+    if (proxy.type == MainPrefs.ProxyPrefs.Type.SOCKS5 && proxy.hasAuth && DesktopStuff.IS_WINDOWS) {
         startProxyRelay(proxy)
     }
 

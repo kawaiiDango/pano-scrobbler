@@ -21,10 +21,10 @@ actual suspend fun doAfterUpdateCheck(releases: GithubReleases): UpdateAction? {
 
 actual fun runUpdateAction(updateAction: UpdateAction) {
     try {
-        if (DesktopStuff.os == DesktopStuff.Os.Windows) {
+        if (DesktopStuff.IS_WINDOWS) {
             ProcessBuilder(updateAction.urlOrFilePath)
                 .start()
-        } else if (DesktopStuff.os == DesktopStuff.Os.Linux) {
+        } else if (DesktopStuff.IS_LINUX) {
             val relauncher = File(DesktopStuff.execDirPath, "relaunch.sh").absolutePath
             ProcessBuilder(relauncher, updateAction.urlOrFilePath)
                 .inheritIO()

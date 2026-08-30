@@ -22,13 +22,13 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.graphics.vector.path
 import androidx.compose.ui.unit.dp
 
-val PanoIcons.RectFilledTranslucent: ImageVector
+val PanoIcons.RectFilled: ImageVector
     get() {
-        if (_RectFilledTranslucent != null) {
-            return _RectFilledTranslucent!!
+        if (_RectFilled != null) {
+            return _RectFilled!!
         }
-        _RectFilledTranslucent = ImageVector.Builder(
-            name = "RectFilledTranslucent",
+        _RectFilled = ImageVector.Builder(
+            name = "RectFilled",
             defaultWidth = 24.dp,
             defaultHeight = 24.dp,
             viewportWidth = 960f,
@@ -37,7 +37,6 @@ val PanoIcons.RectFilledTranslucent: ImageVector
             // draw a solid rectangle as the bg first
             path(
                 fill = SolidColor(Color.Black),
-                fillAlpha = 0.15f,
                 stroke = null,
             ) {
                 moveTo(0f, 0f)
@@ -47,7 +46,7 @@ val PanoIcons.RectFilledTranslucent: ImageVector
                 close()
             }
         }.build()
-        return _RectFilledTranslucent!!
+        return _RectFilled!!
     }
 
-private var _RectFilledTranslucent: ImageVector? = null
+private var _RectFilled: ImageVector? = null

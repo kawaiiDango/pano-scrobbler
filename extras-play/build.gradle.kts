@@ -8,7 +8,7 @@ android {
     namespace = "com.arn.scrobble.extras.play"
     compileSdk {
         version = release(libs.versions.targetSdk.get().toInt()) {
-            minorApiLevel = libs.versions.sdkMinor.get().toInt()
+//            minorApiLevel = libs.versions.sdkMinor.get().toInt()
         }
     }
 

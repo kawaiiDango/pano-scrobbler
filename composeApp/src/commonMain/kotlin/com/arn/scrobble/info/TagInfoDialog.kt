@@ -3,7 +3,9 @@ package com.arn.scrobble.info
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -18,6 +20,7 @@ import com.arn.scrobble.icons.Icons
 import com.arn.scrobble.icons.OpenInBrowser
 import com.arn.scrobble.icons.Tag
 import com.arn.scrobble.ui.IconButtonWithTooltip
+import com.arn.scrobble.ui.TextWithIcon
 import com.arn.scrobble.utils.PlatformStuff
 import io.ktor.http.encodeURLPathPart
 import org.jetbrains.compose.resources.stringResource
@@ -30,52 +33,62 @@ import pano_scrobbler.composeapp.generated.resources.taggings
 fun TagInfoDialog(
     tag: Tag,
     scrollState: ScrollState,
+    isExpanded: Boolean,
+    onExpand: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel: TagInfoVM = viewModel { TagInfoVM(tag) },
 ) {
     val info by viewModel.info.collectAsStateWithLifecycle()
-    var wikiExpanded by rememberSaveable { mutableStateOf(false) }
+    var wikiExpanded by rememberSaveable(isExpanded) { mutableStateOf(isExpanded) }
 
     Column(
         verticalArrangement = Arrangement.spacedBy(8.dp),
         modifier = modifier
     ) {
-        InfoSimpleHeader(
-            text = tag.name,
-            icon = Icons.Tag,
-            trailingContent = {
-                if (!PlatformStuff.isTv) {
-                    IconButtonWithTooltip(
-                        icon = Icons.OpenInBrowser,
-                        contentDescription = stringResource(Res.string.more_info),
-                        onClick = {
-                            val url =
-                                "https://www.last.fm/tag/" + tag.name.encodeURLPathPart()
-                            PlatformStuff.openInBrowser(url)
-                        }
-                    )
-                }
-            },
-            onClick = null,
-        )
+        if (!isExpanded) {
+            TextWithIcon(
+                text = tag.name,
+                icon = Icons.Tag,
+                style = MaterialTheme.typography.titleMedium,
+            )
+        }
 
-        InfoCounts(
-            countPairs = listOf(
-                stringResource(Res.string.taggers) to info?.reach,
-                stringResource(Res.string.taggings) to info?.count
-            ),
-            firstItemIsUsers = false,
-            avatarUrl = null,
-            avatarName = null,
-            forShimmer = info == null
-        )
+        Row(
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            InfoCounts(
+                countPairs = listOf(
+                    stringResource(Res.string.taggers) to info?.reach,
+                    stringResource(Res.string.taggings) to info?.count
+                ),
+                avatarUrl = null,
+                avatarName = null,
+                forShimmer = info == null
+            )
+
+            if (!PlatformStuff.isTv) {
+                IconButtonWithTooltip(
+                    icon = Icons.OpenInBrowser,
+                    contentDescription = stringResource(Res.string.more_info),
+                    onClick = {
+                        val url =
+                            "https://www.last.fm/tag/" + tag.name.encodeURLPathPart()
+                        PlatformStuff.openInBrowser(url)
+                    }
+                )
+            }
+        }
 
         info?.wiki?.content?.let {
             InfoWikiText(
                 text = it,
-                maxLinesWhenCollapsed = 4,
+                maxLinesWhenCollapsed = 10,
                 expanded = wikiExpanded,
-                onExpandToggle = { wikiExpanded = !wikiExpanded },
+                onExpandToggle = {
+                    wikiExpanded = !wikiExpanded
+                    onExpand()
+                },
                 scrollState = scrollState,
                 modifier = Modifier.fillMaxWidth()
             )

@@ -42,9 +42,6 @@ class SessListener(
     private val mainPrefs = PlatformStuff.mainPrefs
     private var platformControllers = emptyList<MediaController>()
 
-    private val scrobbleSpotifyRemote =
-        mainPrefs.data.stateInWithCache(scope) { it.scrobbleSpotifyRemoteP }
-
     private val autoDetectApps =
         mainPrefs.data.stateInWithCache(scope) { it.autoDetectApps }
 
@@ -259,13 +256,10 @@ class SessListener(
             override fun onPlaybackStateChanged(state: PlaybackState?) {
                 state ?: return
 
-                val options = TransformMetadataOptions(
-                    scrobbleSpotifyRemote = scrobbleSpotifyRemote.value
-                )
                 val (playbackInfo, ignoreScrobble) = transformPlaybackState(
                     trackInfo,
                     state,
-                    options
+                    scrobbleSpotifyRemote.value
                 )
 
                 playbackStateChanged(playbackInfo, ignoreScrobble)

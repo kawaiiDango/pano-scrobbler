@@ -2,34 +2,34 @@ package com.arn.scrobble.info
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.ScrollState
-import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.FlowRow
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.requiredHeightIn
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.ExposedDropdownMenuAnchorType
 import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.ExposedDropdownMenuDefaults
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.InputChip
 import androidx.compose.material3.InputChipDefaults
+import androidx.compose.material3.ListItem
+import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.MenuDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -45,7 +45,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -66,8 +65,6 @@ import com.arn.scrobble.icons.Close
 import com.arn.scrobble.icons.ContentCopy
 import com.arn.scrobble.icons.Favorite
 import com.arn.scrobble.icons.Icons
-import com.arn.scrobble.icons.KeyboardArrowDown
-import com.arn.scrobble.icons.KeyboardArrowUp
 import com.arn.scrobble.icons.Mic
 import com.arn.scrobble.icons.MusicNote
 import com.arn.scrobble.icons.OpenInBrowser
@@ -78,10 +75,11 @@ import com.arn.scrobble.navigation.PanoRoute
 import com.arn.scrobble.panoicons.PanoIcons
 import com.arn.scrobble.panoicons.UserTag
 import com.arn.scrobble.ui.EntriesRow
+import com.arn.scrobble.ui.ExpandableHeaderItem
 import com.arn.scrobble.ui.IconButtonWithTooltip
-import com.arn.scrobble.ui.PanoLazyRow
 import com.arn.scrobble.ui.PanoOutlinedTextField
 import com.arn.scrobble.ui.getMusicEntryPlaceholderItem
+import com.arn.scrobble.ui.myTransparentCheckableItemColors
 import com.arn.scrobble.ui.placeholderImageVectorPainter
 import com.arn.scrobble.ui.placeholderPainter
 import com.arn.scrobble.ui.shimmerWindowBounds
@@ -96,10 +94,8 @@ import pano_scrobbler.composeapp.generated.resources.Res
 import pano_scrobbler.composeapp.generated.resources.add_photo
 import pano_scrobbler.composeapp.generated.resources.album_art
 import pano_scrobbler.composeapp.generated.resources.artist_image
-import pano_scrobbler.composeapp.generated.resources.collapse
 import pano_scrobbler.composeapp.generated.resources.copy
 import pano_scrobbler.composeapp.generated.resources.delete
-import pano_scrobbler.composeapp.generated.resources.expand
 import pano_scrobbler.composeapp.generated.resources.listeners
 import pano_scrobbler.composeapp.generated.resources.love
 import pano_scrobbler.composeapp.generated.resources.more_info
@@ -123,6 +119,7 @@ fun MusicEntryInfoDialog(
     user: UserCached,
     onNavigate: (PanoRoute) -> Unit,
     scrollState: ScrollState,
+    onExpand: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel: InfoVM = viewModel { InfoVM(musicEntry, user.name) },
 ) {
@@ -177,53 +174,43 @@ fun MusicEntryInfoDialog(
     }
 
     Column(
-        verticalArrangement = Arrangement.spacedBy(8.dp),
         modifier = modifier
-            .then(
-                if (infoLoaded)
-                    Modifier
-                else
-                    Modifier.shimmerWindowBounds()
-            )
+            .shimmerWindowBounds(!infoLoaded)
     ) {
         entries.forEachIndexed { index, (type, entry) ->
-            InfoSimpleHeader(
+            ExpandableHeaderItem(
                 text = entry.name,
                 icon = getMusicEntryIcon(type),
-                onClick = if (!useLastfm && entry is Track) null
-                else {
-                    { expandedHeaderType = if (expandedHeaderType == type) -1 else type }
-                },
-                leadingContent = {
-                    AnimatedVisibility(expandedHeaderType != type) {
-                        if (entry is Album || entry is Artist) {
-                            AsyncImage(
-                                model = remember(entry) {
-                                    MusicEntryImageReq(entry, accountType)
-                                },
-                                placeholder = placeholderPainter(),
-                                error = placeholderImageVectorPainter(
-                                    entry,
-                                    Icons.BrokenImage
-                                ),
-                                contentDescription = when (entry) {
-                                    is Album -> stringResource(Res.string.album_art)
-                                    is Artist -> stringResource(Res.string.artist_image)
-                                },
-                                modifier = Modifier
-                                    .size(48.dp)
-                                    .clip(MaterialTheme.shapes.small)
-                            )
-                        }
+                canExpand = !(!useLastfm && entry is Track),
+                expanded = expandedHeaderType == type,
+                onToggle = {
+                    if (useLastfm || entry !is Track) {
+                        expandedHeaderType = if (expandedHeaderType == type) -1 else type
                     }
+                    onExpand()
                 },
-                trailingContent = {
-                    Icon(
-                        imageVector = if (expandedHeaderType == type) Icons.KeyboardArrowUp else Icons.KeyboardArrowDown,
-                        contentDescription = stringResource(if (expandedHeaderType == type) Res.string.collapse else Res.string.expand),
-                    )
-                },
-                modifier = Modifier.padding(horizontal = 24.dp)
+                collapsedImage = if (entry is Album || entry is Artist) {
+                    {
+                        AsyncImage(
+                            model = remember(entry) {
+                                MusicEntryImageReq(entry, accountType)
+                            },
+                            placeholder = placeholderPainter(),
+                            error = placeholderImageVectorPainter(
+                                entry,
+                                Icons.BrokenImage
+                            ),
+                            contentDescription = when (entry) {
+                                is Album -> stringResource(Res.string.album_art)
+                                is Artist -> stringResource(Res.string.artist_image)
+                            },
+                            modifier = Modifier
+                                .size(48.dp)
+                                .clip(MaterialTheme.shapes.small)
+                        )
+                    }
+                } else null,
+                modifier = Modifier.padding(horizontal = 12.dp)
             )
 
             InfoActionsRow(
@@ -346,19 +333,19 @@ fun MusicEntryInfoDialog(
             entry.wiki?.content?.let {
                 InfoWikiText(
                     text = it,
-                    maxLinesWhenCollapsed = 2,
+                    maxLinesWhenCollapsed = 3,
                     expanded = expandedWikiType == type,
                     onExpandToggle = {
                         expandedWikiType = if (expandedWikiType == type) -1 else type
                     },
                     scrollState = scrollState,
-                    modifier = Modifier.padding(horizontal = 24.dp)
+                    modifier = Modifier.padding(horizontal = 24.dp, vertical = 8.dp)
                 )
             }
 
             if (index < entries.size - 1) {
-                HorizontalDivider(
-                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp)
+                Spacer(
+                    modifier = Modifier.padding(vertical = 8.dp)
                 )
             }
         }
@@ -407,7 +394,6 @@ private fun InfoCountsForMusicEntry(
         ),
         avatarUrl = user.largeImage.takeIf { it.isNotEmpty() },
         avatarName = user.name,
-        firstItemIsUsers = entry.userplaycount != null,
         onClickFirstItem = if ((entry.userplaycount ?: 0) > 0 && entry is Track) {
             {
                 onNavigate(
@@ -454,7 +440,7 @@ private fun InfoActionsRow(
             IconButtonWithTooltip(
                 icon = PanoIcons.UserTag,
                 onClick = onUserTagsClick,
-                filledStyle = userTagsButtonSelected,
+                checked = userTagsButtonSelected,
                 contentDescription = stringResource(Res.string.my_tags),
             )
         }
@@ -539,7 +525,7 @@ private fun InfoActionsRow(
         if (entry is Track && entry.duration != null && entry.duration > 0) {
             Text(
                 text = Stuff.humanReadableDuration(entry.duration),
-                style = MaterialTheme.typography.bodySmall,
+                style = MaterialTheme.typography.titleMedium,
                 modifier = Modifier
                     .align(Alignment.CenterVertically)
             )
@@ -567,7 +553,6 @@ private fun ColumnScope.InfoTags(
 
     FlowRow(
         horizontalArrangement = Arrangement.spacedBy(8.dp),
-        verticalArrangement = Arrangement.spacedBy(8.dp),
         modifier = modifier
     ) {
         tags.forEach { tag ->
@@ -636,13 +621,14 @@ private fun ColumnScope.InfoTags(
             ExposedDropdownMenu(
                 expanded = dropdownShown,
                 onDismissRequest = { dropdownShown = false }) {
-                userTagsHistory.forEach {
+                userTagsHistory.forEachIndexed { index, tag ->
                     DropdownMenuItem(
                         onClick = {
-                            userTagInput = it
+                            userTagInput = tag
                             dropdownShown = false
                         },
-                        text = { Text(it) }
+                        shape = MenuDefaults.itemShape(index, userTagsHistory.size).shape,
+                        text = { Text(tag) }
                     )
                 }
             }
@@ -650,28 +636,34 @@ private fun ColumnScope.InfoTags(
     }
 }
 
+@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
-private fun TrackListTrack(idx: Int, track: Track, modifier: Modifier = Modifier) {
-    Column(
-        verticalArrangement = Arrangement.SpaceBetween,
-        modifier = modifier
-            .border(1.dp, MaterialTheme.colorScheme.outline, MaterialTheme.shapes.medium)
-            .padding(8.dp)
+private fun TrackListTrack(
+    idx: Int,
+    track: Track,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    ListItem(
+        onClick = onClick,
+        verticalAlignment = Alignment.CenterVertically,
+        colors = ListItemDefaults.myTransparentCheckableItemColors(),
+        modifier = modifier,
+        leadingContent = {
+            Text(
+                text = "${idx + 1}.",
+            )
+        },
+        trailingContent = {
+            Text(
+                text = track.duration?.let { Stuff.humanReadableDuration(it) } ?: "",
+                style = MaterialTheme.typography.labelLarge,
+            )
+        }
     ) {
         Text(
-            text = "${idx + 1}.",
-        )
-
-        Text(
             text = track.name,
-            style = MaterialTheme.typography.titleSmall,
-            textAlign = TextAlign.Center,
             modifier = Modifier.fillMaxWidth()
-        )
-
-        Text(
-            modifier = Modifier.align(Alignment.End),
-            text = track.duration?.let { Stuff.humanReadableDuration(it) } ?: "",
         )
     }
 }
@@ -777,38 +769,43 @@ private fun InfoTrackList(
             ?.let { Stuff.humanReadableDuration(it) + if (durationsMissing) "+" else "" }
     }
 
-    PanoLazyRow(
-        verticalAlignment = Alignment.CenterVertically,
-        contentPadding = PaddingValues(horizontal = 24.dp),
-        modifier = modifier
+    Column(
+        modifier = modifier.padding(horizontal = 24.dp)
     ) {
-        item("summary") {
+        Row(
+            horizontalArrangement = Arrangement.SpaceBetween,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 8.dp, horizontal = 24.dp)
+        ) {
             Text(
                 text = pluralStringResource(
                     Res.plurals.num_tracks,
                     tracks.size,
                     tracks.size.format()
-                ) + (durationsString?.let { "\n\n$it" } ?: ""),
+                ),
                 style = MaterialTheme.typography.titleMedium,
-                textAlign = TextAlign.Center,
-                modifier = Modifier
-                    .padding(8.dp)
+                color = MaterialTheme.colorScheme.onPrimaryContainer
             )
+
+            if (durationsString != null)
+                Text(
+                    text = durationsString,
+                    style = MaterialTheme.typography.titleMedium,
+                    color = MaterialTheme.colorScheme.onPrimaryContainer
+                )
         }
 
-        itemsIndexed(tracks, key = { i, it ->
-            i
-        }) { i, track ->
-            TrackListTrack(
-                i, track,
-                Modifier
-                    .size(150.dp)
-                    .clip(MaterialTheme.shapes.medium)
-                    .clickable {
-                        onTrackClick(track)
-                    }
-                    .padding(8.dp),
-            )
-        }
+        tracks.take(50) // limit to avoid too many non-lazy composables
+            .forEachIndexed { i, track ->
+                TrackListTrack(
+                    idx = i,
+                    track = track,
+                    onClick = { onTrackClick(track) },
+                    modifier = Modifier
+                        .padding(horizontal = 8.dp)
+                        .requiredHeightIn(min = 48.dp),
+                )
+            }
     }
 }

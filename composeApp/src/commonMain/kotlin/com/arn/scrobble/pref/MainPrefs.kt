@@ -129,12 +129,12 @@ data class MainPrefs(
     private val logToFileOnAndroidSince: Long = -1,
     val lovesFetchedForCache: Boolean = false,
     val extractFirstArtistPackages: Set<String> = emptySet(),
-    val discordRpc: DiscordRpcSettings = DiscordRpcSettings(),
-    val proxy: ProxySettings = ProxySettings(),
+    val discordRpc: DiscordRpcPrefs = DiscordRpcPrefs(),
+    val proxy: ProxyPrefs = ProxyPrefs(),
 ) {
 
     @Serializable
-    data class DiscordRpcSettings(
+    data class DiscordRpcPrefs(
         val enabled: Boolean = false,
         val statusLine: Int = Line.Line2.ordinal,
         val albumArt: Boolean = true,
@@ -160,7 +160,7 @@ data class MainPrefs(
     }
 
     @Serializable
-    data class ProxySettings(
+    data class ProxyPrefs(
         val type: Type = Type.SYSTEM,
         val host: String = "127.0.0.1",
         val port: Int = 1080,
@@ -221,7 +221,7 @@ data class MainPrefs(
         val tidalSteelSeriesApi: Boolean = defaultMainPrefs.tidalSteelSeriesApi,
         val deezerApi: Boolean = defaultMainPrefs.deezerApi,
         val lastfmApiAlways: Boolean = defaultMainPrefs.lastfmApiAlways,
-        val discordRpc: DiscordRpcSettings = defaultMainPrefs.discordRpc,
+        val discordRpc: DiscordRpcPrefs = defaultMainPrefs.discordRpc,
     )
 
     val delaySecsP
@@ -243,7 +243,7 @@ data class MainPrefs(
         get() = itunesCountry ?: LocaleUtils.getSystemCountryCode()
 
     val scrobbleSpotifyRemoteP
-        get() = !PlatformStuff.isTv && scrobbleSpotifyRemote
+        get() = PlatformStuff.supportsSpotifyRemote && scrobbleSpotifyRemote
 
     val usePlayFromSearchP
         get() = PlatformStuff.isTv || !PlatformStuff.isDesktop && usePlayFromSearch
@@ -374,7 +374,7 @@ data class MainPrefs(
         const val PREF_MIN_DURATON_SECS_DEFAULT = 30
         const val PREF_MIN_DURATON_SECS_MIN = 10
         const val PREF_MIN_DURATON_SECS_MAX = 60
-        const val PREF_MIN_ALPHA = 0.3f
+        const val PREF_MIN_ALPHA = 0.5f
         const val PREF_MID_ALPHA = 0.6f
         const val PREF_MAX_ALPHA = 1f
 

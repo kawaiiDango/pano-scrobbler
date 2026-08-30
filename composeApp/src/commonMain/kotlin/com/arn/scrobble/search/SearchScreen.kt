@@ -20,11 +20,13 @@ import com.arn.scrobble.icons.Favorite
 import com.arn.scrobble.icons.Icons
 import com.arn.scrobble.icons.Mic
 import com.arn.scrobble.icons.MusicNote
+import com.arn.scrobble.icons.Search
 import com.arn.scrobble.navigation.PanoRoute
-import com.arn.scrobble.ui.EmptyText
 import com.arn.scrobble.ui.MusicEntryListItem
 import com.arn.scrobble.ui.PanoLazyColumn
 import com.arn.scrobble.ui.SearchEffect
+import com.arn.scrobble.ui.SimpleHeaderItem
+import com.arn.scrobble.ui.emptyText
 import com.arn.scrobble.ui.expandableSublist
 import com.arn.scrobble.ui.getMusicEntryPlaceholderItem
 import com.arn.scrobble.utils.PlatformStuff
@@ -35,10 +37,12 @@ import pano_scrobbler.composeapp.generated.resources.Res
 import pano_scrobbler.composeapp.generated.resources.albums
 import pano_scrobbler.composeapp.generated.resources.artists
 import pano_scrobbler.composeapp.generated.resources.external_metadata
+import pano_scrobbler.composeapp.generated.resources.from
 import pano_scrobbler.composeapp.generated.resources.is_turned_off
 import pano_scrobbler.composeapp.generated.resources.lastfm
 import pano_scrobbler.composeapp.generated.resources.loved
 import pano_scrobbler.composeapp.generated.resources.not_found
+import pano_scrobbler.composeapp.generated.resources.search
 import pano_scrobbler.composeapp.generated.resources.tracks
 
 @Composable
@@ -90,6 +94,14 @@ fun SearchScreen(
         modifier = modifier
     ) {
         if (hasLoaded) {
+            item("results_header") {
+                SimpleHeaderItem(
+                    text = stringResource(Res.string.from, stringResource(Res.string.lastfm)),
+                    icon = Icons.Search,
+                    modifier = Modifier.fillMaxWidth()
+                )
+            }
+
             expandableSublist(
                 headerText = artistsText,
                 headerIcon = Icons.Mic,
@@ -128,14 +140,8 @@ fun SearchScreen(
                 fetchAlbumImageIfMissing = true,
             )
 
-            if (searchResults?.isEmpty == true) {
-                item("empty_text") {
-                    EmptyText(
-                        text = stringResource(Res.string.not_found),
-                        visible = true,
-                    )
-                }
-            }
+            if (searchResults?.isEmpty == true)
+                emptyText { stringResource(Res.string.not_found) }
 
         } else if (searchResults != null) {
             items(10) {
@@ -147,16 +153,15 @@ fun SearchScreen(
                 )
             }
         } else if (!useLastfm) {
-            item("lastfm_off") {
-                EmptyText(
-                    text = stringResource(
-                        Res.string.is_turned_off,
-                        stringResource(Res.string.lastfm),
-                        stringResource(Res.string.external_metadata),
-                    ),
-                    visible = true,
+            emptyText {
+                stringResource(
+                    Res.string.is_turned_off,
+                    stringResource(Res.string.lastfm),
+                    stringResource(Res.string.external_metadata),
                 )
             }
+        } else if (searchFieldState.text.isBlank()) {
+            emptyText { stringResource(Res.string.search) }
         }
     }
 }

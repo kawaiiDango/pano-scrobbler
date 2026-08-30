@@ -18,6 +18,20 @@ plugins {
     alias(libs.plugins.android.kotlin.multiplatform.library) apply false
 }
 
+val os = org.gradle.internal.os.OperatingSystem.current()!!
+val arch = System.getProperty("os.arch")!!
+
+val archAmd64 = arrayOf("amd64", "x86_64")
+val archArm64 = arrayOf("aarch64", "arm64")
+
+val resourcesDirName = when {
+    os.isLinux && arch in archAmd64 -> "linux-x64"
+    os.isLinux && arch in archArm64 -> "linux-arm64"
+    os.isWindows && arch in archAmd64 -> "windows-x64"
+    os.isWindows && arch in archArm64 -> "windows-arm64"
+    else -> throw IllegalStateException("Unsupported platform: $os $arch")
+}
+
 extra.apply {
     val versionFile = file("version.txt")
     val verCode = versionFile.readText().trim().toInt()
@@ -26,4 +40,9 @@ extra.apply {
     set("APP_ID", "com.arn.scrobble")
     set("APP_NAME", "Pano Scrobbler")
     set("APP_NAME_NO_SPACES", "pano-scrobbler")
+    set("RESOURCES_DIR_NAME", resourcesDirName)
+    set("IS_WINDOWS", os.isWindows)
+    set("IS_LINUX", os.isLinux)
+    set("IS_X64", arch in archAmd64)
+    set("IS_ARM64", arch in archArm64)
 }

@@ -16,6 +16,10 @@ pluginManagement {
     }
 }
 
+plugins {
+    id("org.gradle.toolchains.foojay-resolver-convention") version "1.0.0"
+}
+
 dependencyResolutionManagement {
     repositories {
         google {
@@ -36,4 +40,5 @@ include(":extras-common")
 include(":extras-nonplay")
 //include(":baselineprofile")
 include(":androidApp")
+include(":desktopApp")
 include(":extras-android")

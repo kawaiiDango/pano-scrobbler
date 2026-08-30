@@ -5,13 +5,13 @@ import androidx.compose.material3.pulltorefresh.PullToRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.LifecycleStartEffect
-import androidx.lifecycle.viewModelScope
 import com.arn.scrobble.api.UserCached
 import com.arn.scrobble.api.lastfm.LastfmPeriod
 import com.arn.scrobble.charts.ChartsOverviewScreen
@@ -21,7 +21,7 @@ import com.arn.scrobble.navigation.PanoTab
 import com.arn.scrobble.recents.ScrobblesScreen
 import com.arn.scrobble.ui.PanoPullToRefreshStateForTab
 import com.arn.scrobble.utils.PlatformStuff
-import kotlinx.coroutines.flow.Flow
+import com.arn.scrobble.utils.Stuff
 import kotlinx.coroutines.launch
 
 @Composable
@@ -34,8 +34,7 @@ fun HomePagerScreen(
     tabsList: List<PanoTab>,
     onNavigate: (PanoRoute) -> Unit,
     pullToRefreshState: PullToRefreshState,
-    onSetRefreshing: (Int, PanoPullToRefreshStateForTab) -> Unit,
-    getPullToRefreshTrigger: (Int) -> Flow<Unit>,
+    onSetRefreshing: (PanoTab, PanoPullToRefreshStateForTab) -> Unit,
     selectSubTabId: (Int) -> Unit,
     mainViewModel: MainViewModel,
     modifier: Modifier = Modifier,
@@ -43,10 +42,13 @@ fun HomePagerScreen(
     var scrobblesTitle by rememberSaveable { mutableStateOf("") }
     var followingTitle by rememberSaveable { mutableStateOf("") }
     var chartsTitle by rememberSaveable { mutableStateOf("") }
+    var lastTabIdxRef by remember { mutableIntStateOf(tabIdx) }
 
     LaunchedEffect(tabIdx, scrobblesTitle, followingTitle, chartsTitle) {
+        lastTabIdxRef = tabIdx
+
         val title = when (tabsList.getOrNull(tabIdx)) {
-            is PanoTab.Scrobbles -> scrobblesTitle
+            PanoTab.Scrobbles, PanoTab.ScrobblesNoSubtabs -> scrobblesTitle
             PanoTab.Following -> followingTitle
             PanoTab.Charts -> chartsTitle
             else -> ""
@@ -57,9 +59,10 @@ fun HomePagerScreen(
 
     LifecycleStartEffect(Unit) {
         onStopOrDispose {
+            // this captures the parameter tabIdx when the effect started, so use lastTabIdxRef state capture
             if (user.isSelf) {
-                val tabIdx = tabIdx.coerceIn(tabsList.indices)
-                mainViewModel.viewModelScope.launch {
+                val tabIdx = lastTabIdxRef.coerceIn(tabsList.indices)
+                Stuff.appScope.launch {
                     PlatformStuff.mainPrefs.updateData {
                         it.copy(lastHomePagerTab = tabIdx)
                     }
@@ -74,12 +77,11 @@ fun HomePagerScreen(
         totalPages = remember(tabsList) { tabsList.count { it !is PanoTab.Profile } },
         modifier = modifier,
     ) { page ->
-        when (tabsList.getOrNull(page)) {
-            is PanoTab.Scrobbles, PanoTab.ScrobblesNoSubtabs -> ScrobblesScreen(
+        when (val tab = tabsList.getOrNull(page)) {
+            PanoTab.Scrobbles, PanoTab.ScrobblesNoSubtabs -> ScrobblesScreen(
                 user = user,
                 pullToRefreshState = pullToRefreshState,
-                onSetRefreshing = { onSetRefreshing(page, it) },
-                pullToRefreshTriggered = { getPullToRefreshTrigger(page) },
+                onSetRefreshing = { onSetRefreshing(tab, it) },
                 onNavigate = onNavigate,
                 editDataFlow = mainViewModel.editScrobbleUtils.editDataFlow,
                 scrobblerStateFlow = mainViewModel.scrobblerStateFlow,
@@ -94,8 +96,7 @@ fun HomePagerScreen(
             PanoTab.Following -> FriendsScreen(
                 user = user,
                 pullToRefreshState = pullToRefreshState,
-                onSetRefreshing = { onSetRefreshing(page, it) },
-                pullToRefreshTriggered = { getPullToRefreshTrigger(page) },
+                onSetRefreshing = { onSetRefreshing(tab, it) },
                 onNavigate = onNavigate,
                 onTitleChange = {
                     followingTitle = it
@@ -107,9 +108,6 @@ fun HomePagerScreen(
                 user = user,
                 digestTimePeriod = digestTimePeriod,
                 onNavigate = onNavigate,
-                onTitleChange = {
-                    chartsTitle = it
-                },
                 modifier = Modifier.fillMaxSize()
             )
 

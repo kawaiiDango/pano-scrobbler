@@ -62,7 +62,7 @@ object Requesters {
     private val proxyAuthenticator = object : Authenticator() {
         override fun getPasswordAuthentication(): PasswordAuthentication? {
             val p = proxy.value
-                .takeIf { it.type == MainPrefs.ProxySettings.Type.SOCKS5 && it.hasAuth }
+                .takeIf { it.type == MainPrefs.ProxyPrefs.Type.SOCKS5 && it.hasAuth }
                 ?: return null
 
             if (requestingProtocol.equals("SOCKS5", ignoreCase = true) &&
@@ -97,11 +97,11 @@ object Requesters {
             val proxyVal = proxy.value
 
             val proxyJvm = when (proxyVal.type) {
-                MainPrefs.ProxySettings.Type.SYSTEM -> {
+                MainPrefs.ProxyPrefs.Type.SYSTEM -> {
                     PlatformStuff.getSystemSocksProxy()
                 }
 
-                MainPrefs.ProxySettings.Type.HTTP -> {
+                MainPrefs.ProxyPrefs.Type.HTTP -> {
                     Proxy(
                         Proxy.Type.HTTP, InetSocketAddress.createUnresolved(
                             proxyVal.host,
@@ -110,7 +110,7 @@ object Requesters {
                     )
                 }
 
-                MainPrefs.ProxySettings.Type.SOCKS5 -> {
+                MainPrefs.ProxyPrefs.Type.SOCKS5 -> {
                     if (!proxyAuthenticatorSet && proxyVal.hasAuth) {
                         proxyAuthenticatorSet = true
                         Authenticator.setDefault(proxyAuthenticator)
@@ -130,7 +130,7 @@ object Requesters {
                 proxy = proxyJvm
 
                 config {
-                    if (proxyVal.type == MainPrefs.ProxySettings.Type.HTTP && proxyVal.hasAuth) {
+                    if (proxyVal.type == MainPrefs.ProxyPrefs.Type.HTTP && proxyVal.hasAuth) {
                         proxyAuthenticator { _, response ->
                             val credential =
                                 Credentials.basic(proxyVal.user, proxyVal.pass)

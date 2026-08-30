@@ -9,8 +9,8 @@ data class ThemeAttributes(
     val blurMainWindow: Boolean,
     val blurSubWindow: Boolean,
     val contrastMode: ContrastMode,
-    val allOnSecondaryContainerColors: List<Color>,
-    val allSecondaryContainerColors: List<Color>,
+    val avatarColors: List<Color>,
+    val avatarContainerColors: List<Color>,
 )
 
 val LocalThemeAttributes = compositionLocalOf<ThemeAttributes> {

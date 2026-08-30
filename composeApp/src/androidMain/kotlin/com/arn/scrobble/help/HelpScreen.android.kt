@@ -1,9 +1,7 @@
 package com.arn.scrobble.help
 
 import android.os.Build
-import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MenuDefaults
 import androidx.compose.material3.SplitButtonDefaults
 import androidx.compose.material3.SplitButtonLayout
 import androidx.compose.material3.Text
@@ -24,7 +22,6 @@ import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff.collectAsStateWithInitialValue
 import org.jetbrains.compose.resources.stringResource
 import pano_scrobbler.composeapp.generated.resources.Res
-import pano_scrobbler.composeapp.generated.resources.affect_performance
 import pano_scrobbler.composeapp.generated.resources.copy
 import pano_scrobbler.composeapp.generated.resources.exit_reasons
 import pano_scrobbler.composeapp.generated.resources.log_to_file
@@ -66,29 +63,26 @@ actual fun HelpSaveLogsButton(
                     expanded = menuShown,
                     onDismissRequest = { menuShown = false },
                 ) {
-                    DropdownMenuItem(
-                        checkedLeadingIcon = {
-                            Icon(
-                                imageVector = Icons.Check,
-                                contentDescription = null,
-                            )
-                        },
+                    item(
+                        leadingIcon = if (logToFile) {
+                            {
+                                Icon(
+                                    imageVector = Icons.Check,
+                                    contentDescription = null,
+                                )
+                            }
+                        } else null,
                         text = {
-                            Text(
-                                stringResource(Res.string.log_to_file) + "\n" +
-                                        "(" + stringResource(Res.string.affect_performance) + ")"
-
-                            )
+                            Text(stringResource(Res.string.log_to_file))
                         },
-                        shapes = MenuDefaults.itemShapes(),
-                        checked = logToFile,
-                        onCheckedChange = {
-                            newCheckedState = it
+                        selected = logToFile,
+                        onClick = {
+                            newCheckedState = !logToFile
                         }
                     )
 
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-                        DropdownMenuItem(
+                        item(
                             text = {
                                 Text(stringResource(Res.string.exit_reasons))
                             },

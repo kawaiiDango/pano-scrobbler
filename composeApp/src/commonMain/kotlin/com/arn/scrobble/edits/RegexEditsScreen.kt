@@ -1,10 +1,9 @@
 package com.arn.scrobble.edits
 
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -12,7 +11,6 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.IconToggleButton
@@ -70,6 +68,7 @@ import com.arn.scrobble.ui.dragContainer
 import com.arn.scrobble.ui.myIconButtonColors
 import com.arn.scrobble.ui.panoContentPadding
 import com.arn.scrobble.ui.rememberDragDropState
+import com.arn.scrobble.ui.shapedClickable
 import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff
 import com.arn.scrobble.utils.Stuff.collectAsStateWithInitialValue
@@ -198,26 +197,6 @@ private fun RegexEditsList(
         contentPadding = panoContentPadding(mayHaveBottomFab = true),
         modifier = modifier.dragContainer(dragDropState),
     ) {
-        if (!PlatformStuff.isTv) {
-            item(key = "test_button") {
-                Box(
-                    contentAlignment = Alignment.Center,
-                    modifier = Modifier
-                        .animateItem()
-                        .fillMaxWidth(),
-                ) {
-                    OutlinedButton(
-                        shapes = ButtonDefaults.shapes(),
-                        onClick = {
-                            onNavigate(PanoRoute.RegexEditsTest)
-                        },
-                    ) {
-                        Text(text = stringResource(Res.string.edit_regex_test))
-                    }
-                }
-            }
-        }
-
         item(key = "presets_header") {
             Text(
                 text = stringResource(Res.string.edit_presets),
@@ -297,6 +276,22 @@ private fun RegexEditsList(
                     ) {
                         Text(maxPatternsText)
                     }
+
+                if (!PlatformStuff.isTv) {
+                    Spacer(
+                        modifier = Modifier
+                            .weight(1f)
+                    )
+
+                    OutlinedButton(
+                        shapes = ButtonDefaults.shapes(),
+                        onClick = {
+                            onNavigate(PanoRoute.RegexEditsTest)
+                        },
+                    ) {
+                        Text(text = stringResource(Res.string.edit_regex_test))
+                    }
+                }
             }
         }
 
@@ -355,6 +350,7 @@ private fun PresetItem(
         if (onNavigateSettings != null) {
             OutlinedIconButton(
                 shapes = IconButtonDefaults.shapes(),
+                border = ButtonDefaults.outlinedButtonBorder(true),
                 onClick = onNavigateSettings
             ) {
                 Icon(
@@ -438,8 +434,7 @@ private fun RegexEditItem(
         Column(
             modifier = Modifier
                 .weight(1f)
-                .clip(MaterialTheme.shapes.medium)
-                .clickable(enabled = !forShimmer) { onItemClick(regexEdit) }
+                .shapedClickable(enabled = !forShimmer) { onItemClick(regexEdit) }
                 .padding(8.dp)
                 .backgroundForShimmer(forShimmer)
         ) {
@@ -491,7 +486,7 @@ private fun RegexEditItem(
                 expanded = dropdownShown,
                 onDismissRequest = { dropdownShown = false },
             ) {
-                DropdownMenuItem(
+                item(
                     text = {
                         Text(
                             stringResource(
@@ -517,7 +512,7 @@ private fun RegexEditItem(
                     },
                 )
 
-                DropdownMenuItem(
+                item(
                     text = {
                         Text(
                             stringResource(Res.string.delete),

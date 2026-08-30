@@ -127,28 +127,30 @@ class TimePeriodsGenerator(
             val timeJumpEntries = mutableListOf<TimeJumpEntry>()
             val endTime = System.currentTimeMillis()
 
-            fun addTimePeriod(
+            fun addTimePeriods(
                 calendarField: Int,
-                addsTime: Boolean,
                 type: TimePeriodType,
             ) {
                 cal.timeInMillis = anchorTime
-                cal.add(calendarField, if (addsTime) 1 else -1)
-                if (cal.timeInMillis in beginTime..endTime) {
+                cal.add(calendarField, -1)
+                val minus1 = cal.timeInMillis.takeIf { it in beginTime..endTime }
+
+                cal.timeInMillis = anchorTime
+                cal.add(calendarField, 1)
+                val plus1 = cal.timeInMillis.takeIf { it in beginTime..endTime }
+
+                if (minus1 != null || plus1 != null) {
                     timeJumpEntries += TimeJumpEntry(
-                        timeMillis = cal.timeInMillis,
-                        type = type,
-                        addsTime = addsTime
+                        minus1 = minus1,
+                        plus1 = plus1,
+                        type = type
                     )
                 }
             }
 
-            addTimePeriod(Calendar.WEEK_OF_YEAR, false, TimePeriodType.WEEK)
-            addTimePeriod(Calendar.WEEK_OF_YEAR, true, TimePeriodType.WEEK)
-            addTimePeriod(Calendar.MONTH, false, TimePeriodType.MONTH)
-            addTimePeriod(Calendar.MONTH, true, TimePeriodType.MONTH)
-            addTimePeriod(Calendar.YEAR, false, TimePeriodType.YEAR)
-            addTimePeriod(Calendar.YEAR, true, TimePeriodType.YEAR)
+            addTimePeriods(Calendar.WEEK_OF_YEAR, TimePeriodType.WEEK)
+            addTimePeriods(Calendar.MONTH, TimePeriodType.MONTH)
+            addTimePeriods(Calendar.YEAR, TimePeriodType.YEAR)
 
             return timeJumpEntries
         }
@@ -426,9 +428,9 @@ data class TimePeriod(
 }
 
 data class TimeJumpEntry(
-    val timeMillis: Long,
+    val minus1: Long?,
+    val plus1: Long?,
     val type: TimePeriodType,
-    val addsTime: Boolean,
 )
 
 enum class TimePeriodType {

@@ -94,7 +94,7 @@ class PanoWebViewClient(
 
         if (
             handler != null &&
-            proxy.type == MainPrefs.ProxySettings.Type.HTTP &&
+            proxy.type == MainPrefs.ProxyPrefs.Type.HTTP &&
             proxy.hasAuth &&
             host == proxy.host
         ) {

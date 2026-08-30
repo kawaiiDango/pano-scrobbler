@@ -22,12 +22,10 @@ actual object SteelSeriesReceiverServer {
 
     @Synchronized
     private fun startServer() {
-        if (serverStartAttempted) {
+        if (serverStartAttempted || !DesktopStuff.IS_WINDOWS) {
             return
         }
         serverStartAttempted = true
-
-        if (DesktopStuff.os != DesktopStuff.Os.Windows) return
 
         val programDataPath = System.getenv("programdata") ?: return
         try {
@@ -107,7 +105,7 @@ actual object SteelSeriesReceiverServer {
         delay(2.seconds)
 
         val lastGameEvent = lastGameEvent
-        if (
+        return if (
             lastGameEvent != null &&
             lastGameEvent.game == "TIDAL" &&
             lastGameEvent.event == "MEDIA_PLAYBACK" &&
@@ -117,19 +115,15 @@ actual object SteelSeriesReceiverServer {
                 album = lastGameEvent.data.frame.album,
             )
 
-            return AdditionalMetadataResult(
+            AdditionalMetadataResult(
                 scrobbleData = sd,
                 artUrl = lastGameEvent.data.frame.imageUrl,
             )
         } else {
             Logger.w { "SteelSeries game event did not match: $lastGameEvent" }
+            AdditionalMetadataResult.FetchAgain
         }
 
-        return AdditionalMetadataResult(
-            scrobbleData = null,
-            artUrl = null,
-            shouldFetchAgain = true
-        )
     }
 
     private class ReceiverServer(

@@ -26,12 +26,14 @@ import com.arn.scrobble.icons.Edit
 import com.arn.scrobble.icons.Icons
 import com.arn.scrobble.ui.PanoLazyColumn
 import com.arn.scrobble.ui.SearchEffect
+import com.arn.scrobble.ui.emptyText
 import com.arn.scrobble.ui.shimmerWindowBounds
 import org.jetbrains.compose.resources.stringResource
 import pano_scrobbler.composeapp.generated.resources.Res
 import pano_scrobbler.composeapp.generated.resources.add_exception
 import pano_scrobbler.composeapp.generated.resources.edit
 import pano_scrobbler.composeapp.generated.resources.rank_change_no_change
+import pano_scrobbler.composeapp.generated.resources.search
 
 @Composable
 fun ArtistsWithDelimitersScreen(
@@ -62,60 +64,60 @@ fun ArtistsWithDelimitersScreen(
                     modifier = Modifier.shimmerWindowBounds().animateItem()
                 )
             }
-        } else {
-            if (searchTermToFirstArtist != null && searchFieldState.text.isNotBlank()) {
-                val (searchTermTrimmed, firstArtist) = searchTermToFirstArtist!!
+        } else if (searchTermToFirstArtist != null && searchFieldState.text.isNotBlank()) {
+            val (searchTermTrimmed, firstArtist) = searchTermToFirstArtist!!
 
-                item(key = "first_artist") {
-                    Surface(
-                        modifier = Modifier
-                            .fillMaxWidth(),
-                        shape = MaterialTheme.shapes.medium,
-                        tonalElevation = 2.dp
+            item(key = "first_artist") {
+                Surface(
+                    modifier = Modifier
+                        .fillMaxWidth(),
+                    shape = MaterialTheme.shapes.medium,
+                    tonalElevation = 2.dp
+                ) {
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        modifier = Modifier.padding(16.dp)
                     ) {
-                        Column(
-                            horizontalAlignment = Alignment.CenterHorizontally,
-                            modifier = Modifier.padding(16.dp)
+                        Row(
+                            horizontalArrangement = Arrangement.spacedBy(8.dp),
+                            verticalAlignment = Alignment.CenterVertically,
                         ) {
-                            Row(
-                                horizontalArrangement = Arrangement.spacedBy(8.dp),
-                                verticalAlignment = Alignment.CenterVertically,
-                            ) {
-                                Icon(
-                                    Icons.Edit,
-                                    contentDescription = stringResource(Res.string.edit),
-                                    tint = MaterialTheme.colorScheme.tertiary,
-                                )
-                                Text(
-                                    firstArtist,
-                                    color = MaterialTheme.colorScheme.tertiary,
-                                )
-                            }
+                            Icon(
+                                Icons.Edit,
+                                contentDescription = stringResource(Res.string.edit),
+                                tint = MaterialTheme.colorScheme.tertiary,
+                            )
+                            Text(
+                                firstArtist,
+                                color = MaterialTheme.colorScheme.tertiary,
+                            )
+                        }
 
-                            if (!firstArtist.equals(searchTermTrimmed, true)) {
-                                OutlinedButton(
-                                    shapes = ButtonDefaults.shapes(),
-                                    onClick = {
-                                        viewModel.insert(searchTermTrimmed)
-                                    },
-                                    modifier = Modifier
-                                        .padding(top = 8.dp)
-                                ) {
-                                    Text(
-                                        stringResource(Res.string.add_exception)
-                                    )
-                                }
-                            } else {
+                        if (!firstArtist.equals(searchTermTrimmed, true)) {
+                            OutlinedButton(
+                                shapes = ButtonDefaults.shapes(),
+                                onClick = {
+                                    viewModel.insert(searchTermTrimmed)
+                                },
+                                modifier = Modifier
+                                    .padding(top = 8.dp)
+                            ) {
                                 Text(
-                                    stringResource(Res.string.rank_change_no_change),
-                                    modifier = Modifier.padding(top = 8.dp)
+                                    stringResource(Res.string.add_exception)
                                 )
                             }
+                        } else {
+                            Text(
+                                stringResource(Res.string.rank_change_no_change),
+                                modifier = Modifier.padding(top = 8.dp)
+                            )
                         }
                     }
                 }
             }
-
+        } else if (searchTermToFirstArtist != null && searchFieldState.text.isBlank()) {
+            emptyText { stringResource(Res.string.search) }
+        } else {
             items(
                 artists!!,
                 key = { it._id }
@@ -124,8 +126,8 @@ fun ArtistsWithDelimitersScreen(
                     artist,
                     onDelete = { viewModel.delete(it) },
                     modifier = Modifier
-                        .fillMaxWidth()
                         .animateItem()
+                        .fillMaxWidth()
                 )
             }
         }

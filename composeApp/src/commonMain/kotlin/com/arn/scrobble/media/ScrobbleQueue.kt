@@ -2,7 +2,6 @@ package com.arn.scrobble.media
 
 import co.touchlab.kermit.Logger
 import com.arn.scrobble.api.AccountType
-import com.arn.scrobble.api.AdditionalMetadataType
 import com.arn.scrobble.api.Scrobblable
 import com.arn.scrobble.api.ScrobbleEverywhere
 import com.arn.scrobble.api.ScrobbleResult
@@ -17,11 +16,8 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.sync.Mutex
-import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withTimeoutOrNull
 import org.jetbrains.compose.resources.getString
 import pano_scrobbler.composeapp.generated.resources.Res
@@ -34,18 +30,12 @@ import kotlin.time.Duration.Companion.milliseconds
 class ScrobbleQueue(
     private val scope: CoroutineScope,
 ) {
-    class NetworkRequestNeededException(cause: Throwable? = null) :
-        IllegalStateException("Network request needed", cause)
-
     // delays scrobbling this hash until it becomes null again
     private var lockedHash: Int? = null
 
     private val tickEveryMs = 500L
 
     private val scrobbleTasks = mutableMapOf<Int, Job>()
-
-    private val fetchAdditionalMetadataTimestamps = ArrayDeque<Long>()
-    private val fetchAdditionalMetadataMutex = Mutex()
 
     // ticker, only handles empty messages and messagePQ
     // required because uptimeMillis pauses / slows down in deep sleep
@@ -69,22 +59,6 @@ class ScrobbleQueue(
 
     fun setLockedHash(hash: Int?) {
         lockedHash = hash
-    }
-
-    private suspend fun canFetchAdditionalMetadata() {
-        // was still getting java.util.NoSuchElementException: ArrayDeque is empty, so use lock
-        return fetchAdditionalMetadataMutex.withLock {
-            val now = System.currentTimeMillis()
-            // Remove timestamps older than n seconds
-            while (now - (fetchAdditionalMetadataTimestamps.firstOrNull() ?: now) > 1 * 60_000) {
-                fetchAdditionalMetadataTimestamps.removeFirstOrNull()
-            }
-            val can = fetchAdditionalMetadataTimestamps.size < 2
-            fetchAdditionalMetadataTimestamps.addLast(System.currentTimeMillis())
-
-            if (!can)
-                throw NetworkRequestNeededException()
-        }
     }
 
     fun scrobble(
@@ -123,7 +97,6 @@ class ScrobbleQueue(
                 PlatformStuff.mainPrefs.data.map { it.submitNowPlaying }.first()
 
             // now playing for a new track or after that of the previously paused track has expired
-            var lastfmNpSucc = false
             if (
                 timestampOverride == null &&
                 submitNowPlaying &&
@@ -148,11 +121,17 @@ class ScrobbleQueue(
 
                 trackInfo.nowPlayingSubmitted(msid)
 
-                if (msid != null)
+                val lastfmNpSucc = npResults?.any { (k, v) ->
+                    k.userAccount.type == AccountType.LASTFM && v.isSuccess
+                } == true
+
+                if (lastfmNpSucc && trackInfo.artUrlState == PlayingTrackInfo.ArtUrlState.None) {
+                    trackInfo.setArtUrlState(PlayingTrackInfo.ArtUrlState.CanFetch)
+                }
+
+                if (msid != null || PlatformStuff.isDesktop) {
                     notifyPlayingTrackEvent(trackInfo.toTrackPlayingEvent())
-
-
-                if (npResults != null && npResults.values.any { !it.isSuccess }) {
+                } else if (npResults != null && npResults.values.any { !it.isSuccess }) {
                     notifyScrobbleError(
                         notiKey = trackInfo.notiKey,
                         scrobbleResults = npResults,
@@ -160,53 +139,19 @@ class ScrobbleQueue(
                         hash = hash
                     )
                 }
-
-                lastfmNpSucc = npResults?.any { (k, v) ->
-                    k.userAccount.type == AccountType.LASTFM && v.isSuccess
-                } == true
-
             }
-
-            // discord rpc album art
-            val npArtFetchJob =
-                if (PlatformStuff.isDesktop &&
-                    PlatformStuff.mainPrefs.data.map { it.discordRpc.enabled }.first() &&
-                    lastfmNpSucc &&
-                    trackInfo.artUrl == null
-                ) {
-                    launch(Dispatchers.IO) {
-                        if (shouldFetchNpArtUrl().firstOrNull { it } == true) {
-                            val additionalMetadata = ScrobbleEverywhere.fetchAdditionalMetadata(
-                                scrobbleData,
-                                AdditionalMetadataType.ART_URL,
-                                ::canFetchAdditionalMetadata,
-                            )
-
-                            if (additionalMetadata.artUrl != null) {
-                                Logger.d { "fetched artUrl for now playing: ${additionalMetadata.artUrl}" }
-                                trackInfo.setArtUrl(additionalMetadata.artUrl)
-                                notifyPlayingTrackEvent(trackInfo.toTrackPlayingEvent())
-                            }
-                        }
-                    }
-                } else
-                    null
 
             // tick every n milliseconds
             while (submitAtTime > PlatformStuff.monotonicTimeMs() || hash == lockedHash) {
                 delay(tickEveryMs.milliseconds)
             }
 
-            npArtFetchJob?.cancel()
-
             // launch it in a separate scope, so that it does not get cancelled
             scope.launch(Dispatchers.IO) {
                 val scrobbleSd = if (fetchAdditionalMetadata) {
-                    val additionalMetadata = ScrobbleEverywhere.fetchAdditionalMetadata(
-                        scrobbleData,
-                        AdditionalMetadataType.MISSING_METADATA,
-                        { }
-                    )
+                    val additionalMetadata = ScrobbleEverywhere.fetchMissingMetadata(
+                        scrobbleData
+                    ) { true }
 
                     ScrobbleEverywhere.preprocessMetadata(
                         additionalMetadata.scrobbleData ?: scrobbleData,
@@ -250,11 +195,7 @@ class ScrobbleQueue(
                 return@launch
             }
 
-            val additionalMeta = ScrobbleEverywhere.fetchAdditionalMetadata(
-                scrobbleData,
-                AdditionalMetadataType.MISSING_METADATA,
-                ::canFetchAdditionalMetadata
-            )
+            val additionalMeta = ScrobbleEverywhere.fetchMissingMetadata(scrobbleData)
 
             var preprocessResult = ScrobbleEverywhere.preprocessMetadata(
                 additionalMeta.scrobbleData ?: scrobbleData,
@@ -293,10 +234,8 @@ class ScrobbleQueue(
                     var artUrl = additionalMeta.artUrl
 
                     if (preprocessResult.canFetchAlbum) {
-                        val additionalMetaAlbumGuess = ScrobbleEverywhere.fetchAdditionalMetadata(
+                        val additionalMetaAlbumGuess = ScrobbleEverywhere.guessAlbumFromCacheLastfm(
                             preprocessResult.scrobbleData,
-                            AdditionalMetadataType.ALBUM_GUESS,
-                            ::canFetchAdditionalMetadata
                         )
 
                         preprocessResult = if (additionalMetaAlbumGuess.scrobbleData != null)
@@ -314,7 +253,7 @@ class ScrobbleQueue(
                     )
 
                     if (artUrl != null) {
-                        trackInfo.setArtUrl(artUrl)
+                        trackInfo.setArtUrlState(PlayingTrackInfo.ArtUrlState(artUrl))
                     }
 
                     notifyPlayingTrackEvent(

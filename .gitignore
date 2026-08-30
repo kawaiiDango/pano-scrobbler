@@ -20,9 +20,9 @@ captures
 *.log
 *.backup
 /build
-/composeApp/resources/**/*.so
-/composeApp/resources/**/*.dll
-/composeApp/resources/**/*.dylib
+/desktopApp/resources/**/*.so
+/desktopApp/resources/**/*.dll
+/desktopApp/resources/**/*.dylib
 /baselineprofile/src/main/java/com/arn/scrobble/baselineprofile/Secrets.kt
 /composeApp/*.json
 /androidApp/*.json

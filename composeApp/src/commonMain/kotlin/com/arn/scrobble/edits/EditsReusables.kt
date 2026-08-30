@@ -2,7 +2,6 @@ package com.arn.scrobble.edits
 
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.widthIn
-import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.IconToggleButton
@@ -89,7 +88,7 @@ fun EditsDeleteMenu(
             expanded = deleteMenuShown,
             onDismissRequest = { deleteMenuShown = false }
         ) {
-            DropdownMenuItem(
+            item(
                 text = {
                     Text(
                         stringResource(Res.string.delete),

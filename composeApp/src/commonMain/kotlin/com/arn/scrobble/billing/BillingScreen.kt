@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.MediumExtendedFloatingActionButton
@@ -22,7 +21,6 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
@@ -112,7 +110,7 @@ fun BillingScreen(
     var code by rememberSaveable { mutableStateOf("") }
     val purchaseMethods = remember { VariantStuff.billingRepository.purchaseMethods }
     val needsActivationCode = remember { VariantStuff.billingRepository.needsActivationCode }
-    var purchaseMethodClicked by remember { mutableStateOf<PurchaseMethod?>(null) }
+    var purchaseMethodClicked by rememberSaveable { mutableStateOf<PurchaseMethod?>(null) }
 
     fun verifyLicenseOnline() {
         code.trim().ifEmpty { null }?.let {
@@ -174,6 +172,7 @@ fun BillingScreen(
                 ),
                 color = MaterialTheme.colorScheme.tertiary,
                 style = MaterialTheme.typography.titleMediumEmphasized,
+                modifier = Modifier.padding(vertical = 16.dp)
             )
         }
 
@@ -224,7 +223,7 @@ fun BillingScreen(
                     onDismissRequest = { purchaseMethodsExpanded = false }
                 ) {
                     purchaseMethods.forEach { purchaseMethod ->
-                        DropdownMenuItem(
+                        item(
                             onClick = {
                                 viewModel.makePurchase(purchaseMethod, activity)
                                 purchaseMethodsExpanded = false
@@ -238,7 +237,7 @@ fun BillingScreen(
                                     )
                                     Text(
                                         purchaseMethod.displayDesc,
-                                        fontStyle = FontStyle.Italic
+                                        style = MaterialTheme.typography.bodySmall
                                     )
                                 }
                             }

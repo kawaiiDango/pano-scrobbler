@@ -49,14 +49,14 @@ actual fun WebViewScreen(
             val proxy = Requesters.proxy.value
 
             val (proxyHostField, proxyPort) = when {
-                proxy.type != MainPrefs.ProxySettings.Type.SYSTEM && !proxy.hasAuth ->
+                proxy.type != MainPrefs.ProxyPrefs.Type.SYSTEM && !proxy.hasAuth ->
                     proxy.host to proxy.port
 
-                proxy.type == MainPrefs.ProxySettings.Type.HTTP && DesktopStuff.os == DesktopStuff.Os.Windows ->
+                proxy.type == MainPrefs.ProxyPrefs.Type.HTTP && DesktopStuff.IS_WINDOWS ->
                     proxy.host to proxy.port
 
                 // GTK4 webview supports auth
-                proxy.type != MainPrefs.ProxySettings.Type.SYSTEM && proxy.hasAuth && DesktopStuff.os == DesktopStuff.Os.Linux -> {
+                proxy.type != MainPrefs.ProxyPrefs.Type.SYSTEM && proxy.hasAuth && DesktopStuff.IS_LINUX -> {
                     val url = HttpUrl.Builder()
                         .scheme("http")
                         .host(proxy.host)
@@ -67,7 +67,7 @@ actual fun WebViewScreen(
                     "${url.encodedUsername}:${url.encodedPassword}@${proxy.host}" to proxy.port
                 }
 
-                proxy.type == MainPrefs.ProxySettings.Type.SOCKS5 && proxy.hasAuth && viewModel.tunnelPort != null ->
+                proxy.type == MainPrefs.ProxyPrefs.Type.SOCKS5 && proxy.hasAuth && viewModel.tunnelPort != null ->
                     "127.0.0.1" to viewModel.tunnelPort!!
 
                 else ->

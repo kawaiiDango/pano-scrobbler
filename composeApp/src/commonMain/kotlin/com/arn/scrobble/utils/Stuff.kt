@@ -396,8 +396,6 @@ object Stuff {
         return flagEmoji.toString()
     }
 
-    fun <T : Any> List<T>.toInverseMap() = mapIndexed { i, it -> it to i }.toMap()
-
     fun Calendar.setMidnight() {
         this[Calendar.HOUR_OF_DAY] = 0
         this[Calendar.MINUTE] = 0

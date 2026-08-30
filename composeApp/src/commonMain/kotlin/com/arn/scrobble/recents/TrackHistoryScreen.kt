@@ -35,10 +35,11 @@ import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff.collectAsStateWithInitialValue
 import com.arn.scrobble.utils.Stuff.format
 import kotlinx.coroutines.flow.Flow
+import org.jetbrains.compose.resources.getPluralString
 import org.jetbrains.compose.resources.stringResource
 import pano_scrobbler.composeapp.generated.resources.Res
 import pano_scrobbler.composeapp.generated.resources.first_scrobbled_on
-import pano_scrobbler.composeapp.generated.resources.my_scrobbles
+import pano_scrobbler.composeapp.generated.resources.num_scrobbles_noti
 import pano_scrobbler.composeapp.generated.resources.time_just_now
 
 @Composable
@@ -62,30 +63,18 @@ fun TrackHistoryScreen(
         PlatformStuff.mainPrefs.data.collectAsStateWithInitialValue { it.showScrobbleSources }
     else
         remember { mutableStateOf(false) }
-    val myScrobblesStr = stringResource(Res.string.my_scrobbles)
     val density = LocalDensity.current
-    val listViewportHeight = remember {
+    val viewportHeightToIsLandscape by remember {
         derivedStateOf {
-            with(density) {
-                (listState.layoutInfo.viewportSize.height - listState.layoutInfo.afterContentPadding - listState.layoutInfo.beforeContentPadding).toDp()
-            }
-        }
-    }
-    val animateListItemContentSize = remember {
-        derivedStateOf {
-            listState.layoutInfo.totalItemsCount > listState.layoutInfo.visibleItemsInfo.size
+            listState.layoutInfo.viewportSize.let { with(density) { it.height.toDp() } to (it.width * 0.7 > it.height) }
         }
     }
 
     LaunchedEffect(total, deletedTracksCount) {
-        val formattedCount = ((total ?: 0) - deletedTracksCount)
+        val count = ((total ?: 0) - deletedTracksCount)
             .coerceAtLeast(0)
-            .format()
-        val title = if (user.isSelf) {
-            "$myScrobblesStr: $formattedCount"
-        } else {
-            "${user.name}: $formattedCount"
-        }
+
+        val title = getPluralString(Res.plurals.num_scrobbles_noti, count, count.format())
         onSetTitle(title)
     }
 
@@ -145,8 +134,8 @@ fun TrackHistoryScreen(
             expandedKey = { expandedKey },
             onExpand = { expandedKey = it },
             onNavigate = onNavigate,
-            animateListItemContentSize = animateListItemContentSize,
-            maxHeight = listViewportHeight,
+            isLandscape = { viewportHeightToIsLandscape.second },
+            maxHeight = { viewportHeightToIsLandscape.first },
             viewModel = viewModel,
         )
 

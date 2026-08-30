@@ -11,7 +11,6 @@ import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff
 import com.arn.scrobble.utils.VariantStuff
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.filterNot
 import kotlinx.coroutines.flow.first
@@ -53,8 +52,7 @@ sealed interface PlayingTrackNotifyEvent {
         val hash: Int,
         val nowPlaying: Boolean,
         val userLoved: Boolean,
-        val userPlayCount: Int,
-        val artUrl: String?,
+        val artUrlState: PlayingTrackInfo.ArtUrlState,
         val timelineStartTime: Long,
         val preprocessed: Boolean,
     ) : PlayingTrackNotifyEvent, PlayingTrackState
@@ -98,6 +96,12 @@ sealed interface PlayingTrackNotifyEvent {
 
     @Serializable
     data object RepostFgNoti : PlayingTrackNotifyEvent
+
+    @Serializable
+    data class ArtUrlFetched(
+        val hash: Int,
+        val artUrl: String,
+    ) : PlayingTrackNotifyEvent
 }
 
 val globalTrackEventFlow by lazy { MutableSharedFlow<PlayingTrackNotifyEvent>(extraBufferCapacity = 10) }
@@ -122,12 +126,6 @@ suspend fun listenForPlayingTrackEvents(
             }
 
             is PlayingTrackNotifyEvent.TrackPlaying -> {
-                val trackInfo = mediaListener.findTrackerByHash(event.hash)?.trackInfo
-                if (!event.nowPlaying) {
-                    if (trackInfo != null && trackInfo.userPlayCount > 0)
-                        trackInfo.updateUserProps(userPlayCount = trackInfo.userPlayCount + 1)
-                }
-
                 PanoNotifications.notifyScrobble(event)
             }
 
@@ -273,9 +271,20 @@ suspend fun listenForPlayingTrackEvents(
                 PanoNotifications.removeNotificationByKey(Stuff.CHANNEL_NOTI_NEW_APP)
             }
 
+            is PlayingTrackNotifyEvent.ArtUrlFetched -> {
+                val trackInfo =
+                    mediaListener.findTrackerByHash(event.hash)?.trackInfo ?: return@collect
+
+                trackInfo.setArtUrlState(PlayingTrackInfo.ArtUrlState(event.artUrl))
+
+                if (trackInfo.isPlaying)
+                    PanoNotifications.notifyScrobble(trackInfo.toTrackPlayingEvent())
+            }
+
             PlayingTrackNotifyEvent.RepostFgNoti -> {
                 PanoNotifications.repostFgNotiIfNeeded()
             }
+
         }
     }
 
@@ -284,5 +293,3 @@ suspend fun listenForPlayingTrackEvents(
 expect fun notifyPlayingTrackEvent(event: PlayingTrackNotifyEvent)
 
 expect fun getNowPlayingFromMainProcess(): PlayingTrackNotifyEvent.TrackPlaying?
-
-expect fun shouldFetchNpArtUrl(): Flow<Boolean>

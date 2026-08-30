@@ -47,10 +47,10 @@ actual fun OnboardingScreen(
         listOfNotNull(
             OnboardingStepType.LOGIN,
             OnboardingStepType.DISCORD_RICH_PRESENCE,
-            if (DesktopStuff.os == DesktopStuff.Os.Linux)
+            if (DesktopStuff.IS_LINUX)
                 OnboardingStepType.AUTOSTART
             else null,
-            if (DesktopStuff.os == DesktopStuff.Os.Linux && System.getenv("APPIMAGE") != null)
+            if (DesktopStuff.IS_LINUX && System.getenv("APPIMAGE") != null)
                 OnboardingStepType.APP_LAUNCHER
             else null,
         )

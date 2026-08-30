@@ -27,12 +27,10 @@ import com.arn.scrobble.media.PlayingTrackNotifyEvent
 import com.arn.scrobble.navigation.DeepLinkUtils
 import com.arn.scrobble.navigation.PanoRoute
 import com.arn.scrobble.updates.UpdateAction
-import com.arn.scrobble.utils.Stuff.format
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
-import org.jetbrains.compose.resources.getPluralString
 import org.jetbrains.compose.resources.getString
 import pano_scrobbler.composeapp.generated.resources.Res
 import pano_scrobbler.composeapp.generated.resources.block
@@ -44,7 +42,6 @@ import pano_scrobbler.composeapp.generated.resources.love
 import pano_scrobbler.composeapp.generated.resources.new_player
 import pano_scrobbler.composeapp.generated.resources.new_player_prompt
 import pano_scrobbler.composeapp.generated.resources.no
-import pano_scrobbler.composeapp.generated.resources.num_scrobbles_noti
 import pano_scrobbler.composeapp.generated.resources.state_unscrobbled
 import pano_scrobbler.composeapp.generated.resources.tap_to_edit
 import pano_scrobbler.composeapp.generated.resources.unlove
@@ -201,24 +198,8 @@ actual object PanoNotifications {
                 }
             }
 
-        if (event.userPlayCount > 0) {
-            nb.setContentTitle(
-                state + Stuff.formatBigHyphen(
-                    event.scrobbleData.artist,
-                    event.scrobbleData.track
-                )
-            )
-                .setContentText(
-                    getPluralString(
-                        Res.plurals.num_scrobbles_noti,
-                        event.userPlayCount,
-                        "~" + event.userPlayCount.format()
-                    )
-                )
-        } else {
-            nb.setContentTitle(state + event.scrobbleData.track)
-                .setContentText(event.scrobbleData.artist)
-        }
+        nb.setContentTitle(state + event.scrobbleData.track)
+            .setContentText(event.scrobbleData.artist)
 
         if (event.nowPlaying) {
             val editDialogArgs = PanoRoute.Modal.EditScrobble(

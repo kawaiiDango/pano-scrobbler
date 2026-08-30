@@ -3,6 +3,7 @@ package com.arn.scrobble.ui
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -45,5 +46,11 @@ actual fun isImeVisible() = false
 
 @Composable
 actual fun ApplyWindowBlur(behind: Int, bg: Int) {
-    // not implemented
+    val modalShownTracker = LocalModalShownTracker.current
+    DisposableEffect(Unit) {
+        modalShownTracker.value += 1
+        onDispose {
+            modalShownTracker.value -= 1
+        }
+    }
 }

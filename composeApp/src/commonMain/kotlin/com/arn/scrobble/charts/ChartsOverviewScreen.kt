@@ -2,6 +2,7 @@ package com.arn.scrobble.charts
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.LocalIndication
+import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.focusable
 import androidx.compose.foundation.horizontalScroll
@@ -17,12 +18,16 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.FilledTonalButton
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -67,18 +72,19 @@ import com.arn.scrobble.icons.Album
 import com.arn.scrobble.icons.AutoAwesomeMosaic
 import com.arn.scrobble.icons.BarChart4Bars
 import com.arn.scrobble.icons.Icons
+import com.arn.scrobble.icons.Info
 import com.arn.scrobble.icons.Mic
+import com.arn.scrobble.icons.MoreVert
 import com.arn.scrobble.icons.MusicNote
+import com.arn.scrobble.icons.QuestionMark
 import com.arn.scrobble.icons.Tag
 import com.arn.scrobble.navigation.PanoRoute
-import com.arn.scrobble.ui.ButtonWithIcon
-import com.arn.scrobble.ui.DismissableNotice
-import com.arn.scrobble.ui.EmptyText
 import com.arn.scrobble.ui.EntriesRow
-import com.arn.scrobble.ui.ExpandableHeaderMenu
-import com.arn.scrobble.ui.InfoText
+import com.arn.scrobble.ui.HeaderItemWithAction
 import com.arn.scrobble.ui.OptionalHorizontalScrollbar
-import com.arn.scrobble.ui.TextHeaderItem
+import com.arn.scrobble.ui.PanoDropdownMenu
+import com.arn.scrobble.ui.SimpleHeaderItem
+import com.arn.scrobble.ui.TextWithIcon
 import com.arn.scrobble.ui.YesNoDropdown
 import com.arn.scrobble.ui.backgroundForShimmer
 import com.arn.scrobble.ui.getMusicEntryPlaceholderItem
@@ -107,8 +113,7 @@ import io.github.koalaplot.core.xygraph.rememberIntLinearAxisModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import org.jetbrains.compose.resources.getPluralString
-import org.jetbrains.compose.resources.getString
+import org.jetbrains.compose.resources.pluralStringResource
 import org.jetbrains.compose.resources.stringResource
 import pano_scrobbler.composeapp.generated.resources.Res
 import pano_scrobbler.composeapp.generated.resources.albums
@@ -122,6 +127,7 @@ import pano_scrobbler.composeapp.generated.resources.days
 import pano_scrobbler.composeapp.generated.resources.external_metadata
 import pano_scrobbler.composeapp.generated.resources.hidden_tags
 import pano_scrobbler.composeapp.generated.resources.is_turned_off
+import pano_scrobbler.composeapp.generated.resources.item_options
 import pano_scrobbler.composeapp.generated.resources.lastfm
 import pano_scrobbler.composeapp.generated.resources.listening_activity
 import pano_scrobbler.composeapp.generated.resources.months
@@ -141,7 +147,6 @@ fun ChartsOverviewScreen(
     user: UserCached,
     digestTimePeriod: LastfmPeriod?,
     onNavigate: (PanoRoute) -> Unit,
-    onTitleChange: (String) -> Unit,
     modifier: Modifier = Modifier,
     viewModel: ChartsVM = viewModel(key = user.key<ChartsVM>()) { ChartsVM(user, true) },
     chartsPeriodViewModel: ChartsPeriodVM = viewModel(key = user.key<ChartsPeriodVM>()) {
@@ -188,19 +193,6 @@ fun ChartsOverviewScreen(
         }
     }
 
-    LaunchedEffect(scrobblesCount) {
-        if (scrobblesCount > 0)
-            onTitleChange(
-                getPluralString(
-                    Res.plurals.num_scrobbles_noti,
-                    scrobblesCount,
-                    scrobblesCount.format()
-                )
-            )
-        else
-            onTitleChange(getString(Res.string.charts))
-    }
-
     fun setInput(timePeriod: TimePeriod, prevTimePeriod: TimePeriod?, refreshCount: Int) {
         isTimePeriodContinuous = timePeriod.lastfmPeriod != null
 
@@ -233,6 +225,8 @@ fun ChartsOverviewScreen(
 
     Column(
         modifier = modifier
+            .verticalScroll(scrollState)
+            .padding(panoContentPadding(sides = false)),
     ) {
         TimePeriodSelector(
             user = user,
@@ -241,209 +235,236 @@ fun ChartsOverviewScreen(
             onSelected = ::setInput,
             showRefreshButton = true,
             digestTimePeriod = digestTimePeriod,
-            modifier = Modifier.fillMaxWidth()
         )
-        Column(
+
+
+        ChartsCount(
+            text = if (scrobblesCount > 0) {
+                pluralStringResource(
+                    Res.plurals.num_scrobbles_noti,
+                    scrobblesCount,
+                    scrobblesCount.format()
+                )
+            } else {
+                stringResource(Res.string.charts)
+            },
             modifier = Modifier
-                .weight(1f)
-                .verticalScroll(scrollState)
-                .padding(panoContentPadding(sides = false))
-        ) {
-            if (!spotifyConsentLearnt) {
-                DismissableNotice(
-                    title = stringResource(Res.string.spotify_consent),
-                    onClick = {
-                        spotifyConsentLearntDropdownShown = true
+                .align(Alignment.CenterHorizontally)
+
+        )
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        if (!spotifyConsentLearnt) {
+            HeaderItemWithAction(
+                title = stringResource(Res.string.spotify_consent),
+                icon = Icons.QuestionMark,
+                trailingIconContentDescription = stringResource(Res.string.item_options),
+                onClick = {
+                    spotifyConsentLearntDropdownShown = true
+                },
+            )
+
+            Box(
+                modifier = Modifier.align(Alignment.End)
+            ) {
+                YesNoDropdown(
+                    expanded = spotifyConsentLearntDropdownShown,
+                    onDismissRequest = {
+                        spotifyConsentLearntDropdownShown = false
                     },
-                    onDismiss = {
+                    onYes = {
                         scope.launch {
                             PlatformStuff.mainPrefs.updateData {
-                                it.copy(spotifyConsentLearnt = true)
+                                it.copy(spotifyConsentLearnt = true, spotifyApi = true)
                             }
                         }
-                    }
+                    },
+                    onNo = {
+                        scope.launch {
+                            PlatformStuff.mainPrefs.updateData {
+                                it.copy(spotifyConsentLearnt = true, spotifyApi = false)
+                            }
+                        }
+                    },
                 )
+            }
+            Spacer(modifier = Modifier.height(8.dp))
+        }
 
-                Box(
-                    modifier = Modifier.align(Alignment.End)
-                ) {
-                    YesNoDropdown(
-                        expanded = spotifyConsentLearntDropdownShown,
-                        onDismissRequest = {
-                            spotifyConsentLearntDropdownShown = false
-                        },
-                        onYes = {
-                            scope.launch {
-                                PlatformStuff.mainPrefs.updateData {
-                                    it.copy(spotifyConsentLearnt = true, spotifyApi = true)
-                                }
-                            }
-                        },
-                        onNo = {
-                            scope.launch {
-                                PlatformStuff.mainPrefs.updateData {
-                                    it.copy(spotifyConsentLearnt = true, spotifyApi = false)
-                                }
-                            }
-                        },
+        EntriesRow(
+            title = getMusicEntryQString(
+                Res.string.artists,
+                Res.plurals.num_artists,
+                artistsCount,
+                isTimePeriodContinuous
+            ),
+            entries = artists,
+            fetchAlbumImageIfMissing = !isTimePeriodContinuous,
+            showArtists = true,
+            headerIcon = Icons.Mic,
+            emptyStringRes = Res.string.charts_no_data,
+            onHeaderClick = {
+                onNavigate(
+                    PanoRoute.ChartsPager(
+                        user = user,
+                        chartsType = Stuff.TYPE_ARTISTS
                     )
-                }
+                )
+            },
+            placeholderItem = remember {
+                getMusicEntryPlaceholderItem(Stuff.TYPE_ARTISTS)
+            },
+            onItemClick = {
+                onNavigate(
+                    PanoRoute.Modal.MusicEntryInfo(
+                        artist = it as Artist,
+                        user = user,
+                        appId = null
+                    )
+                )
+            },
+        )
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        EntriesRow(
+            title = getMusicEntryQString(
+                Res.string.albums,
+                Res.plurals.num_albums,
+                albumsCount,
+                isTimePeriodContinuous
+            ),
+            entries = albums,
+            fetchAlbumImageIfMissing = !isTimePeriodContinuous,
+            showArtists = true,
+            headerIcon = Icons.Album,
+            emptyStringRes = Res.string.charts_no_data,
+            onHeaderClick = {
+                onNavigate(
+                    PanoRoute.ChartsPager(
+                        user = user,
+                        chartsType = Stuff.TYPE_ALBUMS
+                    )
+                )
+            },
+            placeholderItem = remember {
+                getMusicEntryPlaceholderItem(Stuff.TYPE_ALBUMS)
+            },
+            onItemClick = {
+                onNavigate(
+                    PanoRoute.Modal.MusicEntryInfo(
+                        album = it as Album,
+                        user = user,
+                        appId = null
+                    )
+                )
+            },
+        )
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        EntriesRow(
+            title = getMusicEntryQString(
+                Res.string.tracks,
+                Res.plurals.num_tracks,
+                tracksCount,
+                isTimePeriodContinuous
+            ),
+            entries = tracks,
+            fetchAlbumImageIfMissing = true,
+            showArtists = true,
+            headerIcon = Icons.MusicNote,
+            emptyStringRes = Res.string.charts_no_data,
+            onHeaderClick = {
+                onNavigate(
+                    PanoRoute.ChartsPager(
+                        user = user,
+                        chartsType = Stuff.TYPE_TRACKS
+                    )
+                )
+            },
+            placeholderItem = remember {
+                getMusicEntryPlaceholderItem(Stuff.TYPE_TRACKS)
+            },
+            onItemClick = {
+                onNavigate(
+                    PanoRoute.Modal.MusicEntryInfo(
+                        track = it as Track,
+                        user = user,
+                        appId = null
+                    )
+                )
+            },
+        )
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        if (!PlatformStuff.isTv) {
+            FilledTonalButton(
+                shapes = ButtonDefaults.shapes(),
+                onClick = {
+                    onNavigate(
+                        PanoRoute.Modal.CollageGenerator(
+                            collageType = Stuff.TYPE_ALL,
+                            user = user,
+                            timePeriod = chartsPeriodViewModel.selectedPeriod.value
+                                ?: return@FilledTonalButton
+                        )
+                    )
+                }, contentPadding = ButtonDefaults.ButtonWithIconContentPadding,
+                modifier = Modifier
+                    .align(Alignment.CenterHorizontally)
+            ) {
+                Icon(
+                    Icons.AutoAwesomeMosaic,
+                    contentDescription = null,
+                    modifier = Modifier.size(ButtonDefaults.IconSize)
+                )
+                Spacer(Modifier.size(ButtonDefaults.IconSpacing))
+                Text(
+                    stringResource(Res.string.create_collage),
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                )
             }
 
             Spacer(modifier = Modifier.height(8.dp))
-
-            EntriesRow(
-                title = getMusicEntryQString(
-                    Res.string.artists,
-                    Res.plurals.num_artists,
-                    artistsCount,
-                    isTimePeriodContinuous
-                ),
-                entries = artists,
-                fetchAlbumImageIfMissing = !isTimePeriodContinuous,
-                showArtists = true,
-                headerIcon = Icons.Mic,
-                emptyStringRes = Res.string.charts_no_data,
-                onHeaderClick = {
-                    onNavigate(
-                        PanoRoute.ChartsPager(
-                            user = user,
-                            chartsType = Stuff.TYPE_ARTISTS
-                        )
-                    )
-                },
-                placeholderItem = remember {
-                    getMusicEntryPlaceholderItem(Stuff.TYPE_ARTISTS)
-                },
-                onItemClick = {
-                    onNavigate(
-                        PanoRoute.Modal.MusicEntryInfo(
-                            artist = it as Artist,
-                            user = user,
-                            appId = null
-                        )
-                    )
-                },
-            )
-
-            EntriesRow(
-                title = getMusicEntryQString(
-                    Res.string.albums,
-                    Res.plurals.num_albums,
-                    albumsCount,
-                    isTimePeriodContinuous
-                ),
-                entries = albums,
-                fetchAlbumImageIfMissing = !isTimePeriodContinuous,
-                showArtists = true,
-                headerIcon = Icons.Album,
-                emptyStringRes = Res.string.charts_no_data,
-                onHeaderClick = {
-                    onNavigate(
-                        PanoRoute.ChartsPager(
-                            user = user,
-                            chartsType = Stuff.TYPE_ALBUMS
-                        )
-                    )
-                },
-                placeholderItem = remember {
-                    getMusicEntryPlaceholderItem(Stuff.TYPE_ALBUMS)
-                },
-                onItemClick = {
-                    onNavigate(
-                        PanoRoute.Modal.MusicEntryInfo(
-                            album = it as Album,
-                            user = user,
-                            appId = null
-                        )
-                    )
-                },
-            )
-
-            EntriesRow(
-                title = getMusicEntryQString(
-                    Res.string.tracks,
-                    Res.plurals.num_tracks,
-                    tracksCount,
-                    isTimePeriodContinuous
-                ),
-                entries = tracks,
-                fetchAlbumImageIfMissing = true,
-                showArtists = true,
-                headerIcon = Icons.MusicNote,
-                emptyStringRes = Res.string.charts_no_data,
-                onHeaderClick = {
-                    onNavigate(
-                        PanoRoute.ChartsPager(
-                            user = user,
-                            chartsType = Stuff.TYPE_TRACKS
-                        )
-                    )
-                },
-                placeholderItem = remember {
-                    getMusicEntryPlaceholderItem(Stuff.TYPE_TRACKS)
-                },
-                onItemClick = {
-                    onNavigate(
-                        PanoRoute.Modal.MusicEntryInfo(
-                            track = it as Track,
-                            user = user,
-                            appId = null
-                        )
-                    )
-                },
-            )
-
-
-            if (!PlatformStuff.isTv) {
-                Box(
-                    contentAlignment = Alignment.Center,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontalOverscanPadding())
-                ) {
-                    ButtonWithIcon(
-                        onClick = {
-                            onNavigate(
-                                PanoRoute.Modal.CollageGenerator(
-                                    collageType = Stuff.TYPE_ALL,
-                                    user = user,
-                                    timePeriod = chartsPeriodViewModel.selectedPeriod.value
-                                        ?: return@ButtonWithIcon
-                                )
-                            )
-                        },
-                        icon = Icons.AutoAwesomeMosaic,
-                        text = stringResource(Res.string.create_collage),
-                    )
-                }
-            }
-
-            ListeningActivityContent(
-                listeningActivity = listeningActivity,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontalOverscanPadding())
-                    .onGloballyPositioned { coordinates ->
-                        listeningActivityOffsetY = coordinates.positionInParent().y
-                    }
-            )
-
-            TagCloudContent(
-                tagCloud = tagCloud,
-                onHeaderMenuClick = {
-                    onNavigate(PanoRoute.Modal.HiddenTags)
-                },
-                enabled = useLastfm,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontalOverscanPadding())
-                    .onGloballyPositioned { coordinates ->
-                        tagCloudOffsetY = coordinates.positionInParent().y
-                    }
-            )
-
         }
+
+        SimpleHeaderItem(
+            text = stringResource(Res.string.listening_activity),
+            icon = Icons.BarChart4Bars,
+            modifier = Modifier
+                .fillMaxWidth()
+        )
+
+        Spacer(modifier = Modifier.height(4.dp))
+
+        ListeningActivityContent(
+            listeningActivity = listeningActivity,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = horizontalOverscanPadding())
+                .onGloballyPositioned { coordinates ->
+                    listeningActivityOffsetY = coordinates.positionInParent().y
+                }
+        )
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        TagCloudContent(
+            tagCloud = tagCloud,
+            onHeaderMenuClick = {
+                onNavigate(PanoRoute.Modal.HiddenTags)
+            },
+            enabled = useLastfm,
+            modifier = Modifier
+                .fillMaxWidth()
+                .onGloballyPositioned { coordinates ->
+                    tagCloudOffsetY = coordinates.positionInParent().y
+                }
+        )
     }
 }
 
@@ -464,6 +485,7 @@ private fun TagCloudContent(
         mutableStateOf(tagCloud == null || kumoBitmap == null && tagCloud.isNotEmpty())
     }
     val interactionSource = remember { MutableInteractionSource() }
+    var menuShown by remember { mutableStateOf(false) }
 
     val density = LocalDensity.current
 
@@ -487,22 +509,45 @@ private fun TagCloudContent(
     Column(
         modifier = modifier
     ) {
-        ExpandableHeaderMenu(
+        HeaderItemWithAction(
             title = stringResource(Res.string.tag_cloud),
             icon = Icons.Tag,
-            menuItemText = stringResource(Res.string.hidden_tags),
-            onMenuItemClick = onHeaderMenuClick,
+            trailingIcon = Icons.MoreVert,
+            trailingIconContentDescription = stringResource(Res.string.hidden_tags),
+            onClick = { menuShown = true },
             modifier = Modifier
                 .fillMaxWidth()
         )
 
+        Spacer(modifier = Modifier.height(4.dp))
+
+        Box(
+            modifier = Modifier
+                .align(Alignment.End)
+                .padding(end = 8.dp)
+        ) {
+            PanoDropdownMenu(
+                expanded = menuShown,
+                onDismissRequest = { menuShown = false },
+            ) {
+                item(
+                    text = { Text(stringResource(Res.string.hidden_tags)) },
+                    onClick = {
+                        onHeaderMenuClick()
+                        menuShown = false
+                    }
+                )
+            }
+        }
+
         if (!enabled) {
-            InfoText(
+            TextWithIcon(
                 stringResource(
                     Res.string.is_turned_off,
                     stringResource(Res.string.lastfm),
                     stringResource(Res.string.external_metadata),
                 ),
+                icon = Icons.Info,
                 modifier = Modifier.padding(horizontal = 16.dp)
             )
 
@@ -528,10 +573,12 @@ private fun TagCloudContent(
                         tagCloudSizePx = coordinates.size.width
                     }
             ) {
-                EmptyText(
-                    visible = tagCloud?.isEmpty() == true,
-                    text = stringResource(Res.string.not_enough_data),
-                )
+                if (tagCloud?.isEmpty() == true) {
+                    Text(
+                        text = stringResource(Res.string.not_enough_data),
+                        style = MaterialTheme.typography.titleLarge,
+                    )
+                }
 
                 if (tagCloud?.isNotEmpty() == true) {
                     kumoBitmap?.let {
@@ -563,6 +610,7 @@ private fun TagCloudContent(
 private fun ListeningActivityContent(
     listeningActivity: ListeningActivity?,
     modifier: Modifier = Modifier,
+    scrollState: ScrollState = rememberScrollState(),
 ) {
     val isLoading by remember(listeningActivity) { mutableStateOf(listeningActivity == null) }
     val xData by remember(listeningActivity) {
@@ -590,29 +638,19 @@ private fun ListeningActivityContent(
 
     val tintColor = MaterialTheme.colorScheme.secondary
 
-    val scrollState = rememberScrollState()
     val density = LocalDensity.current
     val interactionSource = remember { MutableInteractionSource() }
 
     Column(
         modifier = modifier
     ) {
-        TextHeaderItem(
-            title = stringResource(Res.string.listening_activity),
-            icon = Icons.BarChart4Bars,
-        )
-
         BoxWithConstraints(
             contentAlignment = Alignment.Center,
             modifier = Modifier
                 .fillMaxWidth()
                 .height(240.dp)
-                .then(
-                    if (isLoading) Modifier
-                        .shimmerWindowBounds()
-                        .backgroundForShimmer(true, shape = MaterialTheme.shapes.extraLarge)
-                    else Modifier
-                )
+                .shimmerWindowBounds(isLoading)
+                .backgroundForShimmer(isLoading, shape = MaterialTheme.shapes.extraLarge)
                 .horizontalScroll(scrollState)
                 .clip(MaterialTheme.shapes.medium)
                 .indication(
@@ -621,10 +659,12 @@ private fun ListeningActivityContent(
                 )
                 .focusable(interactionSource = interactionSource)
         ) {
-            EmptyText(
-                visible = listeningActivity?.timePeriodsToCounts?.isEmpty() == true,
-                text = stringResource(Res.string.charts_no_data),
-            )
+            if (listeningActivity?.timePeriodsToCounts?.isEmpty() == true) {
+                Text(
+                    text = stringResource(Res.string.charts_no_data),
+                    style = MaterialTheme.typography.titleLarge,
+                )
+            }
 
             listeningActivity?.let { listeningActivity ->
                 if (listeningActivity.timePeriodsToCounts.isNotEmpty()) {
@@ -723,7 +763,7 @@ private fun AxisLabel(
         color = MaterialTheme.colorScheme.onBackground,
         style = MaterialTheme.typography.bodySmall,
         modifier = modifier,
-        maxLines = 1,
+        maxLines = 2,
     )
 }
 

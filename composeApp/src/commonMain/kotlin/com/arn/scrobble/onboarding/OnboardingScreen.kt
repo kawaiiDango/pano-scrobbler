@@ -9,14 +9,13 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
-import androidx.compose.material3.OutlinedToggleButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.TonalToggleButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -108,7 +107,7 @@ fun ButtonStepperForLogin(
 
     var dropDownShown by remember { mutableStateOf(false) }
 
-    OutlinedToggleButton(
+    TonalToggleButton(
         checked = dropDownShown,
         onCheckedChange = {
             dropDownShown = it
@@ -128,17 +127,19 @@ fun ButtonStepperForLogin(
             onDismissRequest = { dropDownShown = false }
         ) {
             accountTypesToStrings.forEach { (accType, string) ->
-                DropdownMenuItem(
+                item(
                     onClick = {
                         navigate(LoginDestinations.route(accType))
                         dropDownShown = false
                     },
                     text = {
-                        Text(string)
+                        Text(
+                            string,
+                            modifier = Modifier
+                                .testTag("login_type_" + accType.name)
+                                .testTagsAsResId()
+                        )
                     },
-                    modifier = Modifier
-                        .testTag("login_type_" + accType.name)
-                        .testTagsAsResId()
                 )
             }
         }

@@ -40,11 +40,12 @@ notifications from other apps.
 ### All of my scrobbles from Spotify are duplicated
 
 This happens if you have more than one scrobbler connected/running. Disable or uninstall other
-scrobblers. Disconnect your Spotify account from the last.fm website.
+scrobblers. Disconnect your Spotify account from the last.fm website,
+at [last.fm/settings/applications](https://www.last.fm/settings/applications)
 
 ### How do I scrobble only the first artist instead of all the performers?
 
-Go to Configure > Use the first artist only
+Go to Configure > Use the first artist only. Select the apps where you want this behavior.
 
 ### The app is scrobbling non music videos from YouTube
 
@@ -57,6 +58,14 @@ entirely, from settings.
 
 It is not possible to edit scrobbles older than 14 days using this app, regardless of whether you
 have a last.fm pro subscription, due to the method used for editing.
+
+### [desktop] Discord Rich Presence does not work
+
+- Check your activity privacy settings (Discord settings > Activity Privacy). "Share my activity"
+  should be enabled. Check if "Where I share activity" settings are correct.
+- Make sure that you are not invisible on Discord.
+- The native Discord desktop app (i.e. not the website version) must be running.
+- Do not add Pano scrobbler as a game.
 
 ### Pictures of some artists are missing even though they have a picture on last.fm
 

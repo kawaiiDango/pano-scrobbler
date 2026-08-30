@@ -161,7 +161,11 @@ class DesktopMediaListener(
         sessionTracker.metadataChanged(metadata, ignoreScrobble)
     }
 
-    fun platformPlaybackStateChanged(uniqueAppId: String, playbackInfo: PlaybackInfo) {
+    fun platformPlaybackStateChanged(
+        uniqueAppId: String,
+        playbackInfo: PlaybackInfo,
+        canChangeChannel: Boolean, // only used on Windows
+    ) {
         val sessionTracker = sessionTrackers[uniqueAppId] ?: return
 
         if (sessionTracker.lastDuration <= 0 &&
@@ -173,9 +177,15 @@ class DesktopMediaListener(
             return
         }
 
-        val options = TransformMetadataOptions()
         val (commonPlaybackInfo, ignoreScrobble) =
-            transformPlaybackState(sessionTracker.trackInfo, playbackInfo, options)
+            transformPlaybackState(
+                sessionTracker.trackInfo,
+                playbackInfo,
+                if (canChangeChannel)
+                    scrobbleSpotifyRemote.value
+                else
+                    true
+            )
         sessionTracker.playbackStateChanged(commonPlaybackInfo, ignoreScrobble)
     }
 
@@ -193,9 +203,14 @@ class DesktopMediaListener(
             PanoNativeComponents.skip(trackInfo.notiKey)
         }
 
+        override fun pause() {
+            super.pause()
+            DiscordRpc.paused(trackInfo.hash)
+        }
+
         override fun stop() {
-            pause()
-            DiscordRpc.clearDiscordActivity(trackInfo.appId)
+            super.pause()
+            DiscordRpc.clearPaused(trackInfo.hash)
         }
 
         override fun onBeforeScrobble() {

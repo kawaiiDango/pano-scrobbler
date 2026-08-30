@@ -24,7 +24,8 @@ import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff
 import com.arn.scrobble.utils.applyAndroidLocaleLegacy
 
-class MainActivity : ComponentActivity() {
+open class MainActivity : ComponentActivity() {
+    protected open val isDialogActivity = false
     private val isTranslucentMarkerFile by lazy { noBackupFilesDir.resolve("is_translucent") }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -69,23 +70,23 @@ class MainActivity : ComponentActivity() {
                     }
                 }
 
-                LaunchedEffect(themeAttributes.isTranslucent) {
+                LaunchedEffect(themeAttributes.isTranslucent, themeAttributes.blurMainWindow) {
                     val markerFileExists = isTranslucentMarkerFile.exists()
+                    val translucencyChanged = themeAttributes.isTranslucent != markerFileExists
 
-                    if (themeAttributes.isTranslucent && !markerFileExists) {
-                        isTranslucentMarkerFile.createNewFile()
+                    if (translucencyChanged) {
+                        if (themeAttributes.isTranslucent) {
+                            isTranslucentMarkerFile.createNewFile()
+                        } else {
+                            isTranslucentMarkerFile.delete()
+                        }
                         myRecreate()
-                    } else if (!themeAttributes.isTranslucent && markerFileExists) {
-                        isTranslucentMarkerFile.delete()
-                        myRecreate()
+                        // don't touch blur flags on a window that's being torn down
+                        // the new activity instance will run this same effect and apply blur there
+                        return@LaunchedEffect
                     }
-                }
 
-                LaunchedEffect(themeAttributes.blurMainWindow) {
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S &&
-                        PlatformStuff.supportsBlur
-                    ) {
-                        val window = window
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S && PlatformStuff.supportsBlur) {
                         val isBlurEnabled =
                             (window.attributes.flags and WindowManager.LayoutParams.FLAG_BLUR_BEHIND) != 0
 
@@ -105,7 +106,11 @@ class MainActivity : ComponentActivity() {
                 }
 
                 CompositionLocalProvider(LocalActivityRestoredFlag provides (restoredState != null)) {
-                    PanoAppContent()
+                    PanoAppContent(
+                        onCloseLastDialog = if (isDialogActivity) {
+                            onBackPressedDispatcher::onBackPressed
+                        } else null
+                    )
                 }
             }
         }
@@ -118,7 +123,7 @@ class MainActivity : ComponentActivity() {
     override fun onApplyThemeResource(theme: Resources.Theme, resid: Int, first: Boolean) {
         super.onApplyThemeResource(theme, resid, first)
 
-        if (isTranslucentMarkerFile.exists()) {
+        if (!isDialogActivity && isTranslucentMarkerFile.exists()) {
             theme.applyStyle(R.style.Patch_Wallpaper, true)
         }
     }

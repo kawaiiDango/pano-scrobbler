@@ -185,15 +185,15 @@ object AutoUpdater {
             return null
         }
 
-        val file = when (DesktopStuff.os) {
-            DesktopStuff.Os.Windows -> {
+        val file = when {
+            DesktopStuff.IS_WINDOWS -> {
                 val asset = downloadUrl.find { it.name.endsWith(".exe") }
                     ?: return null // No Windows installer found
                 val sha256Hex = asset.digest.substringAfter("sha256:")
                 windows(asset.browser_download_url, sha256Hex)
             }
 
-            DesktopStuff.Os.Linux -> {
+            DesktopStuff.IS_LINUX -> {
                 val asset = downloadUrl.find { it.name.endsWith(".AppImage") }
                     ?: return null // No Linux AppImage found
                 val sha256Hex = asset.digest.substringAfter("sha256:")

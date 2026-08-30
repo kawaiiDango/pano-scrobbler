@@ -24,19 +24,16 @@
     <plurals name="num_weeks">
         <item quantity="one">שבוע %1$s</item>
         <item quantity="two">%1$s שבועות</item>
-        <item quantity="many">%1$s שבועות</item>
         <item quantity="other">%1$s שבועות</item>
     </plurals>
     <plurals name="num_months">
         <item quantity="one">חודש %1$s</item>
         <item quantity="two">%1$s חודשים</item>
-        <item quantity="many">%1$s חודשים</item>
         <item quantity="other">%1$s חודשים</item>
     </plurals>
     <plurals name="num_years">
         <item quantity="one">שנה %1$s</item>
         <item quantity="two">%1$s שנים</item>
-        <item quantity="many">%1$s שנים</item>
         <item quantity="other">%1$s שנים</item>
     </plurals>
 </resources>

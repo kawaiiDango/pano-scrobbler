@@ -11,4 +11,13 @@
     <string name="new_app">Aplicație nouă</string>
     <string comment="User's top artists, albums, tracks, line chart of daily scrobble counts and tag cloud" name="charts">Topuri</string>
     <string name="scrobbles">Scrobbluri</string>
+    <string name="weekly">Săptămânal</string>
+    <string name="monthly">Lunar</string>
+    <string name="charts_overall">Per total</string>
+    <string name="charts_no_data">Nu există date pentru această perioadă</string>
+    <string name="appwidget_loading">Se încarcă…</string>
+    <string name="show_persistent_noti">Arată o notificare persistentă</string>
+    <string name="scrobbler_off">Scrobbler dezactivat</string>
+    <string name="scrobbler_on">Scrobbler activ</string>
+    <string name="pref_noti">Notificări</string>
 </resources>

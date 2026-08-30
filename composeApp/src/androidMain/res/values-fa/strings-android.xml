@@ -23,14 +23,14 @@
     <string name="pref_noti">اعلانات</string>
     <plurals name="num_weeks">
         <item quantity="one">%1$s هفته</item>
-        <item quantity="other">%1$s هفته</item>
+        <item quantity="other">%1$s هفته ها</item>
     </plurals>
     <plurals name="num_months">
         <item quantity="one">%1$s ماه</item>
-        <item quantity="other">%1$s ماه</item>
+        <item quantity="other">%1$s ماه ها</item>
     </plurals>
     <plurals name="num_years">
         <item quantity="one">%1$s سال</item>
-        <item quantity="other">%1$s سال</item>
+        <item quantity="other">%1$s سال ها</item>
     </plurals>
 </resources>

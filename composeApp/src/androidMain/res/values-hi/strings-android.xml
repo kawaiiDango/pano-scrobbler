@@ -15,6 +15,7 @@
     <string name="monthly">मासिक</string>
     <string name="charts_overall">सम्पूर्ण काल</string>
     <string name="charts_no_data">इस अवधि का डेटा नहीं है</string>
+    <string comment="%1= the word weekly or monthly" formatted="true" name="s_top_scrobbles">%1$s शीर्ष स्क्रोबल</string>
     <string name="appwidget_loading">लोड हो रहा है…</string>
     <string name="scrobbler_off">स्क्रौब्ल करना बंद है</string>
     <string name="pref_noti">सूचनाएं</string>

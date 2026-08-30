@@ -41,6 +41,7 @@
     <string name="artists">Nghệ sĩ</string>
     <string name="top_artists" comment="Top artists the user has listened to">Nghệ sĩ hàng đầu</string>
     <string name="artist_channel" comment="Artist or youtube channel">Tác giả</string>
+    <string name="similar_artists">Nghệ sĩ tương tự</string>
     <string name="album">Album</string>
     <string name="albums">Album</string>
     <string name="top_albums" comment="top albums the user has listened to, or most scrobbled albums of an artist">Album hàng đầu</string>
@@ -56,6 +57,8 @@
     <string name="choose_apps">Chọn ứng dụng</string>
     <string name="choose_an_app">Chọn một ứng dụng</string>
     <string name="apps" comment="Currently appears on the regex edit dialog showing the selected apps and allowing the user to add more apps">Ứng dụng</string>
+    <string name="unavailable_offline">Không khả dụng khi offline</string>
+    <string name="tv_url_notice">Mở đường dẫn này trong trình duyệt ở một thiết bị khác</string>
     <string name="scrobble_services" comment="Services like lastfm, librefm, listenbrainz etc">Các dịch vụ</string>
     <string name="share_sig">(bởi Pano Scrobbler)</string>
     <string name="share">Chia sẻ</string>
@@ -70,6 +73,10 @@
     <string name="global" comment="search globally across lastfm">Toàn cầu</string>
     <string name="profile">Hồ sơ</string>
     <string name="profile_pic">Ảnh đại diện</string>
+    <string name="file_exists_confirm_overwrite">Tệp tin đã tồn tại. Nhấn lần nữa để ghi đè.</string>
+    <string name="no_scrobbles">Chưa có bài hát nào ở đây…</string>
+    <string name="no_friends">Chưa theo dõi ai cả…</string>
+    <string name="new_app">Ứng dụng mới</string>
     <string name="show_all">Xem thêm</string>
     <string name="edit">Sửa</string>
     <string name="delete">Xoá</string>
@@ -77,9 +84,11 @@
     <string name="love" comment="Love/like a song">Yêu thích</string>
     <string name="hate" comment="Hate or dislike a song">Không thích</string>
     <string name="following" comment="accounts you are following on lastfm">Đang theo dõi</string>
+    <string name="grant_notification_access">Cấp quyền truy cập thông báo</string>
     <string name="send_notifications">Cho phép gửi thông báo</string>
     <string name="swap" comment="(Swap title and artist)">Hoán đổi</string>
     <string name="time_just_now">mới đây</string>
+    <string name="loved" comment="Its a noun">Đã yêu thích</string>
     <string name="details">Chi tiết</string>
     <string name="sort">Sắp xếp</string>
     <string name="listeners">Thính giả</string>

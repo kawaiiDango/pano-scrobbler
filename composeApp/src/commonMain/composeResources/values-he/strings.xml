@@ -3,73 +3,61 @@
     <plurals name="num_scrobbles_noti">
         <item quantity="one">%1$s סקרובל</item>
         <item quantity="two">%1$s סקרובלים</item>
-        <item quantity="many">%1$s סקרובלים</item>
         <item quantity="other">%1$s סקרובלים</item>
     </plurals>
     <plurals name="num_scrobbles_today" comment="n (scrobbles) today">
         <item quantity="one">סקרובל %1$s היום</item>
         <item quantity="two">%1$s סקרובלים היום</item>
-        <item quantity="many">%1$s סקרובלים היום</item>
         <item quantity="other">%1$s סקרובלים היום</item>
     </plurals>
     <plurals name="num_listeners">
         <item quantity="one">מאזין %1$s</item>
         <item quantity="two">%1$s מאזינים</item>
-        <item quantity="many">%1$s מאזינים</item>
         <item quantity="other">%1$s מאזינים</item>
     </plurals>
     <plurals name="num_days">
         <item quantity="one">יום %1$s</item>
         <item quantity="two">%1$s ימים</item>
-        <item quantity="many">%1$s ימים</item>
         <item quantity="other">%1$s ימים</item>
     </plurals>
     <plurals name="num_weeks">
         <item quantity="one">שבוע %1$s</item>
         <item quantity="two">%1$s שבועות</item>
-        <item quantity="many">%1$s שבועות</item>
         <item quantity="other">%1$s שבועות</item>
     </plurals>
     <plurals name="num_months">
         <item quantity="one">חודש %1$s</item>
         <item quantity="two">%1$s חודשים</item>
-        <item quantity="many">%1$s חודשים</item>
         <item quantity="other">%1$s חודשים</item>
     </plurals>
     <plurals name="num_years">
         <item quantity="one">שנה %1$s</item>
         <item quantity="two">%1$s שנים</item>
-        <item quantity="many">%1$s שנים</item>
         <item quantity="other">%1$s שנים</item>
     </plurals>
     <plurals name="num_artists">
         <item quantity="one">אמן %1$s</item>
         <item quantity="two">%1$s אמנים</item>
-        <item quantity="many">%1$s אמנים</item>
         <item quantity="other">%1$s אמנים</item>
     </plurals>
     <plurals name="num_albums">
         <item quantity="one">אלבום %1$s</item>
         <item quantity="two">%1$s אלבומים</item>
-        <item quantity="many">%1$s אלבומים</item>
         <item quantity="other">%1$s אלבומים</item>
     </plurals>
     <plurals name="num_tracks">
         <item quantity="one">רצועה %1$s</item>
         <item quantity="two">%1$s רצועות</item>
-        <item quantity="many">%1$s רצועות</item>
         <item quantity="other">%1$s רצועות</item>
     </plurals>
     <plurals name="num_matches" comment="regex pattern matches">
         <item quantity="one">התאמה %1$d</item>
         <item quantity="two">%1$d התאמות</item>
-        <item quantity="many">%1$d התאמות</item>
         <item quantity="other">%1$d התאמות</item>
     </plurals>
     <plurals name="num_hours">
         <item quantity="one">שעה %1$d</item>
         <item quantity="two">%1$d שעות</item>
-        <item quantity="many">%1$d שעות</item>
         <item quantity="other">%1$d שעות</item>
     </plurals>
     <string name="yes">כן</string>

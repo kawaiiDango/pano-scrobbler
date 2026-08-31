@@ -252,8 +252,7 @@ graalvmNative {
                     "-H:+ReportExceptionStackTraces",
                     "--enable-native-access=ALL-UNNAMED",
 //                    "--include-locales",
-                    "-H:IncludeLocales=\"" + localesTextFile.readText().trim()
-                        .replace("\n", ",") + "\"",
+                    "-H:IncludeLocales=\"" + localesTextFile.readLines().joinToString(",") + "\"",
                     if (IS_WINDOWS) "-J-Djavax.net.ssl.trustStore=NONE" else null,
                     if (IS_WINDOWS) "-H:NativeLinkerOption=/SUBSYSTEM:WINDOWS" else null,
                     if (IS_WINDOWS) "-H:NativeLinkerOption=/ENTRY:mainCRTStartup" else null,

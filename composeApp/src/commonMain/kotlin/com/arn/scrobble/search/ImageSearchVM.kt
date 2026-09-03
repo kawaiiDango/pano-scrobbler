@@ -17,12 +17,9 @@ import com.arn.scrobble.utils.PlatformFile
 import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.flow.debounce
-import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filterNot
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
@@ -30,8 +27,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 class ImageSearchVM : ViewModel() {
-    private val _searchTerm =
-        MutableSharedFlow<Pair<String, Int>>(replay = 1, extraBufferCapacity = 1)
+    private val _searchTerm = MutableStateFlow("" to -1)
     private val _searchResults = MutableStateFlow<SpotifySearchResponse?>(null)
     val searchResultsWithImages = _searchResults.map {
         it ?: return@map null
@@ -56,9 +52,7 @@ class ImageSearchVM : ViewModel() {
             val country = PlatformStuff.mainPrefs.data.map { it.spotifyCountryP }.first()
 
             _searchTerm
-                .distinctUntilChanged()
                 .filterNot { it.first.isBlank() }
-                .debounce(500)
                 .collectLatest { (term, searchType) ->
                     val results = when (searchType) {
                         Stuff.TYPE_ALBUMS ->
@@ -89,7 +83,7 @@ class ImageSearchVM : ViewModel() {
     }
 
     fun search(term: String) {
-        _searchTerm.tryEmit(term to searchType)
+        _searchTerm.value = term to searchType
     }
 
     fun setMusicEntries(

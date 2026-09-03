@@ -42,7 +42,7 @@ actual object PlatformSpecificPrefs {
     actual fun prefAutostart(filteredItem: FilteredItem) {
         // only implemented for Linux
         if (DesktopStuff.IS_LINUX) {
-            filteredItem("startup", Res.string.run_on_start, null) { title ->
+            filteredItem("startup_autostart", Res.string.run_on_start, null) { title ->
                 val doneString = stringResource(Res.string.done)
 
                 DropdownPref(
@@ -89,7 +89,7 @@ actual object PlatformSpecificPrefs {
     }
 
     actual fun discordRpc(filteredItem: FilteredItem, onNavigate: (PanoRoute) -> Unit) {
-        filteredItem(MainPrefs::discordRpc.name, Res.string.discord_rich_presence, null) { title ->
+        filteredItem("discord_rich_presence", Res.string.discord_rich_presence, null) { title ->
             TextPref(
                 text = title,
                 onClick = { onNavigate(PanoRoute.DiscordRpcSettings) }
@@ -101,7 +101,7 @@ actual object PlatformSpecificPrefs {
     actual fun tidalSteelSeries(filteredItem: FilteredItem, enabled: Boolean) {
         if (DesktopStuff.IS_WINDOWS) {
             filteredItem(
-                MainPrefs::tidalSteelSeriesApi.name,
+                "tidal_steelseries",
                 Res.string.pref_fetch_missing_album,
                 Res.string.tidal_steelseries
             ) { title ->
@@ -121,7 +121,7 @@ actual object PlatformSpecificPrefs {
     actual fun deezerApi(filteredItem: FilteredItem, enabled: Boolean) {
         if (DesktopStuff.IS_WINDOWS) {
             filteredItem(
-                MainPrefs::deezerApi.name,
+                "deezer",
                 Res.string.pref_fetch_missing_album,
                 Res.string.deezer
             ) { title ->

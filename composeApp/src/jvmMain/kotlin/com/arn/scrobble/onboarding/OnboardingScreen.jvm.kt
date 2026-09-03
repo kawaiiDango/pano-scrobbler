@@ -90,7 +90,7 @@ actual fun OnboardingScreen(
 
     Column(
         modifier = modifier,
-        verticalArrangement = Arrangement.spacedBy(16.dp)
+        verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
 
         OnboardingTopRow(

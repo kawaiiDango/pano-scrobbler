@@ -1,13 +1,17 @@
 package com.arn.scrobble.search
 
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.input.TextFieldState
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.arn.scrobble.api.AccountType
@@ -20,12 +24,10 @@ import com.arn.scrobble.icons.Favorite
 import com.arn.scrobble.icons.Icons
 import com.arn.scrobble.icons.Mic
 import com.arn.scrobble.icons.MusicNote
-import com.arn.scrobble.icons.Search
 import com.arn.scrobble.navigation.PanoRoute
 import com.arn.scrobble.ui.MusicEntryListItem
 import com.arn.scrobble.ui.PanoLazyColumn
 import com.arn.scrobble.ui.SearchEffect
-import com.arn.scrobble.ui.SimpleHeaderItem
 import com.arn.scrobble.ui.emptyText
 import com.arn.scrobble.ui.expandableSublist
 import com.arn.scrobble.ui.getMusicEntryPlaceholderItem
@@ -95,10 +97,11 @@ fun SearchScreen(
     ) {
         if (hasLoaded) {
             item("results_header") {
-                SimpleHeaderItem(
+                Text(
                     text = stringResource(Res.string.from, stringResource(Res.string.lastfm)),
-                    icon = Icons.Search,
-                    modifier = Modifier.fillMaxWidth()
+                    style = MaterialTheme.typography.titleMedium,
+                    color = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier.padding(8.dp)
                 )
             }
 

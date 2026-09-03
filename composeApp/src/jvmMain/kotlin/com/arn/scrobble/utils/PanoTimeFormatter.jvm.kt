@@ -127,10 +127,7 @@ actual object PanoTimeFormatter {
                 }
             }
         val formatter = formatterBuilder.toFormatter(Locale.getDefault())
-        return Stuff.formatBigHyphen(
-            startDateTime.format(formatter),
-            endDateTime.format(formatter)
-        )
+        return startDateTime.format(formatter) + " - " + endDateTime.format(formatter)
     }
 
     actual fun dateRange(startMillis: Long, endMillis: Long): String {
@@ -160,21 +157,21 @@ actual object PanoTimeFormatter {
             start.year == end.year && start.month == end.month -> {
                 val startStr = start.format(dayOnlyFormatter)
                 val endStr = end.format(dayMonthYearFormatter)
-                Stuff.formatBigHyphen(startStr, endStr)
+                "$startStr - $endStr"
             }
 
             // Same year, different month -> "28 Aug - 3 Sep[ yyyy]"
             start.year == end.year -> {
                 val startStr = start.format(dayMonthFormatter)
                 val endStr = end.format(dayMonthYearFormatter)
-                Stuff.formatBigHyphen(startStr, endStr)
+                "$startStr - $endStr"
             }
 
             // Different years -> "15 Aug 2025 - 20 Aug 2026"
             else -> {
                 val startStr = start.format(dayMonthYearFormatter)
                 val endStr = end.format(dayMonthYearFormatter)
-                Stuff.formatBigHyphen(startStr, endStr)
+                "$startStr - $endStr"
             }
         }
     }

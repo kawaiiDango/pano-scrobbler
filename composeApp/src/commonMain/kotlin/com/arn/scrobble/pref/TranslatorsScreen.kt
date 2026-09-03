@@ -18,7 +18,6 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.arn.scrobble.ui.PanoLazyColumn
-import com.arn.scrobble.ui.horizontalOverscanPadding
 
 @Composable
 fun TranslatorsScreen(
@@ -51,7 +50,7 @@ private fun TranslatorItem(translator: String) {
                 indication = LocalIndication.current
             )
             .focusable(interactionSource = interactionSource)
-            .padding(horizontal = horizontalOverscanPadding(), vertical = 16.dp)
+            .padding(vertical = 16.dp)
 
     )
 }

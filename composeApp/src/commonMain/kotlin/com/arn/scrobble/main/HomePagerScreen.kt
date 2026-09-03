@@ -74,7 +74,7 @@ fun HomePagerScreen(
     PanoPager(
         selectedPage = tabIdx,
         onSelectPage = onSetTabIdx,
-        totalPages = remember(tabsList) { tabsList.count { it !is PanoTab.Profile } },
+        totalPages = tabsList.size,
         modifier = modifier,
     ) { page ->
         when (val tab = tabsList.getOrNull(page)) {

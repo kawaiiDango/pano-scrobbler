@@ -38,7 +38,7 @@ fun ChartsPagerScreen(
     onNavigate: (PanoRoute) -> Unit,
     modifier: Modifier = Modifier,
     viewModel: ChartsVM = viewModel { ChartsVM(user, false) },
-    chartsPeriodViewModel: ChartsPeriodVM = viewModel { ChartsPeriodVM(user) },
+    chartsPeriodViewModel: ChartsPeriodVM = viewModel { ChartsPeriodVM() },
 ) {
     val artists = viewModel.artists.collectAsLazyPagingItems()
     val albums = viewModel.albums.collectAsLazyPagingItems()
@@ -75,7 +75,7 @@ fun ChartsPagerScreen(
         PanoPager(
             selectedPage = tabIdx,
             onSelectPage = onSetTabIdx,
-            totalPages = tabsList.count(),
+            totalPages = tabsList.size,
             modifier = Modifier.fillMaxSize(),
         ) { page ->
             val type = when (page) {

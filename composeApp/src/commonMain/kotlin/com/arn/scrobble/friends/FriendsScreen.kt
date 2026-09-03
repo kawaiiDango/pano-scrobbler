@@ -479,7 +479,7 @@ private fun FriendItem(
 
     Row(
         verticalAlignment = Alignment.CenterVertically,
-        modifier = modifier.padding(horizontal = 4.dp)
+        modifier = modifier
     ) {
         OutlinedToggleButton(
             checked = detailsShown,

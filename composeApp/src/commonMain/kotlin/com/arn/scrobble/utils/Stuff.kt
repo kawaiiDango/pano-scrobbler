@@ -247,6 +247,10 @@ object Stuff {
         "https://libre.fm/reset.php",
     )
 
+    private val lastfmSupportedLanguageOverrides = setOf(
+        "de", "es", "fr", "it", "ja", "pl", "pt", "ru", "sv", "tr", "zh"
+    )
+
     var isRunningInTest = false
 
     val isInDemoMode get() = mainPrefsCachedValue.demoModeP
@@ -410,6 +414,19 @@ object Stuff {
         } catch (e: URLParserException) {
             false
         }
+    }
+
+    fun localizeLastfmUrl(url: String): String {
+        if (url.startsWith("https://www.last.fm/") || url.startsWith("https://last.fm/")) {
+            val lang = Locale.getDefault().language
+            return if (lang in lastfmSupportedLanguageOverrides) {
+                url.replace("last.fm/", "last.fm/$lang/")
+            } else {
+                url
+            }
+        }
+
+        return url
     }
 
     fun HttpRequestBuilder.cacheStrategy(cacheStrategy: CacheStrategy) {

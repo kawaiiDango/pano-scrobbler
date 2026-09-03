@@ -55,7 +55,7 @@ import com.arn.scrobble.icons.MusicNote
 import com.arn.scrobble.icons.Search
 import com.arn.scrobble.icons.Share
 import com.arn.scrobble.icons.automirrored.ArrowBack
-import com.arn.scrobble.icons.automirrored.KeyboardArrowRight
+import com.arn.scrobble.icons.automirrored.ArrowRight
 import com.arn.scrobble.icons.filled.Favorite
 import com.arn.scrobble.media.getNowPlayingFromMainProcess
 import com.arn.scrobble.navigation.PanoRoute
@@ -329,7 +329,7 @@ private fun TrackDropdownMenu(
                         },
                         trailingIcon = {
                             Icon(
-                                imageVector = Icons.AutoMirrored.KeyboardArrowRight,
+                                imageVector = Icons.AutoMirrored.ArrowRight,
                                 contentDescription = null
                             )
                         }
@@ -346,7 +346,7 @@ private fun TrackDropdownMenu(
                         },
                         trailingIcon = {
                             Icon(
-                                imageVector = Icons.AutoMirrored.KeyboardArrowRight,
+                                imageVector = Icons.AutoMirrored.ArrowRight,
                                 contentDescription = null
                             )
                         },

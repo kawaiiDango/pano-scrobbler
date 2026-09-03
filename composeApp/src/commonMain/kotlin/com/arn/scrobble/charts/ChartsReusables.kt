@@ -4,17 +4,20 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.material3.FilterChip
-import androidx.compose.material3.FilterChipDefaults
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedToggleButton
 import androidx.compose.material3.Text
+import androidx.compose.material3.ToggleButtonDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -24,13 +27,13 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.layout.positionInParent
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.IntOffset
-import androidx.compose.ui.unit.center
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.round
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -43,7 +46,6 @@ import com.arn.scrobble.api.lastfm.LastfmPeriod
 import com.arn.scrobble.charts.TimePeriodsGenerator.Companion.toDuration
 import com.arn.scrobble.charts.TimePeriodsGenerator.Companion.toTimePeriod
 import com.arn.scrobble.icons.ArrowDropDown
-import com.arn.scrobble.icons.ArrowDropDownCircle
 import com.arn.scrobble.icons.CalendarToday
 import com.arn.scrobble.icons.CalendarViewMonth
 import com.arn.scrobble.icons.CalendarViewWeek
@@ -51,8 +53,8 @@ import com.arn.scrobble.icons.Circle
 import com.arn.scrobble.icons.DateRange
 import com.arn.scrobble.icons.Icons
 import com.arn.scrobble.icons.Refresh
-import com.arn.scrobble.icons.automirrored.ArrowLeft
-import com.arn.scrobble.icons.automirrored.ArrowRight
+import com.arn.scrobble.icons.automirrored.ExpandCircleRight
+import com.arn.scrobble.icons.filled.ExpandCircleDown
 import com.arn.scrobble.navigation.DatePickerResult
 import com.arn.scrobble.navigation.DateRangePickerResult
 import com.arn.scrobble.navigation.PanoRoute
@@ -61,7 +63,7 @@ import com.arn.scrobble.navigation.TimePeriodDataResult
 import com.arn.scrobble.navigation.TimePeriodTypeClickedResult
 import com.arn.scrobble.navigation.jsonSerializableSaver
 import com.arn.scrobble.ui.PanoDropdownMenu
-import com.arn.scrobble.ui.combineImageVectors
+import com.arn.scrobble.ui.rememberClippedPainter
 import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff.collectAsStateWithInitialValue
 import com.arn.scrobble.utils.Stuff.format
@@ -119,9 +121,9 @@ private suspend fun LazyListState.scrollToCenterItem(index: Int, animate: Boolea
     val estimatedItemSize = info.visibleItemsInfo.let { visible ->
         when {
             visible.isEmpty() -> 0
-            index in visible.indices -> visible[index].size
             index < visible.first().index -> visible.first().size
             index > visible.last().index -> visible.last().size
+            index in visible.first().index..visible.last().index -> visible[index - visible.first().index].size
             else -> 0
         }
     }
@@ -156,23 +158,23 @@ fun TimePeriodSelector(
     val timePeriods by viewModel.timePeriods.collectAsStateWithLifecycle()
     val selectedPeriod by viewModel.selectedPeriod.collectAsStateWithLifecycle()
     val refreshCount by viewModel.refreshCount.collectAsStateWithLifecycle()
-    val periodType by viewModel.periodType.collectAsStateWithLifecycle()
+    val periodType by viewModel.periodType.collectAsStateWithLifecycle(null)
     var dropdownTypeShown by rememberSaveable(saver = jsonSerializableSaver<TimePeriodType?>()) {
         mutableStateOf(null)
     }
     val accountType by PlatformStuff.mainPrefs.data.collectAsStateWithInitialValue { it.currentAccountType }
     var typeSelectorShown by remember { mutableStateOf<Boolean?>(false) }
     var selectedPeriodOffset by remember { mutableStateOf(DpOffset.Zero) }
-    val validTimes = remember(timePeriods) {
-        timePeriods.associateBy { it.start.timeToUTC() }
-    }
     val density = LocalDensity.current
     val resultEventBus = LocalResultEventBus.current
 
     LaunchedEffect(accountType, digestTimePeriod) {
         when (accountType) {
             AccountType.LISTENBRAINZ -> {
-                viewModel.setPeriodType(TimePeriodType.LISTENBRAINZ)
+                viewModel.setPeriodTypeAndRegisteredTime(
+                    TimePeriodType.LISTENBRAINZ,
+                    user.registeredTime
+                )
                 if (digestTimePeriod == null) {
                     val selected = PlatformStuff.mainPrefs.data.map {
                         it.lastChartsListenBrainzPeriod
@@ -191,14 +193,17 @@ fun TimePeriodSelector(
                         it.lastChartsCustomPeriod
                     )
                 }.first()
-                viewModel.setPeriodType(type)
+                viewModel.setPeriodTypeAndRegisteredTime(type, user.registeredTime)
                 viewModel.setSelectedPeriod(selected)
                 viewModel.setCustomPeriodInput(custom)
                 typeSelectorShown = false
             }
 
             else -> {
-                viewModel.setPeriodType(TimePeriodType.CONTINUOUS)
+                viewModel.setPeriodTypeAndRegisteredTime(
+                    TimePeriodType.CONTINUOUS,
+                    user.registeredTime
+                )
                 typeSelectorShown = false
             }
         }
@@ -251,8 +256,12 @@ fun TimePeriodSelector(
     }
 
     ResultEffect<DatePickerResult> { res ->
-        validTimes[res.dateMillis]?.let {
-            viewModel.setSelectedPeriod(it)
+        val idx = timePeriods.binarySearch { period ->
+            res.timeUtc.timeToLocal().compareTo(period.start)
+        }
+
+        if (idx >= 0) {
+            viewModel.setSelectedPeriod(timePeriods[idx])
         }
     }
 
@@ -290,7 +299,12 @@ fun TimePeriodSelector(
             PeriodTypeSelector(
                 onDismissRequest = { typeSelectorShown = false },
                 selectedPeriodType = periodType,
-                onMenuItemClick = { viewModel.setPeriodType(it) },
+                onMenuItemClick = {
+                    viewModel.setPeriodTypeAndRegisteredTime(
+                        it,
+                        user.registeredTime
+                    )
+                },
                 onRefresh = if (showRefreshButton) {
                     {
                         viewModel.refresh()
@@ -326,9 +340,13 @@ fun TimePeriodSelector(
                     selectedMillis = selectedPeriod?.start ?: System.currentTimeMillis(),
                     onDismissRequest = { dropdownTypeShown = null },
                     allowedRange = user.registeredTime to System.currentTimeMillis(),
-                    onMonthMillisSelected = {
-                        validTimes[it.timeToUTC()]?.let {
-                            viewModel.setSelectedPeriod(it)
+                    onMonthMillisSelected = { monthMillis ->
+                        val idx = timePeriods.binarySearch { period ->
+                            monthMillis.compareTo(period.start)
+                        }
+
+                        if (idx >= 0) {
+                            viewModel.setSelectedPeriod(timePeriods[idx])
                         }
                     }
                 )
@@ -392,6 +410,7 @@ fun TimePeriodSelectorRow(
             OutlinedToggleButton(
                 enabled = enabled,
                 checked = typeSelectorShown,
+                contentPadding = ButtonDefaults.ExtraSmallContentPadding,
                 onCheckedChange = {
                     if (it) {
                         resultEventBus.sendResult(TimePeriodTypeClickedResult)
@@ -401,11 +420,18 @@ fun TimePeriodSelectorRow(
                     .padding(end = 8.dp)
             ) {
                 Icon(
-                    combineImageVectors(
-                        getPeriodTypeIcon(periodType),
-                        Icons.ArrowDropDown
-                    ),
-                    contentDescription = stringResource(Res.string.item_options)
+                    getPeriodTypeIcon(periodType),
+                    contentDescription = stringResource(periodType.stringRes),
+                    modifier = Modifier
+                        .size(20.dp)
+                        .align(Alignment.CenterVertically)
+                )
+
+                Icon(
+                    rememberClippedPainter(Icons.ArrowDropDown, 16.dp),
+                    contentDescription = stringResource(Res.string.item_options),
+                    modifier = Modifier
+                        .align(Alignment.CenterVertically)
                 )
             }
         }
@@ -414,15 +440,26 @@ fun TimePeriodSelectorRow(
             state = listState,
             horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterHorizontally),
             contentPadding = PaddingValues(start = 16.dp, end = 24.dp),
-            // this also makes the things outside the viewport unfocusable
             userScrollEnabled = !PlatformStuff.isDesktop && !PlatformStuff.isTv,
             modifier = Modifier.weight(1f),
         ) {
             itemsIndexed(
-                timePeriodsList
+                timePeriodsList,
+                key = { _, timePeriod ->
+                    timePeriod.lastfmPeriod?.name
+                        ?: timePeriod.listenBrainzRange?.name
+                        ?: timePeriod.start
+                }
             ) { idx, timePeriod ->
-                FilterChip(
-                    onClick = {
+                val enabled = !PlatformStuff.isTv ||
+                        timePeriod == selectedPeriod ||
+                        timePeriodsList.getOrNull(idx + 1) == selectedPeriod ||
+                        timePeriodsList.getOrNull(idx - 1) == selectedPeriod
+
+                OutlinedToggleButton(
+                    enabled = enabled,
+                    checked = timePeriod == selectedPeriod,
+                    onCheckedChange = {
                         resultEventBus.sendResult(
                             TimePeriodClickedResult(
                                 timePeriod,
@@ -430,47 +467,107 @@ fun TimePeriodSelectorRow(
                             )
                         )
                     },
-                    enabled = enabled,
-                    selected = timePeriod == selectedPeriod,
-                    trailingIcon = {
-                        if (timePeriod == selectedPeriod) {
-                            Icon(
-                                imageVector = Icons.ArrowDropDownCircle,
-                                contentDescription = null,
-                                tint = MaterialTheme.colorScheme.onSecondaryContainer
-                            )
-                        } else if (timePeriodsList.getOrNull(idx + 1) == selectedPeriod) {
-                            Icon(
-                                imageVector = Icons.AutoMirrored.ArrowLeft,
-                                contentDescription = null,
-                                tint = MaterialTheme.colorScheme.secondary
-                            )
-                        }
-                    },
-                    leadingIcon = {
-                        if (timePeriodsList.getOrNull(idx - 1) == selectedPeriod) {
-                            Icon(
-                                imageVector = Icons.AutoMirrored.ArrowRight,
-                                contentDescription = null,
-                                tint = MaterialTheme.colorScheme.secondary
-                            )
-                        }
-                    },
-                    shapes = FilterChipDefaults.shapes(),
-                    label = { Text(text = timePeriod.name) },
+                    shapes = ToggleButtonDefaults.shapes(),
+                    colors = ToggleButtonDefaults.outlinedToggleButtonColors(
+                        checkedContainerColor = ToggleButtonDefaults.tonalToggleButtonColors().checkedContainerColor,
+                    ),
+                    contentPadding = ButtonDefaults.ExtraSmallContentPadding,
                     modifier = if (timePeriod == selectedPeriod) {
                         Modifier
                             .onGloballyPositioned { coordinates ->
                                 selectedPeriodOffset =
                                     coordinates.positionInParent().round() +
                                             IntOffset(
-                                                coordinates.size.center.x,
+                                                coordinates.size.width / 2,
                                                 coordinates.size.height
                                             )
                             }
                     } else
                         Modifier
-                )
+                ) {
+
+                    if (timePeriodsList.getOrNull(idx - 1) == selectedPeriod) {
+                        Icon(
+                            imageVector = Icons.AutoMirrored.ExpandCircleRight,
+                            contentDescription = null,
+                        )
+                        Spacer(modifier = Modifier.width(2.dp))
+                    }
+
+                    Text(text = timePeriod.name)
+
+                    if (timePeriod == selectedPeriod) {
+                        Spacer(modifier = Modifier.width(2.dp))
+                        Icon(
+                            imageVector = Icons.Filled.ExpandCircleDown,
+                            contentDescription = null,
+                        )
+                    } else if (timePeriodsList.getOrNull(idx + 1) == selectedPeriod) {
+                        Spacer(modifier = Modifier.width(2.dp))
+                        Icon(
+                            imageVector = Icons.AutoMirrored.ExpandCircleRight,
+                            contentDescription = null,
+                            modifier = Modifier.graphicsLayer {
+                                scaleX = -1f
+                            }
+                        )
+                    }
+                }
+
+                /*
+
+               FilterChip(
+                   onClick = {
+                       resultEventBus.sendResult(
+                           TimePeriodClickedResult(
+                               timePeriod,
+                               selectedPeriodOffset
+                           )
+                       )
+                   },
+                   enabled = enabled,
+                   selected = timePeriod == selectedPeriod,
+                   trailingIcon = {
+                       if (timePeriod == selectedPeriod) {
+                           Icon(
+                               imageVector = Icons.Filled.ExpandCircleDown,
+                               contentDescription = null,
+                           )
+                       } else if (timePeriodsList.getOrNull(idx + 1) == selectedPeriod) {
+                           Icon(
+                               imageVector = Icons.Filled.ExpandCircleRight,
+                               contentDescription = null,
+                               modifier = Modifier.graphicsLayer {
+                                   scaleX = -1f
+                               }
+                           )
+                       }
+                   },
+                   leadingIcon = {
+                       if (timePeriodsList.getOrNull(idx - 1) == selectedPeriod) {
+                           Icon(
+                               imageVector = Icons.Filled.ExpandCircleRight,
+                               contentDescription = null
+                           )
+                       }
+                   },
+                   shapes = FilterChipDefaults.shapes(),
+                   label = { Text(text = timePeriod.name) },
+                   modifier = if (timePeriod == selectedPeriod) {
+                       Modifier
+                           .onGloballyPositioned { coordinates ->
+                               selectedPeriodOffset =
+                                   coordinates.positionInParent().round() +
+                                           IntOffset(
+                                               coordinates.size.center.x,
+                                               coordinates.size.height
+                                           )
+                           }
+                   } else
+                       Modifier
+               )
+
+                */
             }
         }
     }

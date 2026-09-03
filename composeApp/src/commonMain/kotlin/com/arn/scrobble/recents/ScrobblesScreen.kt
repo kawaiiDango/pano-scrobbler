@@ -330,7 +330,7 @@ fun ScrobblesScreen(
 
     ResultEffect<DatePickerResult> { res ->
         selectedType = PanoTab.Scrobbles.ScrobblesSubTabType.SCROBBLES
-        timeJumpMillis = res.dateMillis.timeToLocal().plus((24 * 60 * 60 - 1) * 1000)
+        timeJumpMillis = res.timeUtc.timeToLocal().plus((24 * 60 * 60 - 1) * 1000)
         scrollToTopOnLoad = true
     }
 

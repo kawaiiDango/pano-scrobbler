@@ -88,7 +88,6 @@ import com.arn.scrobble.ui.TextWithIcon
 import com.arn.scrobble.ui.YesNoDropdown
 import com.arn.scrobble.ui.backgroundForShimmer
 import com.arn.scrobble.ui.getMusicEntryPlaceholderItem
-import com.arn.scrobble.ui.horizontalOverscanPadding
 import com.arn.scrobble.ui.panoContentPadding
 import com.arn.scrobble.ui.shimmerWindowBounds
 import com.arn.scrobble.utils.PlatformStuff
@@ -149,9 +148,7 @@ fun ChartsOverviewScreen(
     onNavigate: (PanoRoute) -> Unit,
     modifier: Modifier = Modifier,
     viewModel: ChartsVM = viewModel(key = user.key<ChartsVM>()) { ChartsVM(user, true) },
-    chartsPeriodViewModel: ChartsPeriodVM = viewModel(key = user.key<ChartsPeriodVM>()) {
-        ChartsPeriodVM(user)
-    },
+    chartsPeriodViewModel: ChartsPeriodVM = viewModel { ChartsPeriodVM() },
 ) {
     val artists = viewModel.artists.collectAsLazyPagingItems()
     val albums = viewModel.albums.collectAsLazyPagingItems()
@@ -445,7 +442,7 @@ fun ChartsOverviewScreen(
             listeningActivity = listeningActivity,
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = horizontalOverscanPadding())
+                .padding(panoContentPadding(bottom = false))
                 .onGloballyPositioned { coordinates ->
                     listeningActivityOffsetY = coordinates.positionInParent().y
                 }
@@ -484,7 +481,6 @@ private fun TagCloudContent(
     val isLoading by remember(tagCloud, kumoBitmap) {
         mutableStateOf(tagCloud == null || kumoBitmap == null && tagCloud.isNotEmpty())
     }
-    val interactionSource = remember { MutableInteractionSource() }
     var menuShown by remember { mutableStateOf(false) }
 
     val density = LocalDensity.current
@@ -552,6 +548,8 @@ private fun TagCloudContent(
             )
 
         } else {
+            val boxInteractionSource = remember { MutableInteractionSource() }
+
             Box(
                 contentAlignment = Alignment.Center,
                 modifier = Modifier
@@ -565,10 +563,9 @@ private fun TagCloudContent(
                                 .backgroundForShimmer(true, shape = CircleShape)
                         else
                             Modifier
-                                .clip(CircleShape)
                     )
-                    .indication(interactionSource, LocalIndication.current)
-                    .focusable(interactionSource = interactionSource)
+                    .indication(boxInteractionSource, LocalIndication.current)
+                    .focusable(interactionSource = boxInteractionSource)
                     .onGloballyPositioned { coordinates ->
                         tagCloudSizePx = coordinates.size.width
                     }
@@ -592,6 +589,7 @@ private fun TagCloudContent(
                 }
             }
 
+            val textInteractionSource = remember { MutableInteractionSource() }
             Text(
                 stringResource(
                     Res.string.based_on,
@@ -600,7 +598,9 @@ private fun TagCloudContent(
                 ),
                 modifier = Modifier
                     .align(Alignment.End)
-                    .padding(end = 8.dp)
+                    .indication(textInteractionSource, LocalIndication.current)
+                    .focusable(interactionSource = textInteractionSource)
+                    .padding(panoContentPadding(bottom = false))
             )
         }
     }

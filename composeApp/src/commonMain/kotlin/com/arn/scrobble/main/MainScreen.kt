@@ -28,13 +28,16 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.calculateEndPadding
 import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.exclude
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.ime
 import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.plus
 import androidx.compose.foundation.layout.safeContentPadding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.union
@@ -47,7 +50,6 @@ import androidx.compose.foundation.text.input.TextFieldLineLimits
 import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.foundation.text.input.clearText
 import androidx.compose.foundation.text.input.rememberTextFieldState
-import androidx.compose.foundation.text.input.setTextAndPlaceCursorAtEnd
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.FilledTonalIconButton
@@ -123,6 +125,8 @@ import androidx.compose.ui.input.pointer.pointerHoverIcon
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalLayoutDirection
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.ImeAction
@@ -142,7 +146,6 @@ import androidx.navigation3.runtime.result.ResultEventBusNavEntryDecorator
 import androidx.navigation3.scene.Scene
 import androidx.navigation3.scene.SinglePaneSceneStrategy
 import androidx.navigation3.ui.NavDisplay
-import androidx.navigationevent.NavigationEvent
 import androidx.savedstate.serialization.SavedStateConfiguration
 import androidx.window.core.layout.WindowSizeClass.Companion.WIDTH_DP_EXPANDED_LOWER_BOUND
 import androidx.window.core.layout.WindowSizeClass.Companion.WIDTH_DP_MEDIUM_LOWER_BOUND
@@ -152,7 +155,6 @@ import com.arn.scrobble.api.DrawerData
 import com.arn.scrobble.api.UserCached
 import com.arn.scrobble.charts.TimePeriodSelectorRow
 import com.arn.scrobble.icons.Close
-import com.arn.scrobble.icons.Fullscreen
 import com.arn.scrobble.icons.Icons
 import com.arn.scrobble.icons.Minimize
 import com.arn.scrobble.icons.Search
@@ -184,6 +186,8 @@ import com.arn.scrobble.ui.PanoSnackbarVisuals
 import com.arn.scrobble.ui.PanoToggleButtonGroup
 import com.arn.scrobble.ui.PanoToggleButtonsMode
 import com.arn.scrobble.ui.horizontalOverscanPadding
+import com.arn.scrobble.ui.makeOpaque
+import com.arn.scrobble.ui.verticalOverscanPadding
 import com.arn.scrobble.updates.runUpdateAction
 import com.arn.scrobble.utils.LocaleUtils
 import com.arn.scrobble.utils.PlatformStuff
@@ -205,7 +209,6 @@ import pano_scrobbler.composeapp.generated.resources.back
 import pano_scrobbler.composeapp.generated.resources.close
 import pano_scrobbler.composeapp.generated.resources.delete
 import pano_scrobbler.composeapp.generated.resources.download
-import pano_scrobbler.composeapp.generated.resources.expand
 import pano_scrobbler.composeapp.generated.resources.minimize
 import pano_scrobbler.composeapp.generated.resources.reload
 import pano_scrobbler.composeapp.generated.resources.update_available
@@ -215,9 +218,7 @@ import kotlin.time.Duration.Companion.milliseconds
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PanoAppContent(
-    draggableWrapper: @Composable (content: @Composable (windowTitleActions: WindowTitleActions?) -> Unit) -> Unit = {
-        it(null)
-    },
+    draggableWrapper: (@Composable (content: @Composable (windowTitleActions: WindowTitleActions) -> Unit) -> Unit)? = null,
     onCloseLastDialog: (() -> Unit)? = null,
     viewModel: MainViewModel = viewModel { MainViewModel() },
 ) {
@@ -243,7 +244,6 @@ fun PanoAppContent(
     val density = LocalDensity.current
     val titlesMap = remember { mutableStateMapOf<PanoRoute, String>() }
     val tabIdxMap = remember { mutableStateMapOf<PanoRoute.HasTabs, Int>() }
-    val searchTextMap = remember { mutableStateMapOf<PanoRoute.HasSearch, String>() }
     val modalShownCount = rememberSaveable { mutableIntStateOf(0) }
 
 //    val topBarScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(
@@ -327,11 +327,13 @@ fun PanoAppContent(
     val subtitle = if (
         currentPanoRoute is PanoRoute.HasUser &&
         navigationType == PanoNavigationType.BOTTOM_NAVIGATION &&
+        tabData == null &&
         currentUser?.isSelf == false
     )
         currentUser.name
     else
         null
+    val useAltBottomBar = false // todo testing only
 
     fun goBack(): PanoRoute? {
         if (backStack.size <= 1)
@@ -351,9 +353,6 @@ fun PanoAppContent(
         if (route is PanoRoute.HasTabs)
             tabIdxMap.remove(route)
 
-        if (route is PanoRoute.HasSearch)
-            searchTextMap.remove(route)
-
         if (route != null)
             titlesMap.remove(route)
 
@@ -368,9 +367,6 @@ fun PanoAppContent(
         fun add() {
             val last = backStack.lastOrNull()
             if (last != route) {
-                if (last is PanoRoute.HasSearch)
-                    searchTextMap[last] = searchFieldState.text.toString()
-
                 // expand the whole chain
                 if (last is PanoRoute.Modal.CanExpand && last.isExpanded && route is PanoRoute.Modal.CanExpand)
                     backStack.add(route.copyExpanded())
@@ -395,7 +391,6 @@ fun PanoAppContent(
     fun replaceRoutes(syntheticBackStack: List<PanoRoute>) {
         tabIdxMap.clear()
         titlesMap.clear()
-        searchTextMap.clear()
 
         val oldSize = backStack.size
         backStack.addAll(syntheticBackStack)
@@ -438,18 +433,14 @@ fun PanoAppContent(
 
     LaunchedEffect(currentPanoRoute) {
         if (currentPanoRoute is PanoRoute.HasSearch) {
-            val searchText = searchTextMap[currentPanoRoute]
-
-            if (searchText != null)
-                searchFieldState.setTextAndPlaceCursorAtEnd(searchText)
-            else {
-                searchFieldState.clearText()
-                if (currentPanoRoute is PanoRoute.SearchRequestsFocus)
-                    searchFieldFocusRequester.requestFocus()
-                else
-                    searchFieldFocusRequester.freeFocus()
-            }
-        } else if (!hasTimePeriods) {
+            if (currentPanoRoute is PanoRoute.SearchRequestsFocus)
+                searchFieldFocusRequester.requestFocus()
+            else
+                searchFieldFocusRequester.freeFocus()
+        } else {
+            searchFieldState.clearText()
+        }
+        if (!hasTimePeriods) {
             lastTimePeriodDataResult = null
         }
     }
@@ -543,9 +534,7 @@ fun PanoAppContent(
     }
 
     key(locale) {
-        val needsRoundedCorners = PlatformStuff.isDesktop &&
-                !LocalThemeAttributes.current.blurMainWindow &&
-                MaterialTheme.colorScheme.background.alpha < 1f
+        val needsRoundedCorners = draggableWrapper != null
 
         val needsBackdropBlur = PlatformStuff.isDesktop &&
                 PlatformStuff.supportsBlur &&
@@ -584,57 +573,67 @@ fun PanoAppContent(
                         if (needsBackdropBlur) Modifier.blur(radius = Stuff.BLUR_BACKDROP_RADIUS_DP.dp) else Modifier
                     ),
                 topBar = {
+                    @Composable
+                    fun topAppBar(windowTitleActions: WindowTitleActions?) {
+                        PanoTopAppBar(
+                            titleContent = when {
+                                currentPanoRoute is PanoRoute.HasSearch -> TitleContent.Search(
+                                    searchFieldState,
+                                    searchFieldFocusRequester,
+                                    title
+                                )
+
+                                subTabData != null -> TitleContent.SubTabs(
+                                    subTabData.subTabs,
+                                    selectedSubTabId,
+                                    title
+                                )
+
+                                hasTimePeriods && lastTimePeriodDataResult != null ->
+                                    TitleContent.TimePeriods(lastTimePeriodDataResult!!)
+
+                                else -> TitleContent.Text(title)
+                            },
+                            subtitle = subtitle,
+                            //                            scrollBehavior = topBarScrollBehavior,
+                            scrollBehavior = null,
+                            innerPaddingStart = if (navigationType != PanoNavigationType.BOTTOM_NAVIGATION) navRailWidth else 0.dp,
+                            windowTitleActions = windowTitleActions,
+                            showBack = !PlatformStuff.isTv && backStack.count { !it.isModal() } > 1,
+                            resultEventBus = resultEventBus,
+                            onBack = ::goBack,
+                        )
+                    }
+
                     if (!needsTransparentBg) {
-                        draggableWrapper { windowTitleActions ->
-                            PanoTopAppBar(
-                                titleContent = when {
-                                    currentPanoRoute is PanoRoute.HasSearch -> TitleContent.Search(
-                                        searchFieldState,
-                                        searchFieldFocusRequester,
-                                        title
-                                    )
-
-                                    subTabData != null -> TitleContent.SubTabs(
-                                        subTabData.subTabs,
-                                        selectedSubTabId,
-                                        title
-                                    )
-
-                                    hasTimePeriods && lastTimePeriodDataResult != null ->
-                                        TitleContent.TimePeriods(lastTimePeriodDataResult!!)
-
-                                    else -> TitleContent.Text(title)
-                                },
-                                subtitle = subtitle,
-                                //                            scrollBehavior = topBarScrollBehavior,
-                                scrollBehavior = null,
-                                innerPaddingStart = if (navigationType != PanoNavigationType.BOTTOM_NAVIGATION) navRailWidth else 0.dp,
-                                windowTitleActions = windowTitleActions,
-                                showBack = !PlatformStuff.isTv && backStack.count { !it.isModal() } > 1,
-                                resultEventBus = resultEventBus,
-                                onBack = ::goBack,
-                            )
-                        }
+                        if (draggableWrapper != null)
+                            draggableWrapper { topAppBar(it) }
+                        else
+                            topAppBar(null)
                     }
                 },
                 bottomBar = {
                     val showBottomBar =
                         navigationType == PanoNavigationType.BOTTOM_NAVIGATION && tabData != null && currentUser != null
 
-                    if (currentUser != null) {
-                        AnimatedVisibility(
-                            visible = showBottomBar,
-                            enter = fadeIn() + expandVertically(expandFrom = Alignment.Top) + slideInVertically { it / 2 },
-                            exit = fadeOut() + shrinkVertically(shrinkTowards = Alignment.Top) + slideOutVertically { it / 2 },
-                        ) {
-                            // to show at least something in the animation
-                            var capturedTabData by remember { mutableStateOf(tabData.orEmpty()) }
+                    AnimatedVisibility(
+                        visible = showBottomBar,
+                        enter = fadeIn() + expandVertically(expandFrom = Alignment.Top) + slideInVertically { it / 2 },
+                        exit = fadeOut() + shrinkVertically(shrinkTowards = Alignment.Top) + slideOutVertically { it / 2 },
+                    ) {
+                        // to show at least something in the animation
+                        var capturedTabData by remember { mutableStateOf(tabData.orEmpty()) }
 
-                            LaunchedEffect(tabData) {
-                                if (tabData != null)
-                                    capturedTabData = tabData
-                            }
+                        LaunchedEffect(tabData) {
+                            if (tabData != null)
+                                capturedTabData = tabData
+                        }
 
+                        val user = currentUser?.takeIf {
+                            currentPanoRoute is PanoRoute.SelfHomePager || !it.isSelf
+                        }
+
+                        if (useAltBottomBar) {
                             PanoBottomAppBar(
                                 tabs = capturedTabData,
                                 selectedTabIdx = tabIdxMap.getOrDefault(
@@ -646,11 +645,27 @@ fun PanoAppContent(
                                         tabIdxMap[it] = pos
                                     }
                                 },
-                                user = currentUser,
-//                                profilePopupShown = profilePopupShown,
+                                user = user,
                                 onProfileClicked = {
                                     profilePopupShown = true
                                 },
+                            )
+                        } else {
+                            PanoBottomNavigationBar(
+                                tabs = capturedTabData,
+                                selectedTabIdx = tabIdxMap.getOrDefault(
+                                    currentPanoRoute,
+                                    0
+                                ),
+                                onTabClicked = { pos ->
+                                    (currentPanoRoute as? PanoRoute.HasTabs)?.let {
+                                        tabIdxMap[it] = pos
+                                    }
+                                },
+                                onProfileClicked = {
+                                    profilePopupShown = true
+                                },
+                                user = user,
                             )
                         }
                     }
@@ -753,7 +768,7 @@ fun PanoAppContent(
                                 ContentTransform {
                             val enterOffsetDenominator = 4
                             val exitOffsetDenominator = 4
-                            val scaleFactor = 0.95f
+                            val scaleFactor = 0.9f
                             val enterStiffness = Spring.StiffnessMediumLow
                             val exitStiffness = Spring.StiffnessHigh
 
@@ -800,20 +815,20 @@ fun PanoAppContent(
                                 singlePaneStrategy
                             ),
                             transitionSpec = {
-                                navTransition(AnimatedContentTransitionScope.SlideDirection.End)
+                                navTransition(AnimatedContentTransitionScope.SlideDirection.Start)
                             },
                             popTransitionSpec = {
                                 navTransition(AnimatedContentTransitionScope.SlideDirection.End)
 
                             },
                             predictivePopTransitionSpec = { edge ->
-                                val towards = when (edge) {
-                                    NavigationEvent.EDGE_LEFT -> AnimatedContentTransitionScope.SlideDirection.Right
-                                    NavigationEvent.EDGE_RIGHT -> AnimatedContentTransitionScope.SlideDirection.Left
-                                    else -> AnimatedContentTransitionScope.SlideDirection.End
-                                }
+//                                val towards = when (edge) {
+//                                    NavigationEvent.EDGE_LEFT -> AnimatedContentTransitionScope.SlideDirection.Right
+//                                    NavigationEvent.EDGE_RIGHT -> AnimatedContentTransitionScope.SlideDirection.Left
+//                                    else -> AnimatedContentTransitionScope.SlideDirection.End
+//                                }
 
-                                navTransition(towards)
+                                navTransition(AnimatedContentTransitionScope.SlideDirection.End)
                             },
                             entryProvider = PanoNavGraph.panoNavEntryProvider(
                                 onSetTitle = { route, title ->
@@ -842,7 +857,7 @@ fun PanoAppContent(
                                 mainViewModel = viewModel,
                             ),
                             modifier = Modifier
-                                .widthIn(max = 1020.dp)
+                                .widthIn(max = 960.dp)
                                 .padding(topPadding)
                                 .consumeWindowInsets(topPadding)
                                 .focusRequester(navContentFocusRequester)
@@ -882,7 +897,10 @@ fun PanoAppContent(
                 Box(
                     modifier = Modifier
                         .fillMaxSize()
-                        .padding(vertical = 27.dp, horizontal = 48.dp)
+                        .padding(
+                            vertical = verticalOverscanPadding(),
+                            horizontal = horizontalOverscanPadding()
+                        )
                         .border(1.dp, MaterialTheme.colorScheme.error)
                 )
             }
@@ -956,12 +974,14 @@ private fun PanoTopAppBar(
         containerColor = Color.Transparent
     )
 
-    val startPadding = if (showBack)
-        (innerPaddingStart - IconButtonDefaults.smallContainerSize().width + (2 * 4).dp)
-            .coerceAtLeast(0.dp)
-    // TopAppBarHorizontalPadding is 4.dp
-    else
-        innerPaddingStart
+    val startPadding = innerPaddingStart.let {
+        var padding = it
+        if (windowTitleActions != null)
+            padding += 24.dp
+        else if (showBack)
+            padding -= IconButtonDefaults.smallContainerSize().width + (2 * 4).dp // TopAppBarHorizontalPadding is 4.dp
+        padding.coerceAtLeast(0.dp)
+    }
 
     @Composable
     fun NavIconContent() {
@@ -1013,20 +1033,20 @@ private fun PanoTopAppBar(
             ) {
                 Icon(
                     imageVector = Icons.Minimize,
-                    contentDescription = stringResource(Res.string.minimize)
+                    contentDescription = stringResource(Res.string.minimize),
                 )
             }
 
-            IconButton(
-                shapes = IconButtonDefaults.shapes(),
-                onClick = windowTitleActions::maximizeRestore,
-                modifier = Modifier.pointerHoverIcon(PointerIcon.Default)
-            ) {
-                Icon(
-                    imageVector = Icons.Fullscreen,
-                    contentDescription = stringResource(Res.string.expand)
-                )
-            }
+//            IconButton(
+//                shapes = IconButtonDefaults.shapes(),
+//                onClick = windowTitleActions::maximizeRestore,
+//                modifier = Modifier.pointerHoverIcon(PointerIcon.Default)
+//            ) {
+//                Icon(
+//                    imageVector = Icons.Fullscreen,
+//                    contentDescription = stringResource(Res.string.expand)
+//                )
+//            }
 
             IconButton(
                 shapes = IconButtonDefaults.shapes(),
@@ -1045,6 +1065,13 @@ private fun PanoTopAppBar(
 
     TopAppBar(
         modifier = modifier,
+        contentPadding = TopAppBarDefaults.ContentPadding + PaddingValues(
+            top = (verticalOverscanPadding() - TopAppBarDefaults.ContentPadding.calculateTopPadding())
+                .coerceAtLeast(0.dp),
+            end = (horizontalOverscanPadding() -
+                    TopAppBarDefaults.ContentPadding.calculateEndPadding(LocalLayoutDirection.current)
+                    ).coerceAtLeast(0.dp),
+        ),
         titleHorizontalAlignment = Alignment.CenterHorizontally,
         subtitle = {
             // does not reserve space if null
@@ -1066,15 +1093,13 @@ private fun PanoTopAppBar(
 
             Box(
                 modifier = Modifier
-                    .padding(
-                        top = if (PlatformStuff.isTv) 8.dp else 0.dp, // for TV overscan
-                        start = startPadding
-                    )
+                    .padding(start = startPadding)
                     .graphicsLayer { this.alpha = alpha.value }
             ) {
                 when (titleContent) {
                     is TitleContent.Search -> {
                         var isEditable by rememberSaveable { mutableStateOf(!PlatformStuff.isTv) }
+                        val ime = LocalSoftwareKeyboardController.current
 
                         TextField(
                             state = titleContent.searchState,
@@ -1127,10 +1152,14 @@ private fun PanoTopAppBar(
                             } else
                                 null,
                             keyboardOptions = KeyboardOptions.Default.copy(
-                                imeAction = ImeAction.Search
+                                imeAction = ImeAction.Done,
                             ),
+                            onKeyboardAction = {
+                                ime?.hide()
+                            },
+                            contentPadding = TextFieldDefaults.contentPaddingWithLabel(), // has lower vertical padding
                             modifier = Modifier
-                                .padding(horizontal = horizontalOverscanPadding())
+                                .heightIn(min = 48.dp)
                                 .widthIn(max = 720.dp)
                                 .fillMaxWidth()
                                 .focusRequester(titleContent.focusRequester)
@@ -1229,9 +1258,7 @@ private fun PanoNavigationRail(
     user: UserCached?,
     modifier: Modifier = Modifier,
 ) {
-    val profileTab = if (tabs.contains(PanoTab.Profile) || user != null) PanoTab.Profile else null
-    val hasFooter = profileTab != null && user != null
-    val otherTabs = tabs.filter { it !is PanoTab.Profile }
+    val hasProfileButton = user != null
 
     val expandedByDefault = when (LocalNavigationType.current) {
         PanoNavigationType.PERMANENT_NAVIGATION_DRAWER -> true
@@ -1262,7 +1289,7 @@ private fun PanoNavigationRail(
         override fun Density.arrange(totalSize: Int, sizes: IntArray, outPositions: IntArray) {
             if (sizes.isEmpty()) return
 
-            if (hasFooter) {
+            if (hasProfileButton) {
                 val footerIndex = sizes.lastIndex
                 val footerSize = sizes[footerIndex]
 
@@ -1314,7 +1341,7 @@ private fun PanoNavigationRail(
                         resultEventBus = resultEventBus,
                         onNavigate = onNavigate,
                         modifier = Modifier
-                            .padding(start = horizontalOverscanPadding() / 2)
+                            .padding(start = (horizontalOverscanPadding() / 2).coerceAtLeast(16.dp))
                             .padding(16.dp)
                     )
                 }
@@ -1329,7 +1356,7 @@ private fun PanoNavigationRail(
             .widthIn(max = 220.dp)
     ) {
 
-        otherTabs.forEachIndexed { index, tabMetadata ->
+        tabs.forEachIndexed { index, tabMetadata ->
             WideNavigationRailItem(
                 selected = index == selectedTabIdx,
                 onClick = {
@@ -1354,7 +1381,7 @@ private fun PanoNavigationRail(
             )
         }
 
-        if (hasFooter) {
+        if (hasProfileButton) {
             Row {
                 WideNavigationRailItem(
                     selected = false,
@@ -1397,45 +1424,64 @@ private fun PanoBottomNavigationBar(
     selectedTabIdx: Int,
     onTabClicked: (pos: Int) -> Unit,
     onProfileClicked: () -> Unit,
-    user: UserCached,
+    user: UserCached?,
 ) {
-    ShortNavigationBar {
-        tabs.forEachIndexed { index, tabMetadata ->
+    val hasProfileButton = user != null
 
+    val containerColor = ShortNavigationBarDefaults.containerColor.makeOpaque()
+
+    ShortNavigationBar(
+        containerColor = containerColor,
+        windowInsets = ShortNavigationBarDefaults.windowInsets
+            .exclude(WindowInsets(bottom = 8.dp)), // 64 - 8 = 56
+    ) {
+        tabs.forEachIndexed { index, tabMetadata ->
             ShortNavigationBarItem(
                 selected = index == selectedTabIdx,
                 onClick = {
-                    if (tabMetadata is PanoTab.Profile) {
-                        onProfileClicked()
-                    } else if (index != selectedTabIdx) {
+                    if (index != selectedTabIdx) {
                         onTabClicked(index)
                     }
                 },
                 icon = {
-                    if (tabMetadata is PanoTab.Profile) {
-
-                        AvatarOrInitials(
-                            avatarUrl = user.largeImage,
-                            avatarName = user.name,
-                            modifier = Modifier
-                                .size(24.dp)
-                                .clip(CircleShape)
-                        )
-                    } else
-                        Icon(
-                            imageVector = tabMetadata.icon,
-                            contentDescription = stringResource(tabMetadata.titleRes)
-                        )
+                    Icon(
+                        imageVector = tabMetadata.icon,
+                        contentDescription = stringResource(tabMetadata.titleRes)
+                    )
                 },
                 label = {
                     Text(
-                        if (tabMetadata is PanoTab.Profile)
-                            if (Stuff.isInDemoMode)
-                                "me"
-                            else
-                                user.name
+                        text = stringResource(tabMetadata.titleRes),
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                        modifier = Modifier
+                            .widthIn(max = 100.dp)
+                    )
+                }
+            )
+        }
+
+        if (hasProfileButton) {
+            ShortNavigationBarItem(
+                selected = false,
+                onClick = {
+                    onProfileClicked()
+                },
+                icon = {
+                    AvatarOrInitials(
+                        avatarUrl = user.largeImage,
+                        avatarName = user.name,
+                        modifier = Modifier
+                            .size(24.dp)
+                            .clip(CircleShape)
+                    )
+                },
+                label = {
+                    Text(
+                        text = if (Stuff.isInDemoMode)
+                            "me"
                         else
-                            stringResource(tabMetadata.titleRes),
+                            user.name,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis,
                         modifier = Modifier
@@ -1453,19 +1499,16 @@ private fun PanoBottomAppBar(
     selectedTabIdx: Int,
     onTabClicked: (pos: Int) -> Unit,
     onProfileClicked: () -> Unit,
-    user: UserCached,
+    user: UserCached?,
 ) {
-    val profileTab = tabs.find { it is PanoTab.Profile }
-    val otherTabs = tabs.filter { it !is PanoTab.Profile }
+    val hasProfileButton = user != null
 
     val colors = FloatingToolbarDefaults.standardFloatingToolbarColors().let {
         if (it.toolbarContainerColor.alpha == 1f)
             it
         else
             it.copy(
-                toolbarContainerColor = it.toolbarContainerColor.copy(
-                    alpha = 1f
-                )
+                toolbarContainerColor = it.toolbarContainerColor.makeOpaque()
             )
     }
 
@@ -1512,8 +1555,8 @@ private fun PanoBottomAppBar(
             )
         ) {
             PanoToggleButtonGroup(
-                texts = otherTabs.map { stringResource(it.titleRes) },
-                icons = otherTabs.map { it.icon },
+                texts = tabs.map { stringResource(it.titleRes) },
+                icons = tabs.map { it.icon },
                 selectedIndex = selectedTabIdx,
                 horizontalArrangement = Arrangement.Start,
                 onSelected = onTabClicked,
@@ -1527,7 +1570,7 @@ private fun PanoBottomAppBar(
             )
         }
 
-        if (profileTab != null) {
+        if (hasProfileButton) {
             val shape = CircleShape
 
             FilledTonalIconButton(

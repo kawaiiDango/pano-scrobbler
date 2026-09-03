@@ -6,7 +6,6 @@ all_out
 api
 apps
 arrow_drop_down
-arrow_drop_down_circle
 arrow_upward
 auto_awesome_mosaic
 automation

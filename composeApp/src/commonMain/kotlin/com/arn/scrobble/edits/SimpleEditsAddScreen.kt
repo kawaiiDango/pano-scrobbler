@@ -344,14 +344,6 @@ fun SimpleEditsAddScreen(
                 labelStr = stringResource(Res.string.album_artist),
             )
 
-            TextFieldWrapper(
-                enabled = hasOrigAlbumArtist,
-                value = if (hasOrigAlbumArtist) origAlbumArtist else anythingText,
-                onValueChange = { origAlbumArtist = it },
-                onCheckedChange = { hasOrigAlbumArtist = it },
-                labelStr = stringResource(Res.string.album_artist),
-            )
-
             Text(
                 stringResource(Res.string.edit_example),
                 style = MaterialTheme.typography.bodyMedium,

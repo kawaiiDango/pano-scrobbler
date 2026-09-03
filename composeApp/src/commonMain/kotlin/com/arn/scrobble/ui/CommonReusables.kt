@@ -24,6 +24,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.text.input.TextFieldState
+import androidx.compose.foundation.text.input.setTextAndPlaceCursorAtEnd
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ButtonDefaults
@@ -64,22 +65,26 @@ import androidx.compose.material3.ripple
 import androidx.compose.material3.surfaceColorAtElevation
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusDirection
+import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.graphics.drawscope.DrawScope
+import androidx.compose.ui.graphics.drawscope.clipRect
+import androidx.compose.ui.graphics.drawscope.translate
 import androidx.compose.ui.graphics.painter.ColorPainter
-import androidx.compose.ui.graphics.vector.Group
+import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.graphics.vector.RenderVectorGroup
-import androidx.compose.ui.graphics.vector.VectorPainter
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.input.key.Key
 import androidx.compose.ui.input.key.KeyEventType
@@ -87,6 +92,7 @@ import androidx.compose.ui.input.key.isShiftPressed
 import androidx.compose.ui.input.key.key
 import androidx.compose.ui.input.key.onPreviewKeyEvent
 import androidx.compose.ui.input.key.type
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalLocaleList
 import androidx.compose.ui.platform.testTag
@@ -98,6 +104,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.LifecycleResumeEffect
+import co.touchlab.kermit.Logger
 import coil3.compose.AsyncImage
 import com.arn.scrobble.api.AccountType
 import com.arn.scrobble.api.lastfm.ApiException
@@ -121,6 +129,9 @@ import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff
 import com.arn.scrobble.utils.Stuff.collectAsStateWithInitialValue
 import com.arn.scrobble.utils.redactedMessage
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import kotlinx.serialization.SerializationException
 import okhttp3.HttpUrl.Companion.toHttpUrl
 import org.jetbrains.compose.resources.StringResource
@@ -148,6 +159,7 @@ import pano_scrobbler.composeapp.generated.resources.yes
 import java.util.Calendar
 import java.util.Locale
 import kotlin.math.abs
+import kotlin.time.Duration.Companion.milliseconds
 
 @Composable
 fun AlertDialogOk(
@@ -407,10 +419,36 @@ fun TextWithIcon(
 @Composable
 fun SearchEffect(
     searchFieldState: TextFieldState,
+    initialText: String = "",
+    savedState: MutableState<String> = rememberSaveable { mutableStateOf(initialText) },
     onSearch: (String) -> Unit,
 ) {
-    LaunchedEffect(searchFieldState.text) {
-        onSearch(searchFieldState.text.toString())
+    var restored by remember { mutableStateOf(false) }
+    val scope = rememberCoroutineScope()
+
+    LifecycleResumeEffect(searchFieldState.text) {
+        val job: Job?
+        if (!restored) {
+            searchFieldState.setTextAndPlaceCursorAtEnd(savedState.value)
+            restored = true
+            onSearch(savedState.value)
+            job = null
+        } else {
+            job = scope.launch {
+                delay(500.milliseconds)
+
+                val text = searchFieldState.text.toString()
+                if (savedState.value != text) {
+                    Logger.d { "onSearch $text" }
+                    savedState.value = text
+                    onSearch(text)
+                }
+            }
+        }
+
+        onPauseOrDispose {
+            job?.cancel()
+        }
     }
 }
 
@@ -1007,17 +1045,20 @@ fun InlineCheckButton(
 @Composable
 fun Modifier.shapedClickable(
     shape: Shape = MaterialTheme.shapes.medium,
-    enabled: Boolean = true,
+    clickableAdded: Boolean = true,
     onClick: () -> Unit,
 ) = clip(shape)
-    .clickable(
-        interactionSource = null,
-        enabled = enabled,
-        onClick = onClick,
-        role = Role.Button,
-        indication = ripple(
-            focusRingShape = shape
-        )
+    .then(
+        if (clickableAdded)
+            Modifier.clickable(
+                interactionSource = null,
+                onClick = onClick,
+                role = Role.Button,
+                indication = ripple(
+                    focusRingShape = shape
+                )
+            )
+        else Modifier
     )
 
 @Composable
@@ -1029,28 +1070,18 @@ fun Modifier.backgroundForShimmer(
 else
     background(MaterialTheme.colorScheme.surfaceContainerHighest, shape)
 
-@Composable
-fun horizontalOverscanPadding(): Dp {
-    val navigationType = LocalNavigationType.current
-    return when (navigationType) {
-        PanoNavigationType.BOTTOM_NAVIGATION -> 16.dp
-        PanoNavigationType.NAVIGATION_RAIL -> 24.dp
-        PanoNavigationType.PERMANENT_NAVIGATION_DRAWER -> 48.dp
-    }
-}
+fun horizontalOverscanPadding(): Dp =
+    if (PlatformStuff.isTv)
+        48.dp
+    else
+        0.dp
 
-@Composable
-fun verticalOverscanPadding(): Dp {
-    val navigationType = LocalNavigationType.current
-    return when (navigationType) {
-        PanoNavigationType.BOTTOM_NAVIGATION,
-        PanoNavigationType.NAVIGATION_RAIL,
-            -> if (PlatformStuff.isDesktop || PlatformStuff.isTv) 27.dp
-        else 0.dp
 
-        PanoNavigationType.PERMANENT_NAVIGATION_DRAWER -> 27.dp
-    }
-}
+fun verticalOverscanPadding() =
+    if (PlatformStuff.isTv)
+        27.dp
+    else
+        0.dp
 
 @Composable
 fun placeholderPainter(): ColorPainter {
@@ -1058,42 +1089,44 @@ fun placeholderPainter(): ColorPainter {
     return remember { ColorPainter(color.copy(alpha = 0.5f)) }
 }
 
+private class ClippedCenteredPainter(
+    private val painter: Painter,
+    private val clippedSize: Size,
+) : Painter() {
+
+    override val intrinsicSize: Size
+        get() = clippedSize
+
+    override fun DrawScope.onDraw() {
+        val originalSize = painter.intrinsicSize
+        val dx = (size.width - originalSize.width) / 2f
+        val dy = (size.height - originalSize.height) / 2f
+
+        clipRect {
+            translate(left = dx, top = dy) {
+                with(painter) {
+                    draw(originalSize)
+                }
+            }
+        }
+    }
+}
+
 @Composable
-fun combineImageVectors(
-    main: ImageVector,
-    secondary: ImageVector,
-): VectorPainter {
-    val mainScaleFactor = 0.7f
-    val secondaryScaleFactor = 0.5f
+fun rememberClippedPainter(
+    imageVector: ImageVector,
+    width: Dp,
+    height: Dp = width,
+): Painter {
+    val vectorPainter = rememberVectorPainter(imageVector)
+    val density = LocalDensity.current
 
-    return rememberVectorPainter(
-        defaultWidth = main.defaultWidth,
-        defaultHeight = main.defaultHeight,
-        viewportWidth = main.viewportWidth,
-        viewportHeight = main.viewportHeight,
-        name = main.name,
-        tintColor = main.tintColor,
-        tintBlendMode = main.tintBlendMode,
-        autoMirror = main.autoMirror
-    ) { viewportWidth, viewportHeight ->
-        Group(
-            name = main.root.name + "_main",
-            scaleX = mainScaleFactor,
-            scaleY = mainScaleFactor,
-            translationY = (viewportWidth - main.viewportWidth * mainScaleFactor) / 2,
-        ) {
-            RenderVectorGroup(group = main.root)
-        }
+    val clippedSizePx = remember(width, height, density) {
+        with(density) { Size(width.toPx(), height.toPx()) }
+    }
 
-        Group(
-            name = secondary.root.name + "_secondary",
-            scaleX = secondaryScaleFactor,
-            scaleY = secondaryScaleFactor,
-            translationX = (viewportWidth - secondary.viewportWidth * secondaryScaleFactor),
-            translationY = (viewportHeight - secondary.viewportHeight * secondaryScaleFactor),
-        ) {
-            RenderVectorGroup(group = secondary.root)
-        }
+    return remember(vectorPainter, clippedSizePx) {
+        ClippedCenteredPainter(vectorPainter, clippedSizePx)
     }
 }
 
@@ -1191,7 +1224,7 @@ fun ListItemDefaults.myCheckableItemColors() = ListItemDefaults.colors().let {
 @Composable
 fun ListItemDefaults.myTogglableHeaderItemColors(): ListItemColors {
     val surface =
-        MaterialTheme.colorScheme.surfaceColorAtElevation(LocalAbsoluteTonalElevation.current + 1.dp)
+        MaterialTheme.colorScheme.surfaceColorAtElevation(LocalAbsoluteTonalElevation.current + 2.dp)
 
     return ListItemDefaults.colors(
         contentColor = MaterialTheme.colorScheme.primary,
@@ -1216,11 +1249,10 @@ fun ListItemDefaults.myBigImageShapes() = ListItemDefaults.shapes(
 val MenuDefaults.myGroupStandardContainerColor: Color
     @Composable
     get() {
-        return MenuDefaults.groupStandardContainerColor.let {
-            if (it.alpha < 1f) it.copy(alpha = 1f) else it
-        }
+        return MenuDefaults.groupStandardContainerColor.makeOpaque()
     }
 
+fun Color.makeOpaque() = if (alpha < 1f) copy(alpha = 1f) else this
 
 @Composable
 expect fun ApplyWindowBlur(behind: Int, bg: Int)

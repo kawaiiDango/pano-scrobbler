@@ -136,6 +136,7 @@ fun ProfilePopup(
                 drawerData = drawerData,
                 onDismiss = onDismiss,
                 profileOptionsShown = profileOptionsShown,
+                onNavigate = onNavigate,
                 modifier = Modifier
                     .fillMaxWidth()
             ) {
@@ -176,7 +177,8 @@ fun ProfileDialogContent(
             user = user,
             drawerData = drawerData,
             onDismiss = onDismiss,
-            profileOptionsShown = profileOptionsShown
+            profileOptionsShown = profileOptionsShown,
+            onNavigate = onNavigate
         ) {
             if (user.isSelf) {
                 ProfileTopLevelNav(
@@ -328,6 +330,7 @@ private fun ColumnScope.ProfileTexts(
     drawerData: DrawerData,
     profileOptionsShown: Boolean,
     onDismiss: () -> Unit,
+    onNavigate: (PanoRoute) -> Unit,
     modifier: Modifier = Modifier,
     otherContent: @Composable ColumnScope.() -> Unit,
 ) {
@@ -359,6 +362,7 @@ private fun ColumnScope.ProfileTexts(
                 currentUser = user,
                 accountType = currentAccountType,
                 onDismiss = onDismiss,
+                onNavigate = onNavigate,
             )
         } else {
             val textStyle = MaterialTheme.typography.bodyMediumEmphasized
@@ -420,6 +424,7 @@ private fun ProfileOptions(
     currentUser: UserCached?,
     accountType: AccountType?,
     onDismiss: () -> Unit,
+    onNavigate: (PanoRoute) -> Unit,
     modifier: Modifier = Modifier
 ) {
     currentUser ?: return
@@ -435,7 +440,18 @@ private fun ProfileOptions(
         modifier = modifier
             .width(IntrinsicSize.Max)
     ) {
-        if (!PlatformStuff.isTv) {
+        if (PlatformStuff.isTv) {
+            ButtonWithIcon(
+                icon = Icons.AutoMirrored.Help,
+                text = stringResource(Res.string.help),
+                onClick = {
+                    onDismiss()
+                    onNavigate(PanoRoute.Help())
+                },
+                modifier = Modifier
+                    .align(Alignment.CenterHorizontally)
+            )
+        } else {
             ProfileLinks(
                 user = currentUser,
                 accountType = accountType,

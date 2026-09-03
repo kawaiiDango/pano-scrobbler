@@ -3,10 +3,11 @@ package com.arn.scrobble.search
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.text.input.TextFieldState
-import androidx.compose.foundation.text.input.setTextAndPlaceCursorAtEnd
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -28,8 +29,6 @@ import com.arn.scrobble.api.lastfm.Track
 import com.arn.scrobble.api.spotify.AlbumItem
 import com.arn.scrobble.api.spotify.ArtistItem
 import com.arn.scrobble.api.spotify.TrackItem
-import com.arn.scrobble.icons.Icons
-import com.arn.scrobble.icons.Search
 import com.arn.scrobble.imageloader.MusicEntryImageReq
 import com.arn.scrobble.imageloader.PanoImageLoader
 import com.arn.scrobble.ui.AlertDialogOk
@@ -40,11 +39,9 @@ import com.arn.scrobble.ui.FileType
 import com.arn.scrobble.ui.MusicEntryListItem
 import com.arn.scrobble.ui.PanoLazyColumn
 import com.arn.scrobble.ui.SearchEffect
-import com.arn.scrobble.ui.SimpleHeaderItem
 import com.arn.scrobble.ui.emptyText
 import com.arn.scrobble.ui.shimmerWindowBounds
 import com.arn.scrobble.utils.PlatformStuff
-import com.arn.scrobble.utils.Stuff
 import com.arn.scrobble.utils.Stuff.collectAsStateWithInitialValue
 import com.arn.scrobble.utils.redactedMessage
 import kotlinx.coroutines.launch
@@ -87,12 +84,6 @@ fun ImageSearchScreen(
         onBack()
     }
 
-    val printableEntryName = if (musicEntry is Album) {
-        Stuff.formatBigHyphen(musicEntry.artist!!.name, musicEntry.name)
-    } else {
-        musicEntry.name
-    }
-
     val searchResults by viewModel.searchResultsWithImages.collectAsStateWithLifecycle(null)
 
     val searchError by viewModel.searchError.collectAsStateWithLifecycle()
@@ -108,17 +99,14 @@ fun ImageSearchScreen(
         viewModel.setMusicEntries(musicEntry, originalMusicEntry)
     }
 
-    LaunchedEffect(Unit) {
-        searchFieldState.setTextAndPlaceCursorAtEnd(
-            if (musicEntry is Album)
+    if (useSpotify) {
+        SearchEffect(
+            searchFieldState,
+            initialText = if (musicEntry is Album)
                 musicEntry.artist!!.name + " " + musicEntry.name
             else
                 musicEntry.name
-        )
-    }
-
-    if (useSpotify) {
-        SearchEffect(searchFieldState) {
+        ) {
             viewModel.search(it)
         }
     }
@@ -162,10 +150,11 @@ fun ImageSearchScreen(
 
         if (searchResults?.isNotEmpty() == true) {
             item("results_header") {
-                SimpleHeaderItem(
+                Text(
                     text = stringResource(Res.string.from, stringResource(Res.string.spotify)),
-                    icon = Icons.Search,
-                    modifier = Modifier.fillMaxWidth()
+                    style = MaterialTheme.typography.titleMedium,
+                    color = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier.padding(8.dp)
                 )
             }
 

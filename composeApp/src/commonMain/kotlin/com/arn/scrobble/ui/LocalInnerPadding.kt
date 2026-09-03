@@ -56,19 +56,20 @@ fun panoContentPadding(
 //                    safeDrawingPaddingValues.calculateBottomPadding() +
                     if (mayHaveBottomFab && LocalNavigationType.current == PanoNavigationType.BOTTOM_NAVIGATION) 72.dp else 0.dp
                 ),
-                verticalOverscanPadding()
+                verticalOverscanPadding() + 16.dp
             )
         else 0.dp,
         start = if (sides)
             max(
                 innerPadding.calculateStartPadding(LocalLayoutDirection.current),
-                horizontalOverscanPadding()
+                // TVs have a nav rail at the start
+                16.dp
             )
         else 0.dp,
         end = if (sides)
             max(
                 innerPadding.calculateEndPadding(LocalLayoutDirection.current),
-                horizontalOverscanPadding()
+                horizontalOverscanPadding() + 16.dp
             )
         else 0.dp,
     )

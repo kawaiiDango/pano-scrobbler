@@ -18,6 +18,7 @@ import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
@@ -52,6 +53,7 @@ import com.arn.scrobble.navigation.TimePickerResult
 import com.arn.scrobble.themes.DayNightMode
 import com.arn.scrobble.ui.PanoDropdownMenu
 import com.arn.scrobble.ui.PanoLazyColumn
+import com.arn.scrobble.ui.SearchEffect
 import com.arn.scrobble.ui.SimpleHeaderItem
 import com.arn.scrobble.ui.accountTypeLabel
 import com.arn.scrobble.ui.accountTypeStringRes
@@ -154,7 +156,6 @@ import pano_scrobbler.composeapp.generated.resources.when_not_using
 import java.util.Calendar
 import java.util.Locale
 import kotlin.time.Duration.Companion.hours
-import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.Duration.Companion.minutes
 import kotlin.time.Duration.Companion.seconds
 
@@ -238,14 +239,17 @@ fun PrefsScreen(
 
     val maybeActivity = getActivityOrNull()
 
-    val searchActive = searchFieldState.text.isNotBlank()
+    var searchText by rememberSaveable { mutableStateOf(searchFieldState.text) }
+    val searchActive = searchText.isNotBlank()
     val keysToTitleRes = remember { mutableMapOf<String, TitleStringResource>() }
     var filteredKeys by remember { mutableStateOf(setOf<String>()) }
     var localeChanged by remember { mutableStateOf(false) }
 
-    LaunchedEffect(searchFieldState.text, localeChanged) {
-        delay(500.milliseconds)
+    SearchEffect(searchFieldState) {
+        searchText = it
+    }
 
+    LaunchedEffect(searchText, localeChanged) {
         if (searchActive) {
             val fk = mutableSetOf<String>()
             var prevHeaderKey: String? = null
@@ -269,7 +273,9 @@ fun PrefsScreen(
                         }
                     }
 
-                    if (v.string?.contains(searchFieldState.text, ignoreCase = true) == true) {
+                    if (v.string?.contains(searchText, ignoreCase = true) == true ||
+                        k.split("_").any { it.contains(searchText, ignoreCase = true) }
+                    ) {
                         if (prevHeaderKey != null) {
                             fk += prevHeaderKey
                             prevHeaderKey = null
@@ -380,7 +386,7 @@ fun PrefsScreen(
 //                onNavigate
 //            )
 
-        filteredItem(MainPrefs::scrobblerEnabled.name, Res.string.pref_master, null) { title ->
+        filteredItem("scrobble_enabled", Res.string.pref_master, null) { title ->
             val scope = rememberCoroutineScope()
             val nlsEnabled = scrobblerState != ScrobblerState.NLSDisabled
             var dropdownShown by remember { mutableStateOf(false) }
@@ -484,27 +490,30 @@ fun PrefsScreen(
                         )
                     }
 
-                    item(
-                        leadingIcon = {
-                            Icon(
-                                imageVector = Icons.Timer,
-                                contentDescription = null
-                            )
-                        },
-                        text = {
-                            Text(
-                                stringResource(Res.string.pause_for) + ": " + stringResource(Res.string.charts_custom)
-                            )
-                        },
-                        onClick = {
-                            dropdownShown = false
+                    if (!PlatformStuff.isTv) {
+                        // the time picker has trapped focus issues on TV
+                        item(
+                            leadingIcon = {
+                                Icon(
+                                    imageVector = Icons.Timer,
+                                    contentDescription = null
+                                )
+                            },
+                            text = {
+                                Text(
+                                    stringResource(Res.string.pause_for) + ": " + stringResource(Res.string.charts_custom)
+                                )
+                            },
+                            onClick = {
+                                dropdownShown = false
 
-                            val (h, m) = Calendar.getInstance().let {
-                                it.get(Calendar.HOUR_OF_DAY) to it.get(Calendar.MINUTE)
+                                val (h, m) = Calendar.getInstance().let {
+                                    it.get(Calendar.HOUR_OF_DAY) to it.get(Calendar.MINUTE)
+                                }
+                                onNavigate(PanoRoute.Modal.TimePicker(h, m))
                             }
-                            onNavigate(PanoRoute.Modal.TimePicker(h, m))
-                        }
-                    )
+                        )
+                    }
                 }
             }
         }
@@ -515,7 +524,7 @@ fun PrefsScreen(
 
         PlatformSpecificPrefs.prefAddToAppLauncher(::filteredItem)
 
-        filteredItem(MainPrefs::allowedPackages.name, Res.string.pref_scrobble_from) { title ->
+        filteredItem("allowed_apps", Res.string.pref_scrobble_from) { title ->
             Column(Modifier.fillMaxWidth()) {
                 AppIconsPref(
                     packageNames = allowedPackages,
@@ -539,7 +548,7 @@ fun PrefsScreen(
         }
 
         if (!PlatformStuff.isTv && !PlatformStuff.isDesktop) {
-            filteredItem(MainPrefs::autoDetectApps.name, Res.string.pref_auto_detect) { title ->
+            filteredItem("auto_detect", Res.string.pref_auto_detect) { title ->
                 val notiEnabled =
                     remember { PanoNotifications.isNotiChannelEnabled(Stuff.CHANNEL_NOTI_NEW_APP) }
 
@@ -555,7 +564,7 @@ fun PrefsScreen(
 
         if (PlatformStuff.supportsSpotifyRemote) {
             filteredItem(
-                MainPrefs::scrobbleSpotifyRemoteP.name,
+                "spotify_remote",
                 Res.string.pref_spotify_remote
             ) { title ->
                 SwitchPref(
@@ -567,7 +576,7 @@ fun PrefsScreen(
         }
 
         filteredItem(
-            MainPrefs::extractFirstArtistPackages.name,
+            "first_artist",
             Res.string.first_artist
         ) { title ->
             AppIconsPref(
@@ -587,7 +596,7 @@ fun PrefsScreen(
             )
         }
 
-        filteredItem(MainPrefs::submitNowPlaying.name, Res.string.pref_now_playing) { title ->
+        filteredItem("now_playing", Res.string.pref_now_playing) { title ->
             SwitchPref(
                 text = title,
                 value = submitNowPlaying,
@@ -595,7 +604,7 @@ fun PrefsScreen(
             )
         }
 
-        filteredItem(MainPrefs::minDurationSecsP.name, Res.string.min_track_duration) { title ->
+        filteredItem("minimum_duration", Res.string.min_track_duration) { title ->
             SliderPref(
                 text = title,
                 value = minDurationSecs.toFloat(),
@@ -614,7 +623,7 @@ fun PrefsScreen(
 
         filteredHeader("delay", Res.string.pref_delay, Icons.HourglassEmpty)
 
-        filteredItem(MainPrefs::delayPercentP.name, Res.string.pref_delay_per) { title ->
+        filteredItem("delay_percent", Res.string.pref_delay_per) { title ->
             SliderPref(
                 text = title,
                 value = delayPercent.toFloat(),
@@ -627,7 +636,7 @@ fun PrefsScreen(
             )
         }
 
-        filteredItem(MainPrefs::delaySecsP.name, Res.string.pref_delay_mins) { title ->
+        filteredItem("delay_minutes", Res.string.pref_delay_mins) { title ->
             Column(Modifier.fillMaxWidth()) {
                 SliderPref(
                     text = title,
@@ -683,7 +692,7 @@ fun PrefsScreen(
 
         filteredHeader("personalization", Res.string.pref_personalization, Icons.Person)
 
-        filteredItem(MainPrefs::themeName.name, Res.string.pref_themes) { title ->
+        filteredItem("themes", Res.string.pref_themes) { title ->
             TextPref(
                 text = title,
                 onClick = {
@@ -694,7 +703,7 @@ fun PrefsScreen(
 
         if (PlatformStuff.isDesktop) {
             filteredItem(
-                MainPrefs::trayIconTheme.name,
+                "tray_icon_theme",
                 Res.string.pref_tray_icon_theme
             ) { title ->
                 DropdownPref(
@@ -718,7 +727,7 @@ fun PrefsScreen(
         PlatformSpecificPrefs.prefChartsWidget(::filteredItem)
 
         filteredItem(
-            MainPrefs::showScrobbleSources.name,
+            "scrobble_app",
             Res.string.pref_show_scrobble_sources
         ) { title ->
             SwitchPref(
@@ -732,7 +741,7 @@ fun PrefsScreen(
 
         if (!PlatformStuff.isDesktop) {
             filteredItem(
-                MainPrefs::searchInSource.name,
+                "search_app",
                 Res.string.pref_search_in_source
             ) { title ->
                 SwitchPref(
@@ -748,7 +757,7 @@ fun PrefsScreen(
 
         if (!PlatformStuff.isTv) {
             filteredItem(
-                MainPrefs::searchUrlTemplate.name,
+                "search_url",
                 Res.string.pref_search_url_template
             ) { title ->
                 TextPref(
@@ -763,7 +772,7 @@ fun PrefsScreen(
 
         if (!PlatformStuff.isTv && !PlatformStuff.isDesktop) {
             filteredItem(
-                MainPrefs::linkHeartButtonToRating.name,
+                "heart_button",
                 Res.string.pref_link_heart_button_rating
             ) { title ->
                 SwitchPref(
@@ -777,7 +786,7 @@ fun PrefsScreen(
         }
 
         filteredItem(
-            MainPrefs::firstDayOfWeek.name,
+            "week_day",
             Res.string.pref_first_day_of_week
         ) { title ->
             val autoString = stringResource(Res.string.auto)
@@ -815,7 +824,7 @@ fun PrefsScreen(
 
         filteredHeader("additional_metatadata", Res.string.external_metadata, Icons.Api)
 
-        filteredItem(MainPrefs::lastfmApiAlways.name, Res.string.lastfm) { title ->
+        filteredItem("lastfm", Res.string.lastfm) { title ->
             SwitchPref(
                 text = title,
                 value = lastfmApiAlways,
@@ -828,7 +837,7 @@ fun PrefsScreen(
         }
 
         filteredItem(
-            MainPrefs::fetchAlbum.name,
+            "fetch_missing_album",
             Res.string.pref_fetch_missing_album,
             Res.string.cache
         ) { title ->
@@ -843,7 +852,7 @@ fun PrefsScreen(
             )
         }
 
-        filteredItem(MainPrefs::spotifyApi.name, Res.string.spotify) { title ->
+        filteredItem("spotify", Res.string.spotify) { title ->
             SwitchPref(
                 text = title,
                 summary = stringResource(Res.string.search) + ": " +
@@ -855,7 +864,7 @@ fun PrefsScreen(
         }
 
         filteredItem(
-            MainPrefs::spotifyCountryP.name,
+            "spotify_country",
             Res.string.country_for_api,
             Res.string.spotify
         ) { title ->
@@ -872,7 +881,7 @@ fun PrefsScreen(
         }
 
         filteredItem(
-            MainPrefs::spotifyArtistSearchApproximate.name,
+            "spotify_search_approximate",
             Res.string.pref_spotify_artist_search_approximate
         ) { title ->
             SwitchPref(
@@ -889,7 +898,7 @@ fun PrefsScreen(
 
         filteredHeader("languages", Res.string.pref_locale, Icons.Translate)
 
-        filteredItem(LocaleUtils::locale.name, Res.string.pref_locale) { title ->
+        filteredItem("languages_locales", Res.string.pref_locale) { title ->
             val autoString = stringResource(Res.string.auto)
 
             val localesMap = remember(locale) {
@@ -922,7 +931,7 @@ fun PrefsScreen(
             )
         }
 
-        filteredItem("translate_credits", Res.string.pref_translate_credits) { title ->
+        filteredItem("translation_credits", Res.string.pref_translate_credits) { title ->
             TextPref(
                 text = title,
                 onClick = {
@@ -933,7 +942,7 @@ fun PrefsScreen(
 
         filteredHeader("imexport", Res.string.pref_imexport, Icons.SwapVert)
 
-        filteredItem("export", Res.string.pref_export) { title ->
+        filteredItem("export_backup", Res.string.pref_export) { title ->
             TextPref(
                 text = title,
                 summary = stringResource(Res.string.pref_export_desc),
@@ -943,7 +952,7 @@ fun PrefsScreen(
             )
         }
 
-        filteredItem("import", Res.string.pref_import) { title ->
+        filteredItem("import_restore", Res.string.pref_import) { title ->
             TextPref(
                 text = title,
                 onClick = {
@@ -974,7 +983,7 @@ fun PrefsScreen(
                 }
             }
 
-        filteredItem(key = "delete_account", Res.string.delete_account) { title ->
+        filteredItem(key = "delete", Res.string.delete_account) { title ->
             TextPref(
                 text = title,
                 onClick = {
@@ -987,7 +996,7 @@ fun PrefsScreen(
 
         if (!PlatformStuff.isDesktop && !PlatformStuff.isTv) {
             filteredItem(
-                MainPrefs::preventDuplicateAmbientScrobbles.name,
+                "duplicate_ambient",
                 Res.string.pref_prevent_duplicate_ambient_scrobbles
             ) { title ->
                 SwitchPref(
@@ -998,7 +1007,7 @@ fun PrefsScreen(
             }
         }
 
-        filteredItem(MainPrefs::proxy.name, Res.string.proxy) { title ->
+        filteredItem("proxy", Res.string.proxy) { title ->
             val proxyText = proxy.host + ":" + proxy.port
 
             TextPref(
@@ -1017,7 +1026,7 @@ fun PrefsScreen(
         PlatformSpecificPrefs.updateCheck(::filteredItem, checkForUpdates, updateProgress)
 
         if (!PlatformStuff.isTv) {
-            filteredItem("automation", Res.string.automation) { title ->
+            filteredItem("automation_tasker", Res.string.automation) { title ->
                 TextPref(
                     text = title,
                     onClick = {
@@ -1030,7 +1039,7 @@ fun PrefsScreen(
 
         if (CrashReporterConfig.isAvailable) {
             filteredItem(
-                "crash_reporter",
+                "crash_crashlytics",
                 Res.string.pref_crashlytics_enabled
             ) { title ->
                 SwitchPref(
@@ -1047,7 +1056,7 @@ fun PrefsScreen(
 
         filteredHeader("about", Res.string.pref_about, Icons.Info)
 
-        filteredItem(key = "oss_credits", Res.string.pref_oss_credits) { title ->
+        filteredItem(key = "oss_credits_licenses", Res.string.pref_oss_credits) { title ->
             TextPref(
                 text = title,
                 onClick = {
@@ -1066,7 +1075,7 @@ fun PrefsScreen(
         }
 
         filteredItem(
-            key = "github_link",
+            key = "about_version",
             Res.string.also_available_on,
             if (PlatformStuff.isDesktop)
                 Res.string.android

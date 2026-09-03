@@ -9,7 +9,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
@@ -19,17 +18,8 @@ class ArtistsWithDelimitersVM : ViewModel() {
     private val dao = PanoDb.db.getArtistsWithDelimitersDao()
     private val _searchTerm = MutableStateFlow("")
 
-    private var inited = false
     private var count = 0
     val artistsFiltered = _searchTerm
-        .debounce {
-            if (!inited) {
-                inited = true
-                0
-            } else {
-                500L
-            }
-        }
         .flatMapLatest { term ->
             withContext(Dispatchers.IO) {
                 if (term.isBlank())
@@ -45,14 +35,6 @@ class ArtistsWithDelimitersVM : ViewModel() {
         )
 
     val searchTermToFirstArtist = _searchTerm
-        .debounce {
-            if (!inited) {
-                inited = true
-                0
-            } else {
-                500L
-            }
-        }
         .combine(dao.allFlow()) { term, all ->
             term to FirstArtistExtractor.extract(
                 artistString = term,

@@ -4,8 +4,10 @@
   just for the tray menu. Also makes the app start significantly faster when minimized.
 - Improved reliability of fetching album art for Discord Rich Presence
 - The Windows installer is now 64-bit
+- Uses an outlined focus indicator for tab navigation or DPAD navigation on TV
 - Pause scrobbling until a specific time
 - The UI wastes less vertical space
 - Very long dialogs can now expand to a non-dialog screen
+- Opens locale-specific links for last.fm
 - Bug fixes
 - Translation updates by the translators on Crowdin

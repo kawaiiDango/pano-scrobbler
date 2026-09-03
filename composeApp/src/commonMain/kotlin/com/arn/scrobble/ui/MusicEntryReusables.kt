@@ -24,7 +24,6 @@ import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.ZeroCornerSize
 import androidx.compose.material3.ButtonGroupDefaults
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
@@ -104,8 +103,8 @@ import com.arn.scrobble.icons.KeyboardDoubleArrowUp
 import com.arn.scrobble.icons.Mic
 import com.arn.scrobble.icons.MoreVert
 import com.arn.scrobble.icons.PlayArrow
+import com.arn.scrobble.icons.automirrored.ArrowRight
 import com.arn.scrobble.icons.automirrored.ArrowRightAlt
-import com.arn.scrobble.icons.automirrored.KeyboardArrowRight
 import com.arn.scrobble.icons.automirrored.List
 import com.arn.scrobble.icons.filled.Favorite
 import com.arn.scrobble.imageloader.MusicEntryImageReq
@@ -239,14 +238,14 @@ fun MusicEntryListItem(
                     Modifier
                         .shapedClickable(
                             shape = artShape,
-                            enabled = !forShimmer,
+                            clickableAdded = !forShimmer,
                             onClick = onEntryClick
                         )
                 else
                     Modifier
             )
             .padding(
-                horizontal = 8.dp,
+                horizontal = 4.dp,
                 vertical = if (!fixedImageHeight ||
                     listOfNotNull(topText, secondText, thirdText, progress).size <= 3
                 )
@@ -314,7 +313,7 @@ fun MusicEntryListItem(
                             if (onImageClick != null)
                                 Modifier.shapedClickable(
                                     shape = artShape,
-                                    enabled = !forShimmer,
+                                    clickableAdded = !forShimmer,
                                     onClick = onImageClick,
                                 )
                             else
@@ -377,7 +376,7 @@ fun MusicEntryListItem(
                                 Modifier
                                     .shapedClickable(
                                         shape = MaterialTheme.shapes.large,
-                                        enabled = !forShimmer,
+                                        clickableAdded = !forShimmer,
                                         onClick = onEntryClick
                                     )
                             else
@@ -712,20 +711,22 @@ fun ExpandableHeaderItem(
             )
         },
         leadingContent = {
-            Surface(
-                tonalElevation = 6.dp,
-                shape = CircleShape,
-                modifier = Modifier
-                    .fillMaxHeight()
+            Row(
+                verticalAlignment = Alignment.Bottom,
             ) {
                 Icon(
-                    imageVector = Icons.AutoMirrored.KeyboardArrowRight,
+                    imageVector = Icons.AutoMirrored.ArrowRight,
                     contentDescription = if (expanded && canExpand)
                         stringResource(Res.string.collapse)
                     else
                         stringResource(Res.string.expand),
                     modifier = Modifier
                         .rotate(rotationState)
+                )
+
+                Icon(
+                    imageVector = icon,
+                    contentDescription = null,
                 )
             }
         },
@@ -746,13 +747,6 @@ fun ExpandableHeaderItem(
                     }
                 }
             }
-
-            Icon(
-                imageVector = icon,
-                contentDescription = null,
-                modifier = Modifier
-                    .padding(end = 8.dp)
-            )
 
             Text(
                 text = text,
@@ -787,6 +781,8 @@ fun HeaderItemWithAction(
             Icon(
                 imageVector = trailingIcon,
                 contentDescription = trailingIconContentDescription,
+                modifier = Modifier
+                    .padding(end = horizontalOverscanPadding())
             )
         },
         modifier = modifier

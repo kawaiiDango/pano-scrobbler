@@ -26,7 +26,6 @@ import com.arn.scrobble.pref.SliderPref
 import com.arn.scrobble.pref.SwitchPref
 import com.arn.scrobble.ui.HighlighterVisualTransformation
 import com.arn.scrobble.ui.PanoOutlinedTextField
-import com.arn.scrobble.ui.horizontalOverscanPadding
 import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff
 import com.arn.scrobble.utils.Stuff.collectAsStateWithInitialValue
@@ -174,7 +173,7 @@ fun DiscordRpcScreen(
                 )),
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = horizontalOverscanPadding())
+                .padding(horizontal = 16.dp)
         )
 
         PanoOutlinedTextField(
@@ -202,7 +201,7 @@ fun DiscordRpcScreen(
             enabled = settings.enabled,
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = horizontalOverscanPadding())
+                .padding(horizontal = 16.dp)
         )
 
         PanoOutlinedTextField(
@@ -230,7 +229,7 @@ fun DiscordRpcScreen(
             enabled = settings.enabled,
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = horizontalOverscanPadding())
+                .padding(horizontal = 16.dp)
         )
 
         PanoOutlinedTextField(
@@ -257,7 +256,7 @@ fun DiscordRpcScreen(
             enabled = settings.enabled,
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = horizontalOverscanPadding())
+                .padding(horizontal = 16.dp)
         )
 
         PanoOutlinedTextField(
@@ -284,7 +283,7 @@ fun DiscordRpcScreen(
             enabled = settings.enabled,
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = horizontalOverscanPadding())
+                .padding(horizontal = 16.dp)
         )
 
         DropdownPref(

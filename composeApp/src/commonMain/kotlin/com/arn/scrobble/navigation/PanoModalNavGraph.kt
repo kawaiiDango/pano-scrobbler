@@ -11,6 +11,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.max
 import androidx.navigation3.runtime.EntryProviderScope
 import androidx.navigation3.runtime.result.LocalResultEventBus
 import com.arn.scrobble.api.AccountType
@@ -265,17 +266,17 @@ fun Modifier.navModal(
                 }
             )
         else Modifier
+        // bottom sheets have their own ime padding
     )
     .verticalScroll(scrollState)
     .then(
         if (expanded)
             Modifier.padding(panoContentPadding(sides = sides))
         else
-        // bottom sheets have their own ime padding
             Modifier.padding(
                 start = if (sides) 24.dp else 0.dp,
                 end = if (sides) 24.dp else 0.dp,
-                bottom = verticalOverscanPadding()
+                bottom = max(verticalOverscanPadding(), 16.dp)
             )
     )
 

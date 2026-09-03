@@ -400,7 +400,6 @@ sealed interface PanoRoute : NavKey {
                 PanoTab.Scrobbles,
                 PanoTab.Following,
                 PanoTab.Charts,
-                PanoTab.Profile,
             )
 
             AccountType.LIBREFM,
@@ -408,14 +407,12 @@ sealed interface PanoRoute : NavKey {
                 -> listOf(
                 PanoTab.Scrobbles,
                 PanoTab.Charts,
-                PanoTab.Profile,
             )
 
             AccountType.PLEROMA,
             AccountType.FILE,
                 -> listOf(
                 PanoTab.ScrobblesNoSubtabs,
-                PanoTab.Profile,
             )
         }
     }

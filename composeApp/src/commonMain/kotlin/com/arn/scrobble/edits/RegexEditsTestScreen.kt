@@ -89,7 +89,7 @@ fun RegexEditsTestScreen(
 
     Column(
         verticalArrangement = Arrangement.spacedBy(16.dp),
-        modifier = modifier
+        modifier = modifier.padding(8.dp)
     ) {
         PanoOutlinedTextField(
             value = track,

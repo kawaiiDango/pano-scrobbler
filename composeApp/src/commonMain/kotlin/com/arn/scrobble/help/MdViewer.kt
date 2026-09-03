@@ -79,7 +79,7 @@ fun MdText(
                         },
                         color = MaterialTheme.colorScheme.primary,
                         modifier = itemModifier
-                            .padding(vertical = 8.dp),
+                            .padding(vertical = 8.dp, horizontal = 4.dp),
                     )
 
                 is MdNode.Block.Paragraph,
@@ -87,7 +87,7 @@ fun MdText(
                     Text(
                         text = annotated,
                         modifier = itemModifier
-                            .padding(vertical = 4.dp),
+                            .padding(4.dp),
                     )
             }
         }

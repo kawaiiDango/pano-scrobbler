@@ -224,11 +224,13 @@ tasks.register("updateMaterialSymbols") {
     val unfilledNamesFile = file("material-symbols-names/unfilled.txt")
     val filledNamesFile = file("material-symbols-names/filled.txt")
     val automirroredNamesFile = file("material-symbols-names/automirrored.txt")
+    val filledAutomirroredNamesFile = file("material-symbols-names/filled_automirrored.txt")
 
     inputs.files(
         unfilledNamesFile,
         filledNamesFile,
-        automirroredNamesFile
+        automirroredNamesFile,
+        filledAutomirroredNamesFile
     )
 
     doLast {
@@ -272,6 +274,12 @@ tasks.register("updateMaterialSymbols") {
         downloadBatch(
             automirroredNamesFile.readLines().distinct(),
             filled = false,
+            File(symbolsDir, "automirrored").also { it.mkdir() }
+        )
+
+        downloadBatch(
+            filledAutomirroredNamesFile.readLines().distinct(),
+            filled = true,
             File(symbolsDir, "automirrored").also { it.mkdir() }
         )
 

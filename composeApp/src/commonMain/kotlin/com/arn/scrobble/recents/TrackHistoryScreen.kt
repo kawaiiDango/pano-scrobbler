@@ -1,12 +1,10 @@
 package com.arn.scrobble.recents
 
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ListItem
+import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -16,10 +14,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.paging.compose.collectAsLazyPagingItems
@@ -30,6 +26,7 @@ import com.arn.scrobble.icons.Cake
 import com.arn.scrobble.icons.Icons
 import com.arn.scrobble.navigation.PanoRoute
 import com.arn.scrobble.ui.PanoLazyColumn
+import com.arn.scrobble.ui.myTransparentCheckableItemColors
 import com.arn.scrobble.utils.PanoTimeFormatter
 import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff.collectAsStateWithInitialValue
@@ -95,29 +92,29 @@ fun TrackHistoryScreen(
     ) {
         if (firstScrobbleTime != null) {
             item("first_scrobble_time") {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                ListItem(
+                    leadingContent = {
+                        Icon(
+                            imageVector = Icons.Cake,
+                            contentDescription = null,
+                        )
+                    },
+                    headlineContent = {
+                        Text(
+                            text = stringResource(
+                                Res.string.first_scrobbled_on,
+                                PanoTimeFormatter.relative(
+                                    firstScrobbleTime!!,
+                                    stringResource(Res.string.time_just_now)
+                                )
+                            ),
+                        )
+                    },
+                    colors = ListItemDefaults.myTransparentCheckableItemColors(),
                     modifier = Modifier
                         .animateItem()
                         .fillMaxWidth()
-                        .padding(vertical = 8.dp)
-                ) {
-                    Icon(
-                        imageVector = Icons.Cake,
-                        contentDescription = null,
-                    )
-                    Text(
-                        text = stringResource(
-                            Res.string.first_scrobbled_on,
-                            PanoTimeFormatter.relative(
-                                firstScrobbleTime!!,
-                                stringResource(Res.string.time_just_now)
-                            )
-                        ),
-                        style = MaterialTheme.typography.titleSmall,
-                    )
-                }
+                )
             }
         }
 

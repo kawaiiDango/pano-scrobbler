@@ -12,9 +12,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import com.arn.scrobble.icons.ArrowDropDown
 import com.arn.scrobble.icons.Check
 import com.arn.scrobble.icons.Icons
-import com.arn.scrobble.icons.KeyboardArrowDown
 import com.arn.scrobble.ui.AlertDialogOk
 import com.arn.scrobble.ui.PanoDropdownMenu
 import com.arn.scrobble.utils.AndroidStuff
@@ -103,7 +103,7 @@ actual fun HelpSaveLogsButton(
                 checked = menuShown,
             ) {
                 Icon(
-                    imageVector = Icons.KeyboardArrowDown,
+                    imageVector = Icons.ArrowDropDown,
                     contentDescription = stringResource(Res.string.more),
                 )
             }

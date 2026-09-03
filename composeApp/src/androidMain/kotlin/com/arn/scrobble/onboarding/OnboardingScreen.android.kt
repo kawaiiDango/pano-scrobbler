@@ -12,10 +12,11 @@ import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.selection.toggleable
 import androidx.compose.material3.Checkbox
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
+import androidx.compose.material3.ListItem
+import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -31,9 +32,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.LifecycleStartEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -49,6 +48,7 @@ import com.arn.scrobble.navigation.PanoRoute
 import com.arn.scrobble.navigation.enumSaver
 import com.arn.scrobble.pref.AppListSaveType
 import com.arn.scrobble.ui.AlertDialogOk
+import com.arn.scrobble.ui.myTransparentCheckableItemColors
 import com.arn.scrobble.ui.testTagsAsResId
 import com.arn.scrobble.utils.AndroidStuff
 import com.arn.scrobble.utils.AndroidStuff.toast
@@ -119,6 +119,7 @@ private fun NotificationPermissionStep(
     )
 }
 
+@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 private fun NotificationListenerStep(
     navigate: (PanoRoute) -> Unit,
@@ -170,41 +171,39 @@ private fun NotificationListenerStep(
         isExpanded = isExpanded,
         onSkip = { warningShown = true },
         additionalContent = {
-            Row(
-                modifier = Modifier.fillMaxWidth()
-                    .clip(MaterialTheme.shapes.medium)
-                    .toggleable(
-                        value = notiPersistent,
-                        onValueChange = {
-                            scope.launch {
-                                PlatformStuff.mainPrefs.updateData {
-                                    it.copy(notiPersistent = !it.notiPersistent)
-                                }
-                            }
-                        },
-                        role = Role.Checkbox
-                    ),
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                Checkbox(
-                    checked = notiPersistent,
-                    onCheckedChange = null // null recommended for accessibility with screenreaders
-                )
-
-                Column(
-                    modifier = Modifier.padding(start = 16.dp)
-                ) {
-                    Text(
-                        text = stringResource(Res.string.persistent_noti_fgs),
-                        style = MaterialTheme.typography.titleSmall,
-                        color = MaterialTheme.colorScheme.primary,
-                    )
+            ListItem(
+                checked = notiPersistent,
+                onCheckedChange = {
+                    scope.launch {
+                        PlatformStuff.mainPrefs.updateData {
+                            it.copy(notiPersistent = !it.notiPersistent)
+                        }
+                    }
+                },
+                supportingContent = {
                     Text(
                         text = stringResource(
                             Res.string.persistent_noti_desc,
                             stringResource(Res.string.persistent_noti_oems)
                         ),
-                        style = MaterialTheme.typography.bodyMedium
+                    )
+                },
+                colors = ListItemDefaults.myTransparentCheckableItemColors()
+            ) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                ) {
+                    Checkbox(
+                        checked = notiPersistent,
+                        onCheckedChange = null,
+                        modifier = Modifier.padding(vertical = 4.dp)
+                    )
+
+                    Text(
+                        text = stringResource(Res.string.persistent_noti_fgs),
+                        style = MaterialTheme.typography.titleSmall,
+                        color = MaterialTheme.colorScheme.primary,
                     )
                 }
             }
@@ -336,7 +335,7 @@ actual fun OnboardingScreen(
 
     Column(
         modifier = modifier.testTagsAsResId(),
-        verticalArrangement = Arrangement.spacedBy(16.dp)
+        verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
 
         OnboardingTopRow(

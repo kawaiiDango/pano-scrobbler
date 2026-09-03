@@ -40,7 +40,7 @@ fun InfoPagerScreen(
     PanoPager(
         selectedPage = tabIdx,
         onSelectPage = onSetTabIdx,
-        totalPages = tabsList.count(),
+        totalPages = tabsList.size,
         modifier = modifier,
     ) { page ->
 

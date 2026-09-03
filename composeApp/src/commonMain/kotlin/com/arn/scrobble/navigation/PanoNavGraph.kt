@@ -2,7 +2,6 @@ package com.arn.scrobble.navigation
 
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.input.TextFieldState
-import androidx.compose.foundation.text.input.setTextAndPlaceCursorAtEnd
 import androidx.compose.material3.pulltorefresh.PullToRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -315,7 +314,7 @@ object PanoNavGraph {
             onSetTitleRes(route, Res.string.regex_rules)
             RegexEditsScreen(
                 onNavigate = navigate,
-                modifier = Modifier.navColumn()
+                modifier = Modifier.navColumn().padding(panoContentPadding())
             )
         }
 
@@ -378,7 +377,7 @@ object PanoNavGraph {
         entry<PanoRoute.Translators> { route ->
             onSetTitleRes(route, Res.string.pref_translate_credits)
             TranslatorsScreen(
-                modifier = Modifier.navColumn()
+                modifier = Modifier.navColumn().padding(panoContentPadding())
             )
         }
 
@@ -584,14 +583,9 @@ object PanoNavGraph {
         entry<PanoRoute.Help> { route ->
             onSetTitleRes(route, Res.string.faq)
 
-            if (route.searchTerm.isNotEmpty()) {
-                LaunchedEffect(Unit) {
-                    searchFieldState.setTextAndPlaceCursorAtEnd(route.searchTerm)
-                }
-            }
-
             HelpScreen(
                 searchFieldState = searchFieldState,
+                searchTerm = route.searchTerm,
                 scrobblerStateFlow = mainViewModel.scrobblerStateFlow,
                 modifier = Modifier.navColumn().padding(panoContentPadding())
             )
@@ -601,7 +595,7 @@ object PanoNavGraph {
             onSetTitleRes(route, Res.string.pref_privacy_policy)
 
             PrivacyPolicyScreen(
-                modifier = Modifier.navColumn()
+                modifier = Modifier.navColumn().padding(panoContentPadding())
             )
         }
 
@@ -639,7 +633,7 @@ object PanoNavGraph {
 
             ArtistsWithDelimitersScreen(
                 searchFieldState = searchFieldState,
-                modifier = Modifier.navColumn()
+                modifier = Modifier.navColumn().padding(panoContentPadding())
             )
         }
 

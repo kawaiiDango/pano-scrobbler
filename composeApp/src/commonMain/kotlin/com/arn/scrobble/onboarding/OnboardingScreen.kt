@@ -1,6 +1,5 @@
 package com.arn.scrobble.onboarding
 
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -10,7 +9,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButtonDefaults
+import androidx.compose.material3.ListItem
+import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
@@ -30,14 +30,13 @@ import com.arn.scrobble.api.AccountType
 import com.arn.scrobble.icons.ArrowDropDown
 import com.arn.scrobble.icons.CheckCircle
 import com.arn.scrobble.icons.Circle
+import com.arn.scrobble.icons.FiberManualRecord
 import com.arn.scrobble.icons.Icons
 import com.arn.scrobble.main.MainViewModel
 import com.arn.scrobble.navigation.PanoRoute
-import com.arn.scrobble.panoicons.Nothing
-import com.arn.scrobble.panoicons.PanoIcons
 import com.arn.scrobble.ui.PanoDropdownMenu
 import com.arn.scrobble.ui.accountTypeLabel
-import com.arn.scrobble.ui.horizontalOverscanPadding
+import com.arn.scrobble.ui.myTransparentCheckableItemColors
 import com.arn.scrobble.ui.testTagsAsResId
 import com.arn.scrobble.utils.PlatformStuff
 import org.jetbrains.compose.resources.StringResource
@@ -113,7 +112,7 @@ fun ButtonStepperForLogin(
             dropDownShown = it
         },
         modifier = modifier
-            .padding(start = IconButtonDefaults.mediumIconSize + 16.dp)
+            .padding(top = 4.dp)
             .testTag("login_type_dropdown")
     ) {
         Text(
@@ -170,63 +169,52 @@ fun VerticalStepperItem(
     val icon = if (isDone)
         Icons.CheckCircle
     else if (isExpanded)
-        PanoIcons.Nothing
+        Icons.FiberManualRecord
     else
         Icons.Circle
 
-    Column(
-        verticalArrangement = Arrangement.spacedBy(8.dp),
+    ListItem(
+        headlineContent = {
+            Text(
+                text = stringResource(titleRes),
+                style = MaterialTheme.typography.titleMedium,
+                color = MaterialTheme.colorScheme.primary,
+            )
+        },
+        supportingContent = if (isExpanded) {
+            {
+                Column {
+                    if (description != null) {
+                        Text(
+                            text = description,
+                        )
+                    }
+
+                    if (additionalContent != null) {
+                        additionalContent()
+                    }
+
+                    buttonsContent()
+                }
+            }
+        } else null,
+        leadingContent = {
+            Icon(
+                imageVector = icon,
+                contentDescription = null,
+            )
+        },
+        colors = ListItemDefaults.myTransparentCheckableItemColors(),
         modifier = modifier
             .fillMaxWidth()
-            .padding(vertical = 8.dp, horizontal = horizontalOverscanPadding())
+            .padding(vertical = 8.dp)
             .then(
                 if (isExpanded)
                     Modifier.alpha(1f)
                 else
                     Modifier.alpha(0.5f)
             ),
-    ) {
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(16.dp)
-        ) {
-            Icon(
-                imageVector = icon,
-                contentDescription = null,
-            )
-
-            Text(
-                text = stringResource(titleRes),
-                style = MaterialTheme.typography.titleMedium,
-                color = MaterialTheme.colorScheme.primary,
-                modifier = Modifier.weight(1f)
-            )
-        }
-
-        AnimatedVisibility(isExpanded) {
-            Column(
-                verticalArrangement = Arrangement.spacedBy(8.dp),
-                modifier = Modifier
-                    .fillMaxWidth()
-            ) {
-                if (description != null) {
-                    Text(
-                        text = description,
-                        style = MaterialTheme.typography.bodyMedium,
-                        modifier = modifier
-                            .padding(start = IconButtonDefaults.mediumIconSize + 16.dp)
-                            .fillMaxWidth()
-                    )
-                }
-                if (additionalContent != null) {
-                    additionalContent()
-                }
-
-                buttonsContent()
-            }
-        }
-    }
+    )
 }
 
 @Composable

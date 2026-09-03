@@ -83,6 +83,7 @@ actual object PlatformStuff {
     }
 
     actual fun openInBrowser(url: String) {
+        val url = Stuff.localizeLastfmUrl(url)
         val isMailTo = url.startsWith("mailto:", ignoreCase = true)
 
         var desktop: Desktop? = null

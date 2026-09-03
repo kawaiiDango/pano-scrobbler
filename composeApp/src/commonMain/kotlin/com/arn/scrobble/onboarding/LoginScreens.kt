@@ -85,7 +85,7 @@ fun ListenBrainzLoginScreen(
                 },
                 text = stringResource(
                     Res.string.listenbrainz_info,
-                    "https://listenbrainz.org/profile"
+                    "listenbrainz.org/profile"
                 ),
                 icon = Icons.OpenInBrowser,
                 maxLines = 3,

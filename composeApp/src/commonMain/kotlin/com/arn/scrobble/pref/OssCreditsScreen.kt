@@ -3,7 +3,6 @@ package com.arn.scrobble.pref
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.ListItem
@@ -17,7 +16,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.arn.scrobble.ui.PanoLazyColumn
-import com.arn.scrobble.ui.horizontalOverscanPadding
 import com.arn.scrobble.ui.myTransparentCheckableItemColors
 import com.arn.scrobble.utils.PlatformStuff
 import com.mikepenz.aboutlibraries.Libs
@@ -48,7 +46,6 @@ fun OssCreditsScreen(
                 library,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = horizontalOverscanPadding()),
             )
         }
     }

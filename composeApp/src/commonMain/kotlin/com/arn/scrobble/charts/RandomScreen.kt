@@ -68,7 +68,7 @@ fun RandomScreen(
     onNavigate: (PanoRoute) -> Unit,
     modifier: Modifier = Modifier,
     viewModel: RandomVM = viewModel { RandomVM(user.name) },
-    chartsPeriodViewModel: ChartsPeriodVM = viewModel { ChartsPeriodVM(user) },
+    chartsPeriodViewModel: ChartsPeriodVM = viewModel { ChartsPeriodVM() },
 ) {
     val musicEntry by viewModel.musicEntry.collectAsStateWithLifecycle()
     val hasLoaded by viewModel.hasLoaded.collectAsStateWithLifecycle()
@@ -117,7 +117,6 @@ fun RandomScreen(
     }
 
     Column(
-        horizontalAlignment = Alignment.CenterHorizontally,
         modifier = modifier
     ) {
         TimePeriodSelector(
@@ -134,7 +133,9 @@ fun RandomScreen(
 
         BoxWithConstraints(
             contentAlignment = Alignment.Center,
-            modifier = Modifier.weight(1f)
+            modifier = Modifier
+                .weight(1f)
+                .align(Alignment.CenterHorizontally)
         ) {
             val isLandscape = (maxWidth * 0.7f) > maxHeight
 
@@ -188,6 +189,8 @@ fun RandomScreen(
             onMenuItemClick = { newType ->
                 load(newType)
             },
+            modifier = Modifier
+                .align(Alignment.CenterHorizontally)
         )
 
     }

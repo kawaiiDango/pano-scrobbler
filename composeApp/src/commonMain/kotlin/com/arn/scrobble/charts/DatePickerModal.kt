@@ -2,10 +2,8 @@ package com.arn.scrobble.charts
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
@@ -19,6 +17,7 @@ import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.DropdownMenuPopup
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.MenuAnchorPosition
 import androidx.compose.material3.MenuDefaults
 import androidx.compose.material3.SelectableDates
@@ -26,21 +25,27 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TimePicker
 import androidx.compose.material3.rememberTimePickerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import com.arn.scrobble.icons.Check
 import com.arn.scrobble.icons.Icons
 import com.arn.scrobble.navigation.DatePickerResult
 import com.arn.scrobble.navigation.DateRangePickerResult
+import com.arn.scrobble.navigation.LocalNavigationType
+import com.arn.scrobble.navigation.PanoNavigationType
 import com.arn.scrobble.navigation.TimePickerResult
 import com.arn.scrobble.ui.myGroupStandardContainerColor
 import com.arn.scrobble.ui.rememberLocaleWithCustomWeekday
+import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff.setMidnight
 import org.jetbrains.compose.resources.stringResource
 import pano_scrobbler.composeapp.generated.resources.Res
@@ -74,6 +79,7 @@ fun DateDialog(
     val locale = rememberLocaleWithCustomWeekday()
     val initialDisplayedMonthMillis = remember { selectedDate ?: System.currentTimeMillis() }
     val yearRange = remember { millisRangeToYears(allowedRange) }
+    var firstChange by remember { mutableStateOf(true) }
 
     val selectableDates = remember {
         object : SelectableDates {
@@ -103,21 +109,28 @@ fun DateDialog(
         )
     }
 
-    Column(
-        verticalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterVertically),
-        horizontalAlignment = Alignment.CenterHorizontally,
+    fun onConfirm() {
+        datePickerState.selectedDateMillis?.let {
+            onDateSelected(DatePickerResult(it))
+        }
+    }
+
+    LaunchedEffect(datePickerState.selectedDateMillis) {
+        if (firstChange)
+            firstChange = false
+        else
+            onConfirm()
+    }
+
+    PickerWrapper(
+        onConfirm = null,
         modifier = modifier
     ) {
         DatePicker(
             state = datePickerState,
-            modifier = Modifier.weight(1f, false)
-        )
-        ConfirmButton(
-            {
-                datePickerState.selectedDateMillis?.let {
-                    onDateSelected(DatePickerResult(it))
-                }
-            }
+            showModeToggle = !PlatformStuff.isTv,
+            title = null,
+            modifier = it
         )
     }
 }
@@ -149,13 +162,26 @@ fun DateRangeDialog(
         )
     }
 
-    Column(
-        verticalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterVertically),
-        horizontalAlignment = Alignment.CenterHorizontally,
+    PickerWrapper(
+        onConfirm = {
+            val start = dateRangePickerState.selectedStartDateMillis
+            val end = dateRangePickerState.selectedEndDateMillis
+
+            if (start != null && end != null) {
+                onDateRangeSelected(
+                    DateRangePickerResult(
+                        start,
+                        end + (1.days.inWholeMilliseconds - 1)
+                    )
+                )
+            }
+        },
         modifier = modifier
     ) {
         DateRangePicker(
             state = dateRangePickerState,
+            title = null,
+            showModeToggle = !PlatformStuff.isTv,
 //            headline = {
 //                // workaround for a text overflow bug in compose in pt locale
 //                DateRangePickerDefaults.DateRangePickerHeadline(
@@ -166,25 +192,7 @@ fun DateRangeDialog(
 //                    modifier = Modifier.padding(bottom = 12.dp),
 //                )
 //            },
-            modifier = Modifier
-                .fillMaxWidth()
-                .weight(1f, false)
-        )
-
-        ConfirmButton(
-            {
-                val start = dateRangePickerState.selectedStartDateMillis
-                val end = dateRangePickerState.selectedEndDateMillis
-
-                if (start != null && end != null) {
-                    onDateRangeSelected(
-                        DateRangePickerResult(
-                            start,
-                            end + (1.days.inWholeMilliseconds - 1)
-                        )
-                    )
-                }
-            }
+            modifier = it
         )
     }
 }
@@ -201,21 +209,13 @@ fun TimeDialog(
         initialMinute = m,
 //        is24Hour = true,
     )
-    Column(
-        verticalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterVertically),
-        horizontalAlignment = Alignment.CenterHorizontally,
+    PickerWrapper(
+        onConfirm = {
+            onTimeSelected(TimePickerResult(state.hour, state.minute))
+        },
         modifier = modifier
     ) {
-        TimePicker(
-            state,
-            modifier = Modifier.weight(1f, false)
-        )
-
-        ConfirmButton(
-            {
-                onTimeSelected(TimePickerResult(state.hour, state.minute))
-            }
-        )
+        TimePicker(state, modifier = it)
     }
 }
 
@@ -376,19 +376,59 @@ fun MonthPickerPopup(
 }
 
 @Composable
-private fun ColumnScope.ConfirmButton(
-    onConfirm: () -> Unit,
-    modifier: Modifier = Modifier
+private fun PickerWrapper(
+    onConfirm: (() -> Unit)?,
+    modifier: Modifier = Modifier,
+    content: @Composable (Modifier) -> Unit
 ) {
-    FloatingActionButton(
-        onClick = onConfirm,
-        modifier = modifier
-            .align(Alignment.End)
-            .padding(bottom = 16.dp, end = 16.dp)
-    ) {
-        Icon(
-            imageVector = Icons.Check,
-            contentDescription = stringResource(Res.string.done)
-        )
+    if (LocalNavigationType.current == PanoNavigationType.BOTTOM_NAVIGATION) {
+        Column(
+            verticalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterVertically),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = modifier
+        ) {
+            content(
+                Modifier
+                    .weight(1f, false)
+                    .clip(MaterialTheme.shapes.large)
+            )
+
+            if (onConfirm != null)
+                FloatingActionButton(
+                    onClick = onConfirm,
+                    modifier = Modifier
+                        .align(Alignment.End)
+                        .padding(bottom = 16.dp, end = 16.dp)
+                ) {
+                    Icon(
+                        imageVector = Icons.Check,
+                        contentDescription = stringResource(Res.string.done)
+                    )
+                }
+        }
+    } else {
+        Row(
+            horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.End),
+            modifier = modifier
+        ) {
+            content(
+                Modifier
+                    .weight(1f, false)
+                    .clip(MaterialTheme.shapes.large)
+            )
+
+            if (onConfirm != null)
+                FloatingActionButton(
+                    onClick = onConfirm,
+                    modifier = Modifier
+                        .align(Alignment.Bottom)
+                        .padding(bottom = 16.dp, end = 16.dp)
+                ) {
+                    Icon(
+                        imageVector = Icons.Check,
+                        contentDescription = stringResource(Res.string.done)
+                    )
+                }
+        }
     }
 }

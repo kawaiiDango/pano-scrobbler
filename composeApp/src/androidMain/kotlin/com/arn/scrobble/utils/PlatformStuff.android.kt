@@ -205,7 +205,9 @@ actual object PlatformStuff {
         }
 
         try {
-            val browserIntent = Intent(Intent.ACTION_VIEW, url.toUri())
+            val uri = Stuff.localizeLastfmUrl(url).toUri()
+
+            val browserIntent = Intent(Intent.ACTION_VIEW, uri)
             browserIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
 
             applicationContext.startActivity(browserIntent)

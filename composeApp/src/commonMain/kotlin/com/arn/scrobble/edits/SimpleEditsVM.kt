@@ -7,7 +7,6 @@ import com.arn.scrobble.db.SimpleEdit
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
@@ -16,16 +15,7 @@ import kotlinx.coroutines.withContext
 class SimpleEditsVM : ViewModel() {
     private val dao = PanoDb.db.getSimpleEditsDao()
     private val _searchTerm = MutableStateFlow("")
-    private var inited = false
     val simpleEditsFiltered = _searchTerm
-        .debounce {
-            if (!inited) {
-                inited = true
-                0
-            } else {
-                500L
-            }
-        }
         .flatMapLatest { term ->
             withContext(Dispatchers.IO) {
                 if (term.isBlank())

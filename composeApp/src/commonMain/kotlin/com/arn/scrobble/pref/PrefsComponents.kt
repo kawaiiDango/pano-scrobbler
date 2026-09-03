@@ -31,8 +31,8 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.unit.dp
 import com.arn.scrobble.api.AccountType
 import com.arn.scrobble.api.Scrobblables
+import com.arn.scrobble.icons.ArrowDropDown
 import com.arn.scrobble.icons.Icons
-import com.arn.scrobble.icons.KeyboardArrowDown
 import com.arn.scrobble.icons.Lock
 import com.arn.scrobble.icons.ResetSettings
 import com.arn.scrobble.icons.automirrored.KeyboardArrowLeft
@@ -177,7 +177,7 @@ fun <T> DropdownPref(
         ) {
             Text(text)
             Icon(
-                imageVector = Icons.KeyboardArrowDown,
+                imageVector = Icons.ArrowDropDown,
                 contentDescription = null,
             )
             Box {

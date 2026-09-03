@@ -34,8 +34,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import com.arn.scrobble.icons.Icons
-import com.arn.scrobble.icons.automirrored.KeyboardArrowLeft
-import com.arn.scrobble.icons.automirrored.KeyboardArrowRight
+import com.arn.scrobble.icons.automirrored.ArrowLeft
+import com.arn.scrobble.icons.automirrored.ArrowRight
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
 import pano_scrobbler.composeapp.generated.resources.Res
@@ -172,7 +172,9 @@ actual fun PanoLazyRow(
 
         if (canScroll) {
             Row(
-                modifier = Modifier.align(Alignment.BottomCenter),
+                modifier = Modifier
+                    .padding(horizontal = 8.dp)
+                    .align(Alignment.BottomCenter),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 FilledTonalIconButton(
@@ -186,7 +188,7 @@ actual fun PanoLazyRow(
                         .padding(horizontal = 4.dp)
                 ) {
                     Icon(
-                        imageVector = Icons.AutoMirrored.KeyboardArrowLeft,
+                        imageVector = Icons.AutoMirrored.ArrowLeft,
                         contentDescription = stringResource(Res.string.move_left),
                     )
                 }
@@ -207,7 +209,7 @@ actual fun PanoLazyRow(
                         .padding(horizontal = 4.dp)
                 ) {
                     Icon(
-                        imageVector = Icons.AutoMirrored.KeyboardArrowRight,
+                        imageVector = Icons.AutoMirrored.ArrowRight,
                         contentDescription = stringResource(Res.string.move_right),
                     )
                 }
@@ -223,7 +225,8 @@ actual fun OptionalHorizontalScrollbar(
 ) {
     HorizontalScrollbar(
         modifier = modifier
-            .fillMaxWidth(),
+            .fillMaxWidth()
+            .padding(horizontal = 8.dp),
         adapter = rememberScrollbarAdapter(state)
     )
 }

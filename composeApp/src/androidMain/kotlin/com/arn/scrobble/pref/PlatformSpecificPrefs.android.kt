@@ -41,7 +41,7 @@ import pano_scrobbler.composeapp.generated.resources.show_persistent_noti
 actual object PlatformSpecificPrefs {
     actual fun prefQuickSettings(filteredItem: FilteredItem, scrobblerEnabled: Boolean) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU && !PlatformStuff.isTv) {
-            filteredItem("master_qs_add", Res.string.pref_master_qs_add, null) { title ->
+            filteredItem("quick_settings", Res.string.pref_master_qs_add, null) { title ->
                 val scrobblerEnabledText =
                     stringResource(if (scrobblerEnabled) Res.string.scrobbler_on else Res.string.scrobbler_off)
                 val context = LocalContext.current
@@ -134,7 +134,7 @@ actual object PlatformSpecificPrefs {
     actual fun prefPersistentNotification(filteredItem: FilteredItem, notiPersistent: Boolean) {
         if (!PlatformStuff.isTv) {
             filteredItem(
-                MainPrefs::notiPersistent.name,
+                "persistent_notification",
                 Res.string.persistent_noti_fgs,
                 null
             ) { title ->

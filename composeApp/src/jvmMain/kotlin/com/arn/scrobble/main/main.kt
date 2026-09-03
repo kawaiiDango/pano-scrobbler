@@ -1,6 +1,8 @@
 package com.arn.scrobble.main
 
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.window.WindowDraggableArea
+import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -13,6 +15,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.awt.SwingWindow
 import androidx.compose.ui.input.pointer.PointerIcon
 import androidx.compose.ui.input.pointer.pointerHoverIcon
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.pollSystemTheme
 import androidx.compose.ui.unit.DpSize
@@ -21,6 +24,7 @@ import androidx.compose.ui.window.WindowDecoration
 import androidx.compose.ui.window.WindowPlacement
 import androidx.compose.ui.window.application
 import androidx.compose.ui.window.rememberWindowState
+import androidx.lifecycle.compose.LifecycleStartEffect
 import co.touchlab.kermit.Logger
 import co.touchlab.kermit.Severity
 import com.arn.scrobble.BuildKonfig
@@ -525,6 +529,7 @@ fun main(args: Array<String>) {
                 (isTranslucent.value && !isBlur.value || isBlur.value && DesktopStuff.IS_LINUX) &&
                         VariantStuff.billingRepository.licenseState.value == LicenseState.VALID
             }
+            val minDim = 480
 
             SwingWindow(
                 onCloseRequest = { windowShown = false },
@@ -538,6 +543,11 @@ fun main(args: Array<String>) {
                     WindowDecoration.SystemDefault,
                 icon = painterResource(Res.drawable.ic_launcher_with_bg),
                 init = { window ->
+
+                    if (!BuildKonfig.DEBUG) {
+                        window.exceptionHandler = null
+                    }
+
                     val isBlur = isBlur.value &&
                             VariantStuff.billingRepository.licenseState.value == LicenseState.VALID
 
@@ -561,21 +571,7 @@ fun main(args: Array<String>) {
                     }
                 }
             ) {
-                val density = LocalDensity.current
-
                 LaunchedEffect(Unit) {
-                    window.exceptionHandler = null
-
-                    if (!BuildKonfig.DEBUG) {
-                        val minDim =
-                            if (DesktopStuff.IS_WINDOWS && !isTranslucentAwtWindow)
-                                with(density) { 480.dp.roundToPx() }
-                            else
-                                480
-
-                        window.minimumSize = Dimension(minDim, minDim)
-                    }
-
                     openOrQuitTrigger
                         .filter { it == OpenOrQuitAction.OPEN }
                         .collect {
@@ -605,7 +601,25 @@ fun main(args: Array<String>) {
                     }
                 }
 
+                val swingDensity = LocalDensity.current
+
                 AppTheme {
+                    val composeDensity = LocalDensity.current
+
+                    val densityMultiplier = if (DesktopStuff.IS_WINDOWS)
+                        1f
+                    else
+                        composeDensity.density / swingDensity.density
+
+                    LifecycleStartEffect(Unit) {
+                        window.minimumSize = Dimension(
+                            (minDim * densityMultiplier).toInt(),
+                            (minDim * densityMultiplier).toInt()
+                        )
+
+                        onStopOrDispose { }
+                    }
+
                     if (DesktopStuff.IS_WINDOWS) {
                         LaunchedEffect(Unit) {
                             combine(
@@ -626,38 +640,43 @@ fun main(args: Array<String>) {
                         }
                     }
 
-                    PanoAppContent(
-                        draggableWrapper = {
-                            if (isTranslucentAwtWindow) {
-                                val windowTitleActions = remember {
-                                    object : WindowTitleActions {
-                                        override fun minimize() {
-                                            windowState.isMinimized = true
-                                        }
-
-                                        override fun maximizeRestore() {
-                                            windowState.placement =
-                                                if (windowState.placement == WindowPlacement.Maximized)
-                                                    WindowPlacement.Floating
-                                                else
-                                                    WindowPlacement.Maximized
-                                        }
-
-                                        override fun close() {
-                                            windowShown = false
-                                        }
-                                    }
+                    @Composable
+                    fun draggableWrapper(it: @Composable ((windowTitleActions: WindowTitleActions) -> Unit)) {
+                        val windowTitleActions = remember {
+                            object : WindowTitleActions {
+                                override fun minimize() {
+                                    windowState.isMinimized = true
                                 }
 
-                                WindowDraggableArea(
-                                    modifier = Modifier.pointerHoverIcon(PointerIcon(Cursor(Cursor.MOVE_CURSOR)))
-                                ) {
-                                    it(windowTitleActions)
+                                override fun maximizeRestore() {
+                                    windowState.placement =
+                                        if (windowState.placement == WindowPlacement.Maximized)
+                                            WindowPlacement.Floating
+                                        else
+                                            WindowPlacement.Maximized
                                 }
-                            } else {
-                                it(null)
+
+                                override fun close() {
+                                    windowShown = false
+                                }
                             }
                         }
+
+                        WindowDraggableArea(
+                            modifier = Modifier
+                                .pointerHoverIcon(PointerIcon(Cursor(Cursor.MOVE_CURSOR)))
+                                .pointerInput(Unit) {
+                                    detectTapGestures(
+                                        onDoubleTap = { windowTitleActions.maximizeRestore() }
+                                    )
+                                }
+                        ) {
+                            it(windowTitleActions)
+                        }
+                    }
+
+                    PanoAppContent(
+                        draggableWrapper = if (isTranslucentAwtWindow) ::draggableWrapper else null,
                     )
                 }
             }

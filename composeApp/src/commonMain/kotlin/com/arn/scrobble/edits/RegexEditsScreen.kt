@@ -434,7 +434,7 @@ private fun RegexEditItem(
         Column(
             modifier = Modifier
                 .weight(1f)
-                .shapedClickable(enabled = !forShimmer) { onItemClick(regexEdit) }
+                .shapedClickable(clickableAdded = !forShimmer) { onItemClick(regexEdit) }
                 .padding(8.dp)
                 .backgroundForShimmer(forShimmer)
         ) {

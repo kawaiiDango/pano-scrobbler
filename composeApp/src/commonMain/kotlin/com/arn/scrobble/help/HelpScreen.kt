@@ -45,6 +45,7 @@ expect fun HelpSaveLogsButton(
 @Composable
 fun HelpScreen(
     searchFieldState: TextFieldState,
+    searchTerm: String,
     modifier: Modifier = Modifier,
     scrobblerStateFlow: StateFlow<ScrobblerState>,
     viewModel: MdViewerVM = viewModel {
@@ -58,7 +59,10 @@ fun HelpScreen(
     var filePickerShown by remember { mutableStateOf(false) }
     val mdItems by viewModel.mdBlocks.collectAsStateWithLifecycle()
 
-    SearchEffect(searchFieldState) {
+    SearchEffect(
+        searchFieldState,
+        initialText = searchTerm
+    ) {
         viewModel.setFilter(it)
     }
 

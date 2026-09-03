@@ -3,6 +3,7 @@ package com.arn.scrobble.info
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
+import androidx.compose.foundation.gestures.animateScrollBy
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -33,6 +34,11 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.input.key.Key
+import androidx.compose.ui.input.key.KeyEventType
+import androidx.compose.ui.input.key.key
+import androidx.compose.ui.input.key.onKeyEvent
+import androidx.compose.ui.input.key.type
 import androidx.compose.ui.layout.boundsInParent
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalDensity
@@ -57,6 +63,7 @@ import com.arn.scrobble.ui.shimmerWindowBounds
 import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff
 import com.arn.scrobble.utils.Stuff.format
+import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
 import pano_scrobbler.composeapp.generated.resources.Res
 import pano_scrobbler.composeapp.generated.resources.collapse
@@ -71,7 +78,7 @@ fun InfoWikiText(
     scrollState: ScrollState, // from vertically scrollable column
     modifier: Modifier = Modifier,
 ) {
-    val coroutineScope = rememberCoroutineScope()
+    val scope = rememberCoroutineScope()
     var overflows by remember { mutableStateOf(false) }
     val density = LocalDensity.current
     val scrollStepPx = with(density) { 96.dp.toPx() }
@@ -106,10 +113,38 @@ fun InfoWikiText(
                     maxYInColumn = bounds.bottom
                 }
                 .then(
-                    if (overflows && !expanded)
-                        Modifier.shapedClickable(onClick = onExpandToggle)
-                    else
-                        Modifier
+                    if (overflows)
+                        Modifier.shapedClickable(
+                            onClick = onExpandToggle,
+                            clickableAdded = !expanded || PlatformStuff.isTv
+                        )
+                            .onKeyEvent { event ->
+                                if (event.type != KeyEventType.KeyDown) return@onKeyEvent false
+                                val canScrollUp = scrollState.value > minYInColumn
+                                val canScrollDown =
+                                    scrollState.value + scrollState.viewportSize < maxYInColumn
+
+                                when (event.key) {
+                                    Key.DirectionDown -> {
+                                        if (canScrollDown) {
+                                            scope.launch {
+                                                scrollState.animateScrollBy(scrollStepPx)
+                                            }
+                                            true
+                                        } else false
+                                    }
+
+                                    Key.DirectionUp -> {
+                                        if (canScrollUp) {
+                                            scope.launch { scrollState.animateScrollBy(-scrollStepPx) }
+                                            true
+                                        } else false
+                                    }
+
+                                    else -> false
+                                }
+                            }
+                    else Modifier
                 )
                 .padding(4.dp),
         ) {
@@ -150,54 +185,11 @@ fun InfoWikiText(
                         else
                             0.dp
                     )
-//                    .then(
-//                        if (overflows && !expanded)
-//                            Modifier.clip(MaterialTheme.shapes.medium)
-//                                .clickable(onClick = onExpandToggle)
-
-                    /* is bugged on tv
-                    .onPreviewKeyEvent { keyEvent ->
-                        if (!expanded || keyEvent.type != KeyEventType.KeyDown)
-                            return@onPreviewKeyEvent false
-
-                        val canScrollUp = scrollState.value > minYInColumn
-                        val canScrollDown =
-                            scrollState.value + scrollState.viewportSize < maxYInColumn
-
-                        when (keyEvent.key) {
-                            Key.DirectionDown -> {
-                                if (canScrollDown) {
-                                    coroutineScope.launch {
-                                        scrollState.animateScrollBy(scrollStepPx)
-                                    }
-                                    true
-                                } else {
-                                    false
-                                }
-                            }
-
-                            Key.DirectionUp -> {
-                                if (canScrollUp) {
-                                    coroutineScope.launch {
-                                        scrollState.animateScrollBy(-scrollStepPx)
-                                    }
-                                    true
-                                } else {
-                                    false
-                                }
-                            }
-
-                            else -> false
-                        }
-                    }
-                     */
-//                        else Modifier
-//                    )
                     .padding(8.dp)
             )
 
             if (overflows) {
-                if (expanded) {
+                if (expanded && !PlatformStuff.isTv) {
                     IconButton(
                         onClick = { onExpandToggle() },
                         shapes = IconButtonDefaults.shapes(),
@@ -213,7 +205,7 @@ fun InfoWikiText(
                                 .fillMaxSize()
                         )
                     }
-                } else {
+                } else if (!expanded) {
                     Icon(
                         imageVector = Icons.KeyboardArrowDown,
                         tint = MaterialTheme.colorScheme.primary,
@@ -244,16 +236,38 @@ fun InfoCounts(
         verticalAlignment = Alignment.CenterVertically
     ) {
         countPairs.forEachIndexed { index, (text, value) ->
-            val isClickable = index == 0 && onClickFirstItem != null && avatarName != null
+            if (index == 0 && avatarName != null) {
+                if (onClickFirstItem != null) {
+                    OutlinedButton(
+                        onClick = onClickFirstItem,
+                        enabled = !forShimmer,
+                        shapes = ButtonDefaults.shapes(),
+                        modifier = Modifier
+                            .weight(1f)
+                    ) {
+                        Column(
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            modifier = Modifier
+                                .weight(1f)
+                        ) {
+                            Text(
+                                text = value?.format() ?: "",
+                                textAlign = TextAlign.Center,
+                                style = MaterialTheme.typography.titleMedium,
+                                modifier = Modifier.backgroundForShimmer(forShimmer)
+                            )
 
-            if (isClickable) {
-                OutlinedButton(
-                    onClick = onClickFirstItem,
-                    enabled = !forShimmer,
-                    shapes = ButtonDefaults.shapes(),
-                    modifier = Modifier
-                        .weight(1f)
-                ) {
+                            AvatarOrInitials(
+                                avatarUrl = avatarUrl,
+                                avatarName = avatarName,
+                                modifier = Modifier
+                                    .padding(4.dp)
+                                    .size(24.dp)
+                                    .clip(CircleShape),
+                            )
+                        }
+                    }
+                } else {
                     Column(
                         horizontalAlignment = Alignment.CenterHorizontally,
                         modifier = Modifier

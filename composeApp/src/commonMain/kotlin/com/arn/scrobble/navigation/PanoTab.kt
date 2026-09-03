@@ -11,7 +11,6 @@ import com.arn.scrobble.icons.History
 import com.arn.scrobble.icons.Icons
 import com.arn.scrobble.icons.Mic
 import com.arn.scrobble.icons.MusicNote
-import com.arn.scrobble.icons.Person
 import com.arn.scrobble.icons.Refresh
 import com.arn.scrobble.utils.PlatformStuff
 import org.jetbrains.compose.resources.StringResource
@@ -21,7 +20,6 @@ import pano_scrobbler.composeapp.generated.resources.artists
 import pano_scrobbler.composeapp.generated.resources.charts
 import pano_scrobbler.composeapp.generated.resources.following
 import pano_scrobbler.composeapp.generated.resources.loved
-import pano_scrobbler.composeapp.generated.resources.pref_user_label
 import pano_scrobbler.composeapp.generated.resources.random_text
 import pano_scrobbler.composeapp.generated.resources.recents
 import pano_scrobbler.composeapp.generated.resources.reload
@@ -73,7 +71,6 @@ sealed class PanoTab(
     data object Charts : PanoTab(titleRes = Res.string.charts, icon = Icons.BarChart4Bars),
         PanoRoute.HasTimePeriods
 
-    data object Profile : PanoTab(titleRes = Res.string.pref_user_label, icon = Icons.Person)
     data object TopArtists : PanoTab(titleRes = Res.string.artists, icon = Icons.Mic)
     data object TopAlbums : PanoTab(titleRes = Res.string.albums, icon = Icons.Album)
     data object TopTracks : PanoTab(titleRes = Res.string.tracks, icon = Icons.MusicNote)

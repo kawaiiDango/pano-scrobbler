@@ -35,7 +35,7 @@
     <string name="faq">Câu hỏi thường gặp</string>
     <string name="album_art">Ảnh bìa</string>
     <string name="artist_image">Ảnh bìa nghệ sĩ</string>
-    <string name="network_error">Lỗi kết nối mạng</string>
+    <string name="network_error" comment="Used as a generic fallback error message">Lỗi kết nối mạng</string>
     <string name="required_fields_empty" comment="Shown on filling a form">Yêu cầu ô này là trống</string>
     <string name="artist">Nghệ sĩ</string>
     <string name="artists">Nghệ sĩ</string>
@@ -45,7 +45,7 @@
     <string name="album">Album</string>
     <string name="albums">Album</string>
     <string name="top_albums" comment="top albums the user has listened to, or most scrobbled albums of an artist">Album hàng đầu</string>
-    <string name="track">Bài hát</string>
+    <string name="track" comment="music track or song">Bài hát</string>
     <string name="tracks">Bài hát</string>
     <string name="top_tracks" comment="top tracks the user has listened to, or most scrobbled tracks of an artist">Bài hát hàng đầu</string>
     <string name="similar_tracks">Bài hát phổ biến</string>
@@ -54,8 +54,8 @@
     <string name="auto" comment="automatic or default setting">Tự động</string>
     <string name="music_players">Trình phát nhạc</string>
     <string name="other_apps" comment="Apps which are not music players or video streaming apps">Ứng dụng khác</string>
-    <string name="choose_apps">Chọn ứng dụng</string>
-    <string name="choose_an_app">Chọn một ứng dụng</string>
+    <string name="choose_apps" comment="multi select list">Chọn ứng dụng</string>
+    <string name="choose_an_app" comment="single select list">Chọn một ứng dụng</string>
     <string name="apps" comment="Currently appears on the regex edit dialog showing the selected apps and allowing the user to add more apps">Ứng dụng</string>
     <string name="unavailable_offline">Không khả dụng khi offline</string>
     <string name="tv_url_notice">Mở đường dẫn này trong trình duyệt ở một thiết bị khác</string>
@@ -70,13 +70,12 @@
     <string name="rank_change_no_change">Không đổi</string>
     <string name="search">Tìm kiếm</string>
     <string name="clear_all_history" comment="(talking about search history, tag history)">Xóa lịch sử</string>
-    <string name="global" comment="search globally across lastfm">Toàn cầu</string>
+    <string name="global" comment="something across entire lastfm or the scrobbling service">Toàn cầu</string>
     <string name="profile">Hồ sơ</string>
     <string name="profile_pic">Ảnh đại diện</string>
-    <string name="file_exists_confirm_overwrite">Tệp tin đã tồn tại. Nhấn lần nữa để ghi đè.</string>
     <string name="no_scrobbles">Chưa có bài hát nào ở đây…</string>
     <string name="no_friends">Chưa theo dõi ai cả…</string>
-    <string name="new_app">Ứng dụng mới</string>
+    <string name="new_app" comment="new media player app detected">Ứng dụng mới</string>
     <string name="show_all">Xem thêm</string>
     <string name="edit">Sửa</string>
     <string name="delete">Xoá</string>
@@ -86,41 +85,40 @@
     <string name="following" comment="accounts you are following on lastfm">Đang theo dõi</string>
     <string name="grant_notification_access">Cấp quyền truy cập thông báo</string>
     <string name="send_notifications">Cho phép gửi thông báo</string>
-    <string name="swap" comment="(Swap title and artist)">Hoán đổi</string>
+    <string name="swap" comment="button to swap title and artist">Hoán đổi</string>
     <string name="time_just_now">mới đây</string>
     <string name="loved" comment="Its a noun">Đã yêu thích</string>
-    <string name="details">Chi tiết</string>
-    <string name="sort">Sắp xếp</string>
-    <string name="listeners">Thính giả</string>
+    <string name="sort" comment="to sort a list">Sắp xếp</string>
+    <string name="listeners" comment="number of unique users who scrobbled">Thính giả</string>
     <string name="collapse" comment="(view only a few items)">Thu nhỏ</string>
     <string name="expand" comment="(view all items)">Mở rộng</string>
     <string name="user_loved" formatted="true" comment="%1= username">%1$s thích</string>
     <string name="from" formatted="true" comment="%1= country (displayed in friends popup)">Từ %1$s</string>
     <string name="not_found" comment="Shown in search">Không tìm thấy</string>
     <string name="save" comment="saves a file">Lưu</string>
-    <string name="saved_to_gallery">Đã lưu vào Thư viện</string>
+    <string name="saved_to_gallery" comment="used for the collage generator">Đã lưu vào Thư viện</string>
     <string name="weekly">Hàng tuần</string>
     <string name="weeks">Tuần</string>
     <string name="monthly">Hàng tháng</string>
     <string name="months">Tháng</string>
     <string name="years" comment="For the charts menu which displays year by year">Năm</string>
-    <string name="charts_overall">Tổng quan</string>
+    <string name="charts_overall" comment="all time charts">Tổng quan</string>
     <string name="charts_no_data">Không có dữ liệu trong giai đoạn này</string>
     <string name="charts_custom" comment="Custom date range, but in short, used in the charts menu">Tuỳ chỉnh</string>
     <string name="based_on" formatted="true" comment="%1= the word 'artists', 'albums' or 'tracks'">Dựa trên %1$s</string>
     <string name="not_enough_data" comment="(not enough data to draw a chart etc)">Không đủ dữ liệu</string>
-    <string name="random_text">Ngẫu nhiên</string>
+    <string name="random_text" comment="random scrobble or theme">Ngẫu nhiên</string>
     <string name="original" comment="Original metadata before editing">Gốc</string>
     <string name="corrected" comment="Corrected metadata after editing">Đã sửa</string>
     <string name="close" comment="To close a dialog or something">Đóng</string>
     <string name="appwidget_loading">Đang tải…</string>
     <string name="appwidget_period" comment="1 week, 1 month, 1 year etc">Khoảng thời gian</string>
     <string name="appwidget_shadow">Bóng</string>
-    <string name="appwidget_show">Hiện</string>
-    <string name="light">Sáng</string>
-    <string name="dark">Tối</string>
-    <string name="system_colors">Màu hệ thống</string>
-    <string name="edit_replace">Thay thế</string>
+    <string name="appwidget_show" comment="to visually show something">Hiện</string>
+    <string name="light" comment="light theme">Sáng</string>
+    <string name="dark" comment="dark theme">Tối</string>
+    <string name="system_colors" comment="material you system theme colors">Màu hệ thống</string>
+    <string name="edit_replace" comment="regex replace">Thay thế</string>
     <string name="edit_first" comment="First occurrence of a pattern">Đầu tiên</string>
     <string name="edit_all" comment="All occurrences of a pattern">Tất cả</string>
     <string name="edit_extract" comment="To extract sub text from a larger text, in short, used in pattern edits">Trích xuất</string>
@@ -130,7 +128,7 @@
     <string name="block" comment="block the track from scrobbling">Chặn</string>
     <string name="pin" comment="pin a friend to the top">Ghim</string>
     <string name="unpin" comment="unpin a friend to the top">Bỏ ghim</string>
-    <string name="duration">Thời lượng</string>
+    <string name="duration" comment="The duration of the track">Thời lượng</string>
     <string name="total_listen_time">Tổng thời lượng nghe</string>
     <string name="enable" comment="To enable some feature">Bật</string>
     <string name="username" comment="last.fm Username">Tên người dùng</string>
@@ -139,17 +137,17 @@
     <string name="pref_delay_per" comment="(Scrobble delay in percent)">Phần trăm</string>
     <string name="pref_logout">Đăng xuất</string>
     <string name="pref_login">Đăng nhập</string>
-    <string name="pref_about" comment="Info about this app">Giới thiệu</string>
+    <string name="pref_about" comment="the about section at the bottom of the settings screen">Giới thiệu</string>
     <string name="pref_privacy_policy">Chính sách quyền riêng tư</string>
     <string name="pref_user_label" comment="(Like username)">Người dùng</string>
     <string name="pref_token_label" comment="For Listenbrainz">Token xác thực</string>
     <string name="api_url" comment="For Listenbrainz">API URL</string>
     <string name="server_url" comment="For self hosted scrobbling services">URL máy chủ</string>
     <string name="pref_locale">Ngôn ngữ</string>
-    <string name="pref_misc">Khác</string>
+    <string name="pref_misc" comment="Miscellaneous settings">Khác</string>
     <string name="pref_first_day_of_week" comment="Sunday, Monday etc">Tuần mới bắt đầu vào</string>
-    <string name="pref_export">Xuất</string>
-    <string name="pref_import">Nhập</string>
+    <string name="pref_export" comment="backs up the settings to a file">Xuất</string>
+    <string name="pref_import" comment="restores the settings from a backup/export file">Nhập</string>
     <string name="pref_personalization" comment="Such as themes, widgets and some appearance settings">Cá nhân hoá</string>
     <string name="pref_themes" comment="Color themes">Chủ đề</string>
     <string name="pref_lists" comment="Such as edits list and block lists">Danh sách</string>
@@ -164,21 +162,21 @@
     <string name="kill_reason" comment="%1= reason for the app kill" formatted="true">Lý do: %1$s</string>
     <string name="login_submit" comment="Verifies the login details">Xác thực</string>
     <string name="fix_it_battery_title">Tắt tối ưu hoá pin</string>
-    <string name="fix_it_energy_title">Tắt tối ưu hoá pin</string>
-    <string name="fix_it_action" comment="(To open an app)">Mở</string>
+    <string name="fix_it_energy_title" comment="Disable battery optimizations equivalent for TVs">Tắt tối ưu hoá pin</string>
+    <string name="fix_it_action" comment="(To open an app, a link or a screen within pano scrobbler)">Mở</string>
     <string name="delete_account">Xóa tài khoản</string>
     <string name="add_photo" comment="Add or change a photo for the artist or album">Thêm hoặc thay ảnh</string>
     <string name="from_gallery" comment="Pick an image for the artist or album from the device gallery">Từ thư viện ảnh</string>
-    <string name="square_photo_hint">Chọn ảnh vuông để có kết quả tốt nhất</string>
+    <string name="square_photo_hint" comment="for user picked image from their gallery, used for custom artist or album pic">Chọn ảnh vuông để có kết quả tốt nhất</string>
     <string name="scrobble_to_file">Tập tin</string>
     <string name="password">Mật khẩu</string>
     <string name="create" comment="Create a new file">Tạo mới</string>
     <string name="ok">Đồng ý</string>
     <string name="cancel">Hủy</string>
-    <string name="back">Quay lại</string>
-    <string name="done">Hoàn tất</string>
+    <string name="back" comment="back button">Quay lại</string>
+    <string name="done" comment="Generic done button, sometimes displayed as a tick icon">Hoàn tất</string>
     <string name="retry" comment="Retry loading data from network after it has failed">Thử lại</string>
-    <string name="run_on_start">Chạy khi khởi động máy</string>
+    <string name="run_on_start" comment="used on desktop">Chạy khi khởi động máy</string>
     <string name="save_logs" comment="Debug logs to be saved to a text file">Lưu log</string>
     <string name="contrast" comment="Color contrast, used in the themes screen">Độ tương phản</string>
     <string name="high" comment="As in high/medium/low">Cao</string>

@@ -53,7 +53,7 @@
     <string name="album_art">एल्बम आर्ट</string>
     <string name="artist_image">एल्बम छवि</string>
     <string name="parse_error" comment="Title parsing error for Youtube etc">शीर्षक पार्स गर्न सकेन</string>
-    <string name="network_error">नेटवर्क त्रुटि</string>
+    <string name="network_error" comment="Used as a generic fallback error message">नेटवर्क त्रुटि</string>
     <string name="scrobble_ignored" comment="Will be prefixed by Lastfm: (e.g. Lastfm: Scrobble ignored)">स्क्रबल बेवास्ता गरियो</string>
     <string name="scrobble_ignored_save_edit">Lastfm ले सम्पादनलाई बेवास्ता गरेको छ किनभने स्क्रबल धेरै पुरानो छ। के तपाईं यस सम्पादनलाई भविष्यमा स्क्रबहरूका लागि सेभ गर्न चाहनुहुन्छ?</string>
     <string name="required_fields_empty" comment="Shown on filling a form">आवश्यक क्षेत्रहरू खाली छन्</string>
@@ -66,12 +66,11 @@
     <string name="album">एल्बम</string>
     <string name="albums">एलबमहरू</string>
     <string name="top_albums" comment="top albums the user has listened to, or most scrobbled albums of an artist">शीर्ष एल्बमहरू</string>
-    <string name="track">ट्र्याक</string>
+    <string name="track" comment="music track or song">ट्र्याक</string>
     <string name="tracks">ट्र्याकहरू</string>
     <string name="top_tracks" comment="top tracks the user has listened to, or most scrobbled tracks of an artist">शीर्ष ट्र्याकहरू</string>
     <string name="similar_tracks">समान ट्र्याकहरू</string>
     <string name="state_scrobbling">स्क्रबल गर्दै…</string>
-    <string name="state_scrobbled">स्क्रबल गरियो</string>
     <string name="state_unscrobbled">स्क्रबल हटाइयो</string>
     <string name="tap_to_edit">(सम्पादन गर्नको लागि थिच्नुहोस्)</string>
     <string name="recents" comment="Short for recently scrobbled">हालैका</string>
@@ -79,8 +78,8 @@
     <string name="auto" comment="automatic or default setting">स्वतः</string>
     <string name="music_players">संगीत प्लेयरहरू</string>
     <string name="other_apps" comment="Apps which are not music players or video streaming apps">अन्य एपहरू</string>
-    <string name="choose_apps">एपहरू चयन गर्नुहोस्</string>
-    <string name="choose_an_app">एप चयन गर्नुहोस्</string>
+    <string name="choose_apps" comment="multi select list">एपहरू चयन गर्नुहोस्</string>
+    <string name="choose_an_app" comment="single select list">एप चयन गर्नुहोस्</string>
     <string name="apps" comment="Currently appears on the regex edit dialog showing the selected apps and allowing the user to add more apps">एपहरू</string>
     <string name="unavailable_offline">अफलाइन हुँदा उपलब्ध छैन</string>
     <string name="tv_url_notice">अर्को डिभाइसको ब्राउजरमा यो URL खोल्नुहोस्</string>
@@ -100,19 +99,17 @@
     <string name="rank_change_new">अघिल्लो अवधि भित्र स्क्रबल गरिएको छैन</string>
     <string name="search">खोज्नुहोस्</string>
     <string name="clear_all_history" comment="(talking about search history, tag history)">सबै इतिहास मेटाउनुहोस्</string>
-    <string name="global" comment="search globally across lastfm">ग्लोबल</string>
+    <string name="global" comment="something across entire lastfm or the scrobbling service">ग्लोबल</string>
     <string name="profile">प्रोफाइल</string>
     <string name="profile_pic">प्रोफाइल छवि</string>
     <string name="item_options" comment="Screen reader text for 3 dots menu button">यस वस्तुको लागि विकल्पहरू</string>
     <string name="new_player" formatted="true" comment="(%1 = App name) detected (shown in notification, when a new music player is detected)">%1$s भेटियो</string>
-    <string name="new_player_prompt">यो एप स्क्रबल गरिरहने हो?</string>
-    <string name="cannot_access" comment="%1$s= the file or folder name">%1$s निषेधित</string>
-    <string name="file_exists_confirm_overwrite">फाइल पहिल्यै छ, ओभरराइट गर्न क्लिक गर्नुहोस.</string>
+    <string name="new_player_prompt" comment="when a new music player is detected on android and auto-detect new apps setting is enabled. The allowlist is opt out">यो एप स्क्रबल गरिरहने हो?</string>
     <string name="no_scrobbles">अहिलेसम्म कुनै पनि गीत छैन…</string>
     <string name="no_friends">अहिलेसम्म कसैलाई पनि फलो गरिरहेको छैन…</string>
     <string name="channel_err" comment="Its a noun">स्क्रबल त्रुटिहरू</string>
-    <string name="new_app">नयाँ एप</string>
-    <string name="no_apps_enabled">कुनै एप सक्षम छैन</string>
+    <string name="new_app" comment="new media player app detected">नयाँ एप</string>
+    <string name="no_apps_enabled" comment="user hasn't enabled any apps for scrobbling">कुनै एप सक्षम छैन</string>
     <string name="n_more" formatted="true" comment="n more( pending scrobbles)">%1$d थप</string>
     <string name="show_all">सबै हेर्नुहोस्</string>
     <string name="edit">सम्पादन</string>
@@ -135,7 +132,7 @@
 - र थप 
 - सूचनाहरूले आवाज जनाउँदैन""</string>
     <string name="will_not_scrobble">यो चरण छोड्दा स्क्रबल असक्षम हुनेछ</string>
-    <string name="swap" comment="(Swap title and artist)">स्वाप</string>
+    <string name="swap" comment="button to swap title and artist">स्वाप</string>
     <string name="time_just_now">भर्खरै</string>
     <string name="no_mail_apps">कुनै इमेल क्लाइन्ट स्थापना गरिएको छैन</string>
     <string name="loved" comment="Its a noun">मन पराएको</string>
@@ -143,12 +140,10 @@
     <string name="simple_edits">सम्पादनहरू</string>
     <string name="charts" comment="User's top artists, albums, tracks, line chart of daily scrobble counts and tag cloud">चार्ट्स</string>
     <string name="tag_cloud" comment="https://www.google.com/search?&amp;q=tag+cloud">ट्याग क्लाउड</string>
-    <string name="details">विवरणहरू</string>
     <string name="saved_as_pending">विचाराधीन स्क्रबलको रूपमा सेभ गरियो</string>
-    <string name="sort">क्रमबद्ध</string>
-    <string name="time_jump" comment="Button shows scrobbles from a specific time">समय जम्प</string>
-    <string name="my_scrobbles">मेरो स्क्रबल</string>
-    <string name="listeners">श्रोता</string>
+    <string name="sort" comment="to sort a list">क्रमबद्ध</string>
+    <string name="time_jump" comment="Time selector dropdown to show scrobbles from a specific time">समय जम्प</string>
+    <string name="listeners" comment="number of unique users who scrobbled">श्रोता</string>
     <string name="scrobbles">स्क्रबल</string>
     <string name="collapse" comment="(view only a few items)">संक्षिप्त पार्नुहोस्</string>
     <string name="expand" comment="(view all items)">विस्तृत गर्नुहोस्</string>
@@ -156,7 +151,7 @@
     <string name="from" formatted="true" comment="%1= country (displayed in friends popup)">%1$s बाट</string>
     <string name="not_found" comment="Shown in search">फेला परेन</string>
     <string name="save" comment="saves a file">सेभ</string>
-    <string name="saved_to_gallery">ग्यालरीमा सेभ गरियो</string>
+    <string name="saved_to_gallery" comment="used for the collage generator">ग्यालरीमा सेभ गरियो</string>
     <string name="reports" comment="Like last.week reports and stuff">रिपोर्टहरू</string>
     <string name="weekly">साप्ताहिक</string>
     <string name="weeks">हप्ता</string>
@@ -164,14 +159,14 @@
     <string name="months">महिना</string>
     <string name="days">दिन</string>
     <string name="years" comment="For the charts menu which displays year by year">वर्ष</string>
-    <string name="charts_overall">समग्र</string>
+    <string name="charts_overall" comment="all time charts">समग्र</string>
     <string name="listening_activity" comment="Shows a bar chart of the number of scrobbles each day/week/month/year">सुन्ने गतिविधि</string>
     <string name="charts_no_data">यस अवधिको लागि कुनै डेटा छैन</string>
     <string name="charts_custom" comment="Custom date range, but in short, used in the charts menu">कस्टम</string>
     <string name="charts_continuous" comment="Continuous date ranges, but in short, like last 7 days, last 30 days, etc">लगातार</string>
     <string name="based_on" formatted="true" comment="%1= the word 'artists', 'albums' or 'tracks'">%1$s मा आधारित</string>
     <string name="not_enough_data" comment="(not enough data to draw a chart etc)">पर्याप्त डेटा छैन</string>
-    <string name="random_text">जुनसुकै</string>
+    <string name="random_text" comment="random scrobble or theme">जुनसुकै</string>
     <string name="original" comment="Original metadata before editing">मौलिक</string>
     <string name="corrected" comment="Corrected metadata after editing">सच्याइयो</string>
     <string name="tag" comment="last.fm tag">ट्याग</string>
@@ -186,15 +181,15 @@
     <string name="appwidget_loading">लोड हुँदैछ…</string>
     <string name="appwidget_period" comment="1 week, 1 month, 1 year etc">अवधि</string>
     <string name="appwidget_shadow">छाँया</string>
-    <string name="appwidget_show">देखाउ</string>
-    <string name="light">उज्यालो</string>
-    <string name="dark">अँध्यारो</string>
-    <string name="system_colors">प्रणाली रङहरू</string>
-    <string name="appwidget_alpha">ब्याकग्राउण्ड अपारदर्शकता</string>
+    <string name="appwidget_show" comment="to visually show something">देखाउ</string>
+    <string name="light" comment="light theme">उज्यालो</string>
+    <string name="dark" comment="dark theme">अँध्यारो</string>
+    <string name="system_colors" comment="material you system theme colors">प्रणाली रङहरू</string>
+    <string name="appwidget_alpha" comment="app window background opacity">ब्याकग्राउण्ड अपारदर्शकता</string>
     <string name="appwidget_refresh_every" formatted="true" comment="%1= 'n minutes'; n is &gt;= 45">विजेट प्रत्येक %1$s मा रिफ्रेस हुनेछ</string>
     <string name="edit_name" comment="name for regex pattern">मैत्रीपूर्ण नाम</string>
     <string name="edit_regex">Regex pattern</string>
-    <string name="edit_replace">बढ्लिनुहोस्</string>
+    <string name="edit_replace" comment="regex replace">बढ्लिनुहोस्</string>
     <string name="edit_first" comment="First occurrence of a pattern">पहिलो</string>
     <string name="edit_all" comment="All occurrences of a pattern">सबै</string>
     <string name="edit_extract_example" comment="Do not translate artist, albumArtist, album, track, because the user has to enter them as it is. https://www.google.com/search?q=regex+named+capture+groups">उदाहरणको लागी तपाईं लाई आर्टिस्ट र टाइटल को ठाँउ परिवर्तन गर्न, तपाईंले आर्टिस्ट रिजेक्स (?&lt;track&gt;.*) र ट्रयाक रीजेक्स लाई (?&lt;artist&gt;.*) गरेर राख्नुपर्छ</string>
@@ -205,7 +200,7 @@
     <string name="hidden_tags" comment="Tags that should not be shown to the user">लुकेका ट्यागस</string>
     <string name="pin" comment="pin a friend to the top">पिन</string>
     <string name="unpin" comment="unpin a friend to the top">अनपिन</string>
-    <string name="pin_limit_reached" formatted="true">पिन सीमा पुग्यो (%1$d)</string>
+    <string name="pin_limit_reached" formatted="true" comment="%1= the max limit">पिन सीमा पुग्यो (%1$d)</string>
     <string name="pin_help">पिन भएका सामग्री लाई तलमाथि गर्न केही समय छुनुहोस्</string>
     <string name="use_channel" comment="(Use youtube channel name)">च्यानल नाम प्रयोग</string>
     <string name="regex_edits_suggestion" formatted="true" comment="%1= the preset name (e.g. Remastered)">के तपाईं प्येटर्न बदल्ने नियम प्रयोग गर्न चानुहुन्छ: %1$s?</string>
@@ -213,16 +208,16 @@
     <string name="persistent_noti_text">लुकाउनुको लाई ट्याप गर्नुहोस्</string>
     <string name="scrobbler_off">स्क्रोब्बलर निष्क्रिय</string>
     <string name="scrobbler_on">स्क्रोब्ल्लेर सञ्चालन</string>
-    <string name="duration">समयावधि</string>
+    <string name="duration" comment="The duration of the track">समयावधि</string>
     <string name="total_listen_time">जम्मा सुनेको समय</string>
     <string name="enable" comment="To enable some feature">सक्रिय</string>
     <string name="create_collage">कोलाज बनाउनुहोस्</string>
-    <string name="pref_master">संगीत स्क्रबल गर्नुहोस्</string>
+    <string name="pref_master" comment="Switch to enable or disable scrobbling">संगीत स्क्रबल गर्नुहोस्</string>
     <string name="pref_delay_per" comment="(Scrobble delay in percent)">प्रतिशत</string>
     <string name="pref_logout">लगआउट</string>
-    <string name="sure_tap_again">पक्का? फेरि ट्याप गर्नुहोस्</string>
+    <string name="sure_tap_again" comment="tap again to confirm">पक्का? फेरि ट्याप गर्नुहोस्</string>
     <string name="pref_login">लगइन</string>
-    <string name="pref_about" comment="Info about this app">बारेमा</string>
+    <string name="pref_about" comment="the about section at the bottom of the settings screen">बारेमा</string>
     <string name="pref_privacy_policy">गोपनीयता शर्त</string>
     <string name="pref_user_label" comment="(Like username)">प्रयोगकर्ता</string>
     <string name="pref_token_label" comment="For Listenbrainz">अथेन्टिकेसन टोकन</string>
@@ -232,12 +227,12 @@
     <string name="pref_now_playing">आहिले बजिरहेको लाई सबमिट गर्नुहोस्</string>
     <string name="pref_locale">भाषाहरु</string>
     <string name="pref_crashlytics_enabled">एरोर स्वचीलत रूपमा रिपोर्ट गर्नुहोस्</string>
-    <string name="pref_misc">मिस्क.</string>
+    <string name="pref_misc" comment="Miscellaneous settings">मिस्क.</string>
     <string name="pref_first_day_of_week" comment="Sunday, Monday etc">हप्ता सुरु हुन्छ</string>
     <string name="pref_imexport" comment="As in backup or restore the settings">आयात &amp; निर्यात</string>
-    <string name="pref_export">निर्यात</string>
+    <string name="pref_export" comment="backs up the settings to a file">निर्यात</string>
     <string name="pref_export_desc">सेटिङ्स, एडिट, ब्लकलिस्ट बाट ब्याकअप गर्नुहोस्। लग-इन सँग सम्बन्धित जानकारी ब्याकअप सुरक्षा को कारण ले ब्याकअप हुँदैन। साथीभाइ संग शेयर गर्दा र मोबाइल परिवर्तन गर्दा उपयोगी हुन्छ।.</string>
-    <string name="pref_import">आयात</string>
+    <string name="pref_import" comment="restores the settings from a backup/export file">आयात</string>
     <string name="pref_imexport_network" comment="As in backup or restore the settings over network">नेटवर्क</string>
     <string name="pref_imexport_code" comment="A code shown on the screen to be entered on the other device">कोड</string>
     <string name="pref_imexport_network_notice">नेटवर्क मोड को लागि दुवै डिभाइस एउटै नेटवर्क मा कनेक्ट हुनुपर्छ।</string>

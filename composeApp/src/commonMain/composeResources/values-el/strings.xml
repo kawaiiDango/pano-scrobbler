@@ -49,7 +49,7 @@
     <string name="album_art">Εξώφυλλο άλμπουμ</string>
     <string name="artist_image">Εικόνα καλλιτέχνη</string>
     <string name="parse_error" comment="Title parsing error for Youtube etc">Αδυναμία επαλήθευσης τίτλου</string>
-    <string name="network_error">Σφάλμα δικτύου</string>
+    <string name="network_error" comment="Used as a generic fallback error message">Σφάλμα δικτύου</string>
     <string name="scrobble_ignored" comment="Will be prefixed by Lastfm: (e.g. Lastfm: Scrobble ignored)">Το Scrobble αγνοήθηκε</string>
     <string name="scrobble_ignored_save_edit">Το Lastfm αγνόησε την επεξεργασία πιθανώς επειδή το scrobble είναι πολύ παλιό. Θέλετε να αποθηκεύσετε αυτή την επεξεργασία για μελλοντικά scrobbles;</string>
     <string name="required_fields_empty" comment="Shown on filling a form">Τα απαιτούμενα πεδία είναι κενά</string>
@@ -62,12 +62,11 @@
     <string name="album">Άλμπουμ</string>
     <string name="albums">Άλμπουμ</string>
     <string name="top_albums" comment="top albums the user has listened to, or most scrobbled albums of an artist">Κορυφαία άλμπουμ</string>
-    <string name="track">Κομμάτι</string>
+    <string name="track" comment="music track or song">Κομμάτι</string>
     <string name="tracks">Κομμάτια</string>
     <string name="top_tracks" comment="top tracks the user has listened to, or most scrobbled tracks of an artist">Κορυφαία Κομμάτια</string>
     <string name="similar_tracks">Παρόμοια κομμάτια</string>
     <string name="state_scrobbling">Τώρα κάνεις scrobbling…</string>
-    <string name="state_scrobbled">Scrobbλαρισμένα</string>
     <string name="state_unscrobbled">Αφαιρέθηκε από τα scrobbles σου</string>
     <string name="tap_to_edit">(πατήστε για επεξεργασία)</string>
     <string name="recents" comment="Short for recently scrobbled">Πρόσφατα</string>
@@ -75,8 +74,8 @@
     <string name="auto" comment="automatic or default setting">Αυτόματο</string>
     <string name="music_players">Προγραμμάματα αναπαραγωγής μουσικής</string>
     <string name="other_apps" comment="Apps which are not music players or video streaming apps">Άλλες Εφαρμογές</string>
-    <string name="choose_apps">Επιλέξτε εφαρμογές</string>
-    <string name="choose_an_app">Διάλεξε μια εφαρμογή</string>
+    <string name="choose_apps" comment="multi select list">Επιλέξτε εφαρμογές</string>
+    <string name="choose_an_app" comment="single select list">Διάλεξε μια εφαρμογή</string>
     <string name="apps" comment="Currently appears on the regex edit dialog showing the selected apps and allowing the user to add more apps">Εφαρμογές</string>
     <string name="unavailable_offline">Δεν είναι διαθέσιμο εκτός σύνδεσης</string>
     <string name="scrobble_services" comment="Services like lastfm, librefm, listenbrainz etc">Υπηρεσίες</string>
@@ -93,16 +92,16 @@
     <string name="rank_change_new">Μη scrobbled εντός της προηγούμενης περιόδου</string>
     <string name="search">Αναζήτηση</string>
     <string name="clear_all_history" comment="(talking about search history, tag history)">Εκκαθάριση ιστορικού</string>
-    <string name="global" comment="search globally across lastfm">Παγκόσμια</string>
+    <string name="global" comment="something across entire lastfm or the scrobbling service">Παγκόσμια</string>
     <string name="profile">Προφίλ</string>
     <string name="profile_pic">Εικόνα προφίλ</string>
     <string name="item_options" comment="Screen reader text for 3 dots menu button">Επιλογές για αυτό το αντικείμενο</string>
     <string name="new_player" formatted="true" comment="(%1 = App name) detected (shown in notification, when a new music player is detected)">%1$s ανιχνεύτηκαν</string>
-    <string name="new_player_prompt">Συνέχιση scrobbling αυτής της εφαρμογής;</string>
+    <string name="new_player_prompt" comment="when a new music player is detected on android and auto-detect new apps setting is enabled. The allowlist is opt out">Συνέχιση scrobbling αυτής της εφαρμογής;</string>
     <string name="no_scrobbles">Δεν υπάρχουν τραγούδια ακόμα εδώ…</string>
     <string name="channel_err" comment="Its a noun">Σφάλματα Scrobble</string>
-    <string name="new_app">Νέα εφαρμογή</string>
-    <string name="no_apps_enabled">Δεν υπάρχουν ενεργοποιημένες εφαρμογές</string>
+    <string name="new_app" comment="new media player app detected">Νέα εφαρμογή</string>
+    <string name="no_apps_enabled" comment="user hasn't enabled any apps for scrobbling">Δεν υπάρχουν ενεργοποιημένες εφαρμογές</string>
     <string name="n_more" formatted="true" comment="n more( pending scrobbles)">%1$d ακόμη</string>
     <string name="show_all">Δες τα όλα</string>
     <string name="edit">Επεξεργασία</string>
@@ -122,7 +121,7 @@
 - Και περισσότερα
 - Οι ειδοποιήσεις δεν κάνουν ήχο""</string>
     <string name="will_not_scrobble">Η παράλειψη αυτού του βήματος θα απενεργοποιήσει το scrobbling</string>
-    <string name="swap" comment="(Swap title and artist)">Ανταλλαγή</string>
+    <string name="swap" comment="button to swap title and artist">Ανταλλαγή</string>
     <string name="time_just_now">μόλις τώρα</string>
     <string name="no_mail_apps">Δεν υπάρχει εγκατεστημένος email client</string>
     <string name="loved" comment="Its a noun">Αγαπημένο</string>
@@ -130,12 +129,10 @@
     <string name="simple_edits">Επεξεργασίες</string>
     <string name="charts" comment="User's top artists, albums, tracks, line chart of daily scrobble counts and tag cloud">Charts</string>
     <string name="tag_cloud" comment="https://www.google.com/search?&amp;q=tag+cloud">Σύννεφο ετικετών</string>
-    <string name="details">Λεπτομέρειες</string>
     <string name="saved_as_pending">Αποθηκεύτηκε ως scrobble που εκκρεμεί</string>
-    <string name="sort">Ταξινόμηση</string>
-    <string name="time_jump" comment="Button shows scrobbles from a specific time">Αναδρομή</string>
-    <string name="my_scrobbles">Παλαιότερα scrobbles</string>
-    <string name="listeners">Ακροατές</string>
+    <string name="sort" comment="to sort a list">Ταξινόμηση</string>
+    <string name="time_jump" comment="Time selector dropdown to show scrobbles from a specific time">Αναδρομή</string>
+    <string name="listeners" comment="number of unique users who scrobbled">Ακροατές</string>
     <string name="scrobbles">Scrobbles</string>
     <string name="collapse" comment="(view only a few items)">Κατάρρευση</string>
     <string name="expand" comment="(view all items)">Επέκταση</string>
@@ -143,20 +140,20 @@
     <string name="from" formatted="true" comment="%1= country (displayed in friends popup)">Από %1$s</string>
     <string name="not_found" comment="Shown in search">Δε βρέθηκε</string>
     <string name="save" comment="saves a file">Αποθήκευση</string>
-    <string name="saved_to_gallery">Αποθηκεύτηκε στη Συλλογή</string>
+    <string name="saved_to_gallery" comment="used for the collage generator">Αποθηκεύτηκε στη Συλλογή</string>
     <string name="weekly">Εβδομαδιαία</string>
     <string name="weeks">Εβδομάδες</string>
     <string name="monthly">Μηνιαία</string>
     <string name="months">Μήνες</string>
     <string name="days">Μέρες</string>
     <string name="years" comment="For the charts menu which displays year by year">Χρόνια</string>
-    <string name="charts_overall">Συνολικά</string>
+    <string name="charts_overall" comment="all time charts">Συνολικά</string>
     <string name="charts_no_data">Δεν υπάρχουν δεδομένα για την περίοδο αυτή</string>
     <string name="charts_custom" comment="Custom date range, but in short, used in the charts menu">Προσαρμοσμένο</string>
     <string name="charts_continuous" comment="Continuous date ranges, but in short, like last 7 days, last 30 days, etc">Συνεχής</string>
     <string name="based_on" formatted="true" comment="%1= the word 'artists', 'albums' or 'tracks'">Βασισμένο σε %1$s</string>
     <string name="not_enough_data" comment="(not enough data to draw a chart etc)">Δεν υπάρχουν αρκετά δεδομένα</string>
-    <string name="random_text">Τυχαίο</string>
+    <string name="random_text" comment="random scrobble or theme">Τυχαίο</string>
     <string name="original" comment="Original metadata before editing">Αρχικό</string>
     <string name="corrected" comment="Corrected metadata after editing">Διορθωμένο</string>
     <string name="tag" comment="last.fm tag">Ετικέτα</string>
@@ -171,19 +168,19 @@
     <string name="appwidget_loading">Φόρτωση…</string>
     <string name="appwidget_period" comment="1 week, 1 month, 1 year etc">Περίοδος</string>
     <string name="appwidget_shadow">Σκιά</string>
-    <string name="appwidget_show">Εμφάνισε</string>
-    <string name="light">Φως</string>
-    <string name="dark">Σκοτεινό</string>
-    <string name="system_colors">Χρώματα συστήματος</string>
-    <string name="appwidget_alpha">Διαφάνεια φόντου</string>
+    <string name="appwidget_show" comment="to visually show something">Εμφάνισε</string>
+    <string name="light" comment="light theme">Φως</string>
+    <string name="dark" comment="dark theme">Σκοτεινό</string>
+    <string name="system_colors" comment="material you system theme colors">Χρώματα συστήματος</string>
+    <string name="appwidget_alpha" comment="app window background opacity">Διαφάνεια φόντου</string>
     <string name="appwidget_refresh_every" formatted="true" comment="%1= 'n minutes'; n is &gt;= 45">Το widget θα ανανεώνεται κάθε %1$s</string>
     <string name="edit_name" comment="name for regex pattern">Φιλική ονομασία</string>
     <string name="edit_regex">Μοτίβο Regex</string>
-    <string name="edit_replace">Αντικατάσταση</string>
+    <string name="edit_replace" comment="regex replace">Αντικατάσταση</string>
     <string name="edit_first" comment="First occurrence of a pattern">Πρώτο</string>
     <string name="edit_all" comment="All occurrences of a pattern">Όλα</string>
     <string name="edit_continue">Αν βρεθεί, συνεχίστε να ταιριάζετε με άλλες regexes</string>
-    <string name="edit_case_sensitive">Διάκριση πεζών-κεφαλαίων</string>
+    <string name="edit_case_sensitive" comment="currently used for regex edits matching">Διάκριση πεζών-κεφαλαίων</string>
     <string name="edit_regex_test" comment="(Test regex rules)">Δοκιμή</string>
     <string name="edit_presets" comment="Regex presets">Προεπιλογές</string>
     <string name="edit_max_patterns" formatted="true" comment="%1= max pattern count">Φτάσατε το όριο μοτίβων (%1$d)</string>
@@ -198,7 +195,7 @@
     <string name="hidden_tags" comment="Tags that should not be shown to the user">Κρυφές ετικέτες</string>
     <string name="pin" comment="pin a friend to the top">Καρφίτσωμα</string>
     <string name="unpin" comment="unpin a friend to the top">Ξεκαρφίτσωμα</string>
-    <string name="pin_limit_reached" formatted="true">Συμπληρώθηκε το όριο Pin (%1$d)</string>
+    <string name="pin_limit_reached" formatted="true" comment="%1= the max limit">Συμπληρώθηκε το όριο Pin (%1$d)</string>
     <string name="pin_help">Πατήστε παρατεταμένα καρφιτσωμένα στοιχεία για αναδιάταξη</string>
     <string name="use_channel" comment="(Use youtube channel name)">Χρήση ονόματος καναλιού</string>
     <string name="regex_edits_suggestion" formatted="true" comment="%1= the preset name (e.g. Remastered)">Θα θέλατε να ενεργοποιήσετε τον κανόνα επεξεργασίας μοτίβου: %1$s;</string>
@@ -206,7 +203,7 @@
     <string name="fix_it_desc">Αυτά μπορούν να βοηθήσουν να συνεχήσει το scrobbler να τρέχει στο παρασκήνιο σε ορισμένες συσκευές</string>
     <string name="scrobbler_off">Scrobbler ανενεργό</string>
     <string name="scrobbler_on">Scrobbler ενεργό</string>
-    <string name="duration">Διάρκεια</string>
+    <string name="duration" comment="The duration of the track">Διάρκεια</string>
     <string name="total_listen_time">Συνολικός χρόνος ακρόασης</string>
     <string name="enable" comment="To enable some feature">Ενεργοποιήση</string>
     <string name="disable" comment="To disable some feature">Απενεργοποίηση</string>
@@ -215,7 +212,7 @@
     <string name="create_collage">Δημιουργία κολάζ</string>
     <string name="captions" comment="Collage image captions such as artist names, play counts">Υπότιτλοι εικόνων</string>
     <string name="username" comment="last.fm Username">Όνομα Χρήστη</string>
-    <string name="pref_master">Κάνε scrobble μουσική</string>
+    <string name="pref_master" comment="Switch to enable or disable scrobbling">Κάνε scrobble μουσική</string>
     <string name="pref_master_qs_add">Προσθέστε το πλακίδιο Γρήγορων Ρυθμίσεων</string>
     <string name="pref_master_qs_already_addded">Το πλακίδιο Γρήγορων Ρυθμίσεων έχει ήδη προστεθεί</string>
     <string name="pref_noti">Ειδοποιήσεις</string>
@@ -227,7 +224,7 @@
     <string name="pref_delay_per" comment="(Scrobble delay in percent)">Ποσοστό</string>
     <string name="pref_logout">Αποσύνδεση</string>
     <string name="pref_login">Σύνδεση</string>
-    <string name="pref_about" comment="Info about this app">Σχετικά με</string>
+    <string name="pref_about" comment="the about section at the bottom of the settings screen">Σχετικά με</string>
     <string name="pref_privacy_policy">Πολιτική απορρήτου</string>
     <string name="pref_user_label" comment="(Like username)">Χρήστης</string>
     <string name="pref_token_label" comment="For Listenbrainz">Κλειδί ελέγχου ταυτότητας</string>
@@ -235,12 +232,12 @@
     <string name="pref_now_playing">Υποβολή του τραγουδιού που παίζει τώρα</string>
     <string name="pref_locale">Γλώσσες</string>
     <string name="pref_crashlytics_enabled">Αυτόματη αναφορά σφαλμάτων</string>
-    <string name="pref_misc">Διάφορα.</string>
+    <string name="pref_misc" comment="Miscellaneous settings">Διάφορα.</string>
     <string name="pref_first_day_of_week" comment="Sunday, Monday etc">Αρχή της εβδομάδας</string>
     <string name="pref_imexport" comment="As in backup or restore the settings">Εισαγωγή &amp; εξαγωγή</string>
-    <string name="pref_export">Εξαγωγή</string>
+    <string name="pref_export" comment="backs up the settings to a file">Εξαγωγή</string>
     <string name="pref_export_desc">Δημιουργεί αντίγραφα ασφαλείας ρυθμίσεων, επεξεργασιών και blocklist. Δεν αποθηκεύει συνδέσεις για λόγους ασφαλείας. Χρήσιμο για μετακίνηση μεταξύ συσκευών ή κοινή χρήση με φίλους.</string>
-    <string name="pref_import">Εισαγωγή</string>
+    <string name="pref_import" comment="restores the settings from a backup/export file">Εισαγωγή</string>
     <string name="pref_imexport_code" comment="A code shown on the screen to be entered on the other device">Κωδικός</string>
     <string name="pref_imexport_network_notice">Για τη λειτουργία δικτύου, και οι δύο συσκευές πρέπει να είναι συνδεδεμένες στο ίδιο δίκτυο.</string>
     <string name="pref_personalization" comment="Such as themes, widgets and some appearance settings">Εξατομίκευση</string>
@@ -257,7 +254,7 @@
     <string name="existing_value" comment="starts with lowercase in english because it will be enclosed in angle brackets">Υπάρχοντα δεδομένα</string>
     <string name="pref_translate">Μεταφράστε αυτήν την εφαρμογή</string>
     <string name="pref_translate_credits">Εύσημα μετάφρασης</string>
-    <string name="pref_oss_credits">Αναφορές ανοικτού κώδικα</string>
+    <string name="pref_oss_credits" comment="Open source libraries, licenses used in the app">Αναφορές ανοικτού κώδικα</string>
     <string name="pref_check_updates">Έλεγχος Ενημερώσεων</string>
     <string name="no_updates">Δεν υπάρχουν διαθέσιμες ενημερώσεις</string>
     <string name="pref_notify_updates">Αυτόματες ενημερώσεις</string>
@@ -273,31 +270,31 @@
     <string name="import_lists_keep">Συγχώνευση, διατήρηση υφιστάμενων επεξεργασιών και λίστα αποκλεισμών</string>
     <string name="import_settings">Ρυθμίσεις εισαγωγής</string>
     <string name="copied">Αντιγράφηκε!</string>
-    <string name="lastfm_reauth">Πρέπει να επαληθεύσετε ξανά τον έλεγχο ταυτότητας για να επεξεργαστείτε ή να διαγράψετε scrobbles</string>
-    <string name="failed_encode_url">Αποτυχία κωδικοποίησης URL</string>
+    <string name="lastfm_reauth" comment="The user needs to log out and log in again">Πρέπει να επαληθεύσετε ξανά τον έλεγχο ταυτότητας για να επεξεργαστείτε ή να διαγράψετε scrobbles</string>
+    <string name="failed_encode_url" comment="used for validating url input, in some of the login screens">Αποτυχία κωδικοποίησης URL</string>
     <string name="check_nls" formatted="true" comment="%1= the name Pano Scrobbler. Asks the user to check the app in notification access settings">Έλεγχος %1$s</string>
     <string name="no_browser">Δεν υπάρχει εγκατεστημένος φυλλομετρητής</string>
     <string name="no_player">Δεν υπάρχει εγκατεστημένη εφαρμογή αναπαραγωγής μουσικής</string>
-    <string name="not_running">⚠ Το scrobbler σκοτώθηκε από το σύστημά σας</string>
+    <string name="not_running" comment="When the app detects that the scrobbler was not running. Usually killed by OEM-specific battery savers.">⚠ Το scrobbler σκοτώθηκε από το σύστημά σας</string>
     <string name="login_submit" comment="Verifies the login details">Επαλήθευση</string>
     <string name="submitting_loves" formatted="true">Υποβολή loves, %1$d απομένουν</string>
     <string name="pending_batch" comment="For pending scrobbles">Υποβολή μιας παρτίδας</string>
     <string name="bar_chart">Ιστόγραμμα</string>
     <string name="fix_it_title">Πιθανές διορθώσεις</string>
-    <string name="fix_it_startup_title">Εξοικονομητές ενέργειας / διαχειριστές εκκίνησης</string>
+    <string name="fix_it_startup_title" comment="Like non standard OEM-specific battery settings on Xiaomi, Samsung, etc.">Εξοικονομητές ενέργειας / διαχειριστές εκκίνησης</string>
     <string name="fix_it_battery_title">Απενεργοποίηση βελτιστοποιήσεων μπαταρίας</string>
-    <string name="fix_it_action" comment="(To open an app)">Άνοιγμα</string>
+    <string name="fix_it_action" comment="(To open an app, a link or a screen within pano scrobbler)">Άνοιγμα</string>
     <string name="delete_account">Διαγραφή του λογαριασμού σας</string>
-    <string name="delete_account_custom_servers">Για προσαρμοσμένους διακομιστές, ελέγξτε τα αντίστοιχα έγγραφά τους.</string>
+    <string name="delete_account_custom_servers" comment="used in the delete account screen">Για προσαρμοσμένους διακομιστές, ελέγξτε τα αντίστοιχα έγγραφά τους.</string>
     <string name="add_photo" comment="Add or change a photo for the artist or album">Προσθήκη ή αλλαγή εικόνας</string>
     <string name="from_gallery" comment="Pick an image for the artist or album from the device gallery">Από τη συλλογή</string>
     <string name="scrobble_to_file">Αρχείο</string>
     <string name="password">Κωδικός</string>
     <string name="create" comment="Create a new file">Δημιουργία</string>
-    <string name="nothing" comment="nothing/none">Τίποτα</string>
+    <string name="nothing" comment="select nothing/none">Τίποτα</string>
     <string name="ok">Εντάξει</string>
     <string name="cancel">Ακύρωση</string>
-    <string name="back">Πίσω</string>
+    <string name="back" comment="back button">Πίσω</string>
     <string name="high" comment="As in high/medium/low">Υψηλό</string>
     <string name="medium" comment="As in high/medium/low">Μέτριο</string>
     <string name="low" comment="As in high/medium/low">Χαμηλό</string>
@@ -317,7 +314,8 @@
 • Κάντε απεγκατάσταση αυτής της εφαρμογής.
 • Ανοίξτε την ιστοσελίδα του Google Play από τον υπολογιστή σας.
 • Συνδεθείτε με τον λογαριασμό που κατέχει την αγορά.
-• Εγκαταστήστε αυτή την εφαρμογή απευθείας από την ιστοσελίδα του Google Play.</string>
+• Εγκαταστήστε αυτή την εφαρμογή απευθείας από την ιστοσελίδα του Google Play.
+</string>
     <string name="billing_block">Αποκλεισμός καλλιτεχνών/κομματιών και αυτόματη παράλειψη ή σίγαση</string>
     <string name="billing_pin_friends" formatted="true" comment="%1= number of pins, always 10 or more">Καρφίτσωσε έως %1$d φίλους και αναδιάταξε τους</string>
     <string name="billing_sharing">Αφαίρεση ονόματος εφαρμογής κατά την κοινή χρήση</string>

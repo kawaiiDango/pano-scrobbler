@@ -13,6 +13,7 @@ import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.withContext
+import kotlin.time.Duration.Companion.milliseconds
 
 class RegexEditsTestVM : ViewModel() {
     private val dao = PanoDb.db.getRegexEditsDao()
@@ -20,7 +21,7 @@ class RegexEditsTestVM : ViewModel() {
 
     val regexResults =
         _scrobbleDataInput
-            .debounce(500)
+            .debounce(500.milliseconds)
             .filterNotNull()
             .combine(dao.enabledFlow()) { sd, regexEdits ->
                 if (sd.track.isEmpty() || sd.artist.isEmpty()) {

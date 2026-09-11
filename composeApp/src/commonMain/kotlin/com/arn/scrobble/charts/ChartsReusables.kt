@@ -16,8 +16,8 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedToggleButton
+import androidx.compose.material3.OutlinedToggleButtonDefaults
 import androidx.compose.material3.Text
-import androidx.compose.material3.ToggleButtonDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -27,7 +27,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.layout.positionInParent
@@ -41,7 +41,6 @@ import androidx.navigation3.runtime.result.LocalResultEventBus
 import androidx.navigation3.runtime.result.ResultEffect
 import androidx.navigation3.runtime.result.ResultEventBus
 import com.arn.scrobble.api.AccountType
-import com.arn.scrobble.api.UserCached
 import com.arn.scrobble.api.lastfm.LastfmPeriod
 import com.arn.scrobble.charts.TimePeriodsGenerator.Companion.toDuration
 import com.arn.scrobble.charts.TimePeriodsGenerator.Companion.toTimePeriod
@@ -51,10 +50,10 @@ import com.arn.scrobble.icons.CalendarViewMonth
 import com.arn.scrobble.icons.CalendarViewWeek
 import com.arn.scrobble.icons.Circle
 import com.arn.scrobble.icons.DateRange
+import com.arn.scrobble.icons.ExpandCircleDownFilled
+import com.arn.scrobble.icons.ExpandCircleRightFilledAutoMirrored
 import com.arn.scrobble.icons.Icons
 import com.arn.scrobble.icons.Refresh
-import com.arn.scrobble.icons.automirrored.ExpandCircleRight
-import com.arn.scrobble.icons.filled.ExpandCircleDown
 import com.arn.scrobble.navigation.DatePickerResult
 import com.arn.scrobble.navigation.DateRangePickerResult
 import com.arn.scrobble.navigation.PanoRoute
@@ -63,6 +62,7 @@ import com.arn.scrobble.navigation.TimePeriodDataResult
 import com.arn.scrobble.navigation.TimePeriodTypeClickedResult
 import com.arn.scrobble.navigation.jsonSerializableSaver
 import com.arn.scrobble.ui.PanoDropdownMenu
+import com.arn.scrobble.ui.myColors
 import com.arn.scrobble.ui.rememberClippedPainter
 import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff.collectAsStateWithInitialValue
@@ -147,7 +147,7 @@ fun getPeriodTypePluralRes(periodType: TimePeriodType): PluralStringResource {
 
 @Composable
 fun TimePeriodSelector(
-    user: UserCached,
+    registeredTime: Long,
     viewModel: ChartsPeriodVM,
     onNavigate: (PanoRoute) -> Unit,
     onSelected: (timePeriod: TimePeriod, prevTimePeriod: TimePeriod?, Int) -> Unit,
@@ -158,7 +158,7 @@ fun TimePeriodSelector(
     val timePeriods by viewModel.timePeriods.collectAsStateWithLifecycle()
     val selectedPeriod by viewModel.selectedPeriod.collectAsStateWithLifecycle()
     val refreshCount by viewModel.refreshCount.collectAsStateWithLifecycle()
-    val periodType by viewModel.periodType.collectAsStateWithLifecycle(null)
+    val periodTypeToRegisteredTime by viewModel.periodTypeToRegisteredTime.collectAsStateWithLifecycle()
     var dropdownTypeShown by rememberSaveable(saver = jsonSerializableSaver<TimePeriodType?>()) {
         mutableStateOf(null)
     }
@@ -173,7 +173,7 @@ fun TimePeriodSelector(
             AccountType.LISTENBRAINZ -> {
                 viewModel.setPeriodTypeAndRegisteredTime(
                     TimePeriodType.LISTENBRAINZ,
-                    user.registeredTime
+                    registeredTime
                 )
                 if (digestTimePeriod == null) {
                     val selected = PlatformStuff.mainPrefs.data.map {
@@ -193,7 +193,7 @@ fun TimePeriodSelector(
                         it.lastChartsCustomPeriod
                     )
                 }.first()
-                viewModel.setPeriodTypeAndRegisteredTime(type, user.registeredTime)
+                viewModel.setPeriodTypeAndRegisteredTime(type, registeredTime)
                 viewModel.setSelectedPeriod(selected)
                 viewModel.setCustomPeriodInput(custom)
                 typeSelectorShown = false
@@ -202,7 +202,7 @@ fun TimePeriodSelector(
             else -> {
                 viewModel.setPeriodTypeAndRegisteredTime(
                     TimePeriodType.CONTINUOUS,
-                    user.registeredTime
+                    registeredTime
                 )
                 typeSelectorShown = false
             }
@@ -216,6 +216,7 @@ fun TimePeriodSelector(
     LaunchedEffect(selectedPeriod, refreshCount) {
         selectedPeriod?.let { selectedPeriod ->
             var prevPeriod: TimePeriod? = null
+            val periodType = periodTypeToRegisteredTime?.first
             if (periodType != TimePeriodType.CONTINUOUS) {
                 timePeriods.indexOf(selectedPeriod)
                     .takeIf { it in 0..<timePeriods.lastIndex }
@@ -236,10 +237,10 @@ fun TimePeriodSelector(
             onSelected(selectedPeriod, prevPeriod, refreshCount)
         }
 
-        periodType?.let {
+        periodTypeToRegisteredTime?.let { (periodType, _) ->
             val res = TimePeriodDataResult(
                 typeSelectorShown = typeSelectorShown,
-                periodType = it,
+                periodType = periodType,
                 timePeriodsList = timePeriods,
                 selectedPeriod = selectedPeriod,
                 enabled = enabled
@@ -272,7 +273,7 @@ fun TimePeriodSelector(
                     DpOffset(it.x.toDp(), 0.dp)
                 }
             }
-            dropdownTypeShown = periodType
+            dropdownTypeShown = periodTypeToRegisteredTime?.first
         } else
             viewModel.setSelectedPeriod(res.timePeriod)
     }
@@ -282,10 +283,10 @@ fun TimePeriodSelector(
     }
 
     LaunchedEffect(typeSelectorShown, enabled) {
-        periodType?.let {
+        periodTypeToRegisteredTime?.let { (periodType, _) ->
             val res = TimePeriodDataResult(
                 typeSelectorShown = typeSelectorShown,
-                periodType = it,
+                periodType = periodType,
                 timePeriodsList = timePeriods,
                 selectedPeriod = selectedPeriod,
                 enabled = enabled
@@ -298,11 +299,11 @@ fun TimePeriodSelector(
         if (typeSelectorShown == true) {
             PeriodTypeSelector(
                 onDismissRequest = { typeSelectorShown = false },
-                selectedPeriodType = periodType,
+                selectedPeriodType = periodTypeToRegisteredTime?.first,
                 onMenuItemClick = {
                     viewModel.setPeriodTypeAndRegisteredTime(
                         it,
-                        user.registeredTime
+                        registeredTime
                     )
                 },
                 onRefresh = if (showRefreshButton) {
@@ -317,7 +318,7 @@ fun TimePeriodSelector(
             TimePeriodType.CUSTOM -> {
                 val route = PanoRoute.Modal.DateRangePicker(
                     selectedDateRange = selectedPeriod?.let { it.start.timeToUTC() to it.end.timeToUTC() },
-                    allowedRange = user.registeredTime to System.currentTimeMillis(),
+                    allowedRange = registeredTime to System.currentTimeMillis(),
                 )
 
                 onNavigate(route)
@@ -327,7 +328,7 @@ fun TimePeriodSelector(
             TimePeriodType.WEEK -> {
                 val route = PanoRoute.Modal.DatePicker(
                     selectedDate = selectedPeriod?.start?.timeToUTC(),
-                    allowedRange = user.registeredTime to System.currentTimeMillis(),
+                    allowedRange = registeredTime to System.currentTimeMillis(),
                     weeksOnly = true,
                 )
                 onNavigate(route)
@@ -339,7 +340,7 @@ fun TimePeriodSelector(
                     offset = selectedPeriodOffset,
                     selectedMillis = selectedPeriod?.start ?: System.currentTimeMillis(),
                     onDismissRequest = { dropdownTypeShown = null },
-                    allowedRange = user.registeredTime to System.currentTimeMillis(),
+                    allowedRange = registeredTime to System.currentTimeMillis(),
                     onMonthMillisSelected = { monthMillis ->
                         val idx = timePeriods.binarySearch { period ->
                             monthMillis.compareTo(period.start)
@@ -416,6 +417,7 @@ fun TimePeriodSelectorRow(
                         resultEventBus.sendResult(TimePeriodTypeClickedResult)
                     }
                 },
+                colors = OutlinedToggleButtonDefaults.myColors(),
                 modifier = Modifier
                     .padding(end = 8.dp)
             ) {
@@ -467,10 +469,7 @@ fun TimePeriodSelectorRow(
                             )
                         )
                     },
-                    shapes = ToggleButtonDefaults.shapes(),
-                    colors = ToggleButtonDefaults.outlinedToggleButtonColors(
-                        checkedContainerColor = ToggleButtonDefaults.tonalToggleButtonColors().checkedContainerColor,
-                    ),
+                    colors = OutlinedToggleButtonDefaults.myColors(),
                     contentPadding = ButtonDefaults.ExtraSmallContentPadding,
                     modifier = if (timePeriod == selectedPeriod) {
                         Modifier
@@ -488,7 +487,7 @@ fun TimePeriodSelectorRow(
 
                     if (timePeriodsList.getOrNull(idx - 1) == selectedPeriod) {
                         Icon(
-                            imageVector = Icons.AutoMirrored.ExpandCircleRight,
+                            imageVector = Icons.ExpandCircleRightFilledAutoMirrored,
                             contentDescription = null,
                         )
                         Spacer(modifier = Modifier.width(2.dp))
@@ -499,17 +498,15 @@ fun TimePeriodSelectorRow(
                     if (timePeriod == selectedPeriod) {
                         Spacer(modifier = Modifier.width(2.dp))
                         Icon(
-                            imageVector = Icons.Filled.ExpandCircleDown,
+                            imageVector = Icons.ExpandCircleDownFilled,
                             contentDescription = null,
                         )
                     } else if (timePeriodsList.getOrNull(idx + 1) == selectedPeriod) {
                         Spacer(modifier = Modifier.width(2.dp))
                         Icon(
-                            imageVector = Icons.AutoMirrored.ExpandCircleRight,
+                            imageVector = Icons.ExpandCircleRightFilledAutoMirrored,
                             contentDescription = null,
-                            modifier = Modifier.graphicsLayer {
-                                scaleX = -1f
-                            }
+                            modifier = Modifier.scale(scaleX = -1f, scaleY = 1f)
                         )
                     }
                 }

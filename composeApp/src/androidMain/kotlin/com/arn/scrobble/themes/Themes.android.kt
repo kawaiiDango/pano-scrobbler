@@ -1,6 +1,7 @@
 package com.arn.scrobble.themes
 
 import android.app.Activity
+import android.content.Context
 import android.os.Build
 import android.view.View
 import androidx.annotation.RequiresApi
@@ -11,7 +12,6 @@ import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
 import androidx.compose.runtime.produceState
-import androidx.compose.ui.platform.LocalContext
 import java.util.function.Consumer
 
 
@@ -25,10 +25,8 @@ actual fun isSystemInDarkThemeNative(): State<Boolean> {
 }
 
 @RequiresApi(31)
-@Composable
-actual fun getDynamicColorScheme(dark: Boolean): ColorScheme {
-    val context = LocalContext.current
-
+actual fun getDynamicColorScheme(context: Any?, dark: Boolean): ColorScheme {
+    val context = context as Context
     return if (dark) {
         dynamicDarkColorScheme(context)
     } else {

@@ -182,19 +182,41 @@ object DesktopStuff {
             ?: (System.getProperty("user.home") + "/.local/share")
 
         // Icon
-        val iconSrc =
-            File(appDir, "usr/share/icons/hicolor/scalable/apps/$appNameWithoutSpaces.svg")
-        val iconDest = File(dataHome, "icons/hicolor/scalable/apps/$appNameWithoutSpaces.svg")
+        val iconSrc = File(appDir, "usr/share/icons/hicolor/scalable")
+        val iconDest = File(dataHome, "icons/hicolor/scalable")
         iconDest.parentFile.mkdirs()
-        iconSrc.copyTo(iconDest, overwrite = true)
+        iconSrc.copyRecursively(iconDest, overwrite = true)
+
+        val iconSrc2 = File(appDir, "usr/share/icons/hicolor/symbolic")
+        val iconDest2 = File(dataHome, "icons/hicolor/symbolic")
+        iconDest2.parentFile.mkdirs()
+        iconSrc2.copyRecursively(iconDest2, overwrite = true)
+
+        val oldIconDest = File(dataHome, "icons/hicolor/scalable/apps/$appNameWithoutSpaces.svg")
+        if (oldIconDest.exists())
+            oldIconDest.delete()
 
         val desktopSrc = File(appDir, "usr/share/applications/$appNameWithoutSpaces.desktop")
         val desktopDest = File(dataHome, "applications/$appNameWithoutSpaces.desktop")
         desktopDest.parentFile.mkdirs()
         val desktopContent = desktopSrc.readText()
             .replace(Regex("^Exec=.*$", RegexOption.MULTILINE), "Exec=\"$appImagePath\" %U")
-            .replace(Regex("^Icon=.*$", RegexOption.MULTILINE), "Icon=$appNameWithoutSpaces")
         desktopDest.writeText(desktopContent)
+    }
+
+    fun migrateAppImageDesktopFile() {
+        val appImagePath = System.getenv("APPIMAGE") ?: return
+
+        val dataHome = System.getenv("XDG_DATA_HOME")?.ifEmpty { null }
+            ?: (System.getProperty("user.home") + "/.local/share")
+
+        val desktopDest = File(dataHome, "applications/$appNameWithoutSpaces.desktop")
+
+        if (!desktopDest.exists()) return
+
+        val desktopContent = desktopDest.readText()
+        if (appImagePath in desktopContent && "Icon=$appNameWithoutSpaces\n" in desktopContent)
+            addAppImageToAppLauncher()
     }
 
     fun normalizeAppId(appId: String): String {

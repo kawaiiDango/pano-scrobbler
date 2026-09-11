@@ -9,8 +9,11 @@
         <item name="android:colorPrimary">@color/pinkPrimary</item>
 
         <item name="android:windowContentTransitions">true</item>
-        <item name="android:windowSplashScreenAnimatedIcon">@drawable/avd_splash_icon</item>
-        <item name="android:windowSplashScreenAnimationDuration">@integer/splash_screen_duration
+        <item name="android:windowSplashScreenAnimatedIcon" tools:targetApi="31">
+            @drawable/avd_splash_icon
+        </item>
+        <item name="android:windowSplashScreenAnimationDuration" tools:targetApi="31">
+            @integer/splash_screen_duration
         </item>
         <item name="android:fitsSystemWindows">false</item>
         <item name="android:statusBarColor">@android:color/transparent</item>
@@ -48,23 +51,12 @@
         <item name="android:windowClipToOutline">false</item>
     </style>
 
-    <!--  todo: remove when it arrives in cmp  -->
-
-    <!-- Stub style to workaround Window.setClipToOutline not being available on API 21 -->
-    <style name="DialogWindowTheme" tools:override="true">
-        <item name="android:windowClipToOutline">false</item>
-        <item name="android:windowIsTranslucent">true</item>
-    </style>
-    <!-- Style for decorFitsSystemWindows = false -->
-    <style name="FloatingDialogWindowTheme" tools:override="true">
-        <item name="android:windowClipToOutline">false</item>
-        <item name="android:backgroundDimEnabled">true</item>
-        <item name="android:windowIsTranslucent">true</item>
-    </style>
-
     <!-- Override material3's ModalBottomSheet theme to enable background blur -->
     <style name="EdgeToEdgeFloatingDialogTheme" parent="android:Theme.DeviceDefault.Dialog" tools:override="true">
         <item name="android:windowAnimationStyle">@null</item>
+        <item name="android:windowLayoutInDisplayCutoutMode" tools:targetApi="27">
+            @integer/m3c_window_layout_in_display_cutout_mode
+        </item>
         <item name="android:windowClipToOutline">false</item>
         <item name="android:windowIsFloating">false</item>
         <item name="android:statusBarColor">@android:color/transparent</item>

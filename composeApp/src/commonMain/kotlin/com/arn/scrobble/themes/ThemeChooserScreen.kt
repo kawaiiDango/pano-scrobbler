@@ -1,13 +1,14 @@
 package com.arn.scrobble.themes
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.interaction.collectIsFocusedAsState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.IntrinsicSize
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -18,37 +19,41 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
-import androidx.compose.material3.FilledTonalIconToggleButton
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material3.FilledTonalToggleButton
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Slider
+import androidx.compose.material3.SliderDefaults
 import androidx.compose.material3.Text
-import androidx.compose.material3.ToggleButtonDefaults
-import androidx.compose.material3.TonalToggleButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import com.arn.scrobble.billing.LocalLicenseValidState
 import com.arn.scrobble.icons.Casino
-import com.arn.scrobble.icons.Check
+import com.arn.scrobble.icons.CheckCircleFilled
 import com.arn.scrobble.icons.Icons
 import com.arn.scrobble.icons.Lock
 import com.arn.scrobble.icons.Palette
 import com.arn.scrobble.pref.MainPrefs
 import com.arn.scrobble.pref.SliderPref
-import com.arn.scrobble.themes.colors.ThemeVariants
 import com.arn.scrobble.ui.ButtonWithIcon
 import com.arn.scrobble.ui.LabeledCheckbox
 import com.arn.scrobble.utils.PlatformStuff
@@ -70,6 +75,10 @@ import pano_scrobbler.composeapp.generated.resources.high
 import pano_scrobbler.composeapp.generated.resources.light
 import pano_scrobbler.composeapp.generated.resources.low
 import pano_scrobbler.composeapp.generated.resources.medium
+import pano_scrobbler.composeapp.generated.resources.palette_cmf
+import pano_scrobbler.composeapp.generated.resources.palette_expressive
+import pano_scrobbler.composeapp.generated.resources.palette_tonal_spot
+import pano_scrobbler.composeapp.generated.resources.palette_vibrant
 import pano_scrobbler.composeapp.generated.resources.pref_themes
 import pano_scrobbler.composeapp.generated.resources.random_text
 import pano_scrobbler.composeapp.generated.resources.system_colors
@@ -80,18 +89,28 @@ fun ThemeChooserScreen(
     modifier: Modifier = Modifier,
 ) {
     val isLicenseValid = LocalLicenseValidState.current
-    val themeName by PlatformStuff.mainPrefs.data.collectAsStateWithInitialValue { it.themeName }
+    val themeHue by PlatformStuff.mainPrefs.data.collectAsStateWithInitialValue { it.themeHue }
     val dynamic by PlatformStuff.mainPrefs.data.collectAsStateWithInitialValue { it.themeDynamic }
     val dayNightMode by PlatformStuff.mainPrefs.data.collectAsStateWithInitialValue { it.themeDayNight }
     val random by PlatformStuff.mainPrefs.data.collectAsStateWithInitialValue { it.themeRandom }
-    val contrastMode by PlatformStuff.mainPrefs.data.collectAsStateWithInitialValue { it.themeContrast }
+    val randomHue by remember { ThemeUtils.randomHueForProcess }
     val alpha by PlatformStuff.mainPrefs.data.collectAsStateWithInitialValue { it.themeAlpha }
-    val alphaIntPercent by remember(alpha) { mutableIntStateOf((alpha * 100).toInt()) }
-    val blurMainWindow by PlatformStuff.mainPrefs.data.collectAsStateWithInitialValue { it.themeBlurMainWindow }
-    val blurSubWindow by PlatformStuff.mainPrefs.data.collectAsStateWithInitialValue { it.themeBlurSubWindow }
-    val isAppInNightMode = LocalThemeAttributes.current.isDark
+    val alphaIntPercent = (alpha * 100).toInt()
+    val themeAttributes = LocalThemeAttributes.current
     val scope = rememberCoroutineScope()
-    val enableAlpha = false // todo testing only
+    val enableExperimental = false // todo testing only
+
+    val previewColors =
+        remember(themeAttributes.isDark, themeAttributes.style, themeAttributes.contrastMode) {
+            ThemeUtils.themeHues.associateWith { hue ->
+                ThemeUtils.themePreviewColors(
+                    seedColor = ThemeUtils.getThemeColor(hue),
+                    isDark = themeAttributes.isDark,
+                    contrastMode = themeAttributes.contrastMode,
+                    style = themeAttributes.style
+                )
+            }
+        }
 
     fun save(block: MainPrefs.() -> MainPrefs) {
         scope.launch {
@@ -100,14 +119,14 @@ fun ThemeChooserScreen(
     }
 
     Column(
-        verticalArrangement = Arrangement.spacedBy(16.dp),
+        verticalArrangement = Arrangement.spacedBy(8.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = modifier
     ) {
 
         Row(
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(16.dp),
+            horizontalArrangement = Arrangement.spacedBy(12.dp),
             modifier = Modifier
                 .alpha(if (dynamic) 0.5f else 1f)
         ) {
@@ -120,7 +139,7 @@ fun ThemeChooserScreen(
                 FilterChip(
                     label = { it.Label() },
                     enabled = !dynamic,
-                    selected = contrastMode == it,
+                    selected = themeAttributes.contrastMode == it,
                     shapes = FilterChipDefaults.shapes(),
                     onClick = {
                         save {
@@ -157,7 +176,7 @@ fun ThemeChooserScreen(
         }
 
         Row(
-            horizontalArrangement = Arrangement.spacedBy(16.dp),
+            horizontalArrangement = Arrangement.spacedBy(12.dp),
         ) {
             DayNightMode.entries.forEach {
                 FilterChip(
@@ -175,21 +194,54 @@ fun ThemeChooserScreen(
         }
 
         FlowRow(
+            horizontalArrangement = Arrangement.spacedBy(12.dp),
+        ) {
+            PaletteStyle.entries
+                .filter { it != PaletteStyle.Cmf || enableExperimental }
+                .forEach {
+                    FilterChip(
+                        label = { it.Label() },
+                        selected = themeAttributes.style == it,
+                        enabled = isLicenseValid && !dynamic,
+                        shapes = FilterChipDefaults.shapes(),
+                        onClick = {
+                            save {
+                                copy(themeStyle = it.name)
+                            }
+                        }
+                    )
+                }
+        }
+
+        HueSlider(
+            hue = if (random) randomHue else themeHue,
+            onHueChange = {
+                save {
+                    copy(themeHue = it, themeDynamic = false, themeRandom = false)
+                }
+            },
+            enabled = isLicenseValid,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 8.dp)
+        )
+
+        FlowRow(
             horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterHorizontally),
             verticalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterVertically),
             itemVerticalAlignment = Alignment.CenterVertically,
             modifier = Modifier
                 .fillMaxWidth()
+                .padding(vertical = 8.dp)
         ) {
-            ThemeUtils.themesMap.forEach { (_, themeObj) ->
+            ThemeUtils.themeHues.forEach { hue ->
                 ThemeSwatch(
-                    themeVariants = themeObj,
-                    isDark = isAppInNightMode,
-                    selected = themeName == themeObj.name && !dynamic && !random,
+                    previewColors = previewColors.getValue(hue),
+                    selected = themeHue == hue && !dynamic && !random,
                     onClick = {
                         save {
                             copy(
-                                themeName = themeObj.name,
+                                themeHue = hue,
                                 themeDynamic = false,
                                 themeRandom = false
                             )
@@ -205,11 +257,13 @@ fun ThemeChooserScreen(
                     text = stringResource(Res.string.system_colors),
                     selected = dynamic,
                     onCheckedChange = {
-                        save {
-                            copy(
-                                themeDynamic = it,
-                                themeRandom = false
-                            )
+                        if (it) {
+                            save {
+                                copy(
+                                    themeDynamic = true,
+                                    themeRandom = false
+                                )
+                            }
                         }
                     },
                     enabled = isLicenseValid,
@@ -221,18 +275,22 @@ fun ThemeChooserScreen(
                 text = stringResource(Res.string.random_text),
                 selected = random,
                 onCheckedChange = {
-                    save {
-                        copy(
-                            themeRandom = it,
-                            themeDynamic = false
-                        )
+                    if (it) {
+                        save {
+                            copy(
+                                themeRandom = true,
+                                themeDynamic = false
+                            )
+                        }
+                    } else {
+                        ThemeUtils.randomizeHue()
                     }
                 },
                 enabled = isLicenseValid,
             )
         }
 
-        if (enableAlpha && !PlatformStuff.isTv) {
+        if (enableExperimental && !PlatformStuff.isTv) {
             Column(
                 modifier = Modifier
                     .align(Alignment.Start)
@@ -258,11 +316,11 @@ fun ThemeChooserScreen(
 
                         LabeledCheckbox(
                             text = stringResource(Res.string.blur_main_window),
-                            checked = blurMainWindow,
+                            checked = themeAttributes.blurMainWindow,
                             enabled = isLicenseValid,
                             maxLines = 1,
                             onCheckedChange = {
-                                val newState = !blurMainWindow
+                                val newState = !themeAttributes.blurMainWindow
                                 save {
                                     copy(
                                         themeBlurMainWindow = newState,
@@ -279,11 +337,11 @@ fun ThemeChooserScreen(
 
                         LabeledCheckbox(
                             text = stringResource(Res.string.blur_sub_window),
-                            checked = blurSubWindow,
+                            checked = themeAttributes.blurSubWindow,
                             enabled = isLicenseValid,
                             maxLines = 1,
                             onCheckedChange = {
-                                val newState = !blurSubWindow
+                                val newState = !themeAttributes.blurSubWindow
                                 save {
                                     copy(themeBlurSubWindow = newState)
                                 }
@@ -342,87 +400,78 @@ private fun ContrastMode.Label() {
 }
 
 @Composable
+private fun PaletteStyle.Label() {
+    when (this) {
+        PaletteStyle.TonalSpot -> Text(stringResource(Res.string.palette_tonal_spot))
+        PaletteStyle.Expressive -> Text(stringResource(Res.string.palette_expressive))
+        PaletteStyle.Vibrant -> Text(stringResource(Res.string.palette_vibrant))
+        PaletteStyle.Cmf -> Text(stringResource(Res.string.palette_cmf))
+    }
+}
+
+@Composable
 private fun ThemeSwatch(
-    themeVariants: ThemeVariants,
-    isDark: Boolean,
+    previewColors: Triple<Color, Color, Color>,
     selected: Boolean,
     enabled: Boolean,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val primaryColor = remember(isDark) {
-        if (isDark)
-            themeVariants.dark.primary
-        else
-            themeVariants.light.primary
-    }
-
-    val secondaryColor = remember(isDark) {
-        if (isDark)
-            themeVariants.dark.secondary
-        else
-            themeVariants.light.secondary
-    }
-
-    val tertiaryColor = remember(isDark) {
-        if (isDark)
-            themeVariants.dark.tertiary
-        else
-            themeVariants.light.tertiary
-    }
-
-    val interactionSource = remember { MutableInteractionSource() }
-    val isFocused by interactionSource.collectIsFocusedAsState()
-    val toggleButtonShapes = ToggleButtonDefaults.shapes()
-
-    FilledTonalIconToggleButton(
+    FilledTonalToggleButton(
         checked = selected,
-        shapes = IconButtonDefaults.toggleableShapes(),
-        onCheckedChange = { onClick() },
-        interactionSource = interactionSource,
+        onCheckedChange = {
+            if (it)
+                onClick()
+        },
+        contentPadding = PaddingValues.Zero,
         enabled = enabled,
         modifier = modifier
-            .size(72.dp)
+            .size(64.dp)
             .alpha(if (enabled) 1f else 0.5f)
     ) {
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(8.dp)
-                .clip(
-                    if (isFocused) toggleButtonShapes.pressedShape
-                    else if (selected) toggleButtonShapes.checkedShape
-                    else toggleButtonShapes.shape
-                )
         ) {
             Box(
                 modifier = Modifier
                     .fillMaxHeight()
                     .fillMaxWidth(0.5f)
                     .align(Alignment.TopStart)
-                    .background(primaryColor)
+                    .background(previewColors.first)
             )
             Box(
                 modifier = Modifier
                     .fillMaxHeight(0.5f)
                     .fillMaxWidth(0.5f)
                     .align(Alignment.TopEnd)
-                    .background(secondaryColor)
+                    .background(previewColors.second)
             )
             Box(
                 modifier = Modifier
                     .fillMaxHeight(0.5f)
                     .fillMaxWidth(0.5f)
                     .align(Alignment.BottomEnd)
-                    .background(tertiaryColor)
+                    .background(previewColors.third)
             )
 
             if (selected) {
                 Icon(
-                    imageVector = Icons.Check,
+                    imageVector = Icons.CheckCircleFilled,
                     contentDescription = null,
-//                    tint = if (isDark) Color.White else Color.Black,
-                    modifier = Modifier.align(Alignment.Center)
+                    tint = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier
+                        .size(32.dp)
+                        .background(
+                            color = MaterialTheme.colorScheme.surface,
+                            shape = CircleShape
+                        )
+                        .border(
+                            width = 2.dp,
+                            color = MaterialTheme.colorScheme.surface,
+                            shape = CircleShape
+                        )
+                        .align(Alignment.Center)
                 )
             }
         }
@@ -438,7 +487,7 @@ private fun ThemeSwatchLikeButton(
     onCheckedChange: (Boolean) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    TonalToggleButton(
+    FilledTonalToggleButton(
         checked = selected,
         onCheckedChange = onCheckedChange,
         enabled = enabled,
@@ -449,7 +498,7 @@ private fun ThemeSwatchLikeButton(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Icon(
-                imageVector = icon,
+                imageVector = if (!selected) icon else Icons.CheckCircleFilled,
                 contentDescription = null
             )
             Spacer(modifier = Modifier.height(4.dp))
@@ -457,7 +506,7 @@ private fun ThemeSwatchLikeButton(
                 text = text,
                 maxLines = 2,
                 textAlign = TextAlign.Center,
-                style = MaterialTheme.typography.labelSmall,
+                style = MaterialTheme.typography.labelMedium,
                 modifier = Modifier.widthIn(max = 96.dp)
             )
         }
@@ -465,13 +514,64 @@ private fun ThemeSwatchLikeButton(
 }
 
 @Composable
-private fun ThemeSwatchPreview() {
-    ThemeSwatch(
-        themeVariants = ThemeUtils.defaultTheme,
-        selected = true,
-        onClick = {},
-        isDark = false,
-        enabled = true,
-        modifier = Modifier
+fun HueSlider(
+    hue: Float,
+    onHueChange: (Float) -> Unit,
+    enabled: Boolean,
+    modifier: Modifier = Modifier,
+) {
+    // Precompute the rainbow gradient stops once
+    val step = 15
+    val stops = remember {
+        (0..360 step step).map { h ->
+            Color(ThemeUtils.getThemeColor(hue = h.toFloat(), tone = 70.0))
+        }
+    }
+
+    val rainbowBrush = remember {
+        Brush.horizontalGradient(stops)
+    }
+
+    var internalHue by remember(hue) { mutableFloatStateOf(hue) }
+    val interactionSource: MutableInteractionSource = remember { MutableInteractionSource() }
+    val thumbColor by remember(internalHue / step) {
+        mutableStateOf(
+            stops[(internalHue / step).toInt().coerceIn(0, stops.size - 1)]
+        )
+    }
+    val colors = SliderDefaults.colors(thumbColor = thumbColor)
+
+    Slider(
+        value = internalHue,
+        enabled = enabled,
+        onValueChange = { internalHue = it },
+        onValueChangeFinished = { onHueChange(internalHue) },
+        valueRange = 0f..360f,
+        interactionSource = interactionSource,
+        modifier = modifier.fillMaxWidth(),
+        track = { sliderState ->
+            val height = 32.dp
+
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(height)
+                    .clip(CircleShape)
+                    .background(
+                        rainbowBrush,
+                        alpha = if (enabled) 1f else 0.5f
+                    )
+            )
+        },
+        thumb = {
+            SliderDefaults.Thumb(
+                interactionSource = interactionSource,
+                colors = colors,
+                enabled = enabled,
+                thumbSize = DpSize(16.dp, 56.dp),
+                modifier = Modifier
+                    .border(width = 3.dp, color = colors.activeTickColor, shape = CircleShape)
+            )
+        }
     )
 }

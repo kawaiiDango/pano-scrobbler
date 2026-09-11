@@ -1,81 +1,96 @@
 package com.arn.scrobble.icons
 
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.PathFillType
 import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.graphics.StrokeJoin
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.graphics.vector.path
 import androidx.compose.ui.unit.dp
 
+@Suppress("CheckReturnValue")
 val Icons.Error: ImageVector
-    get() {
-        if (_Error != null) {
-            return _Error!!
-        }
-        _Error = ImageVector.Builder(
-            name = "Error",
-            defaultWidth = 24.dp,
-            defaultHeight = 24.dp,
-            viewportWidth = 960f,
-            viewportHeight = 960f
-        ).apply {
-            path(fill = SolidColor(Color.Black)) {
-                moveTo(508.5f, 668.5f)
-                quadTo(520f, 657f, 520f, 640f)
-                reflectiveQuadToRelative(-11.5f, -28.5f)
-                quadTo(497f, 600f, 480f, 600f)
-                reflectiveQuadToRelative(-28.5f, 11.5f)
-                quadTo(440f, 623f, 440f, 640f)
-                reflectiveQuadToRelative(11.5f, 28.5f)
-                quadTo(463f, 680f, 480f, 680f)
-                reflectiveQuadToRelative(28.5f, -11.5f)
-                close()
-                moveTo(508.5f, 508.5f)
-                quadTo(520f, 497f, 520f, 480f)
-                verticalLineToRelative(-160f)
-                quadToRelative(0f, -17f, -11.5f, -28.5f)
-                reflectiveQuadTo(480f, 280f)
-                quadToRelative(-17f, 0f, -28.5f, 11.5f)
-                reflectiveQuadTo(440f, 320f)
-                verticalLineToRelative(160f)
-                quadToRelative(0f, 17f, 11.5f, 28.5f)
-                reflectiveQuadTo(480f, 520f)
-                quadToRelative(17f, 0f, 28.5f, -11.5f)
-                close()
-                moveTo(480f, 880f)
-                quadToRelative(-83f, 0f, -156f, -31.5f)
-                reflectiveQuadTo(197f, 763f)
-                quadToRelative(-54f, -54f, -85.5f, -127f)
-                reflectiveQuadTo(80f, 480f)
-                quadToRelative(0f, -83f, 31.5f, -156f)
-                reflectiveQuadTo(197f, 197f)
-                quadToRelative(54f, -54f, 127f, -85.5f)
-                reflectiveQuadTo(480f, 80f)
-                quadToRelative(83f, 0f, 156f, 31.5f)
-                reflectiveQuadTo(763f, 197f)
-                quadToRelative(54f, 54f, 85.5f, 127f)
-                reflectiveQuadTo(880f, 480f)
-                quadToRelative(0f, 83f, -31.5f, 156f)
-                reflectiveQuadTo(763f, 763f)
-                quadToRelative(-54f, 54f, -127f, 85.5f)
-                reflectiveQuadTo(480f, 880f)
-                close()
-                moveTo(480f, 800f)
-                quadToRelative(134f, 0f, 227f, -93f)
-                reflectiveQuadToRelative(93f, -227f)
-                quadToRelative(0f, -134f, -93f, -227f)
-                reflectiveQuadToRelative(-227f, -93f)
-                quadToRelative(-134f, 0f, -227f, 93f)
-                reflectiveQuadToRelative(-93f, 227f)
-                quadToRelative(0f, 134f, 93f, 227f)
-                reflectiveQuadToRelative(227f, 93f)
-                close()
-                moveTo(480f, 480f)
-                close()
-            }
-        }.build()
-
-        return _Error!!
+  get() {
+    if (_Error != null) {
+      return _Error!!
     }
+    _Error =
+      ImageVector.Builder(
+          name = "Error",
+          defaultWidth = 24.dp,
+          defaultHeight = 24.dp,
+          viewportWidth = 24f,
+          viewportHeight = 24f,
+        )
+        .apply {
+          path(
+            fill = SolidColor(Color.Black),
+            fillAlpha = 1f,
+            stroke = null,
+            strokeAlpha = 1f,
+            strokeLineWidth = 1f,
+            strokeLineCap = StrokeCap.Butt,
+            strokeLineJoin = StrokeJoin.Bevel,
+            strokeLineMiter = 1f,
+            pathFillType = PathFillType.NonZero,
+          ) {
+            moveTo(12.71f, 16.71f)
+            quadTo(13f, 16.43f, 13f, 16f)
+            reflectiveQuadTo(12.71f, 15.29f)
+            reflectiveQuadTo(12f, 15f)
+            reflectiveQuadToRelative(-0.71f, 0.29f)
+            reflectiveQuadTo(11f, 16f)
+            reflectiveQuadToRelative(0.29f, 0.71f)
+            reflectiveQuadTo(12f, 17f)
+            reflectiveQuadToRelative(0.71f, -0.29f)
+            close()
+            moveToRelative(0f, -4f)
+            quadTo(13f, 12.43f, 13f, 12f)
+            verticalLineTo(8f)
+            quadTo(13f, 7.57f, 12.71f, 7.29f)
+            reflectiveQuadTo(12f, 7f)
+            reflectiveQuadTo(11.29f, 7.29f)
+            reflectiveQuadTo(11f, 8f)
+            verticalLineToRelative(4f)
+            quadToRelative(0f, 0.42f, 0.29f, 0.71f)
+            reflectiveQuadTo(12f, 13f)
+            reflectiveQuadToRelative(0.71f, -0.29f)
+            close()
+            moveTo(12f, 22f)
+            quadTo(9.93f, 22f, 8.1f, 21.21f)
+            quadTo(6.28f, 20.43f, 4.93f, 19.08f)
+            quadTo(3.58f, 17.73f, 2.79f, 15.9f)
+            reflectiveQuadTo(2f, 12f)
+            quadTo(2f, 9.92f, 2.79f, 8.1f)
+            quadTo(3.58f, 6.27f, 4.93f, 4.93f)
+            quadTo(6.28f, 3.57f, 8.1f, 2.79f)
+            quadTo(9.93f, 2f, 12f, 2f)
+            reflectiveQuadToRelative(3.9f, 0.79f)
+            reflectiveQuadToRelative(3.17f, 2.14f)
+            quadToRelative(1.35f, 1.35f, 2.14f, 3.17f)
+            quadTo(22f, 9.92f, 22f, 12f)
+            reflectiveQuadToRelative(-0.79f, 3.9f)
+            reflectiveQuadToRelative(-2.14f, 3.17f)
+            quadToRelative(-1.35f, 1.35f, -3.17f, 2.14f)
+            reflectiveQuadTo(12f, 22f)
+            close()
+            moveToRelative(0f, -2f)
+            quadToRelative(3.35f, 0f, 5.68f, -2.32f)
+            reflectiveQuadTo(20f, 12f)
+            reflectiveQuadTo(17.68f, 6.32f)
+            reflectiveQuadTo(12f, 4f)
+            reflectiveQuadTo(6.33f, 6.32f)
+            reflectiveQuadTo(4f, 12f)
+            reflectiveQuadToRelative(2.33f, 5.68f)
+            reflectiveQuadTo(12f, 20f)
+            close()
+            moveToRelative(0f, -8f)
+            close()
+          }
+        }
+        .build()
+    return _Error!!
+  }
 
-@Suppress("ObjectPropertyName")
 private var _Error: ImageVector? = null

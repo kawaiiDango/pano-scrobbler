@@ -1,65 +1,80 @@
 package com.arn.scrobble.icons
 
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.PathFillType
 import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.graphics.StrokeJoin
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.graphics.vector.path
 import androidx.compose.ui.unit.dp
 
+@Suppress("CheckReturnValue")
 val Icons.KeyboardDoubleArrowUp: ImageVector
-    get() {
-        if (_KeyboardDoubleArrowUp != null) {
-            return _KeyboardDoubleArrowUp!!
-        }
-        _KeyboardDoubleArrowUp = ImageVector.Builder(
-            name = "KeyboardDoubleArrowUp",
-            defaultWidth = 24.dp,
-            defaultHeight = 24.dp,
-            viewportWidth = 960f,
-            viewportHeight = 960f
-        ).apply {
-            path(fill = SolidColor(Color.Black)) {
-                moveTo(480f, 553f)
-                lineTo(324f, 708f)
-                quadToRelative(-11f, 11f, -27.5f, 11.5f)
-                reflectiveQuadTo(268f, 708f)
-                quadToRelative(-11f, -11f, -11f, -28f)
-                reflectiveQuadToRelative(11f, -28f)
-                lineToRelative(184f, -184f)
-                quadToRelative(6f, -6f, 13f, -8.5f)
-                reflectiveQuadToRelative(15f, -2.5f)
-                quadToRelative(8f, 0f, 15f, 2.5f)
-                reflectiveQuadToRelative(13f, 8.5f)
-                lineToRelative(184f, 184f)
-                quadToRelative(11f, 11f, 11.5f, 27.5f)
-                reflectiveQuadTo(692f, 708f)
-                quadToRelative(-11f, 11f, -28f, 11f)
-                reflectiveQuadToRelative(-28f, -11f)
-                lineTo(480f, 553f)
-                close()
-                moveTo(480f, 313f)
-                lineTo(324f, 468f)
-                quadToRelative(-11f, 11f, -27.5f, 11.5f)
-                reflectiveQuadTo(268f, 468f)
-                quadToRelative(-11f, -11f, -11f, -28f)
-                reflectiveQuadToRelative(11f, -28f)
-                lineToRelative(184f, -184f)
-                quadToRelative(6f, -6f, 13f, -8.5f)
-                reflectiveQuadToRelative(15f, -2.5f)
-                quadToRelative(8f, 0f, 15f, 2.5f)
-                reflectiveQuadToRelative(13f, 8.5f)
-                lineToRelative(184f, 184f)
-                quadToRelative(11f, 11f, 11.5f, 27.5f)
-                reflectiveQuadTo(692f, 468f)
-                quadToRelative(-11f, 11f, -28f, 11f)
-                reflectiveQuadToRelative(-28f, -11f)
-                lineTo(480f, 313f)
-                close()
-            }
-        }.build()
-
-        return _KeyboardDoubleArrowUp!!
+  get() {
+    if (_KeyboardDoubleArrowUp != null) {
+      return _KeyboardDoubleArrowUp!!
     }
+    _KeyboardDoubleArrowUp =
+      ImageVector.Builder(
+          name = "KeyboardDoubleArrowUp",
+          defaultWidth = 24.dp,
+          defaultHeight = 24.dp,
+          viewportWidth = 24f,
+          viewportHeight = 24f,
+        )
+        .apply {
+          path(
+            fill = SolidColor(Color.Black),
+            fillAlpha = 1f,
+            stroke = null,
+            strokeAlpha = 1f,
+            strokeLineWidth = 1f,
+            strokeLineCap = StrokeCap.Butt,
+            strokeLineJoin = StrokeJoin.Bevel,
+            strokeLineMiter = 1f,
+            pathFillType = PathFillType.NonZero,
+          ) {
+            moveTo(12f, 13.83f)
+            lineTo(8.1f, 17.7f)
+            quadTo(7.83f, 17.98f, 7.41f, 17.99f)
+            reflectiveQuadTo(6.7f, 17.7f)
+            quadTo(6.43f, 17.43f, 6.43f, 17f)
+            reflectiveQuadTo(6.7f, 16.3f)
+            lineToRelative(4.6f, -4.6f)
+            quadToRelative(0.15f, -0.15f, 0.32f, -0.21f)
+            reflectiveQuadTo(12f, 11.43f)
+            reflectiveQuadToRelative(0.38f, 0.06f)
+            reflectiveQuadTo(12.7f, 11.7f)
+            lineToRelative(4.6f, 4.6f)
+            quadToRelative(0.27f, 0.27f, 0.29f, 0.69f)
+            reflectiveQuadTo(17.3f, 17.7f)
+            quadToRelative(-0.27f, 0.28f, -0.7f, 0.28f)
+            reflectiveQuadTo(15.9f, 17.7f)
+            lineTo(12f, 13.83f)
+            close()
+            moveToRelative(0f, -6f)
+            lineTo(8.1f, 11.7f)
+            quadTo(7.83f, 11.98f, 7.41f, 11.99f)
+            reflectiveQuadTo(6.7f, 11.7f)
+            quadTo(6.43f, 11.43f, 6.43f, 11f)
+            reflectiveQuadTo(6.7f, 10.3f)
+            lineTo(11.3f, 5.7f)
+            quadTo(11.45f, 5.55f, 11.63f, 5.49f)
+            reflectiveQuadTo(12f, 5.43f)
+            reflectiveQuadToRelative(0.38f, 0.06f)
+            reflectiveQuadTo(12.7f, 5.7f)
+            lineToRelative(4.6f, 4.6f)
+            quadToRelative(0.27f, 0.28f, 0.29f, 0.69f)
+            reflectiveQuadTo(17.3f, 11.7f)
+            quadToRelative(-0.27f, 0.28f, -0.7f, 0.28f)
+            reflectiveQuadTo(15.9f, 11.7f)
+            lineTo(12f, 7.82f)
+            close()
+          }
+        }
+        .build()
+    return _KeyboardDoubleArrowUp!!
+  }
 
-@Suppress("ObjectPropertyName")
 private var _KeyboardDoubleArrowUp: ImageVector? = null

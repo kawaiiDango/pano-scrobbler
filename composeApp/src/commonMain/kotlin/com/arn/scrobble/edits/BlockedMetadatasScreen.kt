@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.text.input.TextFieldState
-import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.ListItemDefaults
@@ -26,7 +25,7 @@ import com.arn.scrobble.icons.Icons
 import com.arn.scrobble.icons.Mic
 import com.arn.scrobble.icons.MusicNote
 import com.arn.scrobble.icons.SkipNext
-import com.arn.scrobble.icons.automirrored.VolumeOff
+import com.arn.scrobble.icons.VolumeOffAutoMirrored
 import com.arn.scrobble.navigation.PanoRoute
 import com.arn.scrobble.panoicons.AlbumArtist
 import com.arn.scrobble.panoicons.PanoIcons
@@ -87,7 +86,9 @@ fun BlockedMetadatasScreen(
                         forShimmer = true,
                         onEdit = {},
                         onDelete = {},
-                        modifier = Modifier.shimmerWindowBounds().animateItem()
+                        modifier = Modifier
+                            .shimmerWindowBounds()
+                            .animateItem()
                     )
                 }
             } else {
@@ -112,7 +113,6 @@ fun BlockedMetadatasScreen(
     }
 }
 
-@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 private fun BlockedMetadataItem(
     blockedMetadata: BlockedMetadata,
@@ -145,7 +145,7 @@ private fun BlockedMetadataItem(
                 BlockPlayerAction.mute -> {
                     {
                         Icon(
-                            imageVector = Icons.AutoMirrored.VolumeOff,
+                            imageVector = Icons.VolumeOffAutoMirrored,
                             contentDescription = stringResource(Res.string.mute),
                             tint = MaterialTheme.colorScheme.secondary,
                         )

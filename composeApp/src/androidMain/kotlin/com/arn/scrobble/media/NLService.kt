@@ -25,6 +25,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
@@ -90,23 +91,28 @@ class NLService : NotificationListenerService() {
 
     private fun init() {
         coroutineScope.launch {
-            PlatformStuff.mainPrefs.data.map { it.logToFileOnAndroid }.collect {
-                Logger.config.logWriterList
-                    .filterIsInstance<JavaUtilFileLogger>()
-                    .firstOrNull()
-                    ?.isEnabled = it
-            }
+            PlatformStuff.mainPrefs.data.map { it.logToFileOnAndroid }
+                .distinctUntilChanged()
+                .collect {
+                    Logger.config.logWriterList
+                        .filterIsInstance<JavaUtilFileLogger>()
+                        .firstOrNull()
+                        ?.isEnabled = it
+                }
         }
 
         coroutineScope.launch {
-            PlatformStuff.mainPrefs.data.map { it.scrobblerEnabled }.collect {
-                if (!it)
-                    requestUnbind()
-            }
+            PlatformStuff.mainPrefs.data.map { it.scrobblerEnabled }
+                .distinctUntilChanged()
+                .collect {
+                    if (!it)
+                        requestUnbind()
+                }
         }
 
         coroutineScope.launch {
             PlatformStuff.mainPrefs.data.map { it.notiPersistent }
+                .distinctUntilChanged()
                 .collect { notiPersistent ->
                     if (notiPersistent) {
                         PanoNotifications.startFgs(this@NLService)
@@ -346,7 +352,7 @@ class NLService : NotificationListenerService() {
         if (metadataChanged) {
             scrobbleQueue.remove(trackInfo.hash)
 
-            if (sessListener?.isAppAllowListed(pkgName) == false){
+            if (sessListener?.isAppAllowListed(pkgName) == false) {
                 coroutineScope.launch {
                     PanoNotifications.notifyAppDetected(
                         trackInfo.appId,

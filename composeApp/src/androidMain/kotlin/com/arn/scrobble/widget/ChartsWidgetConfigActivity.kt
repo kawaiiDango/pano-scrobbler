@@ -18,7 +18,6 @@ import com.arn.scrobble.themes.AppTheme
 import com.arn.scrobble.themes.LocalThemeAttributes
 import com.arn.scrobble.utils.AndroidStuff
 import com.arn.scrobble.utils.AndroidStuff.prolongSplashScreen
-import com.arn.scrobble.utils.Stuff
 import com.arn.scrobble.utils.applyAndroidLocaleLegacy
 import kotlinx.coroutines.launch
 
@@ -28,12 +27,6 @@ class ChartsWidgetConfigActivity : ComponentActivity() {
             AppWidgetManager.EXTRA_APPWIDGET_ID,
             AppWidgetManager.INVALID_APPWIDGET_ID
         ) ?: AppWidgetManager.INVALID_APPWIDGET_ID
-    }
-    private val isPinned by lazy {
-        intent?.extras?.getBoolean(
-            Stuff.EXTRA_PINNED,
-            false
-        ) ?: false
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -69,7 +62,6 @@ class ChartsWidgetConfigActivity : ComponentActivity() {
                     }
 
                     ChartsWidgetConfigScreen(
-                        isPinned = isPinned,
                         prefs = prefs.widgets[appWidgetId] ?: WidgetPrefs.SpecificWidgetPrefs(),
                         onSave = ::savePrefsAndFinish,
                         onCancel = ::cancel

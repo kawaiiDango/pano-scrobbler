@@ -1,0 +1,12 @@
+{
+  "uniqueId": "material-color-utilities",
+  "artifactVersion": "[imported]",
+  "scm": {
+    "url": "https://github.com/material-foundation/material-color-utilities"
+  },
+  "name": "Material Color Utilities",
+  "website": "https://github.com/material-foundation/material-color-utilities",
+  "licenses": [
+    "Apache-2.0"
+  ]
+}

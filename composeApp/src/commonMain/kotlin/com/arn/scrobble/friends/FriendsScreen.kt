@@ -19,6 +19,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ButtonGroupDefaults
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
+import androidx.compose.material3.FilledTonalToggleButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialShapes.Companion.Cookie7Sided
@@ -26,9 +27,10 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.MenuDefaults
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedToggleButton
+import androidx.compose.material3.OutlinedToggleButtonDefaults
 import androidx.compose.material3.Text
-import androidx.compose.material3.ToggleButton
 import androidx.compose.material3.ToggleButtonDefaults
+import androidx.compose.material3.ToggleButtonSize
 import androidx.compose.material3.pulltorefresh.PullToRefreshState
 import androidx.compose.material3.toShape
 import androidx.compose.runtime.Composable
@@ -45,7 +47,6 @@ import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -86,6 +87,7 @@ import com.arn.scrobble.ui.PanoPullToRefreshStateForTab
 import com.arn.scrobble.ui.dragContainer
 import com.arn.scrobble.ui.emptyText
 import com.arn.scrobble.ui.getMusicEntryPlaceholderItem
+import com.arn.scrobble.ui.myColors
 import com.arn.scrobble.ui.rememberDragDropState
 import com.arn.scrobble.ui.shimmerWindowBounds
 import com.arn.scrobble.utils.PanoTimeFormatter
@@ -471,8 +473,8 @@ private fun FriendItem(
     onMove: (Int, Int) -> Unit = { _, _ -> },
     isLastPin: Boolean = false,
 ) {
-    val playCount = remember(extraData) { extraData?.playCount }
-    val track = remember(extraData) { extraData?.track }
+    val playCount = extraData?.playCount
+    val track = extraData?.track
     val scope = rememberCoroutineScope()
     var detailsShown by remember { mutableStateOf(false) }
     val avatarShape = if (pinIndex == null) CircleShape else Cookie7Sided.toShape()
@@ -486,11 +488,8 @@ private fun FriendItem(
             onCheckedChange = {
                 detailsShown = it
             },
-            colors = ToggleButtonDefaults.outlinedToggleButtonColors(
-                containerColor = Color.Transparent,
-                disabledContainerColor = Color.Transparent
-            ),
-            shapes = ToggleButtonDefaults.shapes().let {
+            colors = OutlinedToggleButtonDefaults.myColors(),
+            shapes = ToggleButtonDefaults.shapesFor(ToggleButtonSize.Small).let {
                 it.copy(shape = it.pressedShape)
             },
             border = null,
@@ -591,7 +590,7 @@ private fun FriendItem(
                 expanded = true,
                 onDismissRequest = { detailsShown = false },
                 headerContent = {
-                    MenuDefaults.Label {
+                    MenuDefaults.DropdownMenuGroupLabel {
                         Column(
                             verticalArrangement = Arrangement.spacedBy(2.dp),
                             modifier = Modifier
@@ -754,7 +753,7 @@ private fun PinControls(
         ),
     ) {
         if (isPinned) {
-            OutlinedToggleButton(
+            FilledTonalToggleButton(
                 enabled = onMoveUp != null,
                 checked = false,
                 onCheckedChange = {
@@ -770,7 +769,7 @@ private fun PinControls(
             }
         }
 
-        ToggleButton(
+        FilledTonalToggleButton(
             checked = isPinned,
             onCheckedChange = {
                 onPinUnpin(!isPinned)
@@ -786,7 +785,7 @@ private fun PinControls(
         }
 
         if (isPinned) {
-            OutlinedToggleButton(
+            FilledTonalToggleButton(
                 enabled = onMoveDown != null,
                 checked = false,
                 onCheckedChange = {

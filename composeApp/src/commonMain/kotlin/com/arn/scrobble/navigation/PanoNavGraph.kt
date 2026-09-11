@@ -377,7 +377,7 @@ object PanoNavGraph {
         entry<PanoRoute.Translators> { route ->
             onSetTitleRes(route, Res.string.pref_translate_credits)
             TranslatorsScreen(
-                modifier = Modifier.navColumn().padding(panoContentPadding())
+                modifier = Modifier.navColumn()
             )
         }
 

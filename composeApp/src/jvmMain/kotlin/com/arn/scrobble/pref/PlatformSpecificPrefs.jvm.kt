@@ -15,6 +15,7 @@ import pano_scrobbler.composeapp.generated.resources.disable
 import pano_scrobbler.composeapp.generated.resources.discord_rich_presence
 import pano_scrobbler.composeapp.generated.resources.done
 import pano_scrobbler.composeapp.generated.resources.enable
+import pano_scrobbler.composeapp.generated.resources.linux_install_icons
 import pano_scrobbler.composeapp.generated.resources.pref_check_updates
 import pano_scrobbler.composeapp.generated.resources.pref_fetch_missing_album
 import pano_scrobbler.composeapp.generated.resources.pref_notify_updates
@@ -78,6 +79,7 @@ actual object PlatformSpecificPrefs {
                 val doneString = stringResource(Res.string.done)
                 TextPref(
                     text = title,
+                    summary = stringResource(Res.string.linux_install_icons),
                     onClick = {
                         DesktopStuff.addAppImageToAppLauncher()
                         val snackbarData = PanoSnackbarVisuals(doneString)

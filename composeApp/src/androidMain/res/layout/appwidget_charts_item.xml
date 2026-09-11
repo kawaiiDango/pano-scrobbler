@@ -82,7 +82,7 @@
             android:layout_height="@dimen/stonks_icon_size"
             android:layout_marginStart="1dp"
             android:layout_marginTop="1dp"
-            android:alpha="?fakeShadowAlpha"
+            android:alpha="?appWidgetFakeShadowAlpha"
             android:importantForAccessibility="no"
             android:tint="?android:colorBackground"
             tools:src="@drawable/vd_stonks_up_double" />

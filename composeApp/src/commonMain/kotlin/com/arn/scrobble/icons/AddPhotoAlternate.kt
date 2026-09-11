@@ -1,88 +1,103 @@
 package com.arn.scrobble.icons
 
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.PathFillType
 import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.graphics.StrokeJoin
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.graphics.vector.path
 import androidx.compose.ui.unit.dp
 
+@Suppress("CheckReturnValue")
 val Icons.AddPhotoAlternate: ImageVector
-    get() {
-        if (_AddPhotoAlternate != null) {
-            return _AddPhotoAlternate!!
-        }
-        _AddPhotoAlternate = ImageVector.Builder(
-            name = "AddPhotoAlternate",
-            defaultWidth = 24.dp,
-            defaultHeight = 24.dp,
-            viewportWidth = 960f,
-            viewportHeight = 960f
-        ).apply {
-            path(fill = SolidColor(Color.Black)) {
-                moveTo(480f, 480f)
-                close()
-                moveTo(200f, 840f)
-                quadToRelative(-33f, 0f, -56.5f, -23.5f)
-                reflectiveQuadTo(120f, 760f)
-                verticalLineToRelative(-560f)
-                quadToRelative(0f, -33f, 23.5f, -56.5f)
-                reflectiveQuadTo(200f, 120f)
-                horizontalLineToRelative(280f)
-                quadToRelative(17f, 0f, 28.5f, 11.5f)
-                reflectiveQuadTo(520f, 160f)
-                quadToRelative(0f, 17f, -11.5f, 28.5f)
-                reflectiveQuadTo(480f, 200f)
-                lineTo(200f, 200f)
-                verticalLineToRelative(560f)
-                horizontalLineToRelative(560f)
-                verticalLineToRelative(-280f)
-                quadToRelative(0f, -17f, 11.5f, -28.5f)
-                reflectiveQuadTo(800f, 440f)
-                quadToRelative(17f, 0f, 28.5f, 11.5f)
-                reflectiveQuadTo(840f, 480f)
-                verticalLineToRelative(280f)
-                quadToRelative(0f, 33f, -23.5f, 56.5f)
-                reflectiveQuadTo(760f, 840f)
-                lineTo(200f, 840f)
-                close()
-                moveTo(240f, 680f)
-                horizontalLineToRelative(480f)
-                lineTo(570f, 480f)
-                lineTo(450f, 640f)
-                lineToRelative(-90f, -120f)
-                lineToRelative(-120f, 160f)
-                close()
-                moveTo(680f, 280f)
-                horizontalLineToRelative(-40f)
-                quadToRelative(-17f, 0f, -28.5f, -11.5f)
-                reflectiveQuadTo(600f, 240f)
-                quadToRelative(0f, -17f, 11.5f, -28.5f)
-                reflectiveQuadTo(640f, 200f)
-                horizontalLineToRelative(40f)
-                verticalLineToRelative(-40f)
-                quadToRelative(0f, -17f, 11.5f, -28.5f)
-                reflectiveQuadTo(720f, 120f)
-                quadToRelative(17f, 0f, 28.5f, 11.5f)
-                reflectiveQuadTo(760f, 160f)
-                verticalLineToRelative(40f)
-                horizontalLineToRelative(40f)
-                quadToRelative(17f, 0f, 28.5f, 11.5f)
-                reflectiveQuadTo(840f, 240f)
-                quadToRelative(0f, 17f, -11.5f, 28.5f)
-                reflectiveQuadTo(800f, 280f)
-                horizontalLineToRelative(-40f)
-                verticalLineToRelative(40f)
-                quadToRelative(0f, 17f, -11.5f, 28.5f)
-                reflectiveQuadTo(720f, 360f)
-                quadToRelative(-17f, 0f, -28.5f, -11.5f)
-                reflectiveQuadTo(680f, 320f)
-                verticalLineToRelative(-40f)
-                close()
-            }
-        }.build()
-
-        return _AddPhotoAlternate!!
+  get() {
+    if (_AddPhotoAlternate != null) {
+      return _AddPhotoAlternate!!
     }
+    _AddPhotoAlternate =
+      ImageVector.Builder(
+          name = "AddPhotoAlternate",
+          defaultWidth = 24.dp,
+          defaultHeight = 24.dp,
+          viewportWidth = 24f,
+          viewportHeight = 24f,
+        )
+        .apply {
+          path(
+            fill = SolidColor(Color.Black),
+            fillAlpha = 1f,
+            stroke = null,
+            strokeAlpha = 1f,
+            strokeLineWidth = 1f,
+            strokeLineCap = StrokeCap.Butt,
+            strokeLineJoin = StrokeJoin.Bevel,
+            strokeLineMiter = 1f,
+            pathFillType = PathFillType.NonZero,
+          ) {
+            moveTo(12f, 12f)
+            close()
+            moveTo(5f, 21f)
+            quadTo(4.18f, 21f, 3.59f, 20.41f)
+            reflectiveQuadTo(3f, 19f)
+            verticalLineTo(5f)
+            quadTo(3f, 4.17f, 3.59f, 3.59f)
+            reflectiveQuadTo(5f, 3f)
+            horizontalLineToRelative(7f)
+            quadToRelative(0.43f, 0f, 0.71f, 0.29f)
+            reflectiveQuadTo(13f, 4f)
+            quadToRelative(0f, 0.42f, -0.29f, 0.71f)
+            reflectiveQuadTo(12f, 5f)
+            horizontalLineTo(5f)
+            verticalLineTo(19f)
+            horizontalLineTo(19f)
+            verticalLineTo(12f)
+            quadToRelative(0f, -0.43f, 0.29f, -0.71f)
+            reflectiveQuadTo(20f, 11f)
+            quadToRelative(0.43f, 0f, 0.71f, 0.29f)
+            reflectiveQuadTo(21f, 12f)
+            verticalLineToRelative(7f)
+            quadToRelative(0f, 0.82f, -0.59f, 1.41f)
+            reflectiveQuadTo(19f, 21f)
+            horizontalLineTo(5f)
+            close()
+            moveTo(6f, 17f)
+            horizontalLineTo(18f)
+            lineTo(14.25f, 12f)
+            lineToRelative(-3f, 4f)
+            lineTo(9f, 13f)
+            lineTo(6f, 17f)
+            close()
+            moveTo(17f, 7f)
+            horizontalLineTo(16f)
+            quadTo(15.58f, 7f, 15.29f, 6.71f)
+            quadTo(15f, 6.43f, 15f, 6f)
+            reflectiveQuadTo(15.29f, 5.29f)
+            reflectiveQuadTo(16f, 5f)
+            horizontalLineToRelative(1f)
+            verticalLineTo(4f)
+            quadTo(17f, 3.57f, 17.29f, 3.29f)
+            reflectiveQuadTo(18f, 3f)
+            reflectiveQuadToRelative(0.71f, 0.29f)
+            reflectiveQuadTo(19f, 4f)
+            verticalLineTo(5f)
+            horizontalLineToRelative(1f)
+            quadToRelative(0.43f, 0f, 0.71f, 0.29f)
+            reflectiveQuadTo(21f, 6f)
+            reflectiveQuadTo(20.71f, 6.71f)
+            reflectiveQuadTo(20f, 7f)
+            horizontalLineTo(19f)
+            verticalLineTo(8f)
+            quadToRelative(0f, 0.42f, -0.29f, 0.71f)
+            reflectiveQuadTo(18f, 9f)
+            reflectiveQuadTo(17.29f, 8.71f)
+            reflectiveQuadTo(17f, 8f)
+            verticalLineTo(7f)
+            close()
+          }
+        }
+        .build()
+    return _AddPhotoAlternate!!
+  }
 
-@Suppress("ObjectPropertyName")
 private var _AddPhotoAlternate: ImageVector? = null

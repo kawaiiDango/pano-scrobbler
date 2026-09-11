@@ -1,5 +1,7 @@
 package com.arn.scrobble.recents
 
+import androidx.compose.foundation.layout.BoxWithConstraints
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.Icon
@@ -8,14 +10,12 @@ import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalDensity
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.paging.compose.collectAsLazyPagingItems
@@ -60,12 +60,6 @@ fun TrackHistoryScreen(
         PlatformStuff.mainPrefs.data.collectAsStateWithInitialValue { it.showScrobbleSources }
     else
         remember { mutableStateOf(false) }
-    val density = LocalDensity.current
-    val viewportHeightToIsLandscape by remember {
-        derivedStateOf {
-            listState.layoutInfo.viewportSize.let { with(density) { it.height.toDp() } to (it.width * 0.7 > it.height) }
-        }
-    }
 
     LaunchedEffect(total, deletedTracksCount) {
         val count = ((total ?: 0) - deletedTracksCount)
@@ -86,20 +80,28 @@ fun TrackHistoryScreen(
         editDataFlow
     )
 
-    PanoLazyColumn(
-        state = listState,
-        modifier = modifier
-    ) {
-        if (firstScrobbleTime != null) {
-            item("first_scrobble_time") {
-                ListItem(
-                    leadingContent = {
-                        Icon(
-                            imageVector = Icons.Cake,
-                            contentDescription = null,
-                        )
-                    },
-                    headlineContent = {
+    BoxWithConstraints(modifier = modifier) {
+        val isLandscape = maxWidth * 0.7f > maxHeight
+        val listMaxHeight = maxHeight
+
+        PanoLazyColumn(
+            state = listState,
+            modifier = Modifier.fillMaxSize()
+        ) {
+            if (firstScrobbleTime != null) {
+                item("first_scrobble_time") {
+                    ListItem(
+                        leadingContent = {
+                            Icon(
+                                imageVector = Icons.Cake,
+                                contentDescription = null,
+                            )
+                        },
+                        colors = ListItemDefaults.myTransparentCheckableItemColors(),
+                        modifier = Modifier
+                            .animateItem()
+                            .fillMaxWidth()
+                    ) {
                         Text(
                             text = stringResource(
                                 Res.string.first_scrobbled_on,
@@ -109,33 +111,29 @@ fun TrackHistoryScreen(
                                 )
                             ),
                         )
-                    },
-                    colors = ListItemDefaults.myTransparentCheckableItemColors(),
-                    modifier = Modifier
-                        .animateItem()
-                        .fillMaxWidth()
-                )
+                    }
+                }
             }
+
+            scrobblesListItems(
+                tracks = tracks,
+                user = user,
+                pkgMap = pkgMap,
+                fetchAlbumImageIfMissing = false,
+                showScrobbleSources = showScrobbleSources,
+                canEdit = true,
+                canDelete = true,
+                canLove = false,
+                canHate = false,
+                expandedKey = { expandedKey },
+                onExpand = { expandedKey = it },
+                onNavigate = onNavigate,
+                isLandscape = { isLandscape },
+                maxHeight = { listMaxHeight },
+                viewModel = viewModel,
+            )
+
+            scrobblesPlaceholdersAndErrors(tracks = tracks)
         }
-
-        scrobblesListItems(
-            tracks = tracks,
-            user = user,
-            pkgMap = pkgMap,
-            fetchAlbumImageIfMissing = false,
-            showScrobbleSources = showScrobbleSources,
-            canEdit = true,
-            canDelete = true,
-            canLove = false,
-            canHate = false,
-            expandedKey = { expandedKey },
-            onExpand = { expandedKey = it },
-            onNavigate = onNavigate,
-            isLandscape = { viewportHeightToIsLandscape.second },
-            maxHeight = { viewportHeightToIsLandscape.first },
-            viewModel = viewModel,
-        )
-
-        scrobblesPlaceholdersAndErrors(tracks = tracks)
     }
 }

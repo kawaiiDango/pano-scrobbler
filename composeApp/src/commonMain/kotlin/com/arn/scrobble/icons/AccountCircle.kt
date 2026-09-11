@@ -1,95 +1,110 @@
 package com.arn.scrobble.icons
 
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.PathFillType
 import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.graphics.StrokeJoin
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.graphics.vector.path
 import androidx.compose.ui.unit.dp
 
+@Suppress("CheckReturnValue")
 val Icons.AccountCircle: ImageVector
-    get() {
-        if (_AccountCircle != null) {
-            return _AccountCircle!!
-        }
-        _AccountCircle = ImageVector.Builder(
-            name = "AccountCircle",
-            defaultWidth = 24.dp,
-            defaultHeight = 24.dp,
-            viewportWidth = 960f,
-            viewportHeight = 960f
-        ).apply {
-            path(fill = SolidColor(Color.Black)) {
-                moveTo(234f, 684f)
-                quadToRelative(51f, -39f, 114f, -61.5f)
-                reflectiveQuadTo(480f, 600f)
-                quadToRelative(69f, 0f, 132f, 22.5f)
-                reflectiveQuadTo(726f, 684f)
-                quadToRelative(35f, -41f, 54.5f, -93f)
-                reflectiveQuadTo(800f, 480f)
-                quadToRelative(0f, -133f, -93.5f, -226.5f)
-                reflectiveQuadTo(480f, 160f)
-                quadToRelative(-133f, 0f, -226.5f, 93.5f)
-                reflectiveQuadTo(160f, 480f)
-                quadToRelative(0f, 59f, 19.5f, 111f)
-                reflectiveQuadToRelative(54.5f, 93f)
-                close()
-                moveTo(380.5f, 479.5f)
-                quadTo(340f, 439f, 340f, 380f)
-                reflectiveQuadToRelative(40.5f, -99.5f)
-                quadTo(421f, 240f, 480f, 240f)
-                reflectiveQuadToRelative(99.5f, 40.5f)
-                quadTo(620f, 321f, 620f, 380f)
-                reflectiveQuadToRelative(-40.5f, 99.5f)
-                quadTo(539f, 520f, 480f, 520f)
-                reflectiveQuadToRelative(-99.5f, -40.5f)
-                close()
-                moveTo(480f, 880f)
-                quadToRelative(-83f, 0f, -156f, -31.5f)
-                reflectiveQuadTo(197f, 763f)
-                quadToRelative(-54f, -54f, -85.5f, -127f)
-                reflectiveQuadTo(80f, 480f)
-                quadToRelative(0f, -83f, 31.5f, -156f)
-                reflectiveQuadTo(197f, 197f)
-                quadToRelative(54f, -54f, 127f, -85.5f)
-                reflectiveQuadTo(480f, 80f)
-                quadToRelative(83f, 0f, 156f, 31.5f)
-                reflectiveQuadTo(763f, 197f)
-                quadToRelative(54f, 54f, 85.5f, 127f)
-                reflectiveQuadTo(880f, 480f)
-                quadToRelative(0f, 83f, -31.5f, 156f)
-                reflectiveQuadTo(763f, 763f)
-                quadToRelative(-54f, 54f, -127f, 85.5f)
-                reflectiveQuadTo(480f, 880f)
-                close()
-                moveTo(580f, 784.5f)
-                quadToRelative(47f, -15.5f, 86f, -44.5f)
-                quadToRelative(-39f, -29f, -86f, -44.5f)
-                reflectiveQuadTo(480f, 680f)
-                quadToRelative(-53f, 0f, -100f, 15.5f)
-                reflectiveQuadTo(294f, 740f)
-                quadToRelative(39f, 29f, 86f, 44.5f)
-                reflectiveQuadTo(480f, 800f)
-                quadToRelative(53f, 0f, 100f, -15.5f)
-                close()
-                moveTo(523f, 423f)
-                quadToRelative(17f, -17f, 17f, -43f)
-                reflectiveQuadToRelative(-17f, -43f)
-                quadToRelative(-17f, -17f, -43f, -17f)
-                reflectiveQuadToRelative(-43f, 17f)
-                quadToRelative(-17f, 17f, -17f, 43f)
-                reflectiveQuadToRelative(17f, 43f)
-                quadToRelative(17f, 17f, 43f, 17f)
-                reflectiveQuadToRelative(43f, -17f)
-                close()
-                moveTo(480f, 380f)
-                close()
-                moveTo(480f, 740f)
-                close()
-            }
-        }.build()
-
-        return _AccountCircle!!
+  get() {
+    if (_AccountCircle != null) {
+      return _AccountCircle!!
     }
+    _AccountCircle =
+      ImageVector.Builder(
+          name = "AccountCircle",
+          defaultWidth = 24.dp,
+          defaultHeight = 24.dp,
+          viewportWidth = 24f,
+          viewportHeight = 24f,
+        )
+        .apply {
+          path(
+            fill = SolidColor(Color.Black),
+            fillAlpha = 1f,
+            stroke = null,
+            strokeAlpha = 1f,
+            strokeLineWidth = 1f,
+            strokeLineCap = StrokeCap.Butt,
+            strokeLineJoin = StrokeJoin.Bevel,
+            strokeLineMiter = 1f,
+            pathFillType = PathFillType.NonZero,
+          ) {
+            moveTo(5.85f, 17.1f)
+            quadTo(7.13f, 16.13f, 8.7f, 15.56f)
+            reflectiveQuadTo(12f, 15f)
+            reflectiveQuadToRelative(3.3f, 0.56f)
+            reflectiveQuadToRelative(2.85f, 1.54f)
+            quadToRelative(0.88f, -1.03f, 1.36f, -2.33f)
+            reflectiveQuadTo(20f, 12f)
+            quadTo(20f, 8.67f, 17.66f, 6.34f)
+            reflectiveQuadTo(12f, 4f)
+            quadTo(8.68f, 4f, 6.34f, 6.34f)
+            reflectiveQuadTo(4f, 12f)
+            quadToRelative(0f, 1.47f, 0.49f, 2.78f)
+            quadToRelative(0.49f, 1.3f, 1.36f, 2.33f)
+            close()
+            moveTo(9.51f, 11.99f)
+            quadTo(8.5f, 10.98f, 8.5f, 9.5f)
+            quadTo(8.5f, 8.02f, 9.51f, 7.01f)
+            reflectiveQuadTo(12f, 6f)
+            reflectiveQuadToRelative(2.49f, 1.01f)
+            reflectiveQuadTo(15.5f, 9.5f)
+            reflectiveQuadToRelative(-1.01f, 2.49f)
+            reflectiveQuadTo(12f, 13f)
+            quadTo(10.53f, 13f, 9.51f, 11.99f)
+            close()
+            moveTo(12f, 22f)
+            quadTo(9.93f, 22f, 8.1f, 21.21f)
+            quadTo(6.28f, 20.43f, 4.93f, 19.08f)
+            quadTo(3.58f, 17.73f, 2.79f, 15.9f)
+            reflectiveQuadTo(2f, 12f)
+            quadTo(2f, 9.92f, 2.79f, 8.1f)
+            quadTo(3.58f, 6.27f, 4.93f, 4.93f)
+            quadTo(6.28f, 3.57f, 8.1f, 2.79f)
+            quadTo(9.93f, 2f, 12f, 2f)
+            reflectiveQuadToRelative(3.9f, 0.79f)
+            reflectiveQuadToRelative(3.17f, 2.14f)
+            quadToRelative(1.35f, 1.35f, 2.14f, 3.17f)
+            quadTo(22f, 9.92f, 22f, 12f)
+            reflectiveQuadToRelative(-0.79f, 3.9f)
+            reflectiveQuadToRelative(-2.14f, 3.17f)
+            quadToRelative(-1.35f, 1.35f, -3.17f, 2.14f)
+            reflectiveQuadTo(12f, 22f)
+            close()
+            moveToRelative(2.5f, -2.39f)
+            quadToRelative(1.18f, -0.39f, 2.15f, -1.11f)
+            quadTo(15.68f, 17.77f, 14.5f, 17.39f)
+            reflectiveQuadTo(12f, 17f)
+            reflectiveQuadTo(9.5f, 17.39f)
+            quadTo(8.33f, 17.77f, 7.35f, 18.5f)
+            quadToRelative(0.98f, 0.73f, 2.15f, 1.11f)
+            reflectiveQuadTo(12f, 20f)
+            reflectiveQuadToRelative(2.5f, -0.39f)
+            close()
+            moveTo(13.08f, 10.58f)
+            quadTo(13.5f, 10.15f, 13.5f, 9.5f)
+            reflectiveQuadTo(13.08f, 8.42f)
+            reflectiveQuadTo(12f, 8f)
+            reflectiveQuadTo(10.93f, 8.42f)
+            reflectiveQuadTo(10.5f, 9.5f)
+            reflectiveQuadToRelative(0.43f, 1.07f)
+            reflectiveQuadTo(12f, 11f)
+            reflectiveQuadToRelative(1.08f, -0.43f)
+            close()
+            moveTo(12f, 9.5f)
+            close()
+            moveToRelative(0f, 9f)
+            close()
+          }
+        }
+        .build()
+    return _AccountCircle!!
+  }
 
-@Suppress("ObjectPropertyName")
 private var _AccountCircle: ImageVector? = null

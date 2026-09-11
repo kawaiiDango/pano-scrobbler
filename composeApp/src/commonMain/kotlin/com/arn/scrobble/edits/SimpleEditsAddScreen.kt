@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledIconToggleButton
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
@@ -80,6 +81,7 @@ import pano_scrobbler.composeapp.generated.resources.show_all
 import pano_scrobbler.composeapp.generated.resources.swap
 import pano_scrobbler.composeapp.generated.resources.track
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SimpleEditsAddScreen(
     simpleEdit: SimpleEdit?,

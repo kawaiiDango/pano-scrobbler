@@ -33,9 +33,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
+import com.arn.scrobble.icons.ArrowLeftAutoMirrored
+import com.arn.scrobble.icons.ArrowRightAutoMirrored
 import com.arn.scrobble.icons.Icons
-import com.arn.scrobble.icons.automirrored.ArrowLeft
-import com.arn.scrobble.icons.automirrored.ArrowRight
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
 import pano_scrobbler.composeapp.generated.resources.Res
@@ -188,7 +188,7 @@ actual fun PanoLazyRow(
                         .padding(horizontal = 4.dp)
                 ) {
                     Icon(
-                        imageVector = Icons.AutoMirrored.ArrowLeft,
+                        imageVector = Icons.ArrowLeftAutoMirrored,
                         contentDescription = stringResource(Res.string.move_left),
                     )
                 }
@@ -209,7 +209,7 @@ actual fun PanoLazyRow(
                         .padding(horizontal = 4.dp)
                 ) {
                     Icon(
-                        imageVector = Icons.AutoMirrored.ArrowRight,
+                        imageVector = Icons.ArrowRightAutoMirrored,
                         contentDescription = stringResource(Res.string.move_right),
                     )
                 }

@@ -83,25 +83,34 @@ actual object PlatformStuff {
     }
 
     actual fun openInBrowser(url: String) {
-        val url = Stuff.localizeLastfmUrl(url)
-        val isMailTo = url.startsWith("mailto:", ignoreCase = true)
+        val desktop = if (Desktop.isDesktopSupported()) Desktop.getDesktop() else null
 
-        var desktop: Desktop? = null
-        if (DesktopStuff.IS_LINUX && Desktop.isDesktopSupported())
-            desktop = Desktop.getDesktop().takeIf {
-                if (isMailTo)
-                    it.isSupported(Desktop.Action.MAIL)
-                else
-                    it.isSupported(Desktop.Action.BROWSE)
+        when {
+            desktop != null &&
+                    url.startsWith("mailto:", ignoreCase = true) &&
+                    desktop.isSupported(Desktop.Action.MAIL)
+                -> {
+                desktop.mail(URI(url))
             }
 
-        if (desktop != null) {
-            if (isMailTo)
-                desktop.mail(URI(url))
-            else
-                desktop.browse(URI(url))
-        } else
-            PanoNativeComponents.openUrl(url)
+            desktop != null &&
+                    url.startsWith("http", ignoreCase = true) &&
+                    desktop.isSupported(Desktop.Action.BROWSE)
+                -> {
+                desktop.browse(URI(Stuff.localizeLastfmUrl(url)))
+            }
+
+            desktop != null &&
+                    url.startsWith("file", ignoreCase = true) &&
+                    desktop.isSupported(Desktop.Action.OPEN)
+                -> {
+                desktop.open(File(URI(url)))
+            }
+
+            desktop == null && DesktopStuff.IS_LINUX -> {
+                PanoNativeComponents.openUrlLinux(url)
+            }
+        }
     }
 
     actual suspend fun checkScrobblerState(requestRebind: Boolean): ScrobblerState {

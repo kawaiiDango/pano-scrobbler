@@ -1,93 +1,108 @@
 package com.arn.scrobble.icons
 
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.PathFillType
 import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.graphics.StrokeJoin
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.graphics.vector.path
 import androidx.compose.ui.unit.dp
 
+@Suppress("CheckReturnValue")
 val Icons.Fullscreen: ImageVector
-    get() {
-        if (_Fullscreen != null) {
-            return _Fullscreen!!
-        }
-        _Fullscreen = ImageVector.Builder(
-            name = "Fullscreen",
-            defaultWidth = 24.dp,
-            defaultHeight = 24.dp,
-            viewportWidth = 960f,
-            viewportHeight = 960f
-        ).apply {
-            path(fill = SolidColor(Color.Black)) {
-                moveTo(200f, 760f)
-                horizontalLineToRelative(80f)
-                quadToRelative(17f, 0f, 28.5f, 11.5f)
-                reflectiveQuadTo(320f, 800f)
-                quadToRelative(0f, 17f, -11.5f, 28.5f)
-                reflectiveQuadTo(280f, 840f)
-                lineTo(160f, 840f)
-                quadToRelative(-17f, 0f, -28.5f, -11.5f)
-                reflectiveQuadTo(120f, 800f)
-                verticalLineToRelative(-120f)
-                quadToRelative(0f, -17f, 11.5f, -28.5f)
-                reflectiveQuadTo(160f, 640f)
-                quadToRelative(17f, 0f, 28.5f, 11.5f)
-                reflectiveQuadTo(200f, 680f)
-                verticalLineToRelative(80f)
-                close()
-                moveTo(760f, 760f)
-                verticalLineToRelative(-80f)
-                quadToRelative(0f, -17f, 11.5f, -28.5f)
-                reflectiveQuadTo(800f, 640f)
-                quadToRelative(17f, 0f, 28.5f, 11.5f)
-                reflectiveQuadTo(840f, 680f)
-                verticalLineToRelative(120f)
-                quadToRelative(0f, 17f, -11.5f, 28.5f)
-                reflectiveQuadTo(800f, 840f)
-                lineTo(680f, 840f)
-                quadToRelative(-17f, 0f, -28.5f, -11.5f)
-                reflectiveQuadTo(640f, 800f)
-                quadToRelative(0f, -17f, 11.5f, -28.5f)
-                reflectiveQuadTo(680f, 760f)
-                horizontalLineToRelative(80f)
-                close()
-                moveTo(200f, 200f)
-                verticalLineToRelative(80f)
-                quadToRelative(0f, 17f, -11.5f, 28.5f)
-                reflectiveQuadTo(160f, 320f)
-                quadToRelative(-17f, 0f, -28.5f, -11.5f)
-                reflectiveQuadTo(120f, 280f)
-                verticalLineToRelative(-120f)
-                quadToRelative(0f, -17f, 11.5f, -28.5f)
-                reflectiveQuadTo(160f, 120f)
-                horizontalLineToRelative(120f)
-                quadToRelative(17f, 0f, 28.5f, 11.5f)
-                reflectiveQuadTo(320f, 160f)
-                quadToRelative(0f, 17f, -11.5f, 28.5f)
-                reflectiveQuadTo(280f, 200f)
-                horizontalLineToRelative(-80f)
-                close()
-                moveTo(760f, 200f)
-                horizontalLineToRelative(-80f)
-                quadToRelative(-17f, 0f, -28.5f, -11.5f)
-                reflectiveQuadTo(640f, 160f)
-                quadToRelative(0f, -17f, 11.5f, -28.5f)
-                reflectiveQuadTo(680f, 120f)
-                horizontalLineToRelative(120f)
-                quadToRelative(17f, 0f, 28.5f, 11.5f)
-                reflectiveQuadTo(840f, 160f)
-                verticalLineToRelative(120f)
-                quadToRelative(0f, 17f, -11.5f, 28.5f)
-                reflectiveQuadTo(800f, 320f)
-                quadToRelative(-17f, 0f, -28.5f, -11.5f)
-                reflectiveQuadTo(760f, 280f)
-                verticalLineToRelative(-80f)
-                close()
-            }
-        }.build()
-
-        return _Fullscreen!!
+  get() {
+    if (_Fullscreen != null) {
+      return _Fullscreen!!
     }
+    _Fullscreen =
+      ImageVector.Builder(
+          name = "Fullscreen",
+          defaultWidth = 24.dp,
+          defaultHeight = 24.dp,
+          viewportWidth = 24f,
+          viewportHeight = 24f,
+        )
+        .apply {
+          path(
+            fill = SolidColor(Color.Black),
+            fillAlpha = 1f,
+            stroke = null,
+            strokeAlpha = 1f,
+            strokeLineWidth = 1f,
+            strokeLineCap = StrokeCap.Butt,
+            strokeLineJoin = StrokeJoin.Bevel,
+            strokeLineMiter = 1f,
+            pathFillType = PathFillType.NonZero,
+          ) {
+            moveTo(5f, 19f)
+            horizontalLineTo(7f)
+            quadToRelative(0.43f, 0f, 0.71f, 0.29f)
+            reflectiveQuadTo(8f, 20f)
+            reflectiveQuadTo(7.71f, 20.71f)
+            reflectiveQuadTo(7f, 21f)
+            horizontalLineTo(4f)
+            quadTo(3.58f, 21f, 3.29f, 20.71f)
+            quadTo(3f, 20.43f, 3f, 20f)
+            verticalLineTo(17f)
+            quadTo(3f, 16.58f, 3.29f, 16.29f)
+            reflectiveQuadTo(4f, 16f)
+            reflectiveQuadToRelative(0.71f, 0.29f)
+            reflectiveQuadTo(5f, 17f)
+            verticalLineToRelative(2f)
+            close()
+            moveToRelative(14f, 0f)
+            verticalLineTo(17f)
+            quadToRelative(0f, -0.43f, 0.29f, -0.71f)
+            reflectiveQuadTo(20f, 16f)
+            quadToRelative(0.43f, 0f, 0.71f, 0.29f)
+            reflectiveQuadTo(21f, 17f)
+            verticalLineToRelative(3f)
+            quadToRelative(0f, 0.43f, -0.29f, 0.71f)
+            reflectiveQuadTo(20f, 21f)
+            horizontalLineTo(17f)
+            quadToRelative(-0.43f, 0f, -0.71f, -0.29f)
+            quadTo(16f, 20.43f, 16f, 20f)
+            reflectiveQuadToRelative(0.29f, -0.71f)
+            reflectiveQuadTo(17f, 19f)
+            horizontalLineToRelative(2f)
+            close()
+            moveTo(5f, 5f)
+            verticalLineTo(7f)
+            quadTo(5f, 7.43f, 4.71f, 7.71f)
+            reflectiveQuadTo(4f, 8f)
+            reflectiveQuadTo(3.29f, 7.71f)
+            quadTo(3f, 7.43f, 3f, 7f)
+            verticalLineTo(4f)
+            quadTo(3f, 3.57f, 3.29f, 3.29f)
+            reflectiveQuadTo(4f, 3f)
+            horizontalLineTo(7f)
+            quadTo(7.43f, 3f, 7.71f, 3.29f)
+            reflectiveQuadTo(8f, 4f)
+            quadTo(8f, 4.42f, 7.71f, 4.71f)
+            reflectiveQuadTo(7f, 5f)
+            horizontalLineTo(5f)
+            close()
+            moveTo(19f, 5f)
+            horizontalLineTo(17f)
+            quadTo(16.58f, 5f, 16.29f, 4.71f)
+            reflectiveQuadTo(16f, 4f)
+            quadTo(16f, 3.57f, 16.29f, 3.29f)
+            reflectiveQuadTo(17f, 3f)
+            horizontalLineToRelative(3f)
+            quadToRelative(0.43f, 0f, 0.71f, 0.29f)
+            reflectiveQuadTo(21f, 4f)
+            verticalLineTo(7f)
+            quadToRelative(0f, 0.43f, -0.29f, 0.71f)
+            reflectiveQuadTo(20f, 8f)
+            reflectiveQuadTo(19.29f, 7.71f)
+            quadTo(19f, 7.43f, 19f, 7f)
+            verticalLineTo(5f)
+            close()
+          }
+        }
+        .build()
+    return _Fullscreen!!
+  }
 
-@Suppress("ObjectPropertyName")
 private var _Fullscreen: ImageVector? = null

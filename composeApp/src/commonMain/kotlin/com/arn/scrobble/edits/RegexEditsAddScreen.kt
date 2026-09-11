@@ -18,6 +18,7 @@ import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedIconButton
 import androidx.compose.material3.OutlinedToggleButton
+import androidx.compose.material3.OutlinedToggleButtonDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -68,6 +69,7 @@ import com.arn.scrobble.ui.PanoDropdownMenu
 import com.arn.scrobble.ui.PanoOutlinedTextField
 import com.arn.scrobble.ui.PanoToggleButtonGroup
 import com.arn.scrobble.ui.PanoToggleButtonsMode
+import com.arn.scrobble.ui.myColors
 import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff.collectAsStateWithInitialValue
 import com.arn.scrobble.utils.redactedMessage
@@ -862,6 +864,7 @@ private fun CopyFromSelector(
     OutlinedToggleButton(
         checked = dropDownShown,
         onCheckedChange = { dropDownShown = it },
+        colors = OutlinedToggleButtonDefaults.myColors(),
         modifier = modifier.padding(end = 8.dp)
     ) {
         if (selected == null) {

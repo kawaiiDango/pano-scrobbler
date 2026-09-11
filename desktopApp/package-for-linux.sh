@@ -18,22 +18,21 @@ distDir="$scriptDir/../dist"
 verCode=$(cat "$scriptDir/../version.txt")
 verName="$((verCode / 100)).$((verCode % 100))"
 
-# Clean and create AppDir
-rm -rf "$appDir"
-mkdir -p "$libExecDir"
-
-# Copy executable files to a dir in Linux filesystem
-cp -ar "$nativeImageDir/." "$libExecDir"
-
-# Fix permissions
-chmod 644 "$libExecDir"/*.*
-chmod 644 "$libExecDir"/lib/*.*
-chmod 644 "$libExecDir/LICENSE"
-chmod 755 "$libExecDir/$appNameWithoutSpaces"
-
 # Strip .so files
-strip --strip-unneeded "$libExecDir"/*.so
-strip --strip-unneeded "$libExecDir"/lib/*.so
+strip --strip-unneeded "$nativeImageDir"/*.so
+strip --strip-unneeded "$nativeImageDir"/lib/*.so
+
+# Clean AppDir
+rm -rf "$appDir"
+
+install -Dm644 -t "${libExecDir}/lib/" "${nativeImageDir}"/lib/*.so
+install -Dm644 -t "${libExecDir}/" "${nativeImageDir}"/*.so
+install -Dm644 -t "${libExecDir}/icons/hicolor/scalable/apps/" "${nativeImageDir}/icons/hicolor/scalable/apps/"*.svg
+install -Dm644 -t "${libExecDir}/icons/hicolor/symbolic/apps/" "${nativeImageDir}/icons/hicolor/symbolic/apps/"*.svg
+install -Dm644 -t "${libExecDir}/icons/hicolor/" "${nativeImageDir}/icons/hicolor/index.theme"
+install -Dm644 -t "${libExecDir}/" "${nativeImageDir}"/LICENSE
+install -Dm644 -t "${libExecDir}/" "${nativeImageDir}"/${appNameWithoutSpaces}.desktop
+install -Dm755 -t "${libExecDir}/" "${nativeImageDir}/${appNameWithoutSpaces}"
 
 # Create tarball
 tarFile="$distDir/$appNameWithoutSpaces-$resourcesDirName.tar.gz"
@@ -47,24 +46,27 @@ sleep 3
 chmod +x "$libExecDir/relaunch.sh"
 
 # LICENSE
-mkdir -p "$appDir/usr/share/licenses/$appNameWithoutSpaces"
+install -d "$appDir/usr/share/licenses/$appNameWithoutSpaces"
 mv "$libExecDir/LICENSE" "$appDir/usr/share/licenses/$appNameWithoutSpaces/"
 
-# Icon
-mkdir -p "$appDir/usr/share/icons/hicolor/scalable/apps"
-mv "$libExecDir/$appNameWithoutSpaces.svg" "$appDir/"
-cp "$appDir/$appNameWithoutSpaces.svg" "$appDir/usr/share/icons/hicolor/scalable/apps/"
+# Icons
+mv "$libExecDir/icons" "$appDir/usr/share/"
+
+for f in "$appDir/usr/share/icons/hicolor/symbolic/apps/"*-symbolic.svg; do
+  mv -- "$f" "${f%-symbolic.svg}-appimage-symbolic.svg"
+done
+
+for f in "$appDir/usr/share/icons/hicolor/scalable/apps/"*.svg; do
+  mv -- "$f" "${f%.svg}-appimage.svg"
+done
+
+cp "$appDir/usr/share/icons/hicolor/scalable/apps/"*.svg "$appDir/"
 
 # Desktop file
 desktopFile="$libExecDir/$appNameWithoutSpaces.desktop"
-sed -i "s/^Exec=.*/Exec=AppRun %U/" "$desktopFile"
-sed -i "s/^Icon=.*/Icon=$appNameWithoutSpaces/" "$desktopFile"
-cp "$desktopFile" "$appDir/"
-
-# Again
-sed -i "s/^Exec=.*/Exec=$appNameWithoutSpaces %U/" "$desktopFile"
-sed -i "s/^Icon=.*/Icon=$appNameWithoutSpaces/" "$desktopFile"
-mkdir -p "$appDir/usr/share/applications/"
+sed -i -e "s/^Icon=.*/Icon=$appNameWithoutSpaces-appimage/" "$desktopFile"
+sed -e "s/^Exec=.*/Exec=AppRun %U/" "$desktopFile" >  "$appDir/$appNameWithoutSpaces.desktop"
+install -d "$appDir/usr/share/applications/"
 mv "$desktopFile" "$appDir/usr/share/applications/"
 
 # Create AppRun symlink
@@ -73,7 +75,7 @@ ln -srf "$libExecDir/$appNameWithoutSpaces" "$appDir/AppRun"
 # Download appimagetool if missing
 appImageToolFile="$HOME/appimagetool-$arch.AppImage"
 if [ ! -f "$appImageToolFile" ]; then
-    wget -O "$appImageToolFile" "https://github.com/AppImage/appimagetool/releases/download/continuous/appimagetool-$arch.AppImage"
+    curl -L -o "$appImageToolFile" "https://github.com/AppImage/appimagetool/releases/download/continuous/appimagetool-$arch.AppImage"
     chmod +x "$appImageToolFile"
 fi
 
@@ -92,26 +94,16 @@ debPkgDir="/tmp/pano-scrobbler-deb"
 
 rm -rf "$debPkgDir"
 
-mkdir -p \
-  $debPkgDir/usr/{bin,opt/pano-scrobbler/lib,share/{applications,licenses/pano-scrobbler,icons/hicolor/scalable/apps}} \
-  $debPkgDir/DEBIAN
+install -Dm644 -t "${debPkgDir}/opt/$appNameWithoutSpaces/lib/" "${nativeImageDir}"/lib/*.so
+install -Dm644 -t "${debPkgDir}/opt/$appNameWithoutSpaces/" "${nativeImageDir}"/*.so
+install -Dm755 -t "${debPkgDir}/opt/$appNameWithoutSpaces/" "${nativeImageDir}/${appNameWithoutSpaces}"
+install -d "${debPkgDir}/usr/bin/"
+ln -srf "${debPkgDir}/opt/$appNameWithoutSpaces/$appNameWithoutSpaces" "${debPkgDir}/usr/bin/${appNameWithoutSpaces}"
 
-install -m644 "${nativeImageDir}"/*.so        "${debPkgDir}/usr/opt/$appNameWithoutSpaces/"
-install -m644 "${nativeImageDir}"/lib/*.so    "${debPkgDir}/usr/opt/$appNameWithoutSpaces/lib/"
-install -m755 "${nativeImageDir}/${appNameWithoutSpaces}" "${debPkgDir}/usr/opt/$appNameWithoutSpaces"
-ln -srf "${debPkgDir}/usr/opt/$appNameWithoutSpaces/$appNameWithoutSpaces" "${debPkgDir}/usr/bin/${appNameWithoutSpaces}"
-
-desktopDst="${debPkgDir}/usr/share/applications/${appNameWithoutSpaces}.desktop"
-sed \
-    -e 's|^Exec=.*|Exec=pano-scrobbler %U|' \
-    -e 's|^Icon=.*|Icon=pano-scrobbler|' \
-    "${nativeImageDir}/${appNameWithoutSpaces}.desktop" > "${desktopDst}"
-chmod 644 "${desktopDst}"
-
-install -m644 "${nativeImageDir}/${appNameWithoutSpaces}.svg" \
-    "${debPkgDir}/usr/share/icons/hicolor/scalable/apps/${appNameWithoutSpaces}.svg"
-install -m644 "${nativeImageDir}/LICENSE" \
-    "${debPkgDir}/usr/share/licenses/${appNameWithoutSpaces}/LICENSE"
+install -Dm644 "${nativeImageDir}/${appNameWithoutSpaces}.desktop" "${debPkgDir}/usr/share/applications/${appNameWithoutSpaces}.desktop"
+install -Dm644 -t "${debPkgDir}/usr/share/icons/hicolor/scalable/apps/" "${nativeImageDir}/icons/hicolor/scalable/apps/"*.svg
+install -Dm644 -t "${debPkgDir}/usr/share/icons/hicolor/symbolic/apps/" "${nativeImageDir}/icons/hicolor/symbolic/apps/"*.svg
+install -Dm644 -t "${debPkgDir}/usr/share/licenses/${appNameWithoutSpaces}/" "${nativeImageDir}/LICENSE"
 
 installedSize=$(du -sk "${debPkgDir}" | awk '{print $1}')
 
@@ -120,6 +112,8 @@ if [ "$arch" = "aarch64" ]; then
 else
     debArch="amd64"
 fi
+
+install -d $debPkgDir/DEBIAN
 
 cat > "${debPkgDir}/DEBIAN/control" <<EOF
 Package: ${appNameWithoutSpaces}

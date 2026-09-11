@@ -1,75 +1,90 @@
 package com.arn.scrobble.icons
 
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.PathFillType
 import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.graphics.StrokeJoin
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.graphics.vector.path
 import androidx.compose.ui.unit.dp
 
+@Suppress("CheckReturnValue")
 val Icons.CheckCircle: ImageVector
-    get() {
-        if (_CheckCircle != null) {
-            return _CheckCircle!!
-        }
-        _CheckCircle = ImageVector.Builder(
-            name = "CheckCircle",
-            defaultWidth = 24.dp,
-            defaultHeight = 24.dp,
-            viewportWidth = 960f,
-            viewportHeight = 960f
-        ).apply {
-            path(fill = SolidColor(Color.Black)) {
-                moveToRelative(424f, 552f)
-                lineToRelative(-86f, -86f)
-                quadToRelative(-11f, -11f, -28f, -11f)
-                reflectiveQuadToRelative(-28f, 11f)
-                quadToRelative(-11f, 11f, -11f, 28f)
-                reflectiveQuadToRelative(11f, 28f)
-                lineToRelative(114f, 114f)
-                quadToRelative(12f, 12f, 28f, 12f)
-                reflectiveQuadToRelative(28f, -12f)
-                lineToRelative(226f, -226f)
-                quadToRelative(11f, -11f, 11f, -28f)
-                reflectiveQuadToRelative(-11f, -28f)
-                quadToRelative(-11f, -11f, -28f, -11f)
-                reflectiveQuadToRelative(-28f, 11f)
-                lineTo(424f, 552f)
-                close()
-                moveTo(480f, 880f)
-                quadToRelative(-83f, 0f, -156f, -31.5f)
-                reflectiveQuadTo(197f, 763f)
-                quadToRelative(-54f, -54f, -85.5f, -127f)
-                reflectiveQuadTo(80f, 480f)
-                quadToRelative(0f, -83f, 31.5f, -156f)
-                reflectiveQuadTo(197f, 197f)
-                quadToRelative(54f, -54f, 127f, -85.5f)
-                reflectiveQuadTo(480f, 80f)
-                quadToRelative(83f, 0f, 156f, 31.5f)
-                reflectiveQuadTo(763f, 197f)
-                quadToRelative(54f, 54f, 85.5f, 127f)
-                reflectiveQuadTo(880f, 480f)
-                quadToRelative(0f, 83f, -31.5f, 156f)
-                reflectiveQuadTo(763f, 763f)
-                quadToRelative(-54f, 54f, -127f, 85.5f)
-                reflectiveQuadTo(480f, 880f)
-                close()
-                moveTo(480f, 800f)
-                quadToRelative(134f, 0f, 227f, -93f)
-                reflectiveQuadToRelative(93f, -227f)
-                quadToRelative(0f, -134f, -93f, -227f)
-                reflectiveQuadToRelative(-227f, -93f)
-                quadToRelative(-134f, 0f, -227f, 93f)
-                reflectiveQuadToRelative(-93f, 227f)
-                quadToRelative(0f, 134f, 93f, 227f)
-                reflectiveQuadToRelative(227f, 93f)
-                close()
-                moveTo(480f, 480f)
-                close()
-            }
-        }.build()
-
-        return _CheckCircle!!
+  get() {
+    if (_CheckCircle != null) {
+      return _CheckCircle!!
     }
+    _CheckCircle =
+      ImageVector.Builder(
+          name = "CheckCircle",
+          defaultWidth = 24.dp,
+          defaultHeight = 24.dp,
+          viewportWidth = 24f,
+          viewportHeight = 24f,
+        )
+        .apply {
+          path(
+            fill = SolidColor(Color.Black),
+            fillAlpha = 1f,
+            stroke = null,
+            strokeAlpha = 1f,
+            strokeLineWidth = 1f,
+            strokeLineCap = StrokeCap.Butt,
+            strokeLineJoin = StrokeJoin.Bevel,
+            strokeLineMiter = 1f,
+            pathFillType = PathFillType.NonZero,
+          ) {
+            moveTo(10.6f, 13.8f)
+            lineTo(8.45f, 11.65f)
+            quadTo(8.18f, 11.38f, 7.75f, 11.38f)
+            quadToRelative(-0.42f, 0f, -0.7f, 0.27f)
+            quadToRelative(-0.28f, 0.28f, -0.28f, 0.7f)
+            quadToRelative(0f, 0.42f, 0.28f, 0.7f)
+            lineTo(9.9f, 15.9f)
+            quadToRelative(0.3f, 0.3f, 0.7f, 0.3f)
+            reflectiveQuadToRelative(0.7f, -0.3f)
+            lineToRelative(5.65f, -5.65f)
+            quadToRelative(0.28f, -0.28f, 0.28f, -0.7f)
+            quadToRelative(0f, -0.42f, -0.28f, -0.7f)
+            quadTo(16.68f, 8.57f, 16.25f, 8.57f)
+            reflectiveQuadToRelative(-0.7f, 0.28f)
+            lineTo(10.6f, 13.8f)
+            close()
+            moveTo(12f, 22f)
+            quadTo(9.93f, 22f, 8.1f, 21.21f)
+            quadTo(6.28f, 20.43f, 4.93f, 19.08f)
+            quadTo(3.58f, 17.73f, 2.79f, 15.9f)
+            reflectiveQuadTo(2f, 12f)
+            quadTo(2f, 9.92f, 2.79f, 8.1f)
+            quadTo(3.58f, 6.27f, 4.93f, 4.93f)
+            quadTo(6.28f, 3.57f, 8.1f, 2.79f)
+            quadTo(9.93f, 2f, 12f, 2f)
+            reflectiveQuadToRelative(3.9f, 0.79f)
+            reflectiveQuadToRelative(3.17f, 2.14f)
+            quadToRelative(1.35f, 1.35f, 2.14f, 3.17f)
+            quadTo(22f, 9.92f, 22f, 12f)
+            reflectiveQuadToRelative(-0.79f, 3.9f)
+            reflectiveQuadToRelative(-2.14f, 3.17f)
+            quadToRelative(-1.35f, 1.35f, -3.17f, 2.14f)
+            reflectiveQuadTo(12f, 22f)
+            close()
+            moveToRelative(0f, -2f)
+            quadToRelative(3.35f, 0f, 5.68f, -2.32f)
+            reflectiveQuadTo(20f, 12f)
+            reflectiveQuadTo(17.68f, 6.32f)
+            reflectiveQuadTo(12f, 4f)
+            reflectiveQuadTo(6.33f, 6.32f)
+            reflectiveQuadTo(4f, 12f)
+            reflectiveQuadToRelative(2.33f, 5.68f)
+            reflectiveQuadTo(12f, 20f)
+            close()
+            moveToRelative(0f, -8f)
+            close()
+          }
+        }
+        .build()
+    return _CheckCircle!!
+  }
 
-@Suppress("ObjectPropertyName")
 private var _CheckCircle: ImageVector? = null

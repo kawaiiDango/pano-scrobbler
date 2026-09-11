@@ -19,15 +19,10 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.arn.scrobble.billing.LicenseState
 import com.arn.scrobble.billing.LocalLicenseValidState
 import com.arn.scrobble.pref.MainPrefs
-import com.arn.scrobble.themes.colors.ThemeVariants
 import com.arn.scrobble.ui.getActivityOrNull
 import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff.collectAsStateWithInitialValue
 import com.arn.scrobble.utils.VariantStuff
-import kotlin.math.abs
-import kotlin.random.Random
-
-private val randomNumberForProcess = abs(Random.nextInt())
 
 @Composable
 fun AppTheme(
@@ -36,9 +31,15 @@ fun AppTheme(
 ) {
     val prefsVersion by PlatformStuff.mainPrefs.data.collectAsStateWithInitialValue { it.version }
     val licenseState by VariantStuff.billingRepository.licenseState.collectAsStateWithLifecycle()
-    val themeName by PlatformStuff.mainPrefs.data.collectAsStateWithInitialValue { it.themeName }
+    val themeHue by PlatformStuff.mainPrefs.data.collectAsStateWithInitialValue {
+        it.themeHue.coerceIn(0f..360f)
+    }
+    val themeStyle by PlatformStuff.mainPrefs.data.collectAsStateWithInitialValue { p ->
+        PaletteStyle.entries.find { it.name == p.themeStyle } ?: ThemeUtils.defaultThemeStyle
+    }
     val dynamic by PlatformStuff.mainPrefs.data.collectAsStateWithInitialValue { it.themeDynamic }
     val random by PlatformStuff.mainPrefs.data.collectAsStateWithInitialValue { it.themeRandom }
+    val randomHue by remember { ThemeUtils.randomHueForProcess }
     val dayNightMode by PlatformStuff.mainPrefs.data.collectAsStateWithInitialValue { it.themeDayNight }
     val contrastMode by PlatformStuff.mainPrefs.data.collectAsStateWithInitialValue { it.themeContrast }
     val blurMainWindowPref by PlatformStuff.mainPrefs.data.collectAsStateWithInitialValue {
@@ -99,53 +100,80 @@ fun AppTheme(
         )
     }
 
-    val themeAttributes =
-        remember(isDark, contrastMode, themeName, alpha, blurMainWindow, blurSubWindow) {
-            val otherColorSchemes = ThemeUtils.themesMap.values
-                .filter { it.name != themeName }
-                .map {
-                    getColorScheme(
-                        theme = it,
-                        isDark = isDark,
-                        contrastMode = contrastMode,
-                    )
-                }
+    val themeAttributes = remember(
+        isDark,
+        contrastMode,
+        themeHue,
+        themeStyle,
+        alpha,
+        blurMainWindow,
+        blurSubWindow
+    ) {
+        val avatarColors = ThemeUtils.themeHues
+            .filter { it != themeHue }
+            .map {
+                ThemeUtils.avatarColors(
+                    seedColor = ThemeUtils.getThemeColor(it),
+                    style = themeStyle,
+                    isDark = isDark,
+                    contrastMode = contrastMode
+                )
+            }
 
-            ThemeAttributes(
-                isDark = isDark,
-                isTranslucent = alpha < 1f,
-                blurMainWindow = blurMainWindow,
-                blurSubWindow = blurSubWindow,
-                contrastMode = contrastMode,
-                avatarColors = otherColorSchemes.map { it.onSecondaryContainer },
-                avatarContainerColors = otherColorSchemes.map { it.secondaryContainer },
-            )
-        }
+        ThemeAttributes(
+            isDark = isDark,
+            isTranslucent = alpha < 1f,
+            blurMainWindow = blurMainWindow,
+            blurSubWindow = blurSubWindow,
+            contrastMode = contrastMode,
+            style = themeStyle,
+            avatarContainerColors = avatarColors.map { it.first },
+            avatarColors = avatarColors.map { it.second },
+        )
+    }
 
     val colorScheme: ColorScheme = when {
         licenseState != LicenseState.VALID -> {
-            getColorScheme(
-                theme = ThemeUtils.defaultTheme,
-                isDark = true,
-                contrastMode = contrastMode,
-            )
+            remember(contrastMode) {
+                ThemeUtils.materialColorScheme(
+                    seedColor = ThemeUtils.getThemeColor(ThemeUtils.DEFAULT_HUE),
+                    style = PaletteStyle.TonalSpot,
+                    isDark = true,
+                    contrastMode = contrastMode
+                )
+            }
         }
 
         dynamic && PlatformStuff.supportsDynamicColors -> {
-            getDynamicColorScheme(isDark).withAlpha(alpha, blurSubWindow)
+            remember(isDark, alpha, blurSubWindow) {
+                getDynamicColorScheme(activity, isDark)
+                    .withAlpha(alpha, blurSubWindow)
+            }
         }
 
         else -> {
-            val theme = if (random)
-                ThemeUtils.themesMap.values.toList()[randomNumberForProcess % ThemeUtils.themesMap.size]
-            else
-                ThemeUtils.themeNameToObject(themeName)
+            remember(
+                contrastMode,
+                themeHue,
+                themeStyle,
+                isDark,
+                random,
+                randomHue,
+                alpha,
+                blurSubWindow
+            ) {
+                val hue = if (random)
+                    randomHue
+                else
+                    themeHue
 
-            getColorScheme(
-                theme = theme,
-                isDark = isDark,
-                contrastMode = contrastMode,
-            ).withAlpha(alpha, blurSubWindow)
+                ThemeUtils.materialColorScheme(
+                    seedColor = ThemeUtils.getThemeColor(hue),
+                    isDark = isDark,
+                    style = themeStyle,
+                    contrastMode = contrastMode,
+                ).withAlpha(alpha, blurSubWindow)
+            }
         }
     }
 
@@ -173,24 +201,6 @@ fun AppTheme(
                 content()
             }
         }
-    }
-}
-
-private fun getColorScheme(
-    theme: ThemeVariants,
-    isDark: Boolean,
-    contrastMode: ContrastMode,
-): ColorScheme {
-    return when {
-        isDark && contrastMode == ContrastMode.LOW -> theme.dark
-        isDark && contrastMode == ContrastMode.MEDIUM -> theme.darkMediumContrast
-        isDark && contrastMode == ContrastMode.HIGH -> theme.darkHighContrast
-
-        !isDark && contrastMode == ContrastMode.LOW -> theme.light
-        !isDark && contrastMode == ContrastMode.MEDIUM -> theme.lightMediumContrast
-        !isDark && contrastMode == ContrastMode.HIGH -> theme.lightHighContrast
-
-        else -> theme.dark
     }
 }
 
@@ -229,8 +239,7 @@ fun AppPreviewTheme(content: @Composable () -> Unit) {
 @Composable
 expect fun isSystemInDarkThemeNative(): State<Boolean>
 
-@Composable
-expect fun getDynamicColorScheme(dark: Boolean): ColorScheme
+expect fun getDynamicColorScheme(context: Any?, dark: Boolean): ColorScheme
 
 @Composable
 expect fun AddAdditionalProviders(content: @Composable () -> Unit)

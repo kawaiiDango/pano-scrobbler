@@ -6,28 +6,26 @@ import android.widget.HeaderViewListAdapter
 import android.widget.ImageView
 import android.widget.ListView
 import android.widget.TextView
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeContentPadding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.FilterChipDefaults
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Slider
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
@@ -41,6 +39,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import com.arn.scrobble.R
 import com.arn.scrobble.api.AccountType
+import com.arn.scrobble.icons.Check
+import com.arn.scrobble.icons.Icons
 import com.arn.scrobble.navigation.enumSaver
 import com.arn.scrobble.pref.WidgetPrefs
 import com.arn.scrobble.ui.ButtonWithDropdown
@@ -57,14 +57,12 @@ import pano_scrobbler.composeapp.generated.resources.appwidget_alpha
 import pano_scrobbler.composeapp.generated.resources.appwidget_period
 import pano_scrobbler.composeapp.generated.resources.appwidget_refresh_every
 import pano_scrobbler.composeapp.generated.resources.appwidget_shadow
-import pano_scrobbler.composeapp.generated.resources.cancel
+import pano_scrobbler.composeapp.generated.resources.done
 import pano_scrobbler.composeapp.generated.resources.num_hours
-import pano_scrobbler.composeapp.generated.resources.ok
 import pano_scrobbler.composeapp.generated.resources.scrobble_services
 
 @Composable
 fun ChartsWidgetConfigScreen(
-    isPinned: Boolean,
     prefs: WidgetPrefs.SpecificWidgetPrefs,
     onSave: (prefs: WidgetPrefs.SpecificWidgetPrefs, reFetch: Boolean) -> Unit,
     onCancel: () -> Unit,
@@ -131,21 +129,25 @@ fun ChartsWidgetConfigScreen(
             )
         }
 
-        Surface(
-            shape = RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp),
+        Box(
             modifier = Modifier
                 .weight(1f)
+                .background(
+                    color = MaterialTheme.colorScheme.surfaceContainerLow,
+                    shape = MaterialTheme.shapes.large
+                )
         ) {
             Column(
                 verticalArrangement = Arrangement.spacedBy(4.dp),
                 modifier = Modifier
                     .fillMaxSize()
                     .verticalScroll(scrollState)
-                    .padding(start = 16.dp, end = 16.dp, top = 16.dp)
+                    .padding(top = 16.dp, bottom = 72.dp)
             ) {
                 Row(
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
-                    verticalAlignment = Alignment.CenterVertically
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier.padding(horizontal = 16.dp)
                 ) {
                     Text(
                         text = stringResource(Res.string.scrobble_services),
@@ -162,7 +164,8 @@ fun ChartsWidgetConfigScreen(
 
                 FlowRow(
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
-                    itemVerticalAlignment = Alignment.CenterVertically
+                    itemVerticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier.padding(horizontal = 16.dp)
                 ) {
                     Text(
                         text = stringResource(Res.string.appwidget_period),
@@ -178,7 +181,9 @@ fun ChartsWidgetConfigScreen(
                     }
                 }
 
-                Column {
+                Column(
+                    modifier = Modifier.padding(horizontal = 16.dp)
+                ) {
                     Text(
                         text = stringResource(Res.string.appwidget_alpha) +
                                 ": ${"%.0f".format(bgAlpha * 100)}%",
@@ -217,45 +222,32 @@ fun ChartsWidgetConfigScreen(
                             Stuff.CHARTS_WIDGET_REFRESH_INTERVAL_HOURS,
                         )
                     ),
-                    modifier = Modifier.padding(vertical = 8.dp)
+                    modifier = Modifier.padding(vertical = 8.dp, horizontal = 16.dp)
                 )
             }
-        }
 
-        Surface(
-            tonalElevation = 4.dp
-        ) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.End
+            FloatingActionButton(
+                onClick = {
+                    onSave(
+                        prefs.copy(
+                            accountType = accountType,
+                            period = period,
+                            images = images,
+                            bgAlpha = bgAlpha,
+                            shadow = shadow
+                        ),
+                        prefs.period != period || accountType != prefs.accountType
+                    )
+                },
+                modifier = Modifier
+                    .align(Alignment.BottomEnd)
+                    .padding(16.dp)
             ) {
-                if (!isPinned) {
-                    TextButton(
-                        shapes = ButtonDefaults.shapes(),
-                        onClick = onCancel
-                    ) {
-                        Text(text = stringResource(Res.string.cancel))
-                    }
-                }
-                Spacer(modifier = Modifier.width(8.dp))
-                TextButton(
-                    shapes = ButtonDefaults.shapes(),
-                    onClick = {
-                        onSave(
-                            prefs.copy(
-                                accountType = accountType,
-                                period = period,
-                                images = images,
-                                bgAlpha = bgAlpha,
-                                shadow = shadow
-                            ),
-                            prefs.period != period || accountType != prefs.accountType
-                        )
-                    }) {
-                    Text(text = stringResource(Res.string.ok))
-                }
+                Icon(
+                    imageVector = Icons.Check,
+                    contentDescription = stringResource(Res.string.done)
+                )
             }
-
         }
     }
 }

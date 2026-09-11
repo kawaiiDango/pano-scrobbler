@@ -13,7 +13,6 @@ import androidx.compose.material3.DatePickerState
 import androidx.compose.material3.DateRangePicker
 import androidx.compose.material3.DateRangePickerState
 import androidx.compose.material3.DropdownMenuGroup
-import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.DropdownMenuPopup
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
@@ -21,6 +20,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.MenuAnchorPosition
 import androidx.compose.material3.MenuDefaults
 import androidx.compose.material3.SelectableDates
+import androidx.compose.material3.SelectableDropdownMenuItem
 import androidx.compose.material3.Text
 import androidx.compose.material3.TimePicker
 import androidx.compose.material3.rememberTimePickerState
@@ -320,7 +320,7 @@ fun MonthPickerPopup(
                     .verticalScroll(rememberScrollState())
             ) {
                 yearsList.forEachIndexed { index, (year, text) ->
-                    DropdownMenuItem(
+                    SelectableDropdownMenuItem(
                         selected = year == selectedYear,
                         shapes = MenuDefaults.itemShape(index, yearsList.size),
                         onClick = {
@@ -350,7 +350,7 @@ fun MonthPickerPopup(
             ) {
                 monthsList.forEachIndexed { index, (month, text) ->
 
-                    DropdownMenuItem(
+                    SelectableDropdownMenuItem(
                         selected = month == selectedMonth,
                         shapes = MenuDefaults.itemShape(index, monthsList.size),
                         onClick = {

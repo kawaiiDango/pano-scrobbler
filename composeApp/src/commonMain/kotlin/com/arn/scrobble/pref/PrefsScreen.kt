@@ -50,7 +50,6 @@ import com.arn.scrobble.main.MainViewModel
 import com.arn.scrobble.main.ScrobblerState
 import com.arn.scrobble.navigation.PanoRoute
 import com.arn.scrobble.navigation.TimePickerResult
-import com.arn.scrobble.themes.DayNightMode
 import com.arn.scrobble.ui.PanoDropdownMenu
 import com.arn.scrobble.ui.PanoLazyColumn
 import com.arn.scrobble.ui.SearchEffect
@@ -91,7 +90,7 @@ import pano_scrobbler.composeapp.generated.resources.cache
 import pano_scrobbler.composeapp.generated.resources.charts_custom
 import pano_scrobbler.composeapp.generated.resources.copy_sk
 import pano_scrobbler.composeapp.generated.resources.country_for_api
-import pano_scrobbler.composeapp.generated.resources.dark
+import pano_scrobbler.composeapp.generated.resources.crashlytics
 import pano_scrobbler.composeapp.generated.resources.debug_menu
 import pano_scrobbler.composeapp.generated.resources.delete_account
 import pano_scrobbler.composeapp.generated.resources.delete_receipt
@@ -102,7 +101,6 @@ import pano_scrobbler.composeapp.generated.resources.external_metadata
 import pano_scrobbler.composeapp.generated.resources.first_artist
 import pano_scrobbler.composeapp.generated.resources.grant_notification_access
 import pano_scrobbler.composeapp.generated.resources.lastfm
-import pano_scrobbler.composeapp.generated.resources.light
 import pano_scrobbler.composeapp.generated.resources.min_track_duration
 import pano_scrobbler.composeapp.generated.resources.notification_channel_blocked
 import pano_scrobbler.composeapp.generated.resources.num_hours
@@ -142,7 +140,6 @@ import pano_scrobbler.composeapp.generated.resources.pref_spotify_remote
 import pano_scrobbler.composeapp.generated.resources.pref_themes
 import pano_scrobbler.composeapp.generated.resources.pref_translate
 import pano_scrobbler.composeapp.generated.resources.pref_translate_credits
-import pano_scrobbler.composeapp.generated.resources.pref_tray_icon_theme
 import pano_scrobbler.composeapp.generated.resources.proxy
 import pano_scrobbler.composeapp.generated.resources.rate_limit_warn
 import pano_scrobbler.composeapp.generated.resources.regex_rules
@@ -197,8 +194,8 @@ fun PrefsScreen(
     mainPrefs.data.collectAsStateWithInitialValue { it.preventDuplicateAmbientScrobbles }
     val submitNowPlaying by
     mainPrefs.data.collectAsStateWithInitialValue { it.submitNowPlaying }
-    val trayIconTheme by
-    mainPrefs.data.collectAsStateWithInitialValue { it.trayIconTheme }
+//    val trayIconTheme by
+//    mainPrefs.data.collectAsStateWithInitialValue { it.trayIconTheme }
     val notiPersistent by
     mainPrefs.data.collectAsStateWithInitialValue { it.notiPersistent }
     val checkForUpdates by
@@ -274,7 +271,7 @@ fun PrefsScreen(
                     }
 
                     if (v.string?.contains(searchText, ignoreCase = true) == true ||
-                        k.split("_").any { it.contains(searchText, ignoreCase = true) }
+                        k.split("_").any { it.startsWith(searchText, ignoreCase = true) }
                     ) {
                         if (prevHeaderKey != null) {
                             fk += prevHeaderKey
@@ -701,28 +698,28 @@ fun PrefsScreen(
             )
         }
 
-        if (PlatformStuff.isDesktop) {
-            filteredItem(
-                "tray_icon_theme",
-                Res.string.pref_tray_icon_theme
-            ) { title ->
-                DropdownPref(
-                    text = title,
-                    selectedValue = trayIconTheme,
-                    values = DayNightMode.entries,
-                    toLabel = {
-                        stringResource(
-                            when (it) {
-                                DayNightMode.SYSTEM -> Res.string.auto
-                                DayNightMode.LIGHT -> Res.string.light
-                                DayNightMode.DARK -> Res.string.dark
-                            }
-                        )
-                    },
-                    copyToSave = { copy(trayIconTheme = it) }
-                )
-            }
-        }
+//        if (PlatformStuff.isDesktop) {
+//            filteredItem(
+//                "tray_icon_theme",
+//                Res.string.pref_tray_icon_theme
+//            ) { title ->
+//                DropdownPref(
+//                    text = title,
+//                    selectedValue = trayIconTheme,
+//                    values = DayNightMode.entries,
+//                    toLabel = {
+//                        stringResource(
+//                            when (it) {
+//                                DayNightMode.SYSTEM -> Res.string.auto
+//                                DayNightMode.LIGHT -> Res.string.light
+//                                DayNightMode.DARK -> Res.string.dark
+//                            }
+//                        )
+//                    },
+//                    copyToSave = { copy(trayIconTheme = it) }
+//                )
+//            }
+//        }
 
         PlatformSpecificPrefs.prefChartsWidget(::filteredItem)
 
@@ -1044,6 +1041,7 @@ fun PrefsScreen(
             ) { title ->
                 SwitchPref(
                     text = title,
+                    summary = stringResource(Res.string.crashlytics),
                     value = crashReporterEnabled,
                     copyToSave = {
                         crashReporterEnabled = it

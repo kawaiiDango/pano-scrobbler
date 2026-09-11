@@ -16,17 +16,15 @@ import org.jetbrains.skia.Image
 import org.jetbrains.skia.Paint
 
 object PanoTrayUtils {
-    enum class TrayIconType {
-        NOT_PLAYING,
-        PLAYING,
-        ERROR;
+    enum class TrayIconState {
+        Idle,
+        Scrobbling,
+        Error;
     }
 
     data class TrayData(
+        val iconType: TrayIconState,
         val tooltip: String,
-        val iconType: TrayIconType,
-        val iconIsDark: Boolean,
-        val iconSize: Int,
         val menuItemIds: List<String>,
         val menuItemTexts: List<String>,
     )

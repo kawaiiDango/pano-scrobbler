@@ -1,65 +1,80 @@
 package com.arn.scrobble.icons
 
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.PathFillType
 import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.graphics.StrokeJoin
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.graphics.vector.path
 import androidx.compose.ui.unit.dp
 
+@Suppress("CheckReturnValue")
 val Icons.SkipNext: ImageVector
-    get() {
-        if (_SkipNext != null) {
-            return _SkipNext!!
-        }
-        _SkipNext = ImageVector.Builder(
-            name = "SkipNext",
-            defaultWidth = 24.dp,
-            defaultHeight = 24.dp,
-            viewportWidth = 960f,
-            viewportHeight = 960f
-        ).apply {
-            path(fill = SolidColor(Color.Black)) {
-                moveTo(660f, 680f)
-                verticalLineToRelative(-400f)
-                quadToRelative(0f, -17f, 11.5f, -28.5f)
-                reflectiveQuadTo(700f, 240f)
-                quadToRelative(17f, 0f, 28.5f, 11.5f)
-                reflectiveQuadTo(740f, 280f)
-                verticalLineToRelative(400f)
-                quadToRelative(0f, 17f, -11.5f, 28.5f)
-                reflectiveQuadTo(700f, 720f)
-                quadToRelative(-17f, 0f, -28.5f, -11.5f)
-                reflectiveQuadTo(660f, 680f)
-                close()
-                moveTo(220f, 645f)
-                verticalLineToRelative(-330f)
-                quadToRelative(0f, -18f, 12f, -29f)
-                reflectiveQuadToRelative(28f, -11f)
-                quadToRelative(5f, 0f, 11f, 1f)
-                reflectiveQuadToRelative(11f, 5f)
-                lineToRelative(248f, 166f)
-                quadToRelative(9f, 6f, 13.5f, 14.5f)
-                reflectiveQuadTo(548f, 480f)
-                quadToRelative(0f, 10f, -4.5f, 18.5f)
-                reflectiveQuadTo(530f, 513f)
-                lineTo(282f, 679f)
-                quadToRelative(-5f, 4f, -11f, 5f)
-                reflectiveQuadToRelative(-11f, 1f)
-                quadToRelative(-16f, 0f, -28f, -11f)
-                reflectiveQuadToRelative(-12f, -29f)
-                close()
-                moveTo(300f, 480f)
-                close()
-                moveTo(300f, 570f)
-                lineTo(436f, 480f)
-                lineTo(300f, 390f)
-                verticalLineToRelative(180f)
-                close()
-            }
-        }.build()
-
-        return _SkipNext!!
+  get() {
+    if (_SkipNext != null) {
+      return _SkipNext!!
     }
+    _SkipNext =
+      ImageVector.Builder(
+          name = "SkipNext",
+          defaultWidth = 24.dp,
+          defaultHeight = 24.dp,
+          viewportWidth = 24f,
+          viewportHeight = 24f,
+        )
+        .apply {
+          path(
+            fill = SolidColor(Color.Black),
+            fillAlpha = 1f,
+            stroke = null,
+            strokeAlpha = 1f,
+            strokeLineWidth = 1f,
+            strokeLineCap = StrokeCap.Butt,
+            strokeLineJoin = StrokeJoin.Bevel,
+            strokeLineMiter = 1f,
+            pathFillType = PathFillType.NonZero,
+          ) {
+            moveTo(16.5f, 17f)
+            verticalLineTo(7f)
+            quadToRelative(0f, -0.43f, 0.29f, -0.71f)
+            reflectiveQuadTo(17.5f, 6f)
+            reflectiveQuadToRelative(0.71f, 0.29f)
+            reflectiveQuadTo(18.5f, 7f)
+            verticalLineTo(17f)
+            quadToRelative(0f, 0.43f, -0.29f, 0.71f)
+            reflectiveQuadTo(17.5f, 18f)
+            reflectiveQuadTo(16.79f, 17.71f)
+            quadTo(16.5f, 17.43f, 16.5f, 17f)
+            close()
+            moveTo(5.5f, 16.13f)
+            verticalLineTo(7.88f)
+            quadTo(5.5f, 7.43f, 5.8f, 7.15f)
+            quadTo(6.1f, 6.88f, 6.5f, 6.88f)
+            quadToRelative(0.13f, 0f, 0.28f, 0.02f)
+            quadTo(6.93f, 6.93f, 7.05f, 7.02f)
+            lineToRelative(6.2f, 4.15f)
+            quadToRelative(0.23f, 0.15f, 0.34f, 0.36f)
+            reflectiveQuadTo(13.7f, 12f)
+            reflectiveQuadToRelative(-0.11f, 0.46f)
+            quadToRelative(-0.11f, 0.21f, -0.34f, 0.36f)
+            lineToRelative(-6.2f, 4.15f)
+            quadTo(6.93f, 17.08f, 6.78f, 17.1f)
+            reflectiveQuadTo(6.5f, 17.13f)
+            quadToRelative(-0.4f, 0f, -0.7f, -0.27f)
+            reflectiveQuadTo(5.5f, 16.13f)
+            close()
+            moveTo(7.5f, 12f)
+            close()
+            moveToRelative(0f, 2.25f)
+            lineTo(10.9f, 12f)
+            lineTo(7.5f, 9.75f)
+            verticalLineToRelative(4.5f)
+            close()
+          }
+        }
+        .build()
+    return _SkipNext!!
+  }
 
-@Suppress("ObjectPropertyName")
 private var _SkipNext: ImageVector? = null

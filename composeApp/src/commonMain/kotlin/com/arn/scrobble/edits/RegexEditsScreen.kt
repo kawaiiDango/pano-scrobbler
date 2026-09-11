@@ -13,10 +13,10 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButtonDefaults
-import androidx.compose.material3.IconToggleButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedIconButton
+import androidx.compose.material3.OutlinedIconToggleButton
 import androidx.compose.material3.SplitButtonDefaults
 import androidx.compose.material3.SplitButtonLayout
 import androidx.compose.material3.Text
@@ -65,7 +65,6 @@ import com.arn.scrobble.ui.PanoDropdownMenu
 import com.arn.scrobble.ui.PanoLazyColumn
 import com.arn.scrobble.ui.backgroundForShimmer
 import com.arn.scrobble.ui.dragContainer
-import com.arn.scrobble.ui.myIconButtonColors
 import com.arn.scrobble.ui.panoContentPadding
 import com.arn.scrobble.ui.rememberDragDropState
 import com.arn.scrobble.ui.shapedClickable
@@ -470,12 +469,12 @@ private fun RegexEditItem(
             }
         }
 
-        IconToggleButton(
+        OutlinedIconToggleButton(
             checked = dropdownShown,
             onCheckedChange = { dropdownShown = it },
             enabled = !forShimmer,
             shapes = IconButtonDefaults.toggleableShapes(),
-            colors = IconButtonDefaults.myIconButtonColors()
+            border = null
         ) {
             Icon(
                 imageVector = Icons.MoreVert,

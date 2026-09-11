@@ -2,9 +2,6 @@ package com.arn.scrobble.ui
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import com.arn.scrobble.PanoNativeComponents
 import com.arn.scrobble.utils.PlatformFile
 import kotlinx.coroutines.flow.first
@@ -22,12 +19,6 @@ actual fun FilePicker(
     onDismiss: () -> Unit,
     onFilePicked: (PlatformFile) -> Unit,
 ) {
-    val extensions by remember(type) {
-        mutableStateOf(
-            getExtensionsForFilePicker(type)
-        )
-    }
-
     val title = when (mode) {
         is FilePickerMode.Open -> stringResource(Res.string.fix_it_action)
         is FilePickerMode.Save -> stringResource(Res.string.create)
@@ -35,6 +26,7 @@ actual fun FilePicker(
 
     LaunchedEffect(show) {
         if (show) {
+            val extensions = getExtensionsForFilePicker(type)
             val requestId = (0..100000).random()
             PanoNativeComponents.fileChooser(
                 requestId = requestId,

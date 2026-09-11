@@ -65,7 +65,7 @@ fun ChartsPagerScreen(
         modifier = modifier,
     ) {
         TimePeriodSelector(
-            user = user,
+            registeredTime = user.registeredTime,
             viewModel = chartsPeriodViewModel,
             onNavigate = onNavigate,
             onSelected = ::setInput,

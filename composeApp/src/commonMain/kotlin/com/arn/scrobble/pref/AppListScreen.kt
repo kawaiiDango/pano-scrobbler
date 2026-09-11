@@ -11,7 +11,6 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.material3.Checkbox
-import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.ListItemDefaults
@@ -76,7 +75,6 @@ import pano_scrobbler.composeapp.generated.resources.websites
 import pano_scrobbler.composeapp.generated.resources.websites_desc
 
 
-@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun AppListScreen(
     searchFieldState: TextFieldState,
@@ -243,7 +241,7 @@ fun AppListScreen(
                             viewModel.setMultiSelectionAppId(appItem.appId, selected)
                         }
                     },
-                    modifier = Modifier.animateItem(),
+                    modifier = Modifier.animateItem()
                 )
             }
         }
@@ -260,7 +258,9 @@ fun AppListScreen(
                     isSingleSelect = isSingleSelect,
                     showAppId = false,
                     onToggle = {},
-                    modifier = Modifier.shimmerWindowBounds().animateItem(),
+                    modifier = Modifier
+                        .shimmerWindowBounds()
+                        .animateItem(),
                     forShimmer = true,
                 )
             }
@@ -338,15 +338,6 @@ fun AppListScreen(
             ) {
                 item("notice_ambient_apps") {
                     ListItem(
-                        headlineContent = {
-                            Text(
-                                style = MaterialTheme.typography.bodyMediumEmphasized,
-                                text = stringResource(
-                                    Res.string.supports_ambient_apps,
-                                    stringResource(Res.string.ambient_apps),
-                                ),
-                            )
-                        },
                         leadingContent = {
                             Icon(
                                 imageVector = Icons.Info,
@@ -356,7 +347,15 @@ fun AppListScreen(
                         colors = ListItemDefaults.myTransparentCheckableItemColors(),
                         modifier = Modifier
                             .fillMaxWidth()
-                    )
+                    ) {
+                        Text(
+                            style = MaterialTheme.typography.bodyMediumEmphasized,
+                            text = stringResource(
+                                Res.string.supports_ambient_apps,
+                                stringResource(Res.string.ambient_apps),
+                            ),
+                        )
+                    }
                 }
             }
 
@@ -478,7 +477,7 @@ fun AppListScreen(
                                         )
                                     }
                                 },
-                                modifier = Modifier.animateItem(),
+                                modifier = Modifier.animateItem()
                             )
                         }
 
@@ -502,7 +501,6 @@ fun AppListScreen(
     }
 }
 
-@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 private fun AppListItem(
     appItem: AppItem?,

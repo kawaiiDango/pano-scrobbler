@@ -13,6 +13,7 @@ import androidx.compose.material3.DropdownMenuPopup
 import androidx.compose.material3.MenuAnchorPosition
 import androidx.compose.material3.MenuDefaults
 import androidx.compose.material3.MenuItemShapes
+import androidx.compose.material3.SelectableDropdownMenuItem
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.Dp
@@ -28,7 +29,7 @@ class PanoMenuScope {
         enabled: Boolean = true,
         selected: Boolean? = null,
         leadingIcon: @Composable (() -> Unit)? = null,
-        trailingIcon: @Composable (() -> Unit)? = null,
+        trailingContent: @Composable (() -> Unit)? = null,
         supportingText: @Composable (() -> Unit)? = null,
     ) {
         entries += { shapes ->
@@ -39,17 +40,17 @@ class PanoMenuScope {
                     text = text,
                     shape = shapes.shape,
                     leadingIcon = leadingIcon,
-                    trailingIcon = trailingIcon,
+                    trailingContent = trailingContent,
                     supportingText = supportingText,
                 )
             else
-                DropdownMenuItem(
+                SelectableDropdownMenuItem(
                     onClick = onClick,
                     enabled = enabled,
                     text = text,
                     shapes = shapes,
                     leadingIcon = leadingIcon,
-                    trailingIcon = trailingIcon,
+                    trailingContent = trailingContent,
                     supportingText = supportingText,
                     selected = selected
                 )

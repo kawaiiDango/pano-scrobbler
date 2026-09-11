@@ -26,8 +26,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.arn.scrobble.icons.ArrowRightAutoMirrored
 import com.arn.scrobble.icons.Icons
-import com.arn.scrobble.icons.automirrored.ArrowRight
 import com.arn.scrobble.ui.ErrorText
 import com.arn.scrobble.ui.FilePicker
 import com.arn.scrobble.ui.FilePickerMode
@@ -168,7 +168,7 @@ fun ExportScreen(
                                 modifier = Modifier.align(Alignment.CenterHorizontally)
                             ) {
                                 Icon(
-                                    Icons.AutoMirrored.ArrowRight,
+                                    Icons.ArrowRightAutoMirrored,
                                     contentDescription = null,
                                     modifier = Modifier.size(ButtonDefaults.IconSize)
                                 )

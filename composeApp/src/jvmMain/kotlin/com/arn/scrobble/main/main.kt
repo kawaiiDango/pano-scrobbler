@@ -42,6 +42,7 @@ import com.arn.scrobble.themes.DayNightMode
 import com.arn.scrobble.ui.SerializableWindowState
 import com.arn.scrobble.updates.runUpdateAction
 import com.arn.scrobble.utils.DesktopStuff
+import com.arn.scrobble.utils.DesktopStuff.migrateAppImageDesktopFile
 import com.arn.scrobble.utils.LocaleUtils
 import com.arn.scrobble.utils.PanoNotifications
 import com.arn.scrobble.utils.PanoTrayUtils
@@ -63,7 +64,6 @@ import kotlinx.coroutines.flow.filterNot
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import org.jetbrains.compose.resources.DensityQualifier
@@ -90,6 +90,9 @@ import pano_scrobbler.composeapp.generated.resources.unlove
 import pano_scrobbler.composeapp.generated.resources.update_downloaded
 import java.awt.Cursor
 import java.awt.Dimension
+import java.io.File
+import java.io.FileOutputStream
+import java.io.PrintStream
 import java.lang.reflect.Constructor
 import java.util.Locale
 import javax.swing.SwingUtilities
@@ -177,6 +180,15 @@ fun main(args: Array<String>) {
     DesktopStuff.setSystemProperties()
     PanoNativeComponents.load()
 
+    if (DesktopStuff.IS_WINDOWS && !BuildKonfig.DEBUG) {
+        val attached = PanoNativeComponents.attachParentConsoleWindows()
+
+        if (attached) {
+            System.setOut(PrintStream(FileOutputStream("CONOUT$"), true, Charsets.UTF_8))
+            System.setErr(PrintStream(FileOutputStream("CONOUT$"), true, Charsets.UTF_8))
+        }
+    }
+
     if (cmdlineArgs.automationCommand != null) {
         // handle automation command
         PanoNativeComponents.sendIpcCommand(
@@ -206,7 +218,7 @@ fun main(args: Array<String>) {
     // ------------------------------- shutdown hook
 
     Runtime.getRuntime().addShutdownHook(Thread {
-        PanoNativeComponents.stopListeningMedia()
+        PanoNativeComponents.stopEventLoop()
         DesktopWorkManager.clearAll()
         PanoDb.db.close()
     })
@@ -214,16 +226,6 @@ fun main(args: Array<String>) {
     // ------------------------------- tray menu
 
     var trayData by mutableStateOf<PanoTrayUtils.TrayData?>(null)
-    val trayIconIsDark = combine(
-        PlatformStuff.mainPrefs.data.map { it.trayIconTheme },
-        // waits till the tokio event loop is started
-        PanoNativeComponents.onDarkModeChangeFlow.filterNotNull()
-    ) { trayIconThemePref, isDarkMode ->
-        when (trayIconThemePref) {
-            DayNightMode.SYSTEM -> !isDarkMode
-            else -> trayIconThemePref == DayNightMode.DARK
-        }
-    }
 
     val dayNightPref =
         PlatformStuff.mainPrefs.data.stateInWithCache(Stuff.appScope) { it.themeDayNight }
@@ -232,23 +234,17 @@ fun main(args: Array<String>) {
     val isBlur =
         PlatformStuff.mainPrefs.data.stateInWithCache(Stuff.appScope) { it.themeBlurMainWindow }
 
-    val trayIconSize = 128
-    var trayIcons by mutableStateOf<Triple<ByteArray, ByteArray, ByteArray>?>(null)
+    val iconsDir = System.getProperty("pano.icons.path")
+        ?: "".takeIf { DesktopStuff.IS_WINDOWS }
+        ?: System.getenv("APPDIR")?.let { "$it/usr/share/icons" }
+        ?: "${DesktopStuff.execDirPath}/icons".takeIf { File(it).exists() }
+        ?: ""
 
     combine(
         PanoNotifications.playingTrackTrayInfo,
         DiscordRpc.wasSuccessful,
         Stuff.globalUpdateAction,
-        trayIconIsDark
-    ) { playingTrackInfo, discordRpcSuccessful, updateAction, trayIconThemeIsDark ->
-
-        if (trayIcons == null) {
-            trayIcons = Triple(
-                Res.readBytes("drawable/vd_noti_persistent.png"),
-                Res.readBytes("drawable/vd_noti.png"),
-                Res.readBytes("drawable/vd_noti_err.png")
-            )
-        }
+    ) { playingTrackInfo, discordRpcSuccessful, updateAction ->
 
         var tooltipText = BuildKonfig.APP_NAME
 
@@ -367,27 +363,27 @@ fun main(args: Array<String>) {
         trayData = PanoTrayUtils.TrayData(
             tooltip = tooltipText,
             iconType = when {
-                playingTrackInfo.isEmpty() -> PanoTrayUtils.TrayIconType.NOT_PLAYING
-                playingTrackInfo.values.any { it is PlayingTrackNotifyEvent.Error } -> PanoTrayUtils.TrayIconType.ERROR
-                else -> PanoTrayUtils.TrayIconType.PLAYING
+                playingTrackInfo.isEmpty() -> PanoTrayUtils.TrayIconState.Idle
+                playingTrackInfo.values.any { it is PlayingTrackNotifyEvent.Error } -> PanoTrayUtils.TrayIconState.Error
+                else -> PanoTrayUtils.TrayIconState.Scrobbling
             },
-            iconIsDark = trayIconThemeIsDark,
-            iconSize = trayIconSize,
             menuItemIds = trayItems.map { it.first },
             menuItemTexts = trayItems.map { it.second }
         )
 
         trayData?.let { trayData ->
-            val pngBytes = when (trayData.iconType) {
-                PanoTrayUtils.TrayIconType.NOT_PLAYING -> trayIcons!!.first
-                PanoTrayUtils.TrayIconType.PLAYING -> trayIcons!!.second
-                PanoTrayUtils.TrayIconType.ERROR -> trayIcons!!.third
-            }
+            val iconNamePrefix = "pano-scrobbler-"
+            val iconNameMiddle = trayData.iconType.name.lowercase()
+            val iconNameSuffix = if (DesktopStuff.IS_WINDOWS) ""
+            else if (System.getenv("APPDIR") != null)
+                "-appimage-symbolic"
+            else
+                "-symbolic"
 
             PanoNativeComponents.setTray(
+                iconName = "$iconNamePrefix$iconNameMiddle$iconNameSuffix",
                 tooltip = trayData.tooltip,
-                pngBytes = pngBytes,
-                invert = !trayData.iconIsDark,
+                iconsDir = iconsDir,
                 menuItemIds = trayData.menuItemIds.toTypedArray(),
                 menuItemTexts = trayData.menuItemTexts.toTypedArray(),
             )
@@ -428,6 +424,9 @@ fun main(args: Array<String>) {
     }
 
     Stuff.appScope.launch {
+        if (DesktopStuff.IS_LINUX)
+            migrateAppImageDesktopFile()
+
         if (!DesktopStuff.noUpdateCheck && initialPrefs.autoUpdates) {
             // this app runs at startup, so wait for an internet connection
             delay(1.minutes)
@@ -436,6 +435,10 @@ fun main(args: Array<String>) {
     }
 
     ComposeUiFlags.pollSystemTheme = false
+    // https://youtrack.jetbrains.com/issue/CMP-10423/DirectX-Smooth-window-resize
+    // this kills transparent windows
+    // System.setProperty("skiko.rendering.windows.direct3DSynchronousLiveResize", "true")
+
     var firstCompositionDone = false
 
     if (cmdlineArgs.minimized) {

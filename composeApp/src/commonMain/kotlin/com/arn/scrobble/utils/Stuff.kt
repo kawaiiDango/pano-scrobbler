@@ -25,6 +25,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
@@ -298,7 +299,9 @@ object Stuff {
 
     fun Number.format() = numberFormat.format(this)!!
 
-    val receiptFlow get() = PlatformStuff.mainPrefs.data.map { it.receipt to it.receiptSignature }
+    val receiptFlow
+        get() = PlatformStuff.mainPrefs.data.map { it.receipt to it.receiptSignature }
+            .distinctUntilChanged()
 
     suspend fun setReceipt(r: String?, s: String?) {
         PlatformStuff.mainPrefs.updateData { it.copy(receipt = r, receiptSignature = s) }

@@ -2,7 +2,6 @@ package com.arn.scrobble.pref
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.ListItemDefaults
@@ -22,7 +21,6 @@ import pano_scrobbler.composeapp.generated.resources.lastfm
 import pano_scrobbler.composeapp.generated.resources.librefm
 import pano_scrobbler.composeapp.generated.resources.listenbrainz
 
-@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun DeleteAccountScreen(modifier: Modifier = Modifier) {
     val lastfmLink = "last.fm/settings/account/delete"
@@ -108,11 +106,10 @@ fun DeleteAccountScreen(modifier: Modifier = Modifier) {
 
         ListItem(
             colors = ListItemDefaults.myTransparentCheckableItemColors(),
-            headlineContent = {
-                Text(
-                    text = stringResource(Res.string.delete_account_custom_servers),
-                )
-            },
-        )
+        ) {
+            Text(
+                text = stringResource(Res.string.delete_account_custom_servers),
+            )
+        }
     }
 }

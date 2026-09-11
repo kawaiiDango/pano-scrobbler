@@ -26,18 +26,18 @@ import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.ZeroCornerSize
 import androidx.compose.material3.ButtonGroupDefaults
-import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
-import androidx.compose.material3.IconToggleButton
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedIconToggleButton
 import androidx.compose.material3.OutlinedToggleButton
+import androidx.compose.material3.OutlinedToggleButtonDefaults
 import androidx.compose.material3.PlainTooltip
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TooltipAnchorPosition
 import androidx.compose.material3.TooltipBox
@@ -86,9 +86,12 @@ import com.arn.scrobble.api.lastfm.Track
 import com.arn.scrobble.charts.ChartsCount
 import com.arn.scrobble.icons.Album
 import com.arn.scrobble.icons.AllOut
+import com.arn.scrobble.icons.ArrowRightAltAutoMirrored
+import com.arn.scrobble.icons.ArrowRightAutoMirrored
 import com.arn.scrobble.icons.AutoAwesomeMosaic
 import com.arn.scrobble.icons.Close
 import com.arn.scrobble.icons.Favorite
+import com.arn.scrobble.icons.FavoriteFilled
 import com.arn.scrobble.icons.FiberManualRecord
 import com.arn.scrobble.icons.GraphicEq
 import com.arn.scrobble.icons.GridView
@@ -100,13 +103,10 @@ import com.arn.scrobble.icons.KeyboardArrowDown
 import com.arn.scrobble.icons.KeyboardArrowUp
 import com.arn.scrobble.icons.KeyboardDoubleArrowDown
 import com.arn.scrobble.icons.KeyboardDoubleArrowUp
+import com.arn.scrobble.icons.ListAutoMirrored
 import com.arn.scrobble.icons.Mic
 import com.arn.scrobble.icons.MoreVert
 import com.arn.scrobble.icons.PlayArrow
-import com.arn.scrobble.icons.automirrored.ArrowRight
-import com.arn.scrobble.icons.automirrored.ArrowRightAlt
-import com.arn.scrobble.icons.automirrored.List
-import com.arn.scrobble.icons.filled.Favorite
 import com.arn.scrobble.imageloader.MusicEntryImageReq
 import com.arn.scrobble.panoicons.Nothing
 import com.arn.scrobble.panoicons.PanoIcons
@@ -145,6 +145,7 @@ enum class GridMode {
     HERO, LIST, GRID
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MusicEntryListItem(
     entry: MusicEntry,
@@ -249,7 +250,7 @@ fun MusicEntryListItem(
                 vertical = if (!fixedImageHeight ||
                     listOfNotNull(topText, secondText, thirdText, progress).size <= 3
                 )
-                    8.dp // add extra space
+                    4.dp // add extra space
                 else
                     0.dp // the inner row is high enough
             )
@@ -328,7 +329,7 @@ fun MusicEntryListItem(
                         .offset(x = 6.dp, y = (-6).dp)
 
                     Icon(
-                        imageVector = if (entry.userloved == true) Icons.Filled.Favorite else Icons.HeartBroken,
+                        imageVector = if (entry.userloved == true) Icons.FavoriteFilled else Icons.HeartBroken,
                         contentDescription = stringResource(if (entry.userloved == true) Res.string.loved else Res.string.hate),
                         tint = MaterialTheme.colorScheme.secondary,
                         modifier = loveHateModifier
@@ -344,7 +345,6 @@ fun MusicEntryListItem(
             }
 
             Row(
-                horizontalArrangement = Arrangement.spacedBy(4.dp),
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier
                     .widthIn(min = 200.dp)
@@ -364,25 +364,25 @@ fun MusicEntryListItem(
                             Modifier
                     )
                     .padding(
-                        vertical = if (isColumn) 8.dp else 0.dp,
-                        horizontal = if (isColumn) 8.dp else 0.dp
+                        vertical = if (isColumn) 4.dp else 0.dp,
+                        horizontal = if (isColumn) 4.dp else 0.dp
                     )
             ) {
                 Column(
                     modifier = Modifier
                         .weight(1f)
+                        .padding(start = 2.dp)
                         .then(
                             if (!hasOnlyOneClickable)
                                 Modifier
                                     .shapedClickable(
-                                        shape = MaterialTheme.shapes.large,
                                         clickableAdded = !forShimmer,
                                         onClick = onEntryClick
                                     )
                             else
                                 Modifier
                         )
-                        .padding(vertical = 4.dp, horizontal = 8.dp)
+                        .padding(vertical = 2.dp, horizontal = 6.dp)
                         .backgroundForShimmer(forShimmer)
                 ) {
 
@@ -453,7 +453,7 @@ fun MusicEntryListItem(
                 if (onMenuToggle != null) {
                     Column(
                         horizontalAlignment = Alignment.CenterHorizontally,
-                        modifier = Modifier.padding(vertical = 8.dp)
+                        modifier = Modifier.padding(vertical = 4.dp)
                     ) {
                         if (entry is Track && entry.isNowPlaying) {
                             Icon(
@@ -478,12 +478,21 @@ fun MusicEntryListItem(
                             }
                         }
 
-                        IconToggleButton(
+                        OutlinedIconToggleButton(
                             checked = menuShown,
                             shapes = IconButtonDefaults.toggleableShapes(),
                             onCheckedChange = onMenuToggle,
                             enabled = !forShimmer,
-                            colors = IconButtonDefaults.myIconButtonColors()
+                            border = null,
+                            colors = IconButtonDefaults.outlinedIconToggleButtonVibrantColors()
+                                .let {
+                                    if (isNowPlaying)
+                                        it.copy(
+                                            contentColor = LocalContentColor.current
+                                        )
+                                    else
+                                        it
+                                }
                         ) {
                             Icon(
                                 imageVector = Icons.MoreVert,
@@ -499,7 +508,6 @@ fun MusicEntryListItem(
     }
 }
 
-@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun MusicEntryGridItem(
     entry: MusicEntry,
@@ -651,20 +659,21 @@ private fun ScrobblesCountProgress(
     // always reserve space for the progress bar
     Box(
         modifier = modifier
+            .height(3.dp)
             .then(
                 if (progress == null)
                     Modifier
                 else
                     Modifier
                         .fillMaxWidth(progress)
-                        .clip(MaterialTheme.shapes.medium)
-                        .background(MaterialTheme.colorScheme.outline.copy(alpha = 0.5f))
+                        .background(
+                            MaterialTheme.colorScheme.outline.copy(alpha = 0.5f),
+                            MaterialTheme.shapes.medium,
+                        )
             )
-            .padding(horizontal = 8.dp, vertical = 2.dp)
     )
 }
 
-@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun ExpandableHeaderItem(
     text: String,
@@ -715,7 +724,7 @@ fun ExpandableHeaderItem(
                 verticalAlignment = Alignment.Bottom,
             ) {
                 Icon(
-                    imageVector = Icons.AutoMirrored.ArrowRight,
+                    imageVector = Icons.ArrowRightAutoMirrored,
                     contentDescription = if (expanded && canExpand)
                         stringResource(Res.string.collapse)
                     else
@@ -756,14 +765,13 @@ fun ExpandableHeaderItem(
     }
 }
 
-@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun HeaderItemWithAction(
     title: String,
     icon: ImageVector,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
-    trailingIcon: ImageVector = Icons.AutoMirrored.ArrowRightAlt,
+    trailingIcon: ImageVector = Icons.ArrowRightAltAutoMirrored,
     trailingIconContentDescription: String = stringResource(Res.string.show_all),
     enabled: Boolean = true,
 ) {
@@ -837,7 +845,7 @@ fun DismissableNotice(
             )
 
             Icon(
-                imageVector = Icons.AutoMirrored.ArrowRightAlt,
+                imageVector = Icons.ArrowRightAltAutoMirrored,
                 contentDescription = null,
                 tint = MaterialTheme.colorScheme.primary
             )
@@ -858,19 +866,14 @@ fun LazyListScope.expandableSublist(
     if (items.isEmpty()) return
 
     stickyHeader(key = headerText) {
-        Surface(
-            shape = MaterialTheme.shapes.large,
-            tonalElevation = 4.dp,
-        ) {
-            ExpandableHeaderItem(
-                text = headerText,
-                icon = headerIcon,
-                expanded = expanded || items.size <= minItems,
-                canExpand = items.size > minItems,
-                onToggle = onToggle,
-                modifier = Modifier.animateItem(),
-            )
-        }
+        ExpandableHeaderItem(
+            text = headerText,
+            icon = headerIcon,
+            expanded = expanded || items.size <= minItems,
+            canExpand = items.size > minItems,
+            onToggle = onToggle,
+            modifier = Modifier.animateItem()
+        )
     }
 
     items(
@@ -882,7 +885,7 @@ fun LazyListScope.expandableSublist(
             item,
             onEntryClick = { onItemClick(item) },
             fetchAlbumImageIfMissing = fetchAlbumImageIfMissing,
-            modifier = Modifier.animateItem(),
+            modifier = Modifier.animateItem()
         )
     }
 }
@@ -1021,6 +1024,7 @@ fun GridOrListSelector(
                         if (it)
                             onGridModeChange(GridMode.HERO)
                     },
+                    colors = OutlinedToggleButtonDefaults.myColors(),
                     shapes = ButtonGroupDefaults.connectedLeadingButtonShapes()
                 ) {
                     Icon(
@@ -1036,6 +1040,7 @@ fun GridOrListSelector(
                     if (it)
                         onGridModeChange(GridMode.GRID)
                 },
+                colors = OutlinedToggleButtonDefaults.myColors(),
                 shapes = ButtonGroupDefaults.connectedMiddleButtonShapes()
             ) {
                 Icon(
@@ -1050,10 +1055,11 @@ fun GridOrListSelector(
                     if (it)
                         onGridModeChange(GridMode.LIST)
                 },
+                colors = OutlinedToggleButtonDefaults.myColors(),
                 shapes = ButtonGroupDefaults.connectedTrailingButtonShapes()
             ) {
                 Icon(
-                    Icons.AutoMirrored.List,
+                    Icons.ListAutoMirrored,
                     contentDescription = stringResource(Res.string.list)
                 )
             }

@@ -12,6 +12,7 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filterNot
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.map
@@ -24,7 +25,7 @@ class ChartsPeriodVM : ViewModel() {
     private var digestPeriod: LastfmPeriod? = null
     private val _periodTypeToRegisteredTime = MutableStateFlow<Pair<TimePeriodType, Long>?>(null)
 
-    val periodType = _periodTypeToRegisteredTime.map { it?.first }
+    val periodTypeToRegisteredTime = _periodTypeToRegisteredTime.asStateFlow()
     private val _refreshCount = MutableStateFlow(0)
     val refreshCount = _refreshCount.asStateFlow()
 
@@ -35,7 +36,7 @@ class ChartsPeriodVM : ViewModel() {
         _periodTypeToRegisteredTime
             .filterNotNull(),
         _customPeriodInput,
-        PlatformStuff.mainPrefs.data.map { it.firstDayOfWeek },
+        PlatformStuff.mainPrefs.data.map { it.firstDayOfWeek }.distinctUntilChanged(),
     ) { periodTypeToRegisteredTime, customPeriod, firstDayOfWeek ->
 
         val (periodType, registeredTime) = periodTypeToRegisteredTime

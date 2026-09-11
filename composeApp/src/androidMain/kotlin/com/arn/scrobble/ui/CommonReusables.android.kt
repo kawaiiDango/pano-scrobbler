@@ -3,7 +3,6 @@ package com.arn.scrobble.ui
 import android.os.Build
 import android.view.WindowManager
 import androidx.activity.compose.LocalActivity
-import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.isImeVisible
 import androidx.compose.runtime.Composable
@@ -47,7 +46,6 @@ actual fun ApplyWindowBlur(behind: Int, bg: Int) {
     }
 }
 
-@OptIn(ExperimentalLayoutApi::class)
 @Composable
 actual fun isImeVisible(): Boolean {
     return WindowInsets.isImeVisible

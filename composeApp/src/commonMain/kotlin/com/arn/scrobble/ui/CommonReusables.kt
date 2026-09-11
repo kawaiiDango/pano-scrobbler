@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.calculateEndPadding
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -33,8 +34,10 @@ import androidx.compose.material3.ButtonGroupDefaults
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CircularWavyProgressIndicator
 import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledTonalButton
+import androidx.compose.material3.FilledTonalToggleButton
+import androidx.compose.material3.FilledTonalToggleButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
@@ -47,8 +50,10 @@ import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.MenuDefaults
 import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.OutlinedIconToggleButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedToggleButton
+import androidx.compose.material3.OutlinedToggleButtonDefaults
 import androidx.compose.material3.PlainTooltip
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
@@ -56,7 +61,6 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.ToggleButtonColors
 import androidx.compose.material3.ToggleButtonDefaults
-import androidx.compose.material3.TonalToggleButton
 import androidx.compose.material3.TooltipAnchorPosition
 import androidx.compose.material3.TooltipBox
 import androidx.compose.material3.TooltipDefaults
@@ -94,6 +98,7 @@ import androidx.compose.ui.input.key.onPreviewKeyEvent
 import androidx.compose.ui.input.key.type
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.platform.LocalLocaleList
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.semantics.Role
@@ -219,7 +224,6 @@ enum class PanoToggleButtonsMode {
     BothVertical
 }
 
-@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun PanoToggleButtonGroup(
     texts: Collection<String>,
@@ -231,9 +235,7 @@ fun PanoToggleButtonGroup(
     horizontalArrangement: Arrangement.Horizontal = ButtonGroupDefaults.HorizontalArrangement,
     enabled: Boolean = true,
     mode: PanoToggleButtonsMode = PanoToggleButtonsMode.Text,
-    colors: ToggleButtonColors = ToggleButtonDefaults.outlinedToggleButtonColors(
-        checkedContainerColor = ToggleButtonDefaults.tonalToggleButtonColors().checkedContainerColor,
-    ),
+    colors: ToggleButtonColors = OutlinedToggleButtonDefaults.myColors(),
     border: Boolean = true,
     textStyle: TextStyle? = null,
 ) {
@@ -258,7 +260,8 @@ fun PanoToggleButtonGroup(
             val textVisible = checked || mode != PanoToggleButtonsMode.Icon
             val contentDescription = if (!textVisible && iconVisible) text else null
 
-            val compressionLimit = ButtonDefaults.contentPaddingFor(ButtonDefaults.MinHeight)
+            val contentPadding =
+                ToggleButtonDefaults.contentPaddingFor(ToggleButtonDefaults.MinHeight)
 
             customItem(
                 buttonGroupContent = {
@@ -275,14 +278,19 @@ fun PanoToggleButtonGroup(
                             texts.size - 1 -> ButtonGroupDefaults.connectedTrailingButtonShapes()
                             else -> ButtonGroupDefaults.connectedMiddleButtonShapes()
                         },
-                        contentPadding = compressionLimit,
+                        contentPadding = contentPadding,
                         interactionSource = interactionSources[index],
                         colors = colors,
-                        border = if (border && !checked) ButtonDefaults.outlinedButtonBorder(enabled) else null,
+                        border = if (border)
+                            OutlinedToggleButtonDefaults.border(enabled, checked)
+                        else
+                            null,
                         modifier = Modifier
                             .animateWidth(
                                 interactionSource = interactionSources[index],
-                                compressionLimit = compressionLimit,
+                                compressionLimit = contentPadding.calculateEndPadding(
+                                    LocalLayoutDirection.current
+                                ),
                             ) then (
                                 if (mode == PanoToggleButtonsMode.BothVertical)
                                     Modifier.widthIn(min = 90.dp)
@@ -517,7 +525,7 @@ fun <T> ButtonWithDropdown(
 ) {
     var dropDownShown by remember { mutableStateOf(false) }
 
-    TonalToggleButton(
+    FilledTonalToggleButton(
         checked = dropDownShown,
         onCheckedChange = { dropDownShown = it },
         modifier = modifier
@@ -551,6 +559,7 @@ fun <T> ButtonWithDropdown(
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun IconButtonWithTooltip(
     icon: ImageVector,
@@ -567,9 +576,10 @@ fun IconButtonWithTooltip(
         modifier = modifier,
     ) {
         if (checked != null) {
-            OutlinedToggleButton(
+            OutlinedIconToggleButton(
                 checked = checked,
                 border = null,
+                shapes = IconButtonDefaults.toggleableShapes(),
                 onCheckedChange = { onClick() },
                 enabled = enabled,
             ) {
@@ -694,7 +704,6 @@ fun SimpleHeaderItem(
     icon: ImageVector,
     modifier: Modifier
 ) {
-    // todo switch to the new non clickable when available
     ListItem(
         colors = ListItemDefaults.colors(
             containerColor = MaterialTheme.colorScheme.surfaceColorAtElevation(
@@ -708,16 +717,14 @@ fun SimpleHeaderItem(
             )
         },
         modifier = modifier,
-        headlineContent = {
-            Text(
-                text = text,
-                style = MaterialTheme.typography.titleMedium,
-            )
-        }
-    )
+    ) {
+        Text(
+            text = text,
+            style = MaterialTheme.typography.titleMedium,
+        )
+    }
 }
 
-@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun LabeledCheckbox(
     text: String,
@@ -1189,16 +1196,6 @@ fun accountTypeLabel(accountType: AccountType): String {
 }
 
 @Composable
-fun IconButtonDefaults.myIconButtonColors() =
-    IconButtonDefaults.filledTonalIconToggleButtonColors()
-        .let {
-            IconButtonDefaults.iconToggleButtonVibrantColors(
-                checkedContainerColor = it.checkedContainerColor,
-                checkedContentColor = it.checkedContentColor,
-            )
-        }
-
-@Composable
 fun ListItemDefaults.myTransparentCheckableItemColors() = ListItemDefaults.colors().let {
     ListItemDefaults.colors(
         containerColor = Color.Transparent,
@@ -1237,7 +1234,6 @@ fun ListItemDefaults.myTogglableHeaderItemColors(): ListItemColors {
     )
 }
 
-@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun ListItemDefaults.myBigImageShapes() = ListItemDefaults.shapes(
     shape = MaterialTheme.shapes.medium,
@@ -1248,9 +1244,16 @@ fun ListItemDefaults.myBigImageShapes() = ListItemDefaults.shapes(
 
 val MenuDefaults.myGroupStandardContainerColor: Color
     @Composable
-    get() {
-        return MenuDefaults.groupStandardContainerColor.makeOpaque()
-    }
+    get() =
+        MenuDefaults.groupStandardContainerColor.makeOpaque()
+
+@Composable
+fun OutlinedToggleButtonDefaults.myColors() =
+    OutlinedToggleButtonDefaults.colors(
+        disabledContainerColor = Color.Transparent,
+        checkedContainerColor = FilledTonalToggleButtonDefaults.colors().checkedContainerColor,
+        checkedContentColor = FilledTonalToggleButtonDefaults.colors().checkedContentColor,
+    )
 
 fun Color.makeOpaque() = if (alpha < 1f) copy(alpha = 1f) else this
 

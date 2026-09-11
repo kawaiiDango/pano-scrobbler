@@ -9,6 +9,7 @@ data class ThemeAttributes(
     val blurMainWindow: Boolean,
     val blurSubWindow: Boolean,
     val contrastMode: ContrastMode,
+    val style: PaletteStyle,
     val avatarColors: List<Color>,
     val avatarContainerColors: List<Color>,
 )

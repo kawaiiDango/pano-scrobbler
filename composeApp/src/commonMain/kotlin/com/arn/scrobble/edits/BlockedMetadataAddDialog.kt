@@ -28,7 +28,7 @@ import com.arn.scrobble.db.PanoDb
 import com.arn.scrobble.icons.Block
 import com.arn.scrobble.icons.Icons
 import com.arn.scrobble.icons.SkipNext
-import com.arn.scrobble.icons.automirrored.VolumeOff
+import com.arn.scrobble.icons.VolumeOffAutoMirrored
 import com.arn.scrobble.media.PlayingTrackNotifyEvent
 import com.arn.scrobble.media.notifyPlayingTrackEvent
 import com.arn.scrobble.navigation.enumSaver
@@ -266,7 +266,7 @@ fun ColumnScope.BlockPlayerActions(
         ),
         icons = listOf(
             Icons.SkipNext,
-            Icons.AutoMirrored.VolumeOff,
+            Icons.VolumeOffAutoMirrored,
             Icons.Block,
         ),
         onSelected = { idx ->

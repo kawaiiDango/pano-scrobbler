@@ -23,15 +23,19 @@ fun PanoPager(
     content: @Composable (page: Int) -> Unit,
 ) {
     val initialPage by rememberSaveable { mutableIntStateOf(selectedPage) }
-    val validSelectedPage by rememberSaveable(selectedPage, totalPages) {
+    var validSelectedPage by rememberSaveable {
         mutableIntStateOf(selectedPage.coerceIn(0, totalPages - 1))
+    }
+    // rememberSaveable does not work with items scrolled away in HorizontalPager, so
+    val pageStateHolder = rememberSaveableStateHolder()
+
+    LaunchedEffect(selectedPage) {
+        validSelectedPage = selectedPage.coerceIn(0, totalPages - 1)
     }
 
     if (!PlatformStuff.isTv) {
         var firstPageChange by rememberSaveable { mutableStateOf(false) }
 
-        // rememberSaveable does not work with items scrolled away in HorizontalPager, so
-        val pageStateHolder = rememberSaveableStateHolder()
         val pagerState = rememberPagerState(
             initialPage = initialPage,
             pageCount = { totalPages }
@@ -64,7 +68,9 @@ fun PanoPager(
         }
 
         Box(modifier = modifier) {
-            content(validSelectedPage)
+            pageStateHolder.SaveableStateProvider(validSelectedPage) {
+                content(validSelectedPage)
+            }
         }
     }
 }

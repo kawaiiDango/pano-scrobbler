@@ -24,6 +24,7 @@ import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.getString
 import pano_scrobbler.composeapp.generated.resources.Res
 import pano_scrobbler.composeapp.generated.resources.charts_no_data
+import kotlin.time.Duration.Companion.milliseconds
 
 
 class RandomVM(private val username: String) : ViewModel() {
@@ -46,7 +47,7 @@ class RandomVM(private val username: String) : ViewModel() {
         viewModelScope.launch {
             _input
                 .filterNotNull()
-                .debounce(300)
+                .debounce(500.milliseconds)
                 .combine(_refreshTrigger.onStart { emit(Unit) }
                 ) { input, _ -> input }
                 .mapLatest { input ->

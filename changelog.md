@@ -9,5 +9,6 @@
 - The UI wastes less vertical space
 - Very long dialogs can now expand to a non-dialog screen
 - Opens locale-specific links for last.fm
+- Added palette styles and hue slider in themes
 - Bug fixes
 - Translation updates by the translators on Crowdin

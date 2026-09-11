@@ -1,5 +1,3 @@
-@file:OptIn(ExperimentalMaterial3ExpressiveApi::class)
-
 package com.arn.scrobble.pref
 
 import androidx.compose.foundation.layout.Arrangement
@@ -9,7 +7,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.ListItemDefaults
@@ -33,10 +30,10 @@ import com.arn.scrobble.api.AccountType
 import com.arn.scrobble.api.Scrobblables
 import com.arn.scrobble.icons.ArrowDropDown
 import com.arn.scrobble.icons.Icons
+import com.arn.scrobble.icons.KeyboardArrowLeftAutoMirrored
+import com.arn.scrobble.icons.KeyboardArrowRightAutoMirrored
 import com.arn.scrobble.icons.Lock
 import com.arn.scrobble.icons.ResetSettings
-import com.arn.scrobble.icons.automirrored.KeyboardArrowLeft
-import com.arn.scrobble.icons.automirrored.KeyboardArrowRight
 import com.arn.scrobble.navigation.PanoRoute
 import com.arn.scrobble.onboarding.LoginDestinations
 import com.arn.scrobble.ui.AppIcon
@@ -310,7 +307,7 @@ fun SliderPref(
                                     }
                                 ) {
                                     Icon(
-                                        imageVector = Icons.AutoMirrored.KeyboardArrowLeft,
+                                        imageVector = Icons.KeyboardArrowLeftAutoMirrored,
                                         contentDescription = stringResource(Res.string.move_left),
                                     )
                                 }
@@ -330,7 +327,7 @@ fun SliderPref(
                                     checked = false,
                                 ) {
                                     Icon(
-                                        imageVector = Icons.AutoMirrored.KeyboardArrowRight,
+                                        imageVector = Icons.KeyboardArrowRightAutoMirrored,
                                         contentDescription = stringResource(Res.string.move_right),
                                     )
                                 }
@@ -351,18 +348,17 @@ fun SliderPref(
                 }
             }
         } else null,
-        headlineContent = {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                Text(text)
-                Spacer(modifier = Modifier.weight(1f))
-                Text(
-                    text = stringRepresentation(internalValue.roundToInt()),
-                )
-            }
+    ) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Text(text)
+            Spacer(modifier = Modifier.weight(1f))
+            Text(
+                text = stringRepresentation(internalValue.roundToInt()),
+            )
         }
-    )
+    }
 }
 
 @Composable

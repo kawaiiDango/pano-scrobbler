@@ -1,13 +1,16 @@
 package com.arn.scrobble.utils
 
 import com.arn.scrobble.VariantStuffInterface
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 
 actual val VariantStuff: VariantStuffInterface = DesktopExtrasVariantStuff(
     scope = Stuff.appScope,
-    lastCheckTime = flow { emitAll(PlatformStuff.mainPrefs.data.map { it.lastLicenseCheckTime }) },
+    lastCheckTime = flow {
+        emitAll(PlatformStuff.mainPrefs.data.map { it.lastLicenseCheckTime }.distinctUntilChanged())
+    },
     setLastCheckTime = { time ->
         PlatformStuff.mainPrefs.updateData { it.copy(lastLicenseCheckTime = time) }
     },

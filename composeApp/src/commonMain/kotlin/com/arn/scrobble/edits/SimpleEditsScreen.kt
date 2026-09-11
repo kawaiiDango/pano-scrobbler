@@ -24,11 +24,11 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.arn.scrobble.db.SimpleEdit
 import com.arn.scrobble.icons.Album
+import com.arn.scrobble.icons.ArrowRightAutoMirrored
 import com.arn.scrobble.icons.Icons
 import com.arn.scrobble.icons.Mic
 import com.arn.scrobble.icons.MusicNote
 import com.arn.scrobble.icons.Stop
-import com.arn.scrobble.icons.automirrored.ArrowRight
 import com.arn.scrobble.navigation.PanoRoute
 import com.arn.scrobble.panoicons.AlbumArtist
 import com.arn.scrobble.panoicons.PanoIcons
@@ -91,7 +91,9 @@ fun SimpleEditsScreen(
                         forShimmer = true,
                         onEdit = {},
                         onDelete = {},
-                        modifier = Modifier.shimmerWindowBounds().animateItem()
+                        modifier = Modifier
+                            .shimmerWindowBounds()
+                            .animateItem()
                     )
                 }
             } else {
@@ -165,7 +167,7 @@ private fun SimpleEditItem(
             }
 
             Icon(
-                imageVector = Icons.AutoMirrored.ArrowRight,
+                imageVector = Icons.ArrowRightAutoMirrored,
                 contentDescription = null,
                 tint = MaterialTheme.colorScheme.tertiary,
                 modifier = Modifier

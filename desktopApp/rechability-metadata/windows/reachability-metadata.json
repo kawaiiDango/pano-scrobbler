@@ -145,6 +145,9 @@
       ]
     },
     {
+      "type": "com.arn.scrobble.utils.HackedContentPane"
+    },
+    {
       "type": "com.sun.crypto.provider.AESCipher$General",
       "methods": [
         {
@@ -1519,6 +1522,9 @@
       "type": "kotlin.reflect.jvm.internal.ReflectionFactoryImpl"
     },
     {
+      "type": "kotlinx.atomicfu.AtomicInt"
+    },
+    {
       "type": "kotlinx.coroutines.AwaitAll"
     },
     {
@@ -2381,10 +2387,26 @@
       "jniAccessible": true,
       "methods": [
         {
+          "name": "drawFrameWhileLiveResizing",
+          "parameterTypes": [
+            "int",
+            "int",
+            "boolean"
+          ]
+        },
+        {
           "name": "isAdapterSupported",
           "parameterTypes": [
             "java.lang.String"
           ]
+        },
+        {
+          "name": "onLiveResizeEnded",
+          "parameterTypes": []
+        },
+        {
+          "name": "onLiveResizeStarted",
+          "parameterTypes": []
         }
       ]
     },
@@ -2647,6 +2669,10 @@
       "methods": [
         {
           "name": "disposeLater",
+          "parameterTypes": []
+        },
+        {
+          "name": "dynamicallyLayoutContainer",
           "parameterTypes": []
         },
         {

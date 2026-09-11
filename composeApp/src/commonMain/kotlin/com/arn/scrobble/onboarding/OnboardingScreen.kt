@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.FilledTonalToggleButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.ListItemDefaults
@@ -15,7 +16,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.TonalToggleButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -106,7 +106,7 @@ fun ButtonStepperForLogin(
 
     var dropDownShown by remember { mutableStateOf(false) }
 
-    TonalToggleButton(
+    FilledTonalToggleButton(
         checked = dropDownShown,
         onCheckedChange = {
             dropDownShown = it
@@ -174,13 +174,6 @@ fun VerticalStepperItem(
         Icons.Circle
 
     ListItem(
-        headlineContent = {
-            Text(
-                text = stringResource(titleRes),
-                style = MaterialTheme.typography.titleMedium,
-                color = MaterialTheme.colorScheme.primary,
-            )
-        },
         supportingContent = if (isExpanded) {
             {
                 Column {
@@ -204,6 +197,7 @@ fun VerticalStepperItem(
                 contentDescription = null,
             )
         },
+        verticalAlignment = Alignment.Top,
         colors = ListItemDefaults.myTransparentCheckableItemColors(),
         modifier = modifier
             .fillMaxWidth()
@@ -214,7 +208,13 @@ fun VerticalStepperItem(
                 else
                     Modifier.alpha(0.5f)
             ),
-    )
+    ) {
+        Text(
+            text = stringResource(titleRes),
+            style = MaterialTheme.typography.titleMedium,
+            color = MaterialTheme.colorScheme.primary,
+        )
+    }
 }
 
 @Composable

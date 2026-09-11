@@ -1,89 +1,104 @@
 package com.arn.scrobble.icons
 
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.PathFillType
 import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.graphics.StrokeJoin
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.graphics.vector.path
 import androidx.compose.ui.unit.dp
 
+@Suppress("CheckReturnValue")
 val Icons.BarChart4Bars: ImageVector
-    get() {
-        if (_BarChart4Bars != null) {
-            return _BarChart4Bars!!
-        }
-        _BarChart4Bars = ImageVector.Builder(
-            name = "BarChart4Bars",
-            defaultWidth = 24.dp,
-            defaultHeight = 24.dp,
-            viewportWidth = 960f,
-            viewportHeight = 960f
-        ).apply {
-            path(fill = SolidColor(Color.Black)) {
-                moveTo(120f, 840f)
-                quadToRelative(-17f, 0f, -28.5f, -11.5f)
-                reflectiveQuadTo(80f, 800f)
-                quadToRelative(0f, -17f, 11.5f, -28.5f)
-                reflectiveQuadTo(120f, 760f)
-                horizontalLineToRelative(720f)
-                quadToRelative(17f, 0f, 28.5f, 11.5f)
-                reflectiveQuadTo(880f, 800f)
-                quadToRelative(0f, 17f, -11.5f, 28.5f)
-                reflectiveQuadTo(840f, 840f)
-                lineTo(120f, 840f)
-                close()
-                moveTo(137.5f, 702.5f)
-                quadTo(120f, 685f, 120f, 660f)
-                verticalLineToRelative(-160f)
-                quadToRelative(0f, -25f, 17.5f, -42.5f)
-                reflectiveQuadTo(180f, 440f)
-                quadToRelative(25f, 0f, 42.5f, 17.5f)
-                reflectiveQuadTo(240f, 500f)
-                verticalLineToRelative(160f)
-                quadToRelative(0f, 25f, -17.5f, 42.5f)
-                reflectiveQuadTo(180f, 720f)
-                quadToRelative(-25f, 0f, -42.5f, -17.5f)
-                close()
-                moveTo(337.5f, 702.5f)
-                quadTo(320f, 685f, 320f, 660f)
-                verticalLineToRelative(-360f)
-                quadToRelative(0f, -25f, 17.5f, -42.5f)
-                reflectiveQuadTo(380f, 240f)
-                quadToRelative(25f, 0f, 42.5f, 17.5f)
-                reflectiveQuadTo(440f, 300f)
-                verticalLineToRelative(360f)
-                quadToRelative(0f, 25f, -17.5f, 42.5f)
-                reflectiveQuadTo(380f, 720f)
-                quadToRelative(-25f, 0f, -42.5f, -17.5f)
-                close()
-                moveTo(537.5f, 702.5f)
-                quadTo(520f, 685f, 520f, 660f)
-                verticalLineToRelative(-240f)
-                quadToRelative(0f, -25f, 17.5f, -42.5f)
-                reflectiveQuadTo(580f, 360f)
-                quadToRelative(25f, 0f, 42.5f, 17.5f)
-                reflectiveQuadTo(640f, 420f)
-                verticalLineToRelative(240f)
-                quadToRelative(0f, 25f, -17.5f, 42.5f)
-                reflectiveQuadTo(580f, 720f)
-                quadToRelative(-25f, 0f, -42.5f, -17.5f)
-                close()
-                moveTo(737.5f, 702.5f)
-                quadTo(720f, 685f, 720f, 660f)
-                verticalLineToRelative(-480f)
-                quadToRelative(0f, -25f, 17.5f, -42.5f)
-                reflectiveQuadTo(780f, 120f)
-                quadToRelative(25f, 0f, 42.5f, 17.5f)
-                reflectiveQuadTo(840f, 180f)
-                verticalLineToRelative(480f)
-                quadToRelative(0f, 25f, -17.5f, 42.5f)
-                reflectiveQuadTo(780f, 720f)
-                quadToRelative(-25f, 0f, -42.5f, -17.5f)
-                close()
-            }
-        }.build()
-
-        return _BarChart4Bars!!
+  get() {
+    if (_BarChart4Bars != null) {
+      return _BarChart4Bars!!
     }
+    _BarChart4Bars =
+      ImageVector.Builder(
+          name = "BarChart4Bars",
+          defaultWidth = 24.dp,
+          defaultHeight = 24.dp,
+          viewportWidth = 24f,
+          viewportHeight = 24f,
+        )
+        .apply {
+          path(
+            fill = SolidColor(Color.Black),
+            fillAlpha = 1f,
+            stroke = null,
+            strokeAlpha = 1f,
+            strokeLineWidth = 1f,
+            strokeLineCap = StrokeCap.Butt,
+            strokeLineJoin = StrokeJoin.Bevel,
+            strokeLineMiter = 1f,
+            pathFillType = PathFillType.NonZero,
+          ) {
+            moveTo(3f, 21f)
+            quadTo(2.58f, 21f, 2.29f, 20.71f)
+            quadTo(2f, 20.43f, 2f, 20f)
+            reflectiveQuadTo(2.29f, 19.29f)
+            reflectiveQuadTo(3f, 19f)
+            horizontalLineTo(21f)
+            quadToRelative(0.43f, 0f, 0.71f, 0.29f)
+            reflectiveQuadTo(22f, 20f)
+            reflectiveQuadToRelative(-0.29f, 0.71f)
+            reflectiveQuadTo(21f, 21f)
+            horizontalLineTo(3f)
+            close()
+            moveTo(3.44f, 17.56f)
+            quadTo(3f, 17.13f, 3f, 16.5f)
+            verticalLineToRelative(-4f)
+            quadTo(3f, 11.88f, 3.44f, 11.44f)
+            reflectiveQuadTo(4.5f, 11f)
+            reflectiveQuadToRelative(1.06f, 0.44f)
+            reflectiveQuadTo(6f, 12.5f)
+            verticalLineToRelative(4f)
+            quadToRelative(0f, 0.63f, -0.44f, 1.06f)
+            reflectiveQuadTo(4.5f, 18f)
+            reflectiveQuadTo(3.44f, 17.56f)
+            close()
+            moveToRelative(5f, 0f)
+            quadTo(8f, 17.13f, 8f, 16.5f)
+            verticalLineToRelative(-9f)
+            quadTo(8f, 6.88f, 8.44f, 6.44f)
+            reflectiveQuadTo(9.5f, 6f)
+            reflectiveQuadToRelative(1.06f, 0.44f)
+            reflectiveQuadTo(11f, 7.5f)
+            verticalLineToRelative(9f)
+            quadToRelative(0f, 0.63f, -0.44f, 1.06f)
+            reflectiveQuadTo(9.5f, 18f)
+            reflectiveQuadTo(8.44f, 17.56f)
+            close()
+            moveToRelative(5f, 0f)
+            quadTo(13f, 17.13f, 13f, 16.5f)
+            verticalLineToRelative(-6f)
+            quadTo(13f, 9.88f, 13.44f, 9.44f)
+            reflectiveQuadTo(14.5f, 9f)
+            reflectiveQuadToRelative(1.06f, 0.44f)
+            reflectiveQuadTo(16f, 10.5f)
+            verticalLineToRelative(6f)
+            quadToRelative(0f, 0.63f, -0.44f, 1.06f)
+            reflectiveQuadTo(14.5f, 18f)
+            reflectiveQuadTo(13.44f, 17.56f)
+            close()
+            moveToRelative(5f, 0f)
+            quadTo(18f, 17.13f, 18f, 16.5f)
+            verticalLineTo(4.5f)
+            quadTo(18f, 3.88f, 18.44f, 3.44f)
+            reflectiveQuadTo(19.5f, 3f)
+            reflectiveQuadToRelative(1.06f, 0.44f)
+            reflectiveQuadTo(21f, 4.5f)
+            verticalLineToRelative(12f)
+            quadToRelative(0f, 0.63f, -0.44f, 1.06f)
+            reflectiveQuadTo(19.5f, 18f)
+            reflectiveQuadTo(18.44f, 17.56f)
+            close()
+          }
+        }
+        .build()
+    return _BarChart4Bars!!
+  }
 
-@Suppress("ObjectPropertyName")
 private var _BarChart4Bars: ImageVector? = null

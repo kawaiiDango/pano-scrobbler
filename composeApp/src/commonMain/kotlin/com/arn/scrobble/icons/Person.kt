@@ -1,83 +1,98 @@
 package com.arn.scrobble.icons
 
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.PathFillType
 import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.graphics.StrokeJoin
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.graphics.vector.path
 import androidx.compose.ui.unit.dp
 
+@Suppress("CheckReturnValue")
 val Icons.Person: ImageVector
-    get() {
-        if (_Person != null) {
-            return _Person!!
-        }
-        _Person = ImageVector.Builder(
-            name = "Person",
-            defaultWidth = 24.dp,
-            defaultHeight = 24.dp,
-            viewportWidth = 960f,
-            viewportHeight = 960f
-        ).apply {
-            path(fill = SolidColor(Color.Black)) {
-                moveTo(367f, 433f)
-                quadToRelative(-47f, -47f, -47f, -113f)
-                reflectiveQuadToRelative(47f, -113f)
-                quadToRelative(47f, -47f, 113f, -47f)
-                reflectiveQuadToRelative(113f, 47f)
-                quadToRelative(47f, 47f, 47f, 113f)
-                reflectiveQuadToRelative(-47f, 113f)
-                quadToRelative(-47f, 47f, -113f, 47f)
-                reflectiveQuadToRelative(-113f, -47f)
-                close()
-                moveTo(160f, 720f)
-                verticalLineToRelative(-32f)
-                quadToRelative(0f, -34f, 17.5f, -62.5f)
-                reflectiveQuadTo(224f, 582f)
-                quadToRelative(62f, -31f, 126f, -46.5f)
-                reflectiveQuadTo(480f, 520f)
-                quadToRelative(66f, 0f, 130f, 15.5f)
-                reflectiveQuadTo(736f, 582f)
-                quadToRelative(29f, 15f, 46.5f, 43.5f)
-                reflectiveQuadTo(800f, 688f)
-                verticalLineToRelative(32f)
-                quadToRelative(0f, 33f, -23.5f, 56.5f)
-                reflectiveQuadTo(720f, 800f)
-                lineTo(240f, 800f)
-                quadToRelative(-33f, 0f, -56.5f, -23.5f)
-                reflectiveQuadTo(160f, 720f)
-                close()
-                moveTo(240f, 720f)
-                horizontalLineToRelative(480f)
-                verticalLineToRelative(-32f)
-                quadToRelative(0f, -11f, -5.5f, -20f)
-                reflectiveQuadTo(700f, 654f)
-                quadToRelative(-54f, -27f, -109f, -40.5f)
-                reflectiveQuadTo(480f, 600f)
-                quadToRelative(-56f, 0f, -111f, 13.5f)
-                reflectiveQuadTo(260f, 654f)
-                quadToRelative(-9f, 5f, -14.5f, 14f)
-                reflectiveQuadToRelative(-5.5f, 20f)
-                verticalLineToRelative(32f)
-                close()
-                moveTo(536.5f, 376.5f)
-                quadTo(560f, 353f, 560f, 320f)
-                reflectiveQuadToRelative(-23.5f, -56.5f)
-                quadTo(513f, 240f, 480f, 240f)
-                reflectiveQuadToRelative(-56.5f, 23.5f)
-                quadTo(400f, 287f, 400f, 320f)
-                reflectiveQuadToRelative(23.5f, 56.5f)
-                quadTo(447f, 400f, 480f, 400f)
-                reflectiveQuadToRelative(56.5f, -23.5f)
-                close()
-                moveTo(480f, 320f)
-                close()
-                moveTo(480f, 720f)
-                close()
-            }
-        }.build()
-
-        return _Person!!
+  get() {
+    if (_Person != null) {
+      return _Person!!
     }
+    _Person =
+      ImageVector.Builder(
+          name = "Person",
+          defaultWidth = 24.dp,
+          defaultHeight = 24.dp,
+          viewportWidth = 24f,
+          viewportHeight = 24f,
+        )
+        .apply {
+          path(
+            fill = SolidColor(Color.Black),
+            fillAlpha = 1f,
+            stroke = null,
+            strokeAlpha = 1f,
+            strokeLineWidth = 1f,
+            strokeLineCap = StrokeCap.Butt,
+            strokeLineJoin = StrokeJoin.Bevel,
+            strokeLineMiter = 1f,
+            pathFillType = PathFillType.NonZero,
+          ) {
+            moveTo(9.18f, 10.83f)
+            quadTo(8f, 9.65f, 8f, 8f)
+            reflectiveQuadTo(9.18f, 5.18f)
+            reflectiveQuadTo(12f, 4f)
+            reflectiveQuadToRelative(2.83f, 1.18f)
+            reflectiveQuadTo(16f, 8f)
+            reflectiveQuadToRelative(-1.17f, 2.82f)
+            reflectiveQuadTo(12f, 12f)
+            reflectiveQuadTo(9.18f, 10.83f)
+            close()
+            moveTo(4f, 18f)
+            verticalLineTo(17.2f)
+            quadTo(4f, 16.35f, 4.44f, 15.64f)
+            quadTo(4.88f, 14.93f, 5.6f, 14.55f)
+            quadTo(7.15f, 13.77f, 8.75f, 13.39f)
+            reflectiveQuadTo(12f, 13f)
+            reflectiveQuadToRelative(3.25f, 0.39f)
+            reflectiveQuadToRelative(3.15f, 1.16f)
+            quadToRelative(0.72f, 0.38f, 1.16f, 1.09f)
+            reflectiveQuadTo(20f, 17.2f)
+            verticalLineTo(18f)
+            quadToRelative(0f, 0.82f, -0.59f, 1.41f)
+            reflectiveQuadTo(18f, 20f)
+            horizontalLineTo(6f)
+            quadTo(5.18f, 20f, 4.59f, 19.41f)
+            reflectiveQuadTo(4f, 18f)
+            close()
+            moveToRelative(2f, 0f)
+            horizontalLineTo(18f)
+            verticalLineTo(17.2f)
+            quadToRelative(0f, -0.27f, -0.14f, -0.5f)
+            quadTo(17.73f, 16.48f, 17.5f, 16.35f)
+            quadTo(16.15f, 15.68f, 14.78f, 15.34f)
+            reflectiveQuadTo(12f, 15f)
+            reflectiveQuadTo(9.23f, 15.34f)
+            reflectiveQuadTo(6.5f, 16.35f)
+            quadTo(6.28f, 16.48f, 6.14f, 16.7f)
+            quadTo(6f, 16.93f, 6f, 17.2f)
+            verticalLineTo(18f)
+            close()
+            moveTo(13.41f, 9.41f)
+            quadTo(14f, 8.82f, 14f, 8f)
+            reflectiveQuadTo(13.41f, 6.59f)
+            reflectiveQuadTo(12f, 6f)
+            reflectiveQuadTo(10.59f, 6.59f)
+            quadTo(10f, 7.18f, 10f, 8f)
+            reflectiveQuadToRelative(0.59f, 1.41f)
+            reflectiveQuadTo(12f, 10f)
+            reflectiveQuadTo(13.41f, 9.41f)
+            close()
+            moveTo(12f, 8f)
+            close()
+            moveToRelative(0f, 10f)
+            close()
+          }
+        }
+        .build()
+    return _Person!!
+  }
 
-@Suppress("ObjectPropertyName")
 private var _Person: ImageVector? = null

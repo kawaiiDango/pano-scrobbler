@@ -226,7 +226,7 @@ fun ChartsOverviewScreen(
             .padding(panoContentPadding(sides = false)),
     ) {
         TimePeriodSelector(
-            user = user,
+            registeredTime = user.registeredTime,
             viewModel = chartsPeriodViewModel,
             onNavigate = onNavigate,
             onSelected = ::setInput,

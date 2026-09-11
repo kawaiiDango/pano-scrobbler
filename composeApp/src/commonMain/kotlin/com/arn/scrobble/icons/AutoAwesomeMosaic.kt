@@ -1,79 +1,94 @@
 package com.arn.scrobble.icons
 
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.PathFillType
 import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.graphics.StrokeJoin
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.graphics.vector.path
 import androidx.compose.ui.unit.dp
 
+@Suppress("CheckReturnValue")
 val Icons.AutoAwesomeMosaic: ImageVector
-    get() {
-        if (_AutoAwesomeMosaic != null) {
-            return _AutoAwesomeMosaic!!
-        }
-        _AutoAwesomeMosaic = ImageVector.Builder(
-            name = "AutoAwesomeMosaic",
-            defaultWidth = 24.dp,
-            defaultHeight = 24.dp,
-            viewportWidth = 960f,
-            viewportHeight = 960f
-        ).apply {
-            path(fill = SolidColor(Color.Black)) {
-                moveTo(440f, 840f)
-                lineTo(200f, 840f)
-                quadToRelative(-33f, 0f, -56.5f, -23.5f)
-                reflectiveQuadTo(120f, 760f)
-                verticalLineToRelative(-560f)
-                quadToRelative(0f, -33f, 23.5f, -56.5f)
-                reflectiveQuadTo(200f, 120f)
-                horizontalLineToRelative(240f)
-                verticalLineToRelative(720f)
-                close()
-                moveTo(360f, 760f)
-                verticalLineToRelative(-560f)
-                lineTo(200f, 200f)
-                verticalLineToRelative(560f)
-                horizontalLineToRelative(160f)
-                close()
-                moveTo(520f, 440f)
-                verticalLineToRelative(-320f)
-                horizontalLineToRelative(240f)
-                quadToRelative(33f, 0f, 56.5f, 23.5f)
-                reflectiveQuadTo(840f, 200f)
-                verticalLineToRelative(240f)
-                lineTo(520f, 440f)
-                close()
-                moveTo(600f, 360f)
-                horizontalLineToRelative(160f)
-                verticalLineToRelative(-160f)
-                lineTo(600f, 200f)
-                verticalLineToRelative(160f)
-                close()
-                moveTo(520f, 840f)
-                verticalLineToRelative(-320f)
-                horizontalLineToRelative(320f)
-                verticalLineToRelative(240f)
-                quadToRelative(0f, 33f, -23.5f, 56.5f)
-                reflectiveQuadTo(760f, 840f)
-                lineTo(520f, 840f)
-                close()
-                moveTo(600f, 760f)
-                horizontalLineToRelative(160f)
-                verticalLineToRelative(-160f)
-                lineTo(600f, 600f)
-                verticalLineToRelative(160f)
-                close()
-                moveTo(360f, 480f)
-                close()
-                moveTo(600f, 360f)
-                close()
-                moveTo(600f, 600f)
-                close()
-            }
-        }.build()
-
-        return _AutoAwesomeMosaic!!
+  get() {
+    if (_AutoAwesomeMosaic != null) {
+      return _AutoAwesomeMosaic!!
     }
+    _AutoAwesomeMosaic =
+      ImageVector.Builder(
+          name = "AutoAwesomeMosaic",
+          defaultWidth = 24.dp,
+          defaultHeight = 24.dp,
+          viewportWidth = 24f,
+          viewportHeight = 24f,
+        )
+        .apply {
+          path(
+            fill = SolidColor(Color.Black),
+            fillAlpha = 1f,
+            stroke = null,
+            strokeAlpha = 1f,
+            strokeLineWidth = 1f,
+            strokeLineCap = StrokeCap.Butt,
+            strokeLineJoin = StrokeJoin.Bevel,
+            strokeLineMiter = 1f,
+            pathFillType = PathFillType.NonZero,
+          ) {
+            moveTo(11f, 21f)
+            horizontalLineTo(5f)
+            quadTo(4.18f, 21f, 3.59f, 20.41f)
+            reflectiveQuadTo(3f, 19f)
+            verticalLineTo(5f)
+            quadTo(3f, 4.17f, 3.59f, 3.59f)
+            reflectiveQuadTo(5f, 3f)
+            horizontalLineToRelative(6f)
+            verticalLineTo(21f)
+            close()
+            moveTo(9f, 19f)
+            verticalLineTo(5f)
+            horizontalLineTo(5f)
+            verticalLineTo(19f)
+            horizontalLineTo(9f)
+            close()
+            moveToRelative(4f, -8f)
+            verticalLineTo(3f)
+            horizontalLineToRelative(6f)
+            quadToRelative(0.83f, 0f, 1.41f, 0.59f)
+            reflectiveQuadTo(21f, 5f)
+            verticalLineToRelative(6f)
+            horizontalLineTo(13f)
+            close()
+            moveTo(15f, 9f)
+            horizontalLineToRelative(4f)
+            verticalLineTo(5f)
+            horizontalLineTo(15f)
+            verticalLineTo(9f)
+            close()
+            moveTo(13f, 21f)
+            verticalLineTo(13f)
+            horizontalLineToRelative(8f)
+            verticalLineToRelative(6f)
+            quadToRelative(0f, 0.82f, -0.59f, 1.41f)
+            reflectiveQuadTo(19f, 21f)
+            horizontalLineTo(13f)
+            close()
+            moveToRelative(2f, -2f)
+            horizontalLineToRelative(4f)
+            verticalLineTo(15f)
+            horizontalLineTo(15f)
+            verticalLineToRelative(4f)
+            close()
+            moveTo(9f, 12f)
+            close()
+            moveTo(15f, 9f)
+            close()
+            moveToRelative(0f, 6f)
+            close()
+          }
+        }
+        .build()
+    return _AutoAwesomeMosaic!!
+  }
 
-@Suppress("ObjectPropertyName")
 private var _AutoAwesomeMosaic: ImageVector? = null

@@ -50,6 +50,7 @@ import com.arn.scrobble.utils.Stuff
 import com.arn.scrobble.utils.Stuff.collectAsStateWithInitialValue
 import com.arn.scrobble.utils.redactedMessage
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.take
 import org.jetbrains.compose.resources.stringResource
@@ -107,6 +108,7 @@ fun RandomScreen(
     // first load
     LaunchedEffect(user) {
         PlatformStuff.mainPrefs.data.map { it.randomType }
+            .distinctUntilChanged()
             .combine(chartsPeriodViewModel.selectedPeriod) { type, selectedPeriod ->
                 type to selectedPeriod
             }
@@ -120,7 +122,7 @@ fun RandomScreen(
         modifier = modifier
     ) {
         TimePeriodSelector(
-            user = user,
+            registeredTime = user.registeredTime,
             viewModel = chartsPeriodViewModel,
             onNavigate = onNavigate,
             onSelected = { curr, prev, _ ->

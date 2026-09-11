@@ -1,70 +1,85 @@
 package com.arn.scrobble.icons
 
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.PathFillType
 import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.graphics.StrokeJoin
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.graphics.vector.path
 import androidx.compose.ui.unit.dp
 
+@Suppress("CheckReturnValue")
 val Icons.PlayCircle: ImageVector
-    get() {
-        if (_PlayCircle != null) {
-            return _PlayCircle!!
-        }
-        _PlayCircle = ImageVector.Builder(
-            name = "PlayCircle",
-            defaultWidth = 24.dp,
-            defaultHeight = 24.dp,
-            viewportWidth = 960f,
-            viewportHeight = 960f
-        ).apply {
-            path(fill = SolidColor(Color.Black)) {
-                moveToRelative(426f, 630f)
-                lineToRelative(195f, -125f)
-                quadToRelative(14f, -9f, 14f, -25f)
-                reflectiveQuadToRelative(-14f, -25f)
-                lineTo(426f, 330f)
-                quadToRelative(-15f, -10f, -30.5f, -1.5f)
-                reflectiveQuadTo(380f, 355f)
-                verticalLineToRelative(250f)
-                quadToRelative(0f, 18f, 15.5f, 26.5f)
-                reflectiveQuadTo(426f, 630f)
-                close()
-                moveTo(480f, 880f)
-                quadToRelative(-83f, 0f, -156f, -31.5f)
-                reflectiveQuadTo(197f, 763f)
-                quadToRelative(-54f, -54f, -85.5f, -127f)
-                reflectiveQuadTo(80f, 480f)
-                quadToRelative(0f, -83f, 31.5f, -156f)
-                reflectiveQuadTo(197f, 197f)
-                quadToRelative(54f, -54f, 127f, -85.5f)
-                reflectiveQuadTo(480f, 80f)
-                quadToRelative(83f, 0f, 156f, 31.5f)
-                reflectiveQuadTo(763f, 197f)
-                quadToRelative(54f, 54f, 85.5f, 127f)
-                reflectiveQuadTo(880f, 480f)
-                quadToRelative(0f, 83f, -31.5f, 156f)
-                reflectiveQuadTo(763f, 763f)
-                quadToRelative(-54f, 54f, -127f, 85.5f)
-                reflectiveQuadTo(480f, 880f)
-                close()
-                moveTo(480f, 800f)
-                quadToRelative(134f, 0f, 227f, -93f)
-                reflectiveQuadToRelative(93f, -227f)
-                quadToRelative(0f, -134f, -93f, -227f)
-                reflectiveQuadToRelative(-227f, -93f)
-                quadToRelative(-134f, 0f, -227f, 93f)
-                reflectiveQuadToRelative(-93f, 227f)
-                quadToRelative(0f, 134f, 93f, 227f)
-                reflectiveQuadToRelative(227f, 93f)
-                close()
-                moveTo(480f, 480f)
-                close()
-            }
-        }.build()
-
-        return _PlayCircle!!
+  get() {
+    if (_PlayCircle != null) {
+      return _PlayCircle!!
     }
+    _PlayCircle =
+      ImageVector.Builder(
+          name = "PlayCircle",
+          defaultWidth = 24.dp,
+          defaultHeight = 24.dp,
+          viewportWidth = 24f,
+          viewportHeight = 24f,
+        )
+        .apply {
+          path(
+            fill = SolidColor(Color.Black),
+            fillAlpha = 1f,
+            stroke = null,
+            strokeAlpha = 1f,
+            strokeLineWidth = 1f,
+            strokeLineCap = StrokeCap.Butt,
+            strokeLineJoin = StrokeJoin.Bevel,
+            strokeLineMiter = 1f,
+            pathFillType = PathFillType.NonZero,
+          ) {
+            moveTo(10.65f, 15.75f)
+            lineToRelative(4.88f, -3.13f)
+            quadTo(15.88f, 12.4f, 15.88f, 12f)
+            reflectiveQuadTo(15.53f, 11.38f)
+            lineTo(10.65f, 8.25f)
+            quadTo(10.28f, 8f, 9.89f, 8.21f)
+            reflectiveQuadTo(9.5f, 8.88f)
+            verticalLineToRelative(6.25f)
+            quadToRelative(0f, 0.45f, 0.39f, 0.66f)
+            reflectiveQuadToRelative(0.76f, -0.04f)
+            close()
+            moveTo(12f, 22f)
+            quadTo(9.93f, 22f, 8.1f, 21.21f)
+            quadTo(6.28f, 20.43f, 4.93f, 19.08f)
+            quadTo(3.58f, 17.73f, 2.79f, 15.9f)
+            reflectiveQuadTo(2f, 12f)
+            quadTo(2f, 9.92f, 2.79f, 8.1f)
+            quadTo(3.58f, 6.27f, 4.93f, 4.93f)
+            quadTo(6.28f, 3.57f, 8.1f, 2.79f)
+            quadTo(9.93f, 2f, 12f, 2f)
+            reflectiveQuadToRelative(3.9f, 0.79f)
+            reflectiveQuadToRelative(3.17f, 2.14f)
+            quadToRelative(1.35f, 1.35f, 2.14f, 3.17f)
+            quadTo(22f, 9.92f, 22f, 12f)
+            reflectiveQuadToRelative(-0.79f, 3.9f)
+            reflectiveQuadToRelative(-2.14f, 3.17f)
+            quadToRelative(-1.35f, 1.35f, -3.17f, 2.14f)
+            reflectiveQuadTo(12f, 22f)
+            close()
+            moveToRelative(0f, -2f)
+            quadToRelative(3.35f, 0f, 5.68f, -2.32f)
+            reflectiveQuadTo(20f, 12f)
+            reflectiveQuadTo(17.68f, 6.32f)
+            reflectiveQuadTo(12f, 4f)
+            reflectiveQuadTo(6.33f, 6.32f)
+            reflectiveQuadTo(4f, 12f)
+            reflectiveQuadToRelative(2.33f, 5.68f)
+            reflectiveQuadTo(12f, 20f)
+            close()
+            moveToRelative(0f, -8f)
+            close()
+          }
+        }
+        .build()
+    return _PlayCircle!!
+  }
 
-@Suppress("ObjectPropertyName")
 private var _PlayCircle: ImageVector? = null

@@ -35,7 +35,6 @@ kotlin {
 
 dependencies {
     implementation(projects.composeApp)
-    implementation(compose.desktop.currentOs)
 }
 
 fun commonJvmArgs(): List<String> {
@@ -44,8 +43,14 @@ fun commonJvmArgs(): List<String> {
         RESOURCES_DIR_NAME
     ).absolutePath
 
+    val iconsPath = File(
+        project.layout.projectDirectory.dir("app-icons").asFile,
+        RESOURCES_DIR_NAME.substringBefore("-")
+    ).absolutePath
+
     return listOfNotNull(
         "-Dpano.native.components.path=$libPath",
+        "-Dpano.icons.path=$iconsPath",
         "--enable-native-access=ALL-UNNAMED",
         if (IS_LINUX) "--add-opens=java.desktop/sun.awt.X11=ALL-UNNAMED" else null,
         "-Dfile.encoding=UTF-8",
@@ -94,95 +99,92 @@ tasks.withType<ComposeHotRun>().configureEach {
     args = listOf("--data-dir", appDataDir)
 }
 
-tasks.register<Exec>("packageInno") {
-    val executableDir = layout.buildDirectory.dir("native/$RESOURCES_DIR_NAME")
-    val distDir = layout.projectDirectory.file("../dist")
-    val scriptFile = layout.projectDirectory.file("inno/installer.iss")
-    val iconFile = layout.projectDirectory.file("app-icons/pano-scrobbler.ico")
-    val isccPath = System.getenv("PROGRAMFILES") + "\\Inno Setup 7\\ISCC.exe"
-    val isccPathUser = System.getenv("LOCALAPPDATA") + "\\Programs\\Inno Setup 7\\ISCC.exe"
+if (IS_WINDOWS) {
+    tasks.register<Exec>("packageInno") {
+        val executableDir = layout.buildDirectory.dir("native/$RESOURCES_DIR_NAME")
+        val distDir = layout.projectDirectory.file("../dist")
+        val scriptFile = layout.projectDirectory.file("inno/installer.iss")
+        val iconFile = layout.projectDirectory.file("app-icons/windows/pano-scrobbler.ico")
+        val isccPath = System.getenv("PROGRAMFILES") + "\\Inno Setup 7\\ISCC.exe"
+        val isccPathUser = System.getenv("LOCALAPPDATA") + "\\Programs\\Inno Setup 7\\ISCC.exe"
 
-    inputs.dir(executableDir)
-    inputs.file(scriptFile)
-    inputs.file(iconFile)
-    outputs.file(layout.projectDirectory.file("../dist/$APP_NAME_NO_SPACES-$RESOURCES_DIR_NAME-setup.exe"))
+        inputs.dir(executableDir)
+        inputs.file(scriptFile)
+        inputs.file(iconFile)
+        outputs.file(layout.projectDirectory.file("../dist/$APP_NAME_NO_SPACES-$RESOURCES_DIR_NAME-setup.exe"))
 
-    doFirst {
-        distDir.asFile.mkdirs()
+        doFirst {
+            distDir.asFile.mkdirs()
+        }
+
+        commandLine(
+            if (File(isccPath).exists()) isccPath else isccPathUser,
+            "/DOUT_DIR=" + distDir.asFile.absolutePath,
+            "/DAPP_DIR=" + executableDir.get().asFile.absolutePath,
+            "/DVERSION=$VER_NAME",
+            "/DICON_FILE=" + iconFile.asFile.absolutePath,
+            scriptFile.asFile.absolutePath
+        )
     }
-
-    commandLine(
-        if (File(isccPath).exists()) isccPath else isccPathUser,
-        "/DOUT_DIR=" + distDir.asFile.absolutePath,
-        "/DAPP_DIR=" + executableDir.get().asFile.absolutePath,
-        "/DVERSION=$VER_NAME",
-        "/DICON_FILE=" + iconFile.asFile.absolutePath,
-        scriptFile.asFile.absolutePath
-    )
 }
 
-tasks.register<Exec>("packageLinuxReleases") {
-    inputs.dir(layout.buildDirectory.dir("native/$RESOURCES_DIR_NAME"))
-    inputs.file(layout.projectDirectory.file("package-for-linux.sh"))
-    outputs.files(
-        layout.projectDirectory.file("../dist/$APP_NAME_NO_SPACES-$RESOURCES_DIR_NAME.tar.gz"),
-        layout.projectDirectory.file("../dist/$APP_NAME_NO_SPACES-$RESOURCES_DIR_NAME.deb"),
-        layout.projectDirectory.file("../dist/$APP_NAME_NO_SPACES-$RESOURCES_DIR_NAME.AppImage")
-    )
+if (IS_LINUX) {
+    tasks.register<Exec>("packageLinuxReleases") {
+        inputs.dir(layout.buildDirectory.dir("native/$RESOURCES_DIR_NAME"))
+        inputs.file(layout.projectDirectory.file("package-for-linux.sh"))
+        outputs.files(
+            layout.projectDirectory.file("../dist/$APP_NAME_NO_SPACES-$RESOURCES_DIR_NAME.tar.gz"),
+            layout.projectDirectory.file("../dist/$APP_NAME_NO_SPACES-$RESOURCES_DIR_NAME.deb"),
+            layout.projectDirectory.file("../dist/$APP_NAME_NO_SPACES-$RESOURCES_DIR_NAME.AppImage")
+        )
 
-    commandLine(
-        "bash",
-        "package-for-linux.sh",
-    )
+        commandLine(
+            "bash",
+            "package-for-linux.sh",
+        )
+    }
 }
 
-tasks.register<Exec>("generateRc") {
-    if (!IS_WINDOWS) return@register
+if (IS_WINDOWS) {
+    tasks.register<Exec>("generateRc") {
 
-    val rcTemplateFile = file("rc-template.txt")
-    val rcOutputDir = project.layout.buildDirectory.dir("generated-rc").get().asFile
-    val icoFilePath = file("app-icons/pano-scrobbler.ico").absolutePath
-        .replace("\\", "\\\\") // escape backslashes for rc compiler
-    val outputFileName = "$APP_NAME_NO_SPACES.exe"
-    val rcOut = File(rcOutputDir, "$outputFileName.rc")
-    val versionMajor = VER_NAME.substringBefore(".")
-    val versionMinor = VER_NAME.substringAfter(".")
+        val rcTemplateFile = file("rc-template.txt")
+        val rcOutputDir = project.layout.buildDirectory.dir("generated-rc").get().asFile
+        val outputFileName = "$APP_NAME_NO_SPACES.exe"
+        val rcOut = File(rcOutputDir, "$outputFileName.rc")
+        val versionMajor = VER_NAME.substringBefore(".")
+        val versionMinor = VER_NAME.substringAfter(".")
 
-    // find rc.exe
-    val rcExe = File(System.getenv("PROGRAMFILES(x86)") + "\\Windows Kits\\10\\bin")
-        .listFiles()
-        ?.filter { it.isDirectory && it.name.startsWith("10.") }
-        ?.maxByOrNull { it.lastModified() }
-        ?.let { File(it, "x64\\rc.exe") }
-        ?.absolutePath
+        // find rc.exe
+        val rcExe = File(System.getenv("PROGRAMFILES(x86)") + "\\Windows Kits\\10\\bin")
+            .listFiles()
+            ?.filter { it.isDirectory && it.name.startsWith("10.") }
+            ?.maxByOrNull { it.lastModified() }
+            ?.let { File(it, "x64\\rc.exe") }
+            ?.absolutePath
 
-    if (rcExe == null)
-        throw GradleException("rc.exe not found. Please install Windows 10 SDK.")
+        if (rcExe == null)
+            throw GradleException("rc.exe not found. Please install Windows 10 SDK.")
 
-    // compile rc to res
-    val command = listOf(
-        rcExe,
-        "/nologo",
-        rcOut.absolutePath
-    )
+        // compile rc to res
+        val command = listOf(
+            rcExe,
+            "/nologo",
+            rcOut.absolutePath
+        )
 
-    commandLine(command)
+        commandLine(command)
 
-    doFirst {
-        val fileType = "0x1"
+        doFirst {
+            val rcContent = rcTemplateFile
+                .readText()
+                .replace("\$versionMajor", versionMajor)
+                .replace("\$versionMinor", versionMinor)
+                .replace("\$fileName", outputFileName)
 
-        val iconInfo = "IDI_ICON_1 ICON \"$icoFilePath\""
-
-        val rcContent = rcTemplateFile
-            .readText()
-            .replace("\$versionMajor", versionMajor)
-            .replace("\$versionMinor", versionMinor)
-            .replace("\$fileName", outputFileName)
-            .replace("\$fileType", fileType)
-            .replace("\$iconInfo", iconInfo)
-
-        rcOutputDir.mkdirs()
-        rcOut.writeText(rcContent)
+            rcOutputDir.mkdirs()
+            rcOut.writeText(rcContent)
+        }
     }
 }
 
@@ -296,7 +298,7 @@ tasks.register<Sync>("packageNativeImage") {
         .artifactView {
             componentFilter { id ->
                 id is ModuleComponentIdentifier && (
-                        (id.group == "org.jetbrains.skiko" && id.module == "skiko-awt-runtime-$RESOURCES_DIR_NAME") ||
+                        (id.group == "org.jetbrains.skiko" && id.module == "skiko-awt-runtime-all") ||
                                 (id.group == "androidx.sqlite" && id.module == "sqlite-bundled-jvm")
                         )
             }
@@ -327,8 +329,9 @@ tasks.register<Sync>("packageNativeImage") {
     }
 
     val nativeLibsDir = file("resources/$RESOURCES_DIR_NAME/")
-    val iconFile =
+    val mainIconFile =
         file("../composeApp/src/jvmMain/composeResources/drawable/ic_launcher_with_bg.svg")
+    val linuxOtherIconsDir = file("app-icons/linux")
     val desktopFile = file("$APP_NAME_NO_SPACES.desktop")
     val licenseFile = file("../LICENSE")
     val distDir = file("../dist")
@@ -366,7 +369,13 @@ tasks.register<Sync>("packageNativeImage") {
 
         // copy icon and desktop file on linux
         if (copyDesktopAndIcon) {
-            iconFile.copyTo(File(outputDir, "pano-scrobbler.svg"), overwrite = true)
+            val iconsOutputDir = File(outputDir, "icons")
+            iconsOutputDir.mkdirs()
+            mainIconFile.copyTo(
+                File(iconsOutputDir, "hicolor/scalable/apps/pano-scrobbler.svg"),
+                overwrite = true
+            )
+            linuxOtherIconsDir.copyRecursively(iconsOutputDir, overwrite = true)
             desktopFile.copyTo(File(outputDir, desktopFile.name), overwrite = true)
         }
 

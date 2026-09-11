@@ -30,12 +30,12 @@ import com.arn.scrobble.icons.Automation
 import com.arn.scrobble.icons.Block
 import com.arn.scrobble.icons.Check
 import com.arn.scrobble.icons.Favorite
+import com.arn.scrobble.icons.HelpAutoMirrored
 import com.arn.scrobble.icons.Icons
 import com.arn.scrobble.icons.Keep
 import com.arn.scrobble.icons.Palette
 import com.arn.scrobble.icons.RegularExpression
 import com.arn.scrobble.icons.Share
-import com.arn.scrobble.icons.automirrored.Help
 import com.arn.scrobble.main.MainViewModel
 import com.arn.scrobble.ui.ButtonWithIcon
 import com.arn.scrobble.ui.ErrorText
@@ -284,7 +284,7 @@ fun BillingScreen(
 
         ButtonWithIcon(
             onClick = onNavigateToTroubleshoot,
-            icon = Icons.AutoMirrored.Help,
+            icon = Icons.HelpAutoMirrored,
             text = stringResource(Res.string.help),
             modifier = Modifier
                 .padding(top = 16.dp)

@@ -29,6 +29,7 @@ import pano_scrobbler.composeapp.generated.resources.Res
 import pano_scrobbler.composeapp.generated.resources.add_to_app_launcher
 import pano_scrobbler.composeapp.generated.resources.discord_rich_presence
 import pano_scrobbler.composeapp.generated.resources.enable
+import pano_scrobbler.composeapp.generated.resources.linux_install_icons
 import pano_scrobbler.composeapp.generated.resources.pref_login
 import pano_scrobbler.composeapp.generated.resources.run_on_start
 import pano_scrobbler.composeapp.generated.resources.yes
@@ -160,7 +161,7 @@ actual fun OnboardingScreen(
                 OnboardingStepType.APP_LAUNCHER -> {
                     VerticalStepperItem(
                         titleRes = Res.string.add_to_app_launcher,
-                        description = null,
+                        description = stringResource(Res.string.linux_install_icons),
                         openButtonText = stringResource(Res.string.yes),
                         openAction = {
                             DesktopStuff.addAppImageToAppLauncher()

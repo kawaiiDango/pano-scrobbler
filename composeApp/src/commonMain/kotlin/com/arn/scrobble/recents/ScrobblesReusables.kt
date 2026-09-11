@@ -44,19 +44,19 @@ import com.arn.scrobble.db.BlockedMetadata
 import com.arn.scrobble.db.PanoDb
 import com.arn.scrobble.db.PendingScrobble
 import com.arn.scrobble.icons.Album
+import com.arn.scrobble.icons.ArrowBackAutoMirrored
+import com.arn.scrobble.icons.ArrowRightAutoMirrored
 import com.arn.scrobble.icons.ContentCopy
 import com.arn.scrobble.icons.Delete
 import com.arn.scrobble.icons.Edit
 import com.arn.scrobble.icons.Favorite
+import com.arn.scrobble.icons.FavoriteFilled
 import com.arn.scrobble.icons.HeartBroken
 import com.arn.scrobble.icons.Icons
 import com.arn.scrobble.icons.Mic
 import com.arn.scrobble.icons.MusicNote
 import com.arn.scrobble.icons.Search
 import com.arn.scrobble.icons.Share
-import com.arn.scrobble.icons.automirrored.ArrowBack
-import com.arn.scrobble.icons.automirrored.ArrowRight
-import com.arn.scrobble.icons.filled.Favorite
 import com.arn.scrobble.media.getNowPlayingFromMainProcess
 import com.arn.scrobble.navigation.PanoRoute
 import com.arn.scrobble.pref.AppItem
@@ -163,7 +163,7 @@ private fun TrackDropdownMenu(
                         shape = MenuDefaults.leadingItemShape,
                         leadingIcon = {
                             Icon(
-                                imageVector = Icons.AutoMirrored.ArrowBack,
+                                imageVector = Icons.ArrowBackAutoMirrored,
                                 contentDescription = null
                             )
                         },
@@ -186,7 +186,7 @@ private fun TrackDropdownMenu(
                         shape = MenuDefaults.leadingItemShape,
                         leadingIcon = {
                             Icon(
-                                imageVector = Icons.AutoMirrored.ArrowBack,
+                                imageVector = Icons.ArrowBackAutoMirrored,
                                 contentDescription = null
                             )
                         },
@@ -273,7 +273,7 @@ private fun TrackDropdownMenu(
                                     imageVector = if (track.userloved != true)
                                         Icons.Favorite
                                     else
-                                        Icons.Filled.Favorite,
+                                        Icons.FavoriteFilled,
                                     contentDescription = null
                                 )
                             }
@@ -327,9 +327,9 @@ private fun TrackDropdownMenu(
                         text = {
                             Text(stringResource(Res.string.more))
                         },
-                        trailingIcon = {
+                        trailingContent = {
                             Icon(
-                                imageVector = Icons.AutoMirrored.ArrowRight,
+                                imageVector = Icons.ArrowRightAutoMirrored,
                                 contentDescription = null
                             )
                         }
@@ -344,9 +344,9 @@ private fun TrackDropdownMenu(
                         text = {
                             Text(stringResource(Res.string.block))
                         },
-                        trailingIcon = {
+                        trailingContent = {
                             Icon(
-                                imageVector = Icons.AutoMirrored.ArrowRight,
+                                imageVector = Icons.ArrowRightAutoMirrored,
                                 contentDescription = null
                             )
                         },
@@ -519,9 +519,10 @@ fun PendingDropdownMenu(
         onDismissRequest = onDismissRequest,
         modifier = modifier,
         headerContent = {
-            MenuDefaults.Label {
+            MenuDefaults.DropdownMenuGroupLabel {
                 Column(
                     verticalArrangement = Arrangement.spacedBy(2.dp),
+                    modifier = Modifier.padding(vertical = 4.dp)
                 ) {
                     Text(
                         "ⓘ " + (pendingScrobble.lastFailedReason
@@ -789,12 +790,12 @@ fun LazyListScope.pendingScrobblesListItems(
             expanded = expanded == true || expanded == null,
             canExpand = expanded != null,
             onToggle = onToggle,
-            modifier = Modifier.animateItem(),
+            modifier = Modifier.animateItem()
         )
     }
 
     if (lastErrored != null && !lastErrored.lastFailedReason.isNullOrEmpty()) {
-        item(key = "pending_scrobble_last_errored") {
+        item(key = "pending_scrobble_last_error") {
             Text(
                 "ⓘ " + stringResource(Res.string.last_error) + ": " +
                         lastErrored.lastFailedReason,

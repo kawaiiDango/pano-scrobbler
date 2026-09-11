@@ -1,66 +1,81 @@
 package com.arn.scrobble.icons
 
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.PathFillType
 import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.graphics.StrokeJoin
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.graphics.vector.path
 import androidx.compose.ui.unit.dp
 
+@Suppress("CheckReturnValue")
 val Icons.Edit: ImageVector
-    get() {
-        if (_Edit != null) {
-            return _Edit!!
-        }
-        _Edit = ImageVector.Builder(
-            name = "Edit",
-            defaultWidth = 24.dp,
-            defaultHeight = 24.dp,
-            viewportWidth = 960f,
-            viewportHeight = 960f
-        ).apply {
-            path(fill = SolidColor(Color.Black)) {
-                moveTo(200f, 760f)
-                horizontalLineToRelative(57f)
-                lineToRelative(391f, -391f)
-                lineToRelative(-57f, -57f)
-                lineToRelative(-391f, 391f)
-                verticalLineToRelative(57f)
-                close()
-                moveTo(160f, 840f)
-                quadToRelative(-17f, 0f, -28.5f, -11.5f)
-                reflectiveQuadTo(120f, 800f)
-                verticalLineToRelative(-97f)
-                quadToRelative(0f, -16f, 6f, -30.5f)
-                reflectiveQuadToRelative(17f, -25.5f)
-                lineToRelative(505f, -504f)
-                quadToRelative(12f, -11f, 26.5f, -17f)
-                reflectiveQuadToRelative(30.5f, -6f)
-                quadToRelative(16f, 0f, 31f, 6f)
-                reflectiveQuadToRelative(26f, 18f)
-                lineToRelative(55f, 56f)
-                quadToRelative(12f, 11f, 17.5f, 26f)
-                reflectiveQuadToRelative(5.5f, 30f)
-                quadToRelative(0f, 16f, -5.5f, 30.5f)
-                reflectiveQuadTo(817f, 313f)
-                lineTo(313f, 817f)
-                quadToRelative(-11f, 11f, -25.5f, 17f)
-                reflectiveQuadToRelative(-30.5f, 6f)
-                horizontalLineToRelative(-97f)
-                close()
-                moveTo(760f, 256f)
-                lineTo(704f, 200f)
-                lineTo(760f, 256f)
-                close()
-                moveTo(619f, 341f)
-                lineTo(591f, 312f)
-                lineTo(648f, 369f)
-                lineTo(619f, 341f)
-                close()
-            }
-        }.build()
-
-        return _Edit!!
+  get() {
+    if (_Edit != null) {
+      return _Edit!!
     }
+    _Edit =
+      ImageVector.Builder(
+          name = "Edit",
+          defaultWidth = 24.dp,
+          defaultHeight = 24.dp,
+          viewportWidth = 24f,
+          viewportHeight = 24f,
+        )
+        .apply {
+          path(
+            fill = SolidColor(Color.Black),
+            fillAlpha = 1f,
+            stroke = null,
+            strokeAlpha = 1f,
+            strokeLineWidth = 1f,
+            strokeLineCap = StrokeCap.Butt,
+            strokeLineJoin = StrokeJoin.Bevel,
+            strokeLineMiter = 1f,
+            pathFillType = PathFillType.NonZero,
+          ) {
+            moveTo(5f, 19f)
+            horizontalLineTo(6.43f)
+            lineTo(16.2f, 9.23f)
+            lineTo(14.78f, 7.8f)
+            lineTo(5f, 17.58f)
+            verticalLineTo(19f)
+            close()
+            moveTo(4f, 21f)
+            quadTo(3.58f, 21f, 3.29f, 20.71f)
+            quadTo(3f, 20.43f, 3f, 20f)
+            verticalLineTo(17.58f)
+            quadToRelative(0f, -0.4f, 0.15f, -0.76f)
+            reflectiveQuadTo(3.58f, 16.18f)
+            lineTo(16.2f, 3.57f)
+            quadTo(16.5f, 3.3f, 16.86f, 3.15f)
+            reflectiveQuadTo(17.63f, 3f)
+            quadToRelative(0.4f, 0f, 0.78f, 0.15f)
+            reflectiveQuadTo(19.05f, 3.6f)
+            lineTo(20.43f, 5f)
+            quadToRelative(0.3f, 0.27f, 0.44f, 0.65f)
+            reflectiveQuadTo(21f, 6.4f)
+            quadToRelative(0f, 0.4f, -0.14f, 0.76f)
+            reflectiveQuadTo(20.43f, 7.82f)
+            lineTo(7.83f, 20.43f)
+            quadTo(7.55f, 20.7f, 7.19f, 20.85f)
+            quadTo(6.83f, 21f, 6.43f, 21f)
+            horizontalLineTo(4f)
+            close()
+            moveTo(19f, 6.4f)
+            lineTo(17.6f, 5f)
+            lineTo(19f, 6.4f)
+            close()
+            moveTo(15.48f, 8.52f)
+            lineTo(14.78f, 7.8f)
+            lineTo(16.2f, 9.23f)
+            lineTo(15.48f, 8.52f)
+            close()
+          }
+        }
+        .build()
+    return _Edit!!
+  }
 
-@Suppress("ObjectPropertyName")
 private var _Edit: ImageVector? = null

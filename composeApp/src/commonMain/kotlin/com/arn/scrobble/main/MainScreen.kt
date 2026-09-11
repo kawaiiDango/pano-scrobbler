@@ -51,7 +51,6 @@ import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.foundation.text.input.clearText
 import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.FilledTonalIconButton
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.FloatingToolbarDefaults
@@ -83,7 +82,6 @@ import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.material3.WideNavigationRail
 import androidx.compose.material3.WideNavigationRailDefaults
 import androidx.compose.material3.WideNavigationRailItem
-import androidx.compose.material3.WideNavigationRailItemDefaults
 import androidx.compose.material3.WideNavigationRailValue
 import androidx.compose.material3.adaptive.currentWindowAdaptiveInfoV2
 import androidx.compose.material3.pulltorefresh.pullToRefresh
@@ -154,11 +152,11 @@ import com.arn.scrobble.BuildKonfig
 import com.arn.scrobble.api.DrawerData
 import com.arn.scrobble.api.UserCached
 import com.arn.scrobble.charts.TimePeriodSelectorRow
+import com.arn.scrobble.icons.ArrowBackAutoMirrored
 import com.arn.scrobble.icons.Close
 import com.arn.scrobble.icons.Icons
 import com.arn.scrobble.icons.Minimize
 import com.arn.scrobble.icons.Search
-import com.arn.scrobble.icons.automirrored.ArrowBack
 import com.arn.scrobble.imageloader.PanoImageLoader
 import com.arn.scrobble.navigation.BottomSheetDialogParent
 import com.arn.scrobble.navigation.BottomSheetSceneStrategy
@@ -956,7 +954,6 @@ private fun PanoFab(
     }
 }
 
-@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 private fun PanoTopAppBar(
     titleContent: TitleContent,
@@ -998,7 +995,7 @@ private fun PanoTopAppBar(
                     modifier = Modifier.pointerHoverIcon(PointerIcon.Default)
                 ) {
                     Icon(
-                        imageVector = Icons.AutoMirrored.ArrowBack,
+                        imageVector = Icons.ArrowBackAutoMirrored,
                         contentDescription = stringResource(Res.string.back)
                     )
                 }
@@ -1277,14 +1274,6 @@ private fun PanoNavigationRail(
         containerColor = Color.Transparent
     )
 
-    val itemColors = if (state.targetValue == WideNavigationRailValue.Expanded)
-        WideNavigationRailItemDefaults.colors(
-            selectedTextColor = MaterialTheme.colorScheme.onSecondaryContainer
-        )
-    else
-        WideNavigationRailItemDefaults.colors()
-
-
     val centerWithPinnedFooter = object : Arrangement.Vertical {
         override fun Density.arrange(totalSize: Int, sizes: IntArray, outPositions: IntArray) {
             if (sizes.isEmpty()) return
@@ -1350,7 +1339,7 @@ private fun PanoNavigationRail(
         arrangement = centerWithPinnedFooter,
         contentPadding = PaddingValues(
             // below top bar now
-            bottom = WideNavigationRailDefaults.ContentPadding.calculateBottomPadding(),
+            bottom = 8.dp,
         ),
         modifier = modifier
             .widthIn(max = 220.dp)
@@ -1376,7 +1365,6 @@ private fun PanoNavigationRail(
                         overflow = TextOverflow.MiddleEllipsis,
                     )
                 },
-                colors = itemColors,
                 modifier = Modifier.fillMaxWidth()
             )
         }
@@ -1408,7 +1396,6 @@ private fun PanoNavigationRail(
                             overflow = TextOverflow.MiddleEllipsis,
                         )
                     },
-                    colors = itemColors,
                     modifier = Modifier.fillMaxWidth()
                 )
 
@@ -1563,7 +1550,7 @@ private fun PanoBottomAppBar(
                 textStyle = MaterialTheme.typography.labelMedium,
                 border = false,
                 mode = PanoToggleButtonsMode.BothVertical,
-                colors = ToggleButtonDefaults.toggleButtonColors(
+                colors = ToggleButtonDefaults.colors(
                     checkedContainerColor = MaterialTheme.colorScheme.secondaryContainer,
                     checkedContentColor = MaterialTheme.colorScheme.onSecondaryContainer,
                 ),

@@ -1,91 +1,106 @@
 package com.arn.scrobble.icons
 
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.PathFillType
 import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.graphics.StrokeJoin
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.graphics.vector.path
 import androidx.compose.ui.unit.dp
 
+@Suppress("CheckReturnValue")
 val Icons.WorkspacePremium: ImageVector
-    get() {
-        if (_WorkspacePremium != null) {
-            return _WorkspacePremium!!
-        }
-        _WorkspacePremium = ImageVector.Builder(
-            name = "WorkspacePremium",
-            defaultWidth = 24.dp,
-            defaultHeight = 24.dp,
-            viewportWidth = 960f,
-            viewportHeight = 960f
-        ).apply {
-            path(fill = SolidColor(Color.Black)) {
-                moveToRelative(480f, 477f)
-                lineToRelative(-68f, 52f)
-                quadToRelative(-6f, 5f, -12f, 0.5f)
-                reflectiveQuadToRelative(-4f, -11.5f)
-                lineToRelative(26f, -84f)
-                lineToRelative(-70f, -56f)
-                quadToRelative(-5f, -5f, -3f, -11.5f)
-                reflectiveQuadToRelative(9f, -6.5f)
-                horizontalLineToRelative(86f)
-                lineToRelative(26f, -82f)
-                quadToRelative(2f, -7f, 10f, -7f)
-                reflectiveQuadToRelative(10f, 7f)
-                lineToRelative(26f, 82f)
-                horizontalLineToRelative(85f)
-                quadToRelative(7f, 0f, 9.5f, 6.5f)
-                reflectiveQuadTo(608f, 378f)
-                lineToRelative(-71f, 56f)
-                lineToRelative(26f, 84f)
-                quadToRelative(2f, 7f, -4f, 11.5f)
-                reflectiveQuadToRelative(-12f, -0.5f)
-                lineToRelative(-67f, -52f)
-                close()
-                moveTo(480f, 840f)
-                lineTo(293f, 902f)
-                quadToRelative(-20f, 7f, -36.5f, -5f)
-                reflectiveQuadTo(240f, 865f)
-                verticalLineToRelative(-254f)
-                quadToRelative(-38f, -42f, -59f, -96f)
-                reflectiveQuadToRelative(-21f, -115f)
-                quadToRelative(0f, -134f, 93f, -227f)
-                reflectiveQuadToRelative(227f, -93f)
-                quadToRelative(134f, 0f, 227f, 93f)
-                reflectiveQuadToRelative(93f, 227f)
-                quadToRelative(0f, 61f, -21f, 115f)
-                reflectiveQuadToRelative(-59f, 96f)
-                verticalLineToRelative(254f)
-                quadToRelative(0f, 20f, -16.5f, 32f)
-                reflectiveQuadTo(667f, 902f)
-                lineToRelative(-187f, -62f)
-                close()
-                moveTo(650f, 570f)
-                quadToRelative(70f, -70f, 70f, -170f)
-                reflectiveQuadToRelative(-70f, -170f)
-                quadToRelative(-70f, -70f, -170f, -70f)
-                reflectiveQuadToRelative(-170f, 70f)
-                quadToRelative(-70f, 70f, -70f, 170f)
-                reflectiveQuadToRelative(70f, 170f)
-                quadToRelative(70f, 70f, 170f, 70f)
-                reflectiveQuadToRelative(170f, -70f)
-                close()
-                moveTo(320f, 801f)
-                lineToRelative(160f, -41f)
-                lineToRelative(160f, 41f)
-                verticalLineToRelative(-124f)
-                quadToRelative(-35f, 20f, -75.5f, 31.5f)
-                reflectiveQuadTo(480f, 720f)
-                quadToRelative(-44f, 0f, -84.5f, -11.5f)
-                reflectiveQuadTo(320f, 677f)
-                verticalLineToRelative(124f)
-                close()
-                moveTo(480f, 739f)
-                close()
-            }
-        }.build()
-
-        return _WorkspacePremium!!
+  get() {
+    if (_WorkspacePremium != null) {
+      return _WorkspacePremium!!
     }
+    _WorkspacePremium =
+      ImageVector.Builder(
+          name = "WorkspacePremium",
+          defaultWidth = 24.dp,
+          defaultHeight = 24.dp,
+          viewportWidth = 24f,
+          viewportHeight = 24f,
+        )
+        .apply {
+          path(
+            fill = SolidColor(Color.Black),
+            fillAlpha = 1f,
+            stroke = null,
+            strokeAlpha = 1f,
+            strokeLineWidth = 1f,
+            strokeLineCap = StrokeCap.Butt,
+            strokeLineJoin = StrokeJoin.Bevel,
+            strokeLineMiter = 1f,
+            pathFillType = PathFillType.NonZero,
+          ) {
+            moveTo(12f, 11.93f)
+            lineToRelative(-1.7f, 1.3f)
+            quadTo(10.15f, 13.35f, 10f, 13.24f)
+            quadTo(9.85f, 13.13f, 9.9f, 12.95f)
+            lineToRelative(0.65f, -2.1f)
+            lineTo(8.8f, 9.45f)
+            quadTo(8.68f, 9.32f, 8.73f, 9.16f)
+            quadTo(8.78f, 9f, 8.95f, 9f)
+            horizontalLineTo(11.1f)
+            lineTo(11.75f, 6.95f)
+            quadTo(11.8f, 6.77f, 12f, 6.77f)
+            reflectiveQuadToRelative(0.25f, 0.18f)
+            lineTo(12.9f, 9f)
+            horizontalLineToRelative(2.13f)
+            quadToRelative(0.18f, 0f, 0.24f, 0.16f)
+            reflectiveQuadTo(15.2f, 9.45f)
+            lineToRelative(-1.78f, 1.4f)
+            lineToRelative(0.65f, 2.1f)
+            quadToRelative(0.05f, 0.18f, -0.1f, 0.29f)
+            reflectiveQuadToRelative(-0.3f, -0.01f)
+            lineTo(12f, 11.93f)
+            close()
+            moveTo(12f, 21f)
+            lineTo(7.33f, 22.55f)
+            quadTo(6.83f, 22.73f, 6.41f, 22.43f)
+            reflectiveQuadTo(6f, 21.63f)
+            verticalLineTo(15.28f)
+            quadTo(5.05f, 14.23f, 4.53f, 12.88f)
+            quadTo(4f, 11.52f, 4f, 10f)
+            quadTo(4f, 6.65f, 6.33f, 4.32f)
+            reflectiveQuadTo(12f, 2f)
+            reflectiveQuadToRelative(5.68f, 2.32f)
+            reflectiveQuadTo(20f, 10f)
+            quadToRelative(0f, 1.52f, -0.52f, 2.88f)
+            reflectiveQuadTo(18f, 15.28f)
+            verticalLineToRelative(6.35f)
+            quadToRelative(0f, 0.5f, -0.41f, 0.8f)
+            reflectiveQuadToRelative(-0.91f, 0.13f)
+            lineTo(12f, 21f)
+            close()
+            moveToRelative(4.25f, -6.75f)
+            quadTo(18f, 12.5f, 18f, 10f)
+            reflectiveQuadTo(16.25f, 5.75f)
+            reflectiveQuadTo(12f, 4f)
+            reflectiveQuadTo(7.75f, 5.75f)
+            reflectiveQuadTo(6f, 10f)
+            reflectiveQuadToRelative(1.75f, 4.25f)
+            reflectiveQuadTo(12f, 16f)
+            reflectiveQuadToRelative(4.25f, -1.75f)
+            close()
+            moveTo(8f, 20.02f)
+            lineTo(12f, 19f)
+            lineToRelative(4f, 1.02f)
+            verticalLineToRelative(-3.1f)
+            quadToRelative(-0.88f, 0.5f, -1.89f, 0.79f)
+            reflectiveQuadTo(12f, 18f)
+            reflectiveQuadTo(9.89f, 17.71f)
+            quadTo(8.88f, 17.43f, 8f, 16.93f)
+            verticalLineToRelative(3.1f)
+            close()
+            moveToRelative(4f, -1.55f)
+            close()
+          }
+        }
+        .build()
+    return _WorkspacePremium!!
+  }
 
-@Suppress("ObjectPropertyName")
 private var _WorkspacePremium: ImageVector? = null

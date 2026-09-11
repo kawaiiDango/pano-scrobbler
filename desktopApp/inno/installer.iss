@@ -17,7 +17,7 @@
   #define APP_DIR "..\build\native\windows-x64"
 #endif
 #ifndef ICON_FILE
-  #define ICON_FILE "..\app-icons\pano-scrobbler.ico"
+  #define ICON_FILE "..\app-icons\windows\pano-scrobbler.ico"
 #endif
 
 [Setup]

@@ -1,103 +1,118 @@
 package com.arn.scrobble.icons
 
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.PathFillType
 import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.graphics.StrokeJoin
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.graphics.vector.path
 import androidx.compose.ui.unit.dp
 
+@Suppress("CheckReturnValue")
 val Icons.EditNote: ImageVector
-    get() {
-        if (_EditNote != null) {
-            return _EditNote!!
-        }
-        _EditNote = ImageVector.Builder(
-            name = "EditNote",
-            defaultWidth = 24.dp,
-            defaultHeight = 24.dp,
-            viewportWidth = 960f,
-            viewportHeight = 960f
-        ).apply {
-            path(fill = SolidColor(Color.Black)) {
-                moveTo(200f, 560f)
-                quadToRelative(-17f, 0f, -28.5f, -11.5f)
-                reflectiveQuadTo(160f, 520f)
-                quadToRelative(0f, -17f, 11.5f, -28.5f)
-                reflectiveQuadTo(200f, 480f)
-                horizontalLineToRelative(200f)
-                quadToRelative(17f, 0f, 28.5f, 11.5f)
-                reflectiveQuadTo(440f, 520f)
-                quadToRelative(0f, 17f, -11.5f, 28.5f)
-                reflectiveQuadTo(400f, 560f)
-                lineTo(200f, 560f)
-                close()
-                moveTo(200f, 400f)
-                quadToRelative(-17f, 0f, -28.5f, -11.5f)
-                reflectiveQuadTo(160f, 360f)
-                quadToRelative(0f, -17f, 11.5f, -28.5f)
-                reflectiveQuadTo(200f, 320f)
-                horizontalLineToRelative(360f)
-                quadToRelative(17f, 0f, 28.5f, 11.5f)
-                reflectiveQuadTo(600f, 360f)
-                quadToRelative(0f, 17f, -11.5f, 28.5f)
-                reflectiveQuadTo(560f, 400f)
-                lineTo(200f, 400f)
-                close()
-                moveTo(200f, 240f)
-                quadToRelative(-17f, 0f, -28.5f, -11.5f)
-                reflectiveQuadTo(160f, 200f)
-                quadToRelative(0f, -17f, 11.5f, -28.5f)
-                reflectiveQuadTo(200f, 160f)
-                horizontalLineToRelative(360f)
-                quadToRelative(17f, 0f, 28.5f, 11.5f)
-                reflectiveQuadTo(600f, 200f)
-                quadToRelative(0f, 17f, -11.5f, 28.5f)
-                reflectiveQuadTo(560f, 240f)
-                lineTo(200f, 240f)
-                close()
-                moveTo(520f, 760f)
-                verticalLineToRelative(-66f)
-                quadToRelative(0f, -8f, 3f, -15.5f)
-                reflectiveQuadToRelative(9f, -13.5f)
-                lineToRelative(209f, -208f)
-                quadToRelative(9f, -9f, 20f, -13f)
-                reflectiveQuadToRelative(22f, -4f)
-                quadToRelative(12f, 0f, 23f, 4.5f)
-                reflectiveQuadToRelative(20f, 13.5f)
-                lineToRelative(37f, 37f)
-                quadToRelative(8f, 9f, 12.5f, 20f)
-                reflectiveQuadToRelative(4.5f, 22f)
-                quadToRelative(0f, 11f, -4f, 22.5f)
-                reflectiveQuadTo(863f, 580f)
-                lineTo(655f, 788f)
-                quadToRelative(-6f, 6f, -13.5f, 9f)
-                reflectiveQuadToRelative(-15.5f, 3f)
-                horizontalLineToRelative(-66f)
-                quadToRelative(-17f, 0f, -28.5f, -11.5f)
-                reflectiveQuadTo(520f, 760f)
-                close()
-                moveTo(820f, 537f)
-                lineTo(783f, 500f)
-                lineTo(820f, 537f)
-                close()
-                moveTo(580f, 740f)
-                horizontalLineToRelative(38f)
-                lineToRelative(121f, -122f)
-                lineToRelative(-18f, -19f)
-                lineToRelative(-19f, -18f)
-                lineToRelative(-122f, 121f)
-                verticalLineToRelative(38f)
-                close()
-                moveTo(721f, 599f)
-                lineTo(702f, 581f)
-                lineTo(739f, 618f)
-                lineTo(721f, 599f)
-                close()
-            }
-        }.build()
-
-        return _EditNote!!
+  get() {
+    if (_EditNote != null) {
+      return _EditNote!!
     }
+    _EditNote =
+      ImageVector.Builder(
+          name = "EditNote",
+          defaultWidth = 24.dp,
+          defaultHeight = 24.dp,
+          viewportWidth = 24f,
+          viewportHeight = 24f,
+        )
+        .apply {
+          path(
+            fill = SolidColor(Color.Black),
+            fillAlpha = 1f,
+            stroke = null,
+            strokeAlpha = 1f,
+            strokeLineWidth = 1f,
+            strokeLineCap = StrokeCap.Butt,
+            strokeLineJoin = StrokeJoin.Bevel,
+            strokeLineMiter = 1f,
+            pathFillType = PathFillType.NonZero,
+          ) {
+            moveTo(5f, 14f)
+            quadTo(4.58f, 14f, 4.29f, 13.71f)
+            quadTo(4f, 13.43f, 4f, 13f)
+            reflectiveQuadTo(4.29f, 12.29f)
+            reflectiveQuadTo(5f, 12f)
+            horizontalLineToRelative(5f)
+            quadToRelative(0.43f, 0f, 0.71f, 0.29f)
+            reflectiveQuadTo(11f, 13f)
+            reflectiveQuadToRelative(-0.29f, 0.71f)
+            reflectiveQuadTo(10f, 14f)
+            horizontalLineTo(5f)
+            close()
+            moveTo(5f, 10f)
+            quadTo(4.58f, 10f, 4.29f, 9.71f)
+            reflectiveQuadTo(4f, 9f)
+            quadTo(4f, 8.57f, 4.29f, 8.29f)
+            reflectiveQuadTo(5f, 8f)
+            horizontalLineToRelative(9f)
+            quadToRelative(0.43f, 0f, 0.71f, 0.29f)
+            reflectiveQuadTo(15f, 9f)
+            quadToRelative(0f, 0.42f, -0.29f, 0.71f)
+            reflectiveQuadTo(14f, 10f)
+            horizontalLineTo(5f)
+            close()
+            moveTo(5f, 6f)
+            quadTo(4.58f, 6f, 4.29f, 5.71f)
+            quadTo(4f, 5.43f, 4f, 5f)
+            reflectiveQuadTo(4.29f, 4.29f)
+            reflectiveQuadTo(5f, 4f)
+            horizontalLineToRelative(9f)
+            quadToRelative(0.43f, 0f, 0.71f, 0.29f)
+            reflectiveQuadTo(15f, 5f)
+            reflectiveQuadTo(14.71f, 5.71f)
+            reflectiveQuadTo(14f, 6f)
+            horizontalLineTo(5f)
+            close()
+            moveToRelative(8f, 13f)
+            verticalLineTo(17.35f)
+            quadToRelative(0f, -0.2f, 0.08f, -0.39f)
+            reflectiveQuadTo(13.3f, 16.63f)
+            lineToRelative(5.23f, -5.2f)
+            quadToRelative(0.22f, -0.22f, 0.5f, -0.32f)
+            reflectiveQuadTo(19.58f, 11f)
+            quadToRelative(0.3f, 0f, 0.57f, 0.11f)
+            quadToRelative(0.27f, 0.11f, 0.5f, 0.34f)
+            lineToRelative(0.93f, 0.93f)
+            quadToRelative(0.2f, 0.22f, 0.31f, 0.5f)
+            reflectiveQuadTo(22f, 13.43f)
+            reflectiveQuadToRelative(-0.1f, 0.56f)
+            reflectiveQuadTo(21.58f, 14.5f)
+            lineToRelative(-5.2f, 5.2f)
+            quadToRelative(-0.15f, 0.15f, -0.34f, 0.23f)
+            reflectiveQuadTo(15.65f, 20f)
+            horizontalLineTo(14f)
+            quadToRelative(-0.42f, 0f, -0.71f, -0.29f)
+            quadTo(13f, 19.43f, 13f, 19f)
+            close()
+            moveToRelative(7.5f, -5.58f)
+            lineTo(19.58f, 12.5f)
+            lineToRelative(0.92f, 0.92f)
+            close()
+            moveToRelative(-6f, 5.08f)
+            horizontalLineToRelative(0.95f)
+            lineToRelative(3.03f, -3.05f)
+            lineTo(18.03f, 14.98f)
+            lineTo(17.55f, 14.53f)
+            lineTo(14.5f, 17.55f)
+            verticalLineTo(18.5f)
+            close()
+            moveToRelative(3.53f, -3.53f)
+            lineTo(17.55f, 14.53f)
+            lineToRelative(0.93f, 0.92f)
+            lineTo(18.03f, 14.98f)
+            close()
+          }
+        }
+        .build()
+    return _EditNote!!
+  }
 
-@Suppress("ObjectPropertyName")
 private var _EditNote: ImageVector? = null

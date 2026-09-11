@@ -1,79 +1,94 @@
 package com.arn.scrobble.icons
 
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.PathFillType
 import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.graphics.StrokeJoin
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.graphics.vector.path
 import androidx.compose.ui.unit.dp
 
+@Suppress("CheckReturnValue")
 val Icons.Album: ImageVector
-    get() {
-        if (_Album != null) {
-            return _Album!!
-        }
-        _Album = ImageVector.Builder(
-            name = "Album",
-            defaultWidth = 24.dp,
-            defaultHeight = 24.dp,
-            viewportWidth = 960f,
-            viewportHeight = 960f
-        ).apply {
-            path(fill = SolidColor(Color.Black)) {
-                moveTo(480f, 660f)
-                quadToRelative(75f, 0f, 127.5f, -52.5f)
-                reflectiveQuadTo(660f, 480f)
-                quadToRelative(0f, -75f, -52.5f, -127.5f)
-                reflectiveQuadTo(480f, 300f)
-                quadToRelative(-75f, 0f, -127.5f, 52.5f)
-                reflectiveQuadTo(300f, 480f)
-                quadToRelative(0f, 75f, 52.5f, 127.5f)
-                reflectiveQuadTo(480f, 660f)
-                close()
-                moveTo(451.5f, 508.5f)
-                quadTo(440f, 497f, 440f, 480f)
-                reflectiveQuadToRelative(11.5f, -28.5f)
-                quadTo(463f, 440f, 480f, 440f)
-                reflectiveQuadToRelative(28.5f, 11.5f)
-                quadTo(520f, 463f, 520f, 480f)
-                reflectiveQuadToRelative(-11.5f, 28.5f)
-                quadTo(497f, 520f, 480f, 520f)
-                reflectiveQuadToRelative(-28.5f, -11.5f)
-                close()
-                moveTo(480f, 880f)
-                quadToRelative(-83f, 0f, -156f, -31.5f)
-                reflectiveQuadTo(197f, 763f)
-                quadToRelative(-54f, -54f, -85.5f, -127f)
-                reflectiveQuadTo(80f, 480f)
-                quadToRelative(0f, -83f, 31.5f, -156f)
-                reflectiveQuadTo(197f, 197f)
-                quadToRelative(54f, -54f, 127f, -85.5f)
-                reflectiveQuadTo(480f, 80f)
-                quadToRelative(83f, 0f, 156f, 31.5f)
-                reflectiveQuadTo(763f, 197f)
-                quadToRelative(54f, 54f, 85.5f, 127f)
-                reflectiveQuadTo(880f, 480f)
-                quadToRelative(0f, 83f, -31.5f, 156f)
-                reflectiveQuadTo(763f, 763f)
-                quadToRelative(-54f, 54f, -127f, 85.5f)
-                reflectiveQuadTo(480f, 880f)
-                close()
-                moveTo(480f, 800f)
-                quadToRelative(134f, 0f, 227f, -93f)
-                reflectiveQuadToRelative(93f, -227f)
-                quadToRelative(0f, -134f, -93f, -227f)
-                reflectiveQuadToRelative(-227f, -93f)
-                quadToRelative(-134f, 0f, -227f, 93f)
-                reflectiveQuadToRelative(-93f, 227f)
-                quadToRelative(0f, 134f, 93f, 227f)
-                reflectiveQuadToRelative(227f, 93f)
-                close()
-                moveTo(480f, 480f)
-                close()
-            }
-        }.build()
-
-        return _Album!!
+  get() {
+    if (_Album != null) {
+      return _Album!!
     }
+    _Album =
+      ImageVector.Builder(
+          name = "Album",
+          defaultWidth = 24.dp,
+          defaultHeight = 24.dp,
+          viewportWidth = 24f,
+          viewportHeight = 24f,
+        )
+        .apply {
+          path(
+            fill = SolidColor(Color.Black),
+            fillAlpha = 1f,
+            stroke = null,
+            strokeAlpha = 1f,
+            strokeLineWidth = 1f,
+            strokeLineCap = StrokeCap.Butt,
+            strokeLineJoin = StrokeJoin.Bevel,
+            strokeLineMiter = 1f,
+            pathFillType = PathFillType.NonZero,
+          ) {
+            moveTo(12f, 16.5f)
+            quadToRelative(1.88f, 0f, 3.19f, -1.31f)
+            reflectiveQuadTo(16.5f, 12f)
+            reflectiveQuadTo(15.19f, 8.81f)
+            reflectiveQuadTo(12f, 7.5f)
+            reflectiveQuadTo(8.81f, 8.81f)
+            reflectiveQuadTo(7.5f, 12f)
+            reflectiveQuadToRelative(1.31f, 3.19f)
+            reflectiveQuadTo(12f, 16.5f)
+            close()
+            moveTo(11.29f, 12.71f)
+            quadTo(11f, 12.43f, 11f, 12f)
+            reflectiveQuadToRelative(0.29f, -0.71f)
+            reflectiveQuadTo(12f, 11f)
+            reflectiveQuadToRelative(0.71f, 0.29f)
+            reflectiveQuadTo(13f, 12f)
+            reflectiveQuadToRelative(-0.29f, 0.71f)
+            reflectiveQuadTo(12f, 13f)
+            reflectiveQuadTo(11.29f, 12.71f)
+            close()
+            moveTo(12f, 22f)
+            quadTo(9.93f, 22f, 8.1f, 21.21f)
+            quadTo(6.28f, 20.43f, 4.93f, 19.08f)
+            quadTo(3.58f, 17.73f, 2.79f, 15.9f)
+            reflectiveQuadTo(2f, 12f)
+            quadTo(2f, 9.92f, 2.79f, 8.1f)
+            quadTo(3.58f, 6.27f, 4.93f, 4.93f)
+            quadTo(6.28f, 3.57f, 8.1f, 2.79f)
+            quadTo(9.93f, 2f, 12f, 2f)
+            reflectiveQuadToRelative(3.9f, 0.79f)
+            reflectiveQuadToRelative(3.17f, 2.14f)
+            quadToRelative(1.35f, 1.35f, 2.14f, 3.17f)
+            quadTo(22f, 9.92f, 22f, 12f)
+            reflectiveQuadToRelative(-0.79f, 3.9f)
+            reflectiveQuadToRelative(-2.14f, 3.17f)
+            quadToRelative(-1.35f, 1.35f, -3.17f, 2.14f)
+            reflectiveQuadTo(12f, 22f)
+            close()
+            moveToRelative(0f, -2f)
+            quadToRelative(3.35f, 0f, 5.68f, -2.32f)
+            reflectiveQuadTo(20f, 12f)
+            reflectiveQuadTo(17.68f, 6.32f)
+            reflectiveQuadTo(12f, 4f)
+            reflectiveQuadTo(6.33f, 6.32f)
+            reflectiveQuadTo(4f, 12f)
+            reflectiveQuadToRelative(2.33f, 5.68f)
+            reflectiveQuadTo(12f, 20f)
+            close()
+            moveToRelative(0f, -8f)
+            close()
+          }
+        }
+        .build()
+    return _Album!!
+  }
 
-@Suppress("ObjectPropertyName")
 private var _Album: ImageVector? = null

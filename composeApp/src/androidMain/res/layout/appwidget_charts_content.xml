@@ -10,6 +10,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:importantForAccessibility="no"
+        android:alpha="0.6"
         android:src="@drawable/shape_widget_rounded_bg" />
 
     <LinearLayout
@@ -55,7 +56,7 @@
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_weight="1"
-                    android:alpha="?fakeShadowAlpha"
+                    android:alpha="?appWidgetFakeShadowAlpha"
                     android:background="?android:selectableItemBackground"
                     android:clickable="false"
                     android:focusable="false"
@@ -68,7 +69,7 @@
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_weight="1"
-                    android:alpha="?fakeShadowAlpha"
+                    android:alpha="?appWidgetFakeShadowAlpha"
                     android:background="?android:selectableItemBackground"
                     android:clickable="false"
                     android:focusable="false"
@@ -81,7 +82,7 @@
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_weight="1"
-                    android:alpha="?fakeShadowAlpha"
+                    android:alpha="?appWidgetFakeShadowAlpha"
                     android:background="?android:selectableItemBackground"
                     android:clickable="false"
                     android:focusable="false"

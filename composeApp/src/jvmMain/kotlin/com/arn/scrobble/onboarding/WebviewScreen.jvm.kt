@@ -15,8 +15,8 @@ import com.arn.scrobble.DesktopWebView
 import com.arn.scrobble.api.Requesters
 import com.arn.scrobble.api.UserAccountTemp
 import com.arn.scrobble.api.pleroma.PleromaOauthClientCreds
+import com.arn.scrobble.icons.HelpAutoMirrored
 import com.arn.scrobble.icons.Icons
-import com.arn.scrobble.icons.automirrored.Help
 import com.arn.scrobble.navigation.PanoRoute
 import com.arn.scrobble.pref.MainPrefs
 import com.arn.scrobble.ui.ButtonWithIcon
@@ -102,7 +102,7 @@ actual fun WebViewScreen(
             onClick = {
                 viewModel.webViewHelp()
             },
-            icon = Icons.AutoMirrored.Help,
+            icon = Icons.HelpAutoMirrored,
             text = stringResource(Res.string.help),
             modifier = Modifier
                 .align(Alignment.CenterHorizontally)

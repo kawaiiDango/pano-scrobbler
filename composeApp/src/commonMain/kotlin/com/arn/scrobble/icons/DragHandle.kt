@@ -1,53 +1,68 @@
 package com.arn.scrobble.icons
 
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.PathFillType
 import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.graphics.StrokeJoin
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.graphics.vector.path
 import androidx.compose.ui.unit.dp
 
+@Suppress("CheckReturnValue")
 val Icons.DragHandle: ImageVector
-    get() {
-        if (_DragHandle != null) {
-            return _DragHandle!!
-        }
-        _DragHandle = ImageVector.Builder(
-            name = "DragHandle",
-            defaultWidth = 24.dp,
-            defaultHeight = 24.dp,
-            viewportWidth = 960f,
-            viewportHeight = 960f
-        ).apply {
-            path(fill = SolidColor(Color.Black)) {
-                moveTo(200f, 600f)
-                quadToRelative(-17f, 0f, -28.5f, -11.5f)
-                reflectiveQuadTo(160f, 560f)
-                quadToRelative(0f, -17f, 11.5f, -28.5f)
-                reflectiveQuadTo(200f, 520f)
-                horizontalLineToRelative(560f)
-                quadToRelative(17f, 0f, 28.5f, 11.5f)
-                reflectiveQuadTo(800f, 560f)
-                quadToRelative(0f, 17f, -11.5f, 28.5f)
-                reflectiveQuadTo(760f, 600f)
-                lineTo(200f, 600f)
-                close()
-                moveTo(200f, 440f)
-                quadToRelative(-17f, 0f, -28.5f, -11.5f)
-                reflectiveQuadTo(160f, 400f)
-                quadToRelative(0f, -17f, 11.5f, -28.5f)
-                reflectiveQuadTo(200f, 360f)
-                horizontalLineToRelative(560f)
-                quadToRelative(17f, 0f, 28.5f, 11.5f)
-                reflectiveQuadTo(800f, 400f)
-                quadToRelative(0f, 17f, -11.5f, 28.5f)
-                reflectiveQuadTo(760f, 440f)
-                lineTo(200f, 440f)
-                close()
-            }
-        }.build()
-
-        return _DragHandle!!
+  get() {
+    if (_DragHandle != null) {
+      return _DragHandle!!
     }
+    _DragHandle =
+      ImageVector.Builder(
+          name = "DragHandle",
+          defaultWidth = 24.dp,
+          defaultHeight = 24.dp,
+          viewportWidth = 24f,
+          viewportHeight = 24f,
+        )
+        .apply {
+          path(
+            fill = SolidColor(Color.Black),
+            fillAlpha = 1f,
+            stroke = null,
+            strokeAlpha = 1f,
+            strokeLineWidth = 1f,
+            strokeLineCap = StrokeCap.Butt,
+            strokeLineJoin = StrokeJoin.Bevel,
+            strokeLineMiter = 1f,
+            pathFillType = PathFillType.NonZero,
+          ) {
+            moveTo(5f, 15f)
+            quadTo(4.58f, 15f, 4.29f, 14.71f)
+            reflectiveQuadTo(4f, 14f)
+            reflectiveQuadTo(4.29f, 13.29f)
+            reflectiveQuadTo(5f, 13f)
+            horizontalLineTo(19f)
+            quadToRelative(0.43f, 0f, 0.71f, 0.29f)
+            reflectiveQuadTo(20f, 14f)
+            reflectiveQuadToRelative(-0.29f, 0.71f)
+            reflectiveQuadTo(19f, 15f)
+            horizontalLineTo(5f)
+            close()
+            moveTo(5f, 11f)
+            quadTo(4.58f, 11f, 4.29f, 10.71f)
+            quadTo(4f, 10.43f, 4f, 10f)
+            quadTo(4f, 9.57f, 4.29f, 9.29f)
+            reflectiveQuadTo(5f, 9f)
+            horizontalLineTo(19f)
+            quadToRelative(0.43f, 0f, 0.71f, 0.29f)
+            reflectiveQuadTo(20f, 10f)
+            reflectiveQuadToRelative(-0.29f, 0.71f)
+            reflectiveQuadTo(19f, 11f)
+            horizontalLineTo(5f)
+            close()
+          }
+        }
+        .build()
+    return _DragHandle!!
+  }
 
-@Suppress("ObjectPropertyName")
 private var _DragHandle: ImageVector? = null

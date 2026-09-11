@@ -1,87 +1,102 @@
 package com.arn.scrobble.icons
 
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.PathFillType
 import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.graphics.StrokeJoin
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.graphics.vector.path
 import androidx.compose.ui.unit.dp
 
+@Suppress("CheckReturnValue")
 val Icons.Delete: ImageVector
-    get() {
-        if (_Delete != null) {
-            return _Delete!!
-        }
-        _Delete = ImageVector.Builder(
-            name = "Delete",
-            defaultWidth = 24.dp,
-            defaultHeight = 24.dp,
-            viewportWidth = 960f,
-            viewportHeight = 960f
-        ).apply {
-            path(fill = SolidColor(Color.Black)) {
-                moveTo(280f, 840f)
-                quadToRelative(-33f, 0f, -56.5f, -23.5f)
-                reflectiveQuadTo(200f, 760f)
-                verticalLineToRelative(-520f)
-                quadToRelative(-17f, 0f, -28.5f, -11.5f)
-                reflectiveQuadTo(160f, 200f)
-                quadToRelative(0f, -17f, 11.5f, -28.5f)
-                reflectiveQuadTo(200f, 160f)
-                horizontalLineToRelative(160f)
-                quadToRelative(0f, -17f, 11.5f, -28.5f)
-                reflectiveQuadTo(400f, 120f)
-                horizontalLineToRelative(160f)
-                quadToRelative(17f, 0f, 28.5f, 11.5f)
-                reflectiveQuadTo(600f, 160f)
-                horizontalLineToRelative(160f)
-                quadToRelative(17f, 0f, 28.5f, 11.5f)
-                reflectiveQuadTo(800f, 200f)
-                quadToRelative(0f, 17f, -11.5f, 28.5f)
-                reflectiveQuadTo(760f, 240f)
-                verticalLineToRelative(520f)
-                quadToRelative(0f, 33f, -23.5f, 56.5f)
-                reflectiveQuadTo(680f, 840f)
-                lineTo(280f, 840f)
-                close()
-                moveTo(680f, 240f)
-                lineTo(280f, 240f)
-                verticalLineToRelative(520f)
-                horizontalLineToRelative(400f)
-                verticalLineToRelative(-520f)
-                close()
-                moveTo(428.5f, 668.5f)
-                quadTo(440f, 657f, 440f, 640f)
-                verticalLineToRelative(-280f)
-                quadToRelative(0f, -17f, -11.5f, -28.5f)
-                reflectiveQuadTo(400f, 320f)
-                quadToRelative(-17f, 0f, -28.5f, 11.5f)
-                reflectiveQuadTo(360f, 360f)
-                verticalLineToRelative(280f)
-                quadToRelative(0f, 17f, 11.5f, 28.5f)
-                reflectiveQuadTo(400f, 680f)
-                quadToRelative(17f, 0f, 28.5f, -11.5f)
-                close()
-                moveTo(588.5f, 668.5f)
-                quadTo(600f, 657f, 600f, 640f)
-                verticalLineToRelative(-280f)
-                quadToRelative(0f, -17f, -11.5f, -28.5f)
-                reflectiveQuadTo(560f, 320f)
-                quadToRelative(-17f, 0f, -28.5f, 11.5f)
-                reflectiveQuadTo(520f, 360f)
-                verticalLineToRelative(280f)
-                quadToRelative(0f, 17f, 11.5f, 28.5f)
-                reflectiveQuadTo(560f, 680f)
-                quadToRelative(17f, 0f, 28.5f, -11.5f)
-                close()
-                moveTo(280f, 240f)
-                verticalLineToRelative(520f)
-                verticalLineToRelative(-520f)
-                close()
-            }
-        }.build()
-
-        return _Delete!!
+  get() {
+    if (_Delete != null) {
+      return _Delete!!
     }
+    _Delete =
+      ImageVector.Builder(
+          name = "Delete",
+          defaultWidth = 24.dp,
+          defaultHeight = 24.dp,
+          viewportWidth = 24f,
+          viewportHeight = 24f,
+        )
+        .apply {
+          path(
+            fill = SolidColor(Color.Black),
+            fillAlpha = 1f,
+            stroke = null,
+            strokeAlpha = 1f,
+            strokeLineWidth = 1f,
+            strokeLineCap = StrokeCap.Butt,
+            strokeLineJoin = StrokeJoin.Bevel,
+            strokeLineMiter = 1f,
+            pathFillType = PathFillType.NonZero,
+          ) {
+            moveTo(7f, 21f)
+            quadTo(6.18f, 21f, 5.59f, 20.41f)
+            reflectiveQuadTo(5f, 19f)
+            verticalLineTo(6f)
+            quadTo(4.58f, 6f, 4.29f, 5.71f)
+            quadTo(4f, 5.43f, 4f, 5f)
+            reflectiveQuadTo(4.29f, 4.29f)
+            reflectiveQuadTo(5f, 4f)
+            horizontalLineTo(9f)
+            quadTo(9f, 3.57f, 9.29f, 3.29f)
+            quadTo(9.58f, 3f, 10f, 3f)
+            horizontalLineToRelative(4f)
+            quadToRelative(0.43f, 0f, 0.71f, 0.29f)
+            reflectiveQuadTo(15f, 4f)
+            horizontalLineToRelative(4f)
+            quadToRelative(0.43f, 0f, 0.71f, 0.29f)
+            reflectiveQuadTo(20f, 5f)
+            reflectiveQuadTo(19.71f, 5.71f)
+            reflectiveQuadTo(19f, 6f)
+            verticalLineTo(19f)
+            quadToRelative(0f, 0.82f, -0.59f, 1.41f)
+            reflectiveQuadTo(17f, 21f)
+            horizontalLineTo(7f)
+            close()
+            moveTo(17f, 6f)
+            horizontalLineTo(7f)
+            verticalLineTo(19f)
+            horizontalLineTo(17f)
+            verticalLineTo(6f)
+            close()
+            moveTo(10.71f, 16.71f)
+            quadTo(11f, 16.43f, 11f, 16f)
+            verticalLineTo(9f)
+            quadTo(11f, 8.57f, 10.71f, 8.29f)
+            reflectiveQuadTo(10f, 8f)
+            quadTo(9.58f, 8f, 9.29f, 8.29f)
+            reflectiveQuadTo(9f, 9f)
+            verticalLineToRelative(7f)
+            quadToRelative(0f, 0.43f, 0.29f, 0.71f)
+            quadTo(9.58f, 17f, 10f, 17f)
+            reflectiveQuadToRelative(0.71f, -0.29f)
+            close()
+            moveToRelative(4f, 0f)
+            quadTo(15f, 16.43f, 15f, 16f)
+            verticalLineTo(9f)
+            quadTo(15f, 8.57f, 14.71f, 8.29f)
+            reflectiveQuadTo(14f, 8f)
+            reflectiveQuadTo(13.29f, 8.29f)
+            reflectiveQuadTo(13f, 9f)
+            verticalLineToRelative(7f)
+            quadToRelative(0f, 0.43f, 0.29f, 0.71f)
+            reflectiveQuadTo(14f, 17f)
+            reflectiveQuadToRelative(0.71f, -0.29f)
+            close()
+            moveTo(7f, 6f)
+            verticalLineTo(19f)
+            verticalLineTo(6f)
+            close()
+          }
+        }
+        .build()
+    return _Delete!!
+  }
 
-@Suppress("ObjectPropertyName")
 private var _Delete: ImageVector? = null

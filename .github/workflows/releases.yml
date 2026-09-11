@@ -7,9 +7,6 @@ on:
         description: 'Upload to GitHub Releases?'
         required: false
         default: false
-  push:
-    paths:
-      - 'nightly-link-dummy-trigger/**'
 jobs:
   build:
     name: Build on ${{ matrix.os }}

@@ -1,47 +1,62 @@
 package com.arn.scrobble.icons
 
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.PathFillType
 import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.graphics.StrokeJoin
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.graphics.vector.path
 import androidx.compose.ui.unit.dp
 
+@Suppress("CheckReturnValue")
 val Icons.KeyboardArrowDown: ImageVector
-    get() {
-        if (_KeyboardArrowDown != null) {
-            return _KeyboardArrowDown!!
-        }
-        _KeyboardArrowDown = ImageVector.Builder(
-            name = "KeyboardArrowDown",
-            defaultWidth = 24.dp,
-            defaultHeight = 24.dp,
-            viewportWidth = 960f,
-            viewportHeight = 960f
-        ).apply {
-            path(fill = SolidColor(Color.Black)) {
-                moveTo(465f, 596.5f)
-                quadToRelative(-7f, -2.5f, -13f, -8.5f)
-                lineTo(268f, 404f)
-                quadToRelative(-11f, -11f, -11f, -28f)
-                reflectiveQuadToRelative(11f, -28f)
-                quadToRelative(11f, -11f, 28f, -11f)
-                reflectiveQuadToRelative(28f, 11f)
-                lineToRelative(156f, 156f)
-                lineToRelative(156f, -156f)
-                quadToRelative(11f, -11f, 28f, -11f)
-                reflectiveQuadToRelative(28f, 11f)
-                quadToRelative(11f, 11f, 11f, 28f)
-                reflectiveQuadToRelative(-11f, 28f)
-                lineTo(508f, 588f)
-                quadToRelative(-6f, 6f, -13f, 8.5f)
-                reflectiveQuadToRelative(-15f, 2.5f)
-                quadToRelative(-8f, 0f, -15f, -2.5f)
-                close()
-            }
-        }.build()
-
-        return _KeyboardArrowDown!!
+  get() {
+    if (_KeyboardArrowDown != null) {
+      return _KeyboardArrowDown!!
     }
+    _KeyboardArrowDown =
+      ImageVector.Builder(
+          name = "KeyboardArrowDown",
+          defaultWidth = 24.dp,
+          defaultHeight = 24.dp,
+          viewportWidth = 24f,
+          viewportHeight = 24f,
+        )
+        .apply {
+          path(
+            fill = SolidColor(Color.Black),
+            fillAlpha = 1f,
+            stroke = null,
+            strokeAlpha = 1f,
+            strokeLineWidth = 1f,
+            strokeLineCap = StrokeCap.Butt,
+            strokeLineJoin = StrokeJoin.Bevel,
+            strokeLineMiter = 1f,
+            pathFillType = PathFillType.NonZero,
+          ) {
+            moveTo(11.63f, 14.91f)
+            quadTo(11.45f, 14.85f, 11.3f, 14.7f)
+            lineTo(6.7f, 10.1f)
+            quadTo(6.43f, 9.82f, 6.43f, 9.4f)
+            quadTo(6.43f, 8.98f, 6.7f, 8.7f)
+            reflectiveQuadTo(7.4f, 8.42f)
+            reflectiveQuadTo(8.1f, 8.7f)
+            lineTo(12f, 12.6f)
+            lineTo(15.9f, 8.7f)
+            quadTo(16.18f, 8.42f, 16.6f, 8.42f)
+            reflectiveQuadTo(17.3f, 8.7f)
+            reflectiveQuadToRelative(0.27f, 0.7f)
+            reflectiveQuadTo(17.3f, 10.1f)
+            lineToRelative(-4.6f, 4.6f)
+            quadToRelative(-0.15f, 0.15f, -0.33f, 0.21f)
+            reflectiveQuadTo(12f, 14.98f)
+            reflectiveQuadTo(11.63f, 14.91f)
+            close()
+          }
+        }
+        .build()
+    return _KeyboardArrowDown!!
+  }
 
-@Suppress("ObjectPropertyName")
 private var _KeyboardArrowDown: ImageVector? = null

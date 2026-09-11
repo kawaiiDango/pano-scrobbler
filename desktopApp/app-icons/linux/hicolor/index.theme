@@ -1,0 +1,17 @@
+[Icon Theme]
+Name=pano-scrobbler-icons
+Directories=scalable/apps,symbolic/apps
+
+[scalable/apps]
+Size=48
+MinSize=8
+MaxSize=512
+Type=Scalable
+Context=Applications
+
+[symbolic/apps]
+Size=48
+MinSize=8
+MaxSize=512
+Type=Scalable
+Context=Applications

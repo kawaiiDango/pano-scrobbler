@@ -1,24 +1,16 @@
-import org.jetbrains.kotlin.gradle.dsl.JvmTarget
-
 plugins {
     alias(libs.plugins.test)
     alias(libs.plugins.baselineprofile)
+}
+
+kotlin {
+    jvmToolchain(25)
 }
 
 android {
     namespace = "com.arn.scrobble.baselineprofile"
     compileSdk = libs.versions.targetSdk.get().toInt()
 
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_21
-        targetCompatibility = JavaVersion.VERSION_21
-    }
-
-    kotlin {
-        compilerOptions {
-            jvmTarget = JvmTarget.JVM_21
-        }
-    }
 
     defaultConfig {
         minSdk = libs.versions.minSdkBaselineProfile.get().toInt()

@@ -61,7 +61,9 @@ fun ArtistsWithDelimitersScreen(
                     ),
                     forShimmer = true,
                     onDelete = {},
-                    modifier = Modifier.shimmerWindowBounds().animateItem()
+                    modifier = Modifier
+                        .shimmerWindowBounds()
+                        .animateItem()
                 )
             }
         } else if (searchTermToFirstArtist != null && searchFieldState.text.isNotBlank()) {

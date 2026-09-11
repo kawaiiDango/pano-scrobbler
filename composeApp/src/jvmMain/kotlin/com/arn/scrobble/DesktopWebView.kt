@@ -1,6 +1,5 @@
 package com.arn.scrobble
 
-import co.touchlab.kermit.Logger
 import com.arn.scrobble.utils.DesktopStuff
 import kotlinx.coroutines.flow.MutableSharedFlow
 
@@ -8,7 +7,19 @@ object DesktopWebView {
 
     var inited = false
         private set
+    private var thread: Thread? = null
     private var callbackUrlAndCookies: MutableSharedFlow<Pair<String, Map<String, String>>>? = null
+
+    init {
+        Runtime.getRuntime().addShutdownHook(Thread {
+            if (inited)
+                quit()
+
+            // quit() is actually async on the native side. It returns immediately.
+            thread?.takeIf { it.isAlive }
+                ?.join()
+        })
+    }
 
     @Suppress("UnsafeDynamicallyLoadedCode")
     fun load() {
@@ -19,21 +30,13 @@ object DesktopWebView {
         if (inited) return
         inited = true
         // Start the event loop in a separate thread
-        val thread = Thread {
+        thread = Thread {
             startEventLoop()
-            Logger.i("WebviewEventLoopThread finished")
+            inited = false
         }.apply {
             name = "WebviewEventLoopThread"
+            start()
         }
-        thread.start()
-
-        Runtime.getRuntime().addShutdownHook(Thread {
-            quit()
-
-            // quit() is actually async on the native side. It returns immediately.
-            thread.takeIf { it.isAlive }
-                ?.join()
-        })
     }
 
     fun setCallbackFlow(flow: MutableSharedFlow<Pair<String, Map<String, String>>>) {

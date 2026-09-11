@@ -31,8 +31,8 @@ val PanoIcons.RectFilledTranslucent: ImageVector
             name = "RectFilledTranslucent",
             defaultWidth = 24.dp,
             defaultHeight = 24.dp,
-            viewportWidth = 960f,
-            viewportHeight = 960f
+            viewportWidth = 24f,
+            viewportHeight = 24f
         ).apply {
             // draw a solid rectangle as the bg first
             path(
@@ -41,9 +41,9 @@ val PanoIcons.RectFilledTranslucent: ImageVector
                 stroke = null,
             ) {
                 moveTo(0f, 0f)
-                lineTo(960f, 0f)
-                lineTo(960f, 960f)
-                lineTo(0f, 960f)
+                lineTo(24f, 0f)
+                lineTo(24f, 24f)
+                lineTo(0f, 24f)
                 close()
             }
         }.build()

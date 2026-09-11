@@ -18,8 +18,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
+import androidx.compose.material3.ExposedDropdownMenu
 import androidx.compose.material3.ExposedDropdownMenuAnchorType
 import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.ExposedDropdownMenuDefaults
@@ -64,12 +63,12 @@ import com.arn.scrobble.icons.BrokenImage
 import com.arn.scrobble.icons.Close
 import com.arn.scrobble.icons.ContentCopy
 import com.arn.scrobble.icons.Favorite
+import com.arn.scrobble.icons.FavoriteFilled
 import com.arn.scrobble.icons.Icons
 import com.arn.scrobble.icons.Mic
 import com.arn.scrobble.icons.MusicNote
 import com.arn.scrobble.icons.OpenInBrowser
 import com.arn.scrobble.icons.Search
-import com.arn.scrobble.icons.filled.Favorite
 import com.arn.scrobble.imageloader.MusicEntryImageReq
 import com.arn.scrobble.navigation.PanoRoute
 import com.arn.scrobble.panoicons.PanoIcons
@@ -449,7 +448,7 @@ private fun InfoActionsRow(
             IconButtonWithTooltip(
                 enabled = user.isSelf,
                 onClick = onLoveClick,
-                icon = if (isLoved) Icons.Filled.Favorite else Icons.Favorite,
+                icon = if (isLoved) Icons.FavoriteFilled else Icons.Favorite,
                 contentDescription = if (isLoved && user.isSelf)
                     stringResource(Res.string.unlove)
                 else if (isLoved)
@@ -533,7 +532,6 @@ private fun InfoActionsRow(
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun ColumnScope.InfoTags(
     tags: List<Tag>,
@@ -636,7 +634,6 @@ private fun ColumnScope.InfoTags(
     }
 }
 
-@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 private fun TrackListTrack(
     idx: Int,
@@ -785,14 +782,14 @@ private fun InfoTrackList(
                     tracks.size.format()
                 ),
                 style = MaterialTheme.typography.titleMedium,
-                color = MaterialTheme.colorScheme.onPrimaryContainer
+                color = MaterialTheme.colorScheme.secondary
             )
 
             if (durationsString != null)
                 Text(
                     text = durationsString,
                     style = MaterialTheme.typography.titleMedium,
-                    color = MaterialTheme.colorScheme.onPrimaryContainer
+                    color = MaterialTheme.colorScheme.secondary
                 )
         }
 

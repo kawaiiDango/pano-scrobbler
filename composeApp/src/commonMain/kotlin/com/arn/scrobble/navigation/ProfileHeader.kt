@@ -24,12 +24,10 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButtonDefaults
-import androidx.compose.material3.ListItem
-import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.MenuAnchorPosition
 import androidx.compose.material3.OutlinedIconButton
@@ -62,6 +60,7 @@ import com.arn.scrobble.api.UserCached
 import com.arn.scrobble.billing.LocalLicenseValidState
 import com.arn.scrobble.icons.Album
 import com.arn.scrobble.icons.ArrowDropDown
+import com.arn.scrobble.icons.HelpAutoMirrored
 import com.arn.scrobble.icons.Icons
 import com.arn.scrobble.icons.Mic
 import com.arn.scrobble.icons.MusicNote
@@ -71,7 +70,6 @@ import com.arn.scrobble.icons.Search
 import com.arn.scrobble.icons.Settings
 import com.arn.scrobble.icons.Today
 import com.arn.scrobble.icons.WorkspacePremium
-import com.arn.scrobble.icons.automirrored.Help
 import com.arn.scrobble.ui.AvatarOrInitials
 import com.arn.scrobble.ui.ButtonWithIcon
 import com.arn.scrobble.ui.PanoDropdownMenu
@@ -79,7 +77,7 @@ import com.arn.scrobble.ui.TextWithIcon
 import com.arn.scrobble.ui.accountTypeLabel
 import com.arn.scrobble.ui.drawSnowflake
 import com.arn.scrobble.ui.generateRandomSnowflake
-import com.arn.scrobble.ui.myTransparentCheckableItemColors
+import com.arn.scrobble.ui.shapedClickable
 import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff
 import com.arn.scrobble.utils.Stuff.collectAsStateWithInitialValue
@@ -418,7 +416,6 @@ private fun ColumnScope.ProfileTexts(
     }
 }
 
-@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 private fun ProfileOptions(
     currentUser: UserCached?,
@@ -442,7 +439,7 @@ private fun ProfileOptions(
     ) {
         if (PlatformStuff.isTv) {
             ButtonWithIcon(
-                icon = Icons.AutoMirrored.Help,
+                icon = Icons.HelpAutoMirrored,
                 text = stringResource(Res.string.help),
                 onClick = {
                     onDismiss()
@@ -463,35 +460,37 @@ private fun ProfileOptions(
         }
 
         otherAccounts.forEach { account ->
-            ListItem(
-                colors = ListItemDefaults.myTransparentCheckableItemColors(),
-                leadingContent = {
-                    AvatarOrInitials(
-                        avatarUrl = account.user.largeImage,
-                        avatarName = account.user.name,
-                        modifier = Modifier
-                            .size(24.dp)
-                            .clip(CircleShape)
-                    )
-                },
-                onClick = {
-                    scope.launch {
-                        PlatformStuff.mainPrefs.updateData { it.copy(currentAccountType = account.type) }
-                        onDismiss()
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .shapedClickable {
+                        scope.launch {
+                            PlatformStuff.mainPrefs.updateData { it.copy(currentAccountType = account.type) }
+                            onDismiss()
+                        }
                     }
-                },
-                supportingContent = {
+                    .padding(horizontal = 8.dp, vertical = 4.dp),
+            ) {
+                AvatarOrInitials(
+                    avatarUrl = account.user.largeImage,
+                    avatarName = account.user.name,
+                    modifier = Modifier
+                        .size(24.dp)
+                        .clip(CircleShape)
+                )
+                Column {
+                    Text(
+                        account.user.name,
+                        overflow = TextOverflow.MiddleEllipsis,
+                        maxLines = 1
+                    )
                     Text(
                         accountTypeLabel(account.type),
                         style = MaterialTheme.typography.bodySmall,
                     )
                 }
-            ) {
-                Text(
-                    account.user.name,
-                    overflow = TextOverflow.MiddleEllipsis,
-                    maxLines = 1
-                )
             }
         }
     }
@@ -536,6 +535,7 @@ private fun ColumnScope.ProfileLinks(
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun ColumnScope.ProfileTopLevelNav(
     onNavigate: (PanoRoute) -> Unit,
@@ -599,7 +599,7 @@ private fun ColumnScope.ProfileTopLevelNav(
 
             ButtonWithIcon(
                 text = stringResource(Res.string.help),
-                icon = Icons.AutoMirrored.Help,
+                icon = Icons.HelpAutoMirrored,
                 onClick = {
                     onNavigate(PanoRoute.Help())
                 },

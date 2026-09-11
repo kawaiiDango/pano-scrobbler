@@ -100,7 +100,7 @@ object DiscordRpc {
                     ?.takeIf { it.preprocessed }
             }
             .combine(
-                PlatformStuff.mainPrefs.data.map { it.discordRpc }
+                PlatformStuff.mainPrefs.data.map { it.discordRpc }.distinctUntilChanged()
             ) { event, settings ->
                 val activity: DiscordActivity
 

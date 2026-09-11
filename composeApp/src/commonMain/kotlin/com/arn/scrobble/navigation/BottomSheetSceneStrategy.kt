@@ -33,9 +33,9 @@ import androidx.navigation3.scene.OverlayScene
 import androidx.navigation3.scene.Scene
 import androidx.navigation3.scene.SceneStrategy
 import androidx.navigation3.scene.SceneStrategyScope
+import com.arn.scrobble.icons.ArrowBackAutoMirrored
 import com.arn.scrobble.icons.Close
 import com.arn.scrobble.icons.Icons
-import com.arn.scrobble.icons.automirrored.ArrowBack
 import com.arn.scrobble.themes.LocalThemeAttributes
 import com.arn.scrobble.ui.ApplyWindowBlur
 import com.arn.scrobble.ui.isImeVisible
@@ -143,7 +143,7 @@ fun BottomSheetDialogParent(
                     .align(Alignment.CenterHorizontally)
             ) {
                 Icon(
-                    imageVector = Icons.AutoMirrored.ArrowBack,
+                    imageVector = Icons.ArrowBackAutoMirrored,
                     contentDescription = stringResource(Res.string.back),
                 )
             }

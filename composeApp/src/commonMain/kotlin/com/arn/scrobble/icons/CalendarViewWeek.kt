@@ -1,67 +1,82 @@
 package com.arn.scrobble.icons
 
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.PathFillType
 import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.graphics.StrokeJoin
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.graphics.vector.path
 import androidx.compose.ui.unit.dp
 
+@Suppress("CheckReturnValue")
 val Icons.CalendarViewWeek: ImageVector
-    get() {
-        if (_CalendarViewWeek != null) {
-            return _CalendarViewWeek!!
-        }
-        _CalendarViewWeek = ImageVector.Builder(
-            name = "CalendarViewWeek",
-            defaultWidth = 24.dp,
-            defaultHeight = 24.dp,
-            viewportWidth = 960f,
-            viewportHeight = 960f
-        ).apply {
-            path(fill = SolidColor(Color.Black)) {
-                moveTo(160f, 800f)
-                quadToRelative(-33f, 0f, -56.5f, -23.5f)
-                reflectiveQuadTo(80f, 720f)
-                verticalLineToRelative(-480f)
-                quadToRelative(0f, -33f, 23.5f, -56.5f)
-                reflectiveQuadTo(160f, 160f)
-                horizontalLineToRelative(640f)
-                quadToRelative(33f, 0f, 56.5f, 23.5f)
-                reflectiveQuadTo(880f, 240f)
-                verticalLineToRelative(480f)
-                quadToRelative(0f, 33f, -23.5f, 56.5f)
-                reflectiveQuadTo(800f, 800f)
-                lineTo(160f, 800f)
-                close()
-                moveTo(520f, 720f)
-                horizontalLineToRelative(100f)
-                verticalLineToRelative(-480f)
-                lineTo(520f, 240f)
-                verticalLineToRelative(480f)
-                close()
-                moveTo(340f, 720f)
-                horizontalLineToRelative(100f)
-                verticalLineToRelative(-480f)
-                lineTo(340f, 240f)
-                verticalLineToRelative(480f)
-                close()
-                moveTo(160f, 720f)
-                horizontalLineToRelative(100f)
-                verticalLineToRelative(-480f)
-                lineTo(160f, 240f)
-                verticalLineToRelative(480f)
-                close()
-                moveTo(700f, 720f)
-                horizontalLineToRelative(100f)
-                verticalLineToRelative(-480f)
-                lineTo(700f, 240f)
-                verticalLineToRelative(480f)
-                close()
-            }
-        }.build()
-
-        return _CalendarViewWeek!!
+  get() {
+    if (_CalendarViewWeek != null) {
+      return _CalendarViewWeek!!
     }
+    _CalendarViewWeek =
+      ImageVector.Builder(
+          name = "CalendarViewWeek",
+          defaultWidth = 24.dp,
+          defaultHeight = 24.dp,
+          viewportWidth = 24f,
+          viewportHeight = 24f,
+        )
+        .apply {
+          path(
+            fill = SolidColor(Color.Black),
+            fillAlpha = 1f,
+            stroke = null,
+            strokeAlpha = 1f,
+            strokeLineWidth = 1f,
+            strokeLineCap = StrokeCap.Butt,
+            strokeLineJoin = StrokeJoin.Bevel,
+            strokeLineMiter = 1f,
+            pathFillType = PathFillType.NonZero,
+          ) {
+            moveTo(4f, 20f)
+            quadTo(3.18f, 20f, 2.59f, 19.41f)
+            reflectiveQuadTo(2f, 18f)
+            verticalLineTo(6f)
+            quadTo(2f, 5.18f, 2.59f, 4.59f)
+            reflectiveQuadTo(4f, 4f)
+            horizontalLineTo(20f)
+            quadToRelative(0.83f, 0f, 1.41f, 0.59f)
+            quadTo(22f, 5.18f, 22f, 6f)
+            verticalLineTo(18f)
+            quadToRelative(0f, 0.82f, -0.59f, 1.41f)
+            reflectiveQuadTo(20f, 20f)
+            horizontalLineTo(4f)
+            close()
+            moveToRelative(9f, -2f)
+            horizontalLineToRelative(2.5f)
+            verticalLineTo(6f)
+            horizontalLineTo(13f)
+            verticalLineTo(18f)
+            close()
+            moveTo(8.5f, 18f)
+            horizontalLineTo(11f)
+            verticalLineTo(6f)
+            horizontalLineTo(8.5f)
+            verticalLineTo(18f)
+            close()
+            moveTo(4f, 18f)
+            horizontalLineTo(6.5f)
+            verticalLineTo(6f)
+            horizontalLineTo(4f)
+            verticalLineTo(18f)
+            close()
+            moveToRelative(13.5f, 0f)
+            horizontalLineTo(20f)
+            verticalLineTo(6f)
+            horizontalLineTo(17.5f)
+            verticalLineTo(18f)
+            close()
+          }
+        }
+        .build()
+    return _CalendarViewWeek!!
+  }
 
-@Suppress("ObjectPropertyName")
 private var _CalendarViewWeek: ImageVector? = null

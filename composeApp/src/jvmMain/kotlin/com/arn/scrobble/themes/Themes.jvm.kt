@@ -12,10 +12,15 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.State
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.remember
+import androidx.compose.ui.ExperimentalComposeUiApi
+import androidx.compose.ui.awt.LocalAwtWindow
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.Density
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.WindowDecorationDefaults
 import com.arn.scrobble.PanoNativeComponents
 import com.arn.scrobble.utils.DesktopStuff
+import com.arn.scrobble.utils.isUndecorated
 import kotlinx.coroutines.flow.filterNotNull
 
 @Composable
@@ -24,11 +29,11 @@ actual fun isSystemInDarkThemeNative(): State<Boolean> {
         .collectAsState(false)
 }
 
-@Composable
-actual fun getDynamicColorScheme(dark: Boolean): ColorScheme {
+actual fun getDynamicColorScheme(context: Any?, dark: Boolean): ColorScheme {
     throw NotImplementedError("Not implemented on desktop")
 }
 
+@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 actual fun AddAdditionalProviders(content: @Composable () -> Unit) {
     val scrollbarColor = MaterialTheme.colorScheme.onSurfaceVariant
@@ -57,10 +62,13 @@ actual fun AddAdditionalProviders(content: @Composable () -> Unit) {
         }
     }
 
+    val isUndecorated = LocalAwtWindow.current?.isUndecorated == true
+
     CompositionLocalProvider(
         LocalScrollbarStyle provides defaultScrollbarStyle.copy(
             unhoverColor = scrollbarColor.copy(alpha = defaultScrollbarStyle.unhoverColor.alpha),
             hoverColor = scrollbarColor.copy(alpha = defaultScrollbarStyle.hoverColor.alpha),
+            thickness = defaultScrollbarStyle.thickness + if (isUndecorated) WindowDecorationDefaults.ResizerThickness else 0.dp
         ),
         LocalContextMenuRepresentation provides contextMenuRepresentation,
         LocalDensity provides density

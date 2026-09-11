@@ -38,7 +38,7 @@ class ChartsVM(
 ) : ViewModel() {
 
     private val _input = MutableStateFlow<ChartsLoaderInput?>(null)
-    private val _inputDebounced = _input.debounce(500)
+    private val _inputDebounced = _input.debounce(500.milliseconds)
         .filterNotNull()
 
     private val pagingConfig = PagingConfig(

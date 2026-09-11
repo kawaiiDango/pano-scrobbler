@@ -25,11 +25,10 @@ val needsGraalvm = gradle.startParameter.taskNames.any { requested ->
 }
 
 kotlin {
-    if (needsGraalvm) {
-        jvmToolchain {
-            languageVersion = JavaLanguageVersion.of(25)
+    jvmToolchain {
+        languageVersion = JavaLanguageVersion.of(25)
+        if (needsGraalvm)
             vendor = JvmVendorSpec.matching("GraalVM Community")
-        }
     }
 }
 
@@ -277,7 +276,8 @@ tasks.register<Sync>("packageNativeImage") {
     )
     val graalvmLauncher = javaToolchains.launcherFor {
         languageVersion = JavaLanguageVersion.of(25)
-        vendor = JvmVendorSpec.matching("GraalVM Community")
+        if (needsGraalvm)
+            vendor = JvmVendorSpec.matching("GraalVM Community")
     }
     val graalvmHome = graalvmLauncher.get().metadata.installationPath.asFile.absolutePath
     val copyDesktopAndIcon = IS_LINUX

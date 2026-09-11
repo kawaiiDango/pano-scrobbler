@@ -64,6 +64,12 @@ kotlin {
             enable = true
         }
 
+        lint {
+            toolchain {
+                languageVersion = JavaLanguageVersion.of(25)
+            }
+        }
+
         withHostTest {}
     }
 

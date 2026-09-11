@@ -100,7 +100,11 @@ android {
         }
     }
 
-
+    lint {
+        toolchain {
+            languageVersion = JavaLanguageVersion.of(25)
+        }
+    }
 
     dependenciesInfo {
         includeInApk = false

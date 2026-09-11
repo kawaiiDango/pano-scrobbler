@@ -19,7 +19,11 @@ android {
 
         consumerProguardFiles("consumer-rules.pro")
     }
-
+    lint {
+        toolchain {
+            languageVersion = JavaLanguageVersion.of(25)
+        }
+    }
     buildTypes {
         create("releaseGithub") {
             matchingFallbacks += listOf("release")

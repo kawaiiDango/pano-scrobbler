@@ -1,48 +1,14 @@
 plugins {
-    alias(libs.plugins.kotlin.multiplatform)
-    alias(libs.plugins.android.kotlin.multiplatform.library)
+    alias(libs.plugins.kotlin.jvm)
     alias(libs.plugins.kotlin.serialization)
 }
 
 kotlin {
-    jvm()
+    jvmToolchain(25)
+}
 
-    // Target declarations - add or remove as needed below. These define
-    // which platforms this KMP module supports.
-    // See: https://kotlinlang.org/docs/multiplatform-discover-project.html#targets
-    android {
-        namespace = "com.arn.scrobble.extras.nonplay"
-        compileSdk {
-            version = release(libs.versions.targetSdk.get().toInt()) {
-//                minorApiLevel = libs.versions.sdkMinor.get().toInt()
-            }
-        }
-        minSdk = libs.versions.minSdk.get().toInt()
-    }
-
-    // Source set declarations.
-    // Declaring a target automatically creates a source set with the same name. By default, the
-    // Kotlin Gradle Plugin creates additional source sets that depend on each other, since it is
-    // common to share sources between related targets.
-    // See: https://kotlinlang.org/docs/multiplatform-hierarchy.html
-    sourceSets {
-        commonMain {
-            dependencies {
-                implementation(libs.kotlin.stdlib)
-                implementation(libs.kotlinx.serialization.json)
-                implementation(projects.extrasCommon)
-                implementation(libs.kotlinx.coroutines.core)
-            }
-        }
-
-        androidMain {
-            dependencies {
-                implementation(libs.kotlinx.coroutines.android)
-            }
-        }
-
-        jvmMain.dependencies {
-        }
-    }
-
+dependencies {
+    implementation(libs.kotlinx.serialization.json)
+    implementation(projects.extrasCommon)
+    implementation(libs.kotlinx.coroutines.core)
 }

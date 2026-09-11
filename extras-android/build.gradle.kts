@@ -18,6 +18,12 @@ android {
         jvmToolchain(25)
     }
 
+    lint {
+        toolchain {
+            languageVersion = JavaLanguageVersion.of(25)
+        }
+    }
+
     buildTypes {
         create("releaseGithub") {
         }

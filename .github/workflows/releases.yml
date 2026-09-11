@@ -16,20 +16,23 @@ jobs:
         os: [ windows-2025-vs2026, ubuntu-24.04, ubuntu-24.04-arm ]
         include:
           - os: windows-2025-vs2026
-            resources-dir: windows-x64
+            os-name: windows
+            arch: x64
           #            graalvm-url: https://github.com/graalvm/graalvm-ce-builds/releases/download/graal-25.1.3/graalvm-community-jdk-25i1-25.0.3_windows-x64_bin.zip
           - os: ubuntu-24.04
-            resources-dir: linux-x64
+            os-name: linux
+            arch: x64
           #            graalvm-url: https://github.com/graalvm/graalvm-ce-builds/releases/download/graal-25.1.3/graalvm-community-jdk-25i1-25.0.3_linux-x64_bin.tar.gz
           - os: ubuntu-24.04-arm
-            resources-dir: linux-arm64
+            os-name: linux
+            arch: arm64
     #            graalvm-url: https://github.com/graalvm/graalvm-ce-builds/releases/download/graal-25.1.3/graalvm-community-jdk-25i1-25.0.3_linux-aarch64_bin.tar.gz
     steps:
       - name: Checkout repository
         uses: actions/checkout@v7
 
       - name: Fix permissions
-        if: matrix.resources-dir != 'windows-x64'
+        if: matrix.os-name == 'linux'
         shell: bash
         run: |
           chmod +x ./gradlew
@@ -39,13 +42,13 @@ jobs:
         run: |
           echo "${{ secrets.LOCAL_PROPERTIES }}" > local.properties
 
-      - if: matrix.resources-dir == 'linux-x64'
+      - if: matrix.os-name == 'linux' && matrix.arch == 'x64'
         name: Set up Android secrets
         shell: bash
         run: |
           echo "${{ secrets.ANDROID_KEYSTORE_JKS }}" | base64 -d - > androidApp/android-keystore.jks
 
-      - if: matrix.resources-dir == 'linux-x64'
+      - if: matrix.os-name == 'linux' && matrix.arch == 'x64'
         name: Build APK
         shell: bash
         run: |
@@ -54,12 +57,12 @@ jobs:
           $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --list_installed
           ./gradlew androidApp:assembleReleaseGithub --no-daemon
 
-      - if: matrix.resources-dir == 'linux-x64'
-        name: Upload Android binary
+      - if: matrix.os-name == 'linux' && matrix.arch == 'x64'
+        name: Upload .apk
         uses: actions/upload-artifact@v7
         with:
-          name: pano-scrobbler-android-universal
-          path: dist/pano-scrobbler-android-universal*
+          path: dist/pano-scrobbler-android-universal.apk
+          archive: false
 
       - name: Install GraalVM CE
         uses: graalvm/setup-graalvm@v1
@@ -100,10 +103,10 @@ jobs:
           fi
 
           # Download artifacts from that run (filter by name if provided)
-          gh run download "$RUN_ID" -R "kawaiiDango/pano-native-components" -n "libs-${{ matrix.resources-dir }}" -D desktopApp/resources/${{ matrix.resources-dir }}
+          gh run download "$RUN_ID" -R "kawaiiDango/pano-native-components" -n "libs-${{ matrix.os-name }}-${{ matrix.arch }}" -D desktopApp/resources/${{ matrix.os-name }}-${{ matrix.arch }}
 
       - name: Install Inno Setup
-        if: matrix.resources-dir == 'windows-x64'
+        if: matrix.os-name == 'windows'
         shell: bash
         run: |
           winget install --id JRSoftware.InnoSetup.7 --accept-package-agreements --accept-source-agreements --disable-interactivity
@@ -113,11 +116,29 @@ jobs:
         run: |
           ./gradlew desktopApp:packageNativeImage --no-daemon
 
-      - name: Upload desktop binary
+      - if: matrix.os-name == 'linux'
         uses: actions/upload-artifact@v7
         with:
-          name: pano-scrobbler-${{ matrix.resources-dir }}
-          path: dist/pano-scrobbler-${{ matrix.resources-dir }}*
+          path: dist/*.AppImage
+          archive: false
+          
+      - if: matrix.os-name == 'linux'
+        uses: actions/upload-artifact@v7
+        with:
+          path: dist/*.deb
+          archive: false
+          
+      - if: matrix.os-name == 'linux'
+        uses: actions/upload-artifact@v7
+        with:
+          path: dist/*.tar.gz
+          archive: false
+
+      - if: matrix.os-name == 'windows'
+        uses: actions/upload-artifact@v7
+        with:
+          path: dist/*.exe
+          archive: false
 
   upload-release:
     needs: [ build ]
@@ -162,13 +183,7 @@ jobs:
           target_commitish: ${{ github.sha }}
           name: ${{ steps.release_metadata.outputs.verName }}
           body: ${{ steps.release_metadata.outputs.changelog }}
-          preserve_order: true
-          files: |
-            dist/*.exe
-            dist/*.apk
-            dist/*.AppImage
-            dist/*.deb
-            dist/*.tar.gz
+          files: dist/*.*
 
       - name: Dispatch static site build
         env:

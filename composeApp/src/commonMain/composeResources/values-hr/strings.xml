@@ -69,7 +69,7 @@
     <string name="album_art">Naslovnica albuma</string>
     <string name="artist_image">Slika izvođača</string>
     <string name="parse_error" comment="Title parsing error for Youtube etc">Nije moguće analizirati naslov</string>
-    <string name="network_error">Mrežna greška</string>
+    <string name="network_error" comment="Used as a generic fallback error message">Mrežna greška</string>
     <string name="scrobble_ignored" comment="Will be prefixed by Lastfm: (e.g. Lastfm: Scrobble ignored)">Scrobble ignoriran</string>
     <string name="scrobble_ignored_save_edit">Lastfm je ignorirao uređivanje vjerojatno jer je scrobble prestar. Želite li ovo uređivanje spremiti za buduće scrobbleove?</string>
     <string name="required_fields_empty" comment="Shown on filling a form">Obavezna polja su prazna</string>
@@ -82,12 +82,11 @@
     <string name="album">Album</string>
     <string name="albums">Albumi</string>
     <string name="top_albums" comment="top albums the user has listened to, or most scrobbled albums of an artist">Top albumi</string>
-    <string name="track">Pjesma</string>
+    <string name="track" comment="music track or song">Pjesma</string>
     <string name="tracks">Pjesme</string>
     <string name="top_tracks" comment="top tracks the user has listened to, or most scrobbled tracks of an artist">Top pjesme</string>
     <string name="similar_tracks">Slične pjesme</string>
     <string name="state_scrobbling">Sada scrobblea…</string>
-    <string name="state_scrobbled">Scrobbleano</string>
     <string name="state_unscrobbled">Scrobble uklonjen</string>
     <string name="tap_to_edit">(dodirni za uređivanje)</string>
     <string name="recents" comment="Short for recently scrobbled">Nedavno</string>
@@ -95,8 +94,8 @@
     <string name="auto" comment="automatic or default setting">Auto</string>
     <string name="music_players">Reproduktori glazbe</string>
     <string name="other_apps" comment="Apps which are not music players or video streaming apps">Ostale aplikacije</string>
-    <string name="choose_apps">Odaberite aplikacije</string>
-    <string name="choose_an_app">Odaberite aplikaciju</string>
+    <string name="choose_apps" comment="multi select list">Odaberite aplikacije</string>
+    <string name="choose_an_app" comment="single select list">Odaberite aplikaciju</string>
     <string name="apps" comment="Currently appears on the regex edit dialog showing the selected apps and allowing the user to add more apps">Aplikacije</string>
     <string name="unavailable_offline">Nije dostupno izvan mreže</string>
     <string name="tv_url_notice">Otvori ovaj URL u pregledniku na drugom uređaju</string>
@@ -116,20 +115,18 @@
     <string name="rank_change_new">Nije scrobbleano unutar prethodnog razdoblja</string>
     <string name="search">Traži</string>
     <string name="clear_all_history" comment="(talking about search history, tag history)">Očisti svu povijest</string>
-    <string name="global" comment="search globally across lastfm">Globalno</string>
+    <string name="global" comment="something across entire lastfm or the scrobbling service">Globalno</string>
     <string name="profile">Profil</string>
     <string name="profile_pic">Slika profila</string>
     <string name="item_options" comment="Screen reader text for 3 dots menu button">Opcije za ovu stavku</string>
     <string name="new_player" formatted="true" comment="(%1 = App name) detected (shown in notification, when a new music player is detected)">Aplikacija %1$s detektirana</string>
-    <string name="new_player_prompt">Nastaviti scrobbleati ovu aplikaciju?</string>
-    <string name="new_player_prompt_desktop">Odite u postavke da biste scrobblali ovu aplikaciju</string>
-    <string name="cannot_access" comment="%1$s= the file or folder name">Pristup za %1$s nije dopušten</string>
-    <string name="file_exists_confirm_overwrite">Datoteka postoji. Pritisnite ponovno za pisanje preko nje.</string>
+    <string name="new_player_prompt" comment="when a new music player is detected on android and auto-detect new apps setting is enabled. The allowlist is opt out">Nastaviti scrobbleati ovu aplikaciju?</string>
+    <string name="new_player_prompt_desktop" comment="when a new music player is detected on desktop. The allowlist is opt in">Odite u postavke da biste scrobblali ovu aplikaciju</string>
     <string name="no_scrobbles">Ovdje još nema pjesama…</string>
     <string name="no_friends">Ne pratite nikoga još…</string>
     <string name="channel_err" comment="Its a noun">Greške kod scrobbleanja</string>
-    <string name="new_app">Nova aplikacija</string>
-    <string name="no_apps_enabled">Nijedna aplikacija nije omogućena</string>
+    <string name="new_app" comment="new media player app detected">Nova aplikacija</string>
+    <string name="no_apps_enabled" comment="user hasn't enabled any apps for scrobbling">Nijedna aplikacija nije omogućena</string>
     <string name="n_more" formatted="true" comment="n more( pending scrobbles)">Još %1$d</string>
     <string name="show_all">Prikaži sve</string>
     <string name="edit">Uredi</string>
@@ -153,7 +150,7 @@
 - i više toga
 - obavijesti su tihe"</string>
     <string name="will_not_scrobble">Ako preskočite ovaj korak, scrobbleanje bit će onemogućeno</string>
-    <string name="swap" comment="(Swap title and artist)">Zamijeni mjesta</string>
+    <string name="swap" comment="button to swap title and artist">Zamijeni mjesta</string>
     <string name="time_just_now">upravo sada</string>
     <string name="no_mail_apps">Nema instaliranih klijenata za epoštu</string>
     <string name="add">Dodaj novu stavku</string>
@@ -162,12 +159,10 @@
     <string name="simple_edits">Uređivanja</string>
     <string name="charts" comment="User's top artists, albums, tracks, line chart of daily scrobble counts and tag cloud">Ljestvice</string>
     <string name="tag_cloud" comment="https://www.google.com/search?&amp;q=tag+cloud">Oblak oznaka</string>
-    <string name="details">Detalji</string>
     <string name="saved_as_pending">Spremljeno kao scrobble na čekanju</string>
-    <string name="sort">Sortiraj</string>
-    <string name="time_jump" comment="Button shows scrobbles from a specific time">Vremenski skok</string>
-    <string name="my_scrobbles">Moji scrobbleovi</string>
-    <string name="listeners">Slušatelji</string>
+    <string name="sort" comment="to sort a list">Sortiraj</string>
+    <string name="time_jump" comment="Time selector dropdown to show scrobbles from a specific time">Vremenski skok</string>
+    <string name="listeners" comment="number of unique users who scrobbled">Slušatelji</string>
     <string name="scrobbles">Scrobbleovi</string>
     <string name="collapse" comment="(view only a few items)">Sažmi</string>
     <string name="expand" comment="(view all items)">Proširi</string>
@@ -175,7 +170,7 @@
     <string name="from" formatted="true" comment="%1= country (displayed in friends popup)">Iz: %1$s</string>
     <string name="not_found" comment="Shown in search">Nije pronađeno</string>
     <string name="save" comment="saves a file">Spremi</string>
-    <string name="saved_to_gallery">Spremljeno u galeriju</string>
+    <string name="saved_to_gallery" comment="used for the collage generator">Spremljeno u galeriju</string>
     <string name="reports" comment="Like last.week reports and stuff">Izvješća</string>
     <string name="weekly">Tjedni</string>
     <string name="weeks">Tjedni</string>
@@ -183,14 +178,14 @@
     <string name="months">Mjeseci</string>
     <string name="days">Dana</string>
     <string name="years" comment="For the charts menu which displays year by year">Godine</string>
-    <string name="charts_overall">Sveukupno</string>
+    <string name="charts_overall" comment="all time charts">Sveukupno</string>
     <string name="listening_activity" comment="Shows a bar chart of the number of scrobbles each day/week/month/year">Aktivnost slušanja</string>
     <string name="charts_no_data">Nema podataka za ovo razdoblje</string>
     <string name="charts_custom" comment="Custom date range, but in short, used in the charts menu">Prilagođeno</string>
     <string name="charts_continuous" comment="Continuous date ranges, but in short, like last 7 days, last 30 days, etc">Kontinuirano</string>
     <string name="based_on" formatted="true" comment="%1= the word 'artists', 'albums' or 'tracks'">Temeljeno na: %1$s</string>
     <string name="not_enough_data" comment="(not enough data to draw a chart etc)">Nema dovoljno podataka</string>
-    <string name="random_text">Nasumično</string>
+    <string name="random_text" comment="random scrobble or theme">Nasumično</string>
     <string name="original" comment="Original metadata before editing">Izvorno</string>
     <string name="corrected" comment="Corrected metadata after editing">Ispravljeno</string>
     <string name="tag" comment="last.fm tag">Oznaka</string>
@@ -205,15 +200,15 @@
     <string name="appwidget_loading">Učitavanje…</string>
     <string name="appwidget_period" comment="1 week, 1 month, 1 year etc">Razdoblje</string>
     <string name="appwidget_shadow">Sjena</string>
-    <string name="appwidget_show">Prikaži</string>
-    <string name="light">Svijetlo</string>
-    <string name="dark">Tamno</string>
-    <string name="system_colors">Boje sustava</string>
-    <string name="appwidget_alpha">Neprozirnost pozadine</string>
+    <string name="appwidget_show" comment="to visually show something">Prikaži</string>
+    <string name="light" comment="light theme">Svijetlo</string>
+    <string name="dark" comment="dark theme">Tamno</string>
+    <string name="system_colors" comment="material you system theme colors">Boje sustava</string>
+    <string name="appwidget_alpha" comment="app window background opacity">Neprozirnost pozadine</string>
     <string name="appwidget_refresh_every" formatted="true" comment="%1= 'n minutes'; n is &gt;= 45">Razdoblje osvježavanja widgeta: %1$s</string>
     <string name="edit_name" comment="name for regex pattern">Lako prepoznatljiv naziv</string>
     <string name="edit_regex">Regex šablona</string>
-    <string name="edit_replace">Zamijeni</string>
+    <string name="edit_replace" comment="regex replace">Zamijeni</string>
     <string name="edit_first" comment="First occurrence of a pattern">Prvo</string>
     <string name="edit_all" comment="All occurrences of a pattern">Sve</string>
     <string name="edit_extract" comment="To extract sub text from a larger text, in short, used in pattern edits">Izdvoji</string>
@@ -224,7 +219,7 @@
     <string name="edit_regex_invalid" formatted="true" comment="%1= the regex error message">Nevažeći regex: %1$s</string>
     <string name="edit_regex_rules_matched" comment="the specific regex patterns that were used">Korišteni predlošci:</string>
     <string name="edit_continue">Ako je pronađeno, nastavi provjeravati ostale regexe</string>
-    <string name="edit_case_sensitive">Razlikuj velika i mala slova</string>
+    <string name="edit_case_sensitive" comment="currently used for regex edits matching">Razlikuj velika i mala slova</string>
     <string name="edit_regex_test" comment="(Test regex rules)">Testiraj</string>
     <string name="edit_presets" comment="Regex presets">Predlošci</string>
     <string name="edit_max_patterns" formatted="true" comment="%1= max pattern count">Dosegnuto ograničenje šablona (%1$d)</string>
@@ -240,7 +235,7 @@
     <string name="hidden_tags" comment="Tags that should not be shown to the user">Skrivene oznake</string>
     <string name="pin" comment="pin a friend to the top">Prikvači</string>
     <string name="unpin" comment="unpin a friend to the top">Otkvači</string>
-    <string name="pin_limit_reached" formatted="true">Dosegnuto ograničenje prikvačivanja (%1$d)</string>
+    <string name="pin_limit_reached" formatted="true" comment="%1= the max limit">Dosegnuto ograničenje prikvačivanja (%1$d)</string>
     <string name="pin_help">Dugo pritisnite prikvačene stavke da biste im promijenili poredak</string>
     <string name="use_channel" comment="(Use youtube channel name)">Koristi naziv kanala</string>
     <string name="regex_edits_suggestion" formatted="true" comment="%1= the preset name (e.g. Remastered)">Želite li omogućiti pravilo za šablonsko uređivanje: %1$s?</string>
@@ -249,7 +244,7 @@
     <string name="persistent_noti_text">Dotaknite za sakrivanje</string>
     <string name="scrobbler_off">Scrobbler onemogućen</string>
     <string name="scrobbler_on">Scrobbler aktivan</string>
-    <string name="duration">Trajanje</string>
+    <string name="duration" comment="The duration of the track">Trajanje</string>
     <string name="total_listen_time">Ukupno vrijeme slušanja</string>
     <string name="enable" comment="To enable some feature">Omogući</string>
     <string name="disable" comment="To disable some feature">Onemogući</string>
@@ -259,15 +254,15 @@
     <string name="create_collage">Stvori kolaž</string>
     <string name="captions" comment="Collage image captions such as artist names, play counts">Opisi slika</string>
     <string name="username" comment="last.fm Username">Korisničko ime</string>
-    <string name="pref_master">Scrobblaj glazbu</string>
+    <string name="pref_master" comment="Switch to enable or disable scrobbling">Scrobblaj glazbu</string>
     <string name="pref_master_qs_add">Dodaj pločicu brzih postavki</string>
     <string name="pref_master_qs_already_addded">Pločica brzih postavki već je dodana</string>
     <string name="pref_noti">Obavijesti</string>
     <string name="pref_offline_info">ℹ️ Izvanmrežni scrobbleovi i oznake "voljeno" bit će spremljene i poslane kasnije.</string>
     <string name="pref_scrobble_from" comment="Scrobble from (these apps)">Scrobblaj iz</string>
     <string name="pref_enabled_apps_summary">ℹ️ Podržane su aplikacije koje dijele metapodatke o glazbi. Da biste izbjegli duplo scrobbleanje sa Spotifya, samo aktivirajte značajku na jednom mjestu.</string>
-    <string name="pref_auto_detect">Automatski scrobblaj iz novih aplikacija</string>
-    <string name="pref_spotify_remote">Scrobblaj Spotify s drugih uređaja</string>
+    <string name="pref_auto_detect" comment="Automatically scrobble from new apps when they are installed">Automatski scrobblaj iz novih aplikacija</string>
+    <string name="pref_spotify_remote" comment="as in Spotify Connect or whatever it is called">Scrobblaj Spotify s drugih uređaja</string>
     <string name="pref_spotify_artist_search_approximate" comment="This feature actually grabs the first result from Spotify artist search regardless of what that result is">Koristi približnu pretragu slike izvođača</string>
     <string name="pref_link_heart_button_rating">Koristite tipku srca u obavijesti da biste pjesmu označili kao favorita i u reproduktoru glazbe</string>
     <string name="pref_prevent_duplicate_ambient_scrobbles">Onemogući kontinuirano scrobblanje s mikrofona kada uređaj reproducira glazbu</string>
@@ -275,9 +270,9 @@
     <string name="pref_delay_mins" comment="(Scrobble delay in minutes)">Minute</string>
     <string name="pref_delay_per" comment="(Scrobble delay in percent)">Postotak</string>
     <string name="pref_logout">Odjava</string>
-    <string name="sure_tap_again">Sigurni? Dodirnite opet</string>
+    <string name="sure_tap_again" comment="tap again to confirm">Sigurni? Dodirnite opet</string>
     <string name="pref_login">Prijava</string>
-    <string name="pref_about" comment="Info about this app">O aplikaciji</string>
+    <string name="pref_about" comment="the about section at the bottom of the settings screen">O aplikaciji</string>
     <string name="pref_privacy_policy">Politika privatnosti</string>
     <string name="pref_user_label" comment="(Like username)">Korisnik</string>
     <string name="pref_token_label" comment="For Listenbrainz">Autentifikacijski token</string>
@@ -288,12 +283,12 @@
     <string name="pref_fetch_missing_album" formatted="true" comment="%1= the name of a service like last.fm, Deezer etc">Dohvati album koji nedostaje sa servisa %1$s</string>
     <string name="pref_locale">Jezici</string>
     <string name="pref_crashlytics_enabled">Automatski prijavi greške</string>
-    <string name="pref_misc">Razno</string>
+    <string name="pref_misc" comment="Miscellaneous settings">Razno</string>
     <string name="pref_first_day_of_week" comment="Sunday, Monday etc">Tjedan počinje u</string>
     <string name="pref_imexport" comment="As in backup or restore the settings">Uvoz i izvoz</string>
-    <string name="pref_export">Izvezi</string>
+    <string name="pref_export" comment="backs up the settings to a file">Izvezi</string>
     <string name="pref_export_desc">Sigurnosno kopira postavke, uređivanja i popise blokiranja. Iz sigurnosnih razloga ne sprema prijave. Korisno za premještanje na novi uređaj ili dijeljenje s prijateljima.</string>
-    <string name="pref_import">Uvezi</string>
+    <string name="pref_import" comment="restores the settings from a backup/export file">Uvezi</string>
     <string name="pref_imexport_network" comment="As in backup or restore the settings over network">Mreža</string>
     <string name="pref_imexport_code" comment="A code shown on the screen to be entered on the other device">Kod</string>
     <string name="pref_imexport_network_notice">Za mrežni način rada, oba uređaja moraju biti spojena na istu mrežu.</string>
@@ -311,11 +306,11 @@
     <string name="existing_value" comment="starts with lowercase in english because it will be enclosed in angle brackets">postojeći podatci</string>
     <string name="pref_translate">Prevedi ovu aplikaciju</string>
     <string name="pref_translate_credits">Popis prevoditelja</string>
-    <string name="pref_oss_credits">Licence otvorenog koda</string>
+    <string name="pref_oss_credits" comment="Open source libraries, licenses used in the app">Licence otvorenog koda</string>
     <string name="pref_check_updates">Provjeri ažuriranja</string>
     <string name="no_updates">Nema dostupnih ažuriranja</string>
     <string name="pref_notify_updates">Automatska ažuriranja</string>
-    <string name="update_downloaded">Ažuriranje je preuzeto</string>
+    <string name="update_downloaded" comment="app update">Ažuriranje je preuzeto</string>
     <string name="pref_search_url_template">Predložak URL-a tražilice</string>
     <string name="pref_search_url_template_desc" comment="Do not translate $query as the user has to enter it as it is">Koristite $query na mjestu pojma pretraživanja</string>
     <string name="update_available" formatted="true" comment="%1= the version number">Dostupno ažuriranje: %1$s</string>
@@ -331,42 +326,42 @@
     <string name="import_lists_keep">Spoji, sa zadržavanjem postojećih uređivanja i listi za blokiranje</string>
     <string name="import_settings">Postavke uvoza</string>
     <string name="copied">Kopirano!</string>
-    <string name="lastfm_reauth">Morate se ponovno autentificirati za uređivanje ili brisanje scrobbleova</string>
+    <string name="lastfm_reauth" comment="The user needs to log out and log in again">Morate se ponovno autentificirati za uređivanje ili brisanje scrobbleova</string>
     <string name="like_instance" comment="%1= the scrobbling service name, such as last.fm, ListenBrainz">Instanca slična servisu %1$s</string>
-    <string name="failed_encode_url">Kodiranje URL-a nije uspjelo</string>
+    <string name="failed_encode_url" comment="used for validating url input, in some of the login screens">Kodiranje URL-a nije uspjelo</string>
     <string name="check_nls" formatted="true" comment="%1= the name Pano Scrobbler. Asks the user to check the app in notification access settings">Provjeri %1$s</string>
     <string name="no_browser">Nema instaliranih preglednika</string>
     <string name="no_player">Nema instaliranih reproduktora glazbe</string>
-    <string name="not_running">⚠ Vaš sustav je zaustavio pokretanje scrobblera</string>
+    <string name="not_running" comment="When the app detects that the scrobbler was not running. Usually killed by OEM-specific battery savers.">⚠ Vaš sustav je zaustavio pokretanje scrobblera</string>
     <string name="kill_reason" comment="%1= reason for the app kill" formatted="true">Razlog: %1$s</string>
     <string name="login_submit" comment="Verifies the login details">Potvrdi</string>
     <string name="submitting_loves" formatted="true">Prijenos voljenih pjesama, preostalo %1$d</string>
     <string name="pending_batch" comment="For pending scrobbles">Prenošenje više scrobbleova</string>
     <string name="bar_chart">Stupčasti dijagram</string>
     <string name="fix_it_title">Mogući ispravci</string>
-    <string name="fix_it_startup_title">Štednja baterije / upravitelji pokretanja</string>
+    <string name="fix_it_startup_title" comment="Like non standard OEM-specific battery settings on Xiaomi, Samsung, etc.">Štednja baterije / upravitelji pokretanja</string>
     <string name="fix_it_battery_title">Onemogući optimizaciju baterije</string>
-    <string name="fix_it_energy_title">Onemogućite optimizaciju potrošnje energije</string>
-    <string name="fix_it_action" comment="(To open an app)">Otvori</string>
+    <string name="fix_it_energy_title" comment="Disable battery optimizations equivalent for TVs">Onemogućite optimizaciju potrošnje energije</string>
+    <string name="fix_it_action" comment="(To open an app, a link or a screen within pano scrobbler)">Otvori</string>
     <string name="delete_account">Izbriši svoj račun</string>
-    <string name="delete_account_custom_servers">Za prilagođene poslužitelje, provjerite njihovu dokumentaciju.</string>
+    <string name="delete_account_custom_servers" comment="used in the delete account screen">Za prilagođene poslužitelje, provjerite njihovu dokumentaciju.</string>
     <string name="add_photo" comment="Add or change a photo for the artist or album">Dodaj ili promijeni sliku</string>
     <string name="from_gallery" comment="Pick an image for the artist or album from the device gallery">Iz galerije</string>
-    <string name="square_photo_hint">Za najbolji rezultat koristite kvadratnu sliku</string>
+    <string name="square_photo_hint" comment="for user picked image from their gallery, used for custom artist or album pic">Za najbolji rezultat koristite kvadratnu sliku</string>
     <string name="scrobble_to_file">Datoteka</string>
     <string name="password">Lozinka</string>
     <string name="open_existing" comment="Append to an existing file">Dodaj postojećem</string>
     <string name="create" comment="Create a new file">Stvori</string>
     <string name="scan_qr">Skeniraj ovo za prijavu</string>
-    <string name="copy_from">Kopiraj iz</string>
-    <string name="nothing" comment="nothing/none">Ništa</string>
+    <string name="copy_from" comment="Copy from another edit field, used in regex edits screen">Kopiraj iz</string>
+    <string name="nothing" comment="select nothing/none">Ništa</string>
     <string name="borders" comment="Borders between images in the generated collage">Rubovi</string>
     <string name="ok">U redu</string>
     <string name="cancel">Odustani</string>
-    <string name="back">Natrag</string>
-    <string name="done">Gotovo</string>
+    <string name="back" comment="back button">Natrag</string>
+    <string name="done" comment="Generic done button, sometimes displayed as a tick icon">Gotovo</string>
     <string name="retry" comment="Retry loading data from network after it has failed">Pokušaj ponovo</string>
-    <string name="run_on_start">Pokretanje kod uključivanja računala</string>
+    <string name="run_on_start" comment="used on desktop">Pokretanje kod uključivanja računala</string>
     <string name="save_logs" comment="Debug logs to be saved to a text file">Spremi izvješća</string>
     <string name="contrast" comment="Color contrast, used in the themes screen">Kontrast</string>
     <string name="high" comment="As in high/medium/low">Visoko</string>
@@ -374,21 +369,21 @@
     <string name="low" comment="As in high/medium/low">Nisko</string>
     <string name="needs_plugin" comment="Used for some desktop media players">Neke aplikacije zahtijevaju dodatke</string>
     <string name="reload" comment="Reload or refresh">Osvježi</string>
-    <string name="pref_tray_icon_theme">Tema ikone u traci sustava</string>
+    <string name="pref_tray_icon_theme" comment="like dark/light/auto">Tema ikone u traci sustava</string>
     <string name="min_track_duration">Scrobblaj pjesme duže od</string>
-    <string name="automation">Upravljajte Pano Scrobblerom iz aplikacija za automatizaciju</string>
+    <string name="automation" comment="automation apps like Tasker on Android, or commandline on desktop">Upravljajte Pano Scrobblerom iz aplikacija za automatizaciju</string>
     <string name="country_for_api" formatted="true" comment="%1$s is the name of the streaming service, like Spotify, Apple Music">Država relevantna za metapodatke iz servisa %1$s</string>
     <string name="login_in_browser">Dovrši prijavu u prozoru internetskog preglednika</string>
-    <string name="edit_no_save">Ovo se neće spremiti za buduće scrobblove</string>
+    <string name="edit_no_save" comment="used in the edit dialog to not remember the edit">Ovo se neće spremiti za buduće scrobblove</string>
     <string name="also_available_on" formatted="true" comment="%1$s is the platform name, like Android, PC">Preuzmi ovu aplikaciju za %1$s</string>
-    <string name="first_artist">Koristi samo prvog izvođača</string>
-    <string name="external_metadata">Vanjski izvori metapodataka</string>
+    <string name="first_artist" comment="scrobble the first artist from a comma separated string of artists for example">Koristi samo prvog izvođača</string>
+    <string name="external_metadata" comment="Used to supplement partially missing metadata. Sources are Spotify, Deezer etc">Vanjski izvori metapodataka</string>
     <string name="line_n" formatted="true" comment="%1$s is the line number, currently used in the context of Discord Rich Presence">Linija %1$s</string>
     <string name="album_art_now_playing">Dohvati naslovnicu albuma iz značajke „Sada svira”, ako je potrebno</string>
     <string name="is_turned_off" formatted="true" comment="%1$s= the name of a web service, e.g. Spotify, %2$s=the section name in settings screen where this setting can be found">Usluga %1$s je isključena u sekciji postavki „%2$s”</string>
     <string name="discord_compact_view_line">Prikaži kao „Sluša”:</string>
     <string name="available_placeholders" formatted="true" comment="%1 = placeholder strings, e.g. $artist, $title etc.">Dostupni zamjenski tekstovi: %1$s</string>
-    <string name="show_paused_for">Prikaži pauzirane medije za</string>
+    <string name="show_paused_for" comment="Show paused media for n minutes, used for discord rich presence">Prikaži pauzirane medije za</string>
     <string name="edit_example">npr. za zamjenu izvođača 1 s izvođačem 2 bez da se mijenjaju drugi metapodaci, omogućite samo polje izvođača i popunite samo izvorno i ispravljeno ime izvođača, a ostala polja ostavite onemogućena.</string>
     <string name="when_using" formatted="true" comment="%1$s is the web service or media player name">Kada se koristi %1$s</string>
     <string name="when_not_using" formatted="true" comment="%1$s is the web service or media player name">Kada se ne koristi %1$s</string>
@@ -415,9 +410,9 @@
     <string name="missing_local_network_permission">Ova značajka zahtijeva dozvolu za spajanje na lokalnu mrežu</string>
     <string name="artist_splitting_exceptions" comment="exceptions for the use first artist feature">Iznimke razdvajanja izvođača</string>
     <string name="add_exception" comment="as in adding an exception to a rule or setting">Dodaj iznimku</string>
-    <string name="upto_n" formatted="true">Do %1$d</string>
+    <string name="upto_n" formatted="true" comment="%1 is a number">Do %1$d</string>
     <string name="add_to_app_launcher">Dodaj prečac u pokretač aplikacija</string>
-    <string name="persistent_noti_fgs">Održavaj scrobbler živim u pozadini</string>
+    <string name="persistent_noti_fgs" comment="Actually displays a persistent notification on android when enabled">Održavaj scrobbler živim u pozadini</string>
     <string name="empty_apps_list">Aplikacije će se ovdje pojaviti nakon što pustite neku pjesmu u njima</string>
     <string name="supports_ambient_apps" formatted="true" comment="%1 = comma-separated list of music recognition apps">Podržava i aplikacije za prepoznavanje glazbe, poput %1$s</string>
     <string name="persistent_noti_desc" formatted="true" comment="%1 = some names of phone manufacturers">Potrebno kod OEM-ova koji agresivno zaustavljaju pozadinske procese, poput %1$s itd.</string>

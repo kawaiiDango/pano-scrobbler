@@ -57,7 +57,7 @@
     <string name="album_art">Copertina album</string>
     <string name="artist_image">Foto artista</string>
     <string name="parse_error" comment="Title parsing error for Youtube etc">Impossibile individuare il titolo</string>
-    <string name="network_error">Errore di rete</string>
+    <string name="network_error" comment="Used as a generic fallback error message">Errore di rete</string>
     <string name="scrobble_ignored" comment="Will be prefixed by Lastfm: (e.g. Lastfm: Scrobble ignored)">Scrobble ignorato</string>
     <string name="scrobble_ignored_save_edit">Lastfm ha ignorato la modifica, probabilmente perché lo scrobble è troppo vecchio. Vorresti invece salvare questa modifica per gli scrobble futuri?</string>
     <string name="required_fields_empty" comment="Shown on filling a form">Alcuni campi obbligatori sono vuoti</string>
@@ -70,12 +70,11 @@
     <string name="album">Album</string>
     <string name="albums">Album</string>
     <string name="top_albums" comment="top albums the user has listened to, or most scrobbled albums of an artist">Album più ascoltati</string>
-    <string name="track">Brano</string>
+    <string name="track" comment="music track or song">Brano</string>
     <string name="tracks">Brani</string>
     <string name="top_tracks" comment="top tracks the user has listened to, or most scrobbled tracks of an artist">Brani più ascoltati</string>
     <string name="similar_tracks">Brani simili</string>
     <string name="state_scrobbling">Scrobbling in corso…</string>
-    <string name="state_scrobbled">Scrobbling effettuato</string>
     <string name="state_unscrobbled">Scrobbling annullato</string>
     <string name="tap_to_edit">(Tocca per modificare)</string>
     <string name="recents" comment="Short for recently scrobbled">Recenti</string>
@@ -83,8 +82,8 @@
     <string name="auto" comment="automatic or default setting">Automatico</string>
     <string name="music_players">Lettori musicali</string>
     <string name="other_apps" comment="Apps which are not music players or video streaming apps">Altre app</string>
-    <string name="choose_apps">Scegli le app</string>
-    <string name="choose_an_app">Scegli un'app</string>
+    <string name="choose_apps" comment="multi select list">Scegli le app</string>
+    <string name="choose_an_app" comment="single select list">Scegli un'app</string>
     <string name="apps" comment="Currently appears on the regex edit dialog showing the selected apps and allowing the user to add more apps">App</string>
     <string name="unavailable_offline">Non disponibile offline</string>
     <string name="tv_url_notice">Apri questo URL sul browser di un altro dispositivo</string>
@@ -104,20 +103,18 @@
     <string name="rank_change_new">Nessuno scrobbling nel periodo precedente</string>
     <string name="search">Cerca</string>
     <string name="clear_all_history" comment="(talking about search history, tag history)">Cancella cronologia</string>
-    <string name="global" comment="search globally across lastfm">Globale</string>
+    <string name="global" comment="something across entire lastfm or the scrobbling service">Globale</string>
     <string name="profile">Profilo</string>
     <string name="profile_pic">Immagine del profilo</string>
     <string name="item_options" comment="Screen reader text for 3 dots menu button">Opzioni per questo elemento</string>
     <string name="new_player" formatted="true" comment="(%1 = App name) detected (shown in notification, when a new music player is detected)">%1$s rilevata</string>
-    <string name="new_player_prompt">Vuoi continuare lo scrobbling su questa app?</string>
-    <string name="new_player_prompt_desktop">Vai alle impostazioni per iniziare lo scrobbling di quest'app</string>
-    <string name="cannot_access" comment="%1$s= the file or folder name">Impossibile accedere a %1$s</string>
-    <string name="file_exists_confirm_overwrite">Il file esiste già. Clicca di nuovo per sovrascriverlo.</string>
+    <string name="new_player_prompt" comment="when a new music player is detected on android and auto-detect new apps setting is enabled. The allowlist is opt out">Vuoi continuare lo scrobbling su questa app?</string>
+    <string name="new_player_prompt_desktop" comment="when a new music player is detected on desktop. The allowlist is opt in">Vai alle impostazioni per iniziare lo scrobbling di quest'app</string>
     <string name="no_scrobbles">Nessuna canzone per ora…</string>
     <string name="no_friends">Non segui ancora nessuno…</string>
     <string name="channel_err" comment="Its a noun">Errori di scrobbling</string>
-    <string name="new_app">Nuova app</string>
-    <string name="no_apps_enabled">Nessuna app abilitata</string>
+    <string name="new_app" comment="new media player app detected">Nuova app</string>
+    <string name="no_apps_enabled" comment="user hasn't enabled any apps for scrobbling">Nessuna app abilitata</string>
     <string name="n_more" formatted="true" comment="n more( pending scrobbles)">Altri %1$d</string>
     <string name="show_all">Mostra tutti</string>
     <string name="edit">Modifica</string>
@@ -141,7 +138,7 @@
 - E altro ancora
 - Le notifiche non sono sonore""</string>
     <string name="will_not_scrobble">Saltando questo passaggio, lo scrobbling sarà disabilitato</string>
-    <string name="swap" comment="(Swap title and artist)">Scambia</string>
+    <string name="swap" comment="button to swap title and artist">Scambia</string>
     <string name="time_just_now">adesso</string>
     <string name="no_mail_apps">Nessuna app di posta elettronica installata</string>
     <string name="add">Aggiungi nuovo elemento</string>
@@ -150,12 +147,10 @@
     <string name="simple_edits">Modifiche</string>
     <string name="charts" comment="User's top artists, albums, tracks, line chart of daily scrobble counts and tag cloud">Classifiche</string>
     <string name="tag_cloud" comment="https://www.google.com/search?&amp;q=tag+cloud">Nuvola di tag</string>
-    <string name="details">Dettagli</string>
     <string name="saved_as_pending">Salvato come scrobbling in attesa</string>
-    <string name="sort">Ordina</string>
-    <string name="time_jump" comment="Button shows scrobbles from a specific time">Salto temporale</string>
-    <string name="my_scrobbles">I miei scrobbling</string>
-    <string name="listeners">Ascoltatori</string>
+    <string name="sort" comment="to sort a list">Ordina</string>
+    <string name="time_jump" comment="Time selector dropdown to show scrobbles from a specific time">Salto temporale</string>
+    <string name="listeners" comment="number of unique users who scrobbled">Ascoltatori</string>
     <string name="scrobbles">Scrobbling</string>
     <string name="collapse" comment="(view only a few items)">Riduci</string>
     <string name="expand" comment="(view all items)">Espandi</string>
@@ -163,7 +158,7 @@
     <string name="from" formatted="true" comment="%1= country (displayed in friends popup)">Da: %1$s</string>
     <string name="not_found" comment="Shown in search">Nessun risultato</string>
     <string name="save" comment="saves a file">Salva</string>
-    <string name="saved_to_gallery">Salvato nella galleria</string>
+    <string name="saved_to_gallery" comment="used for the collage generator">Salvato nella galleria</string>
     <string name="reports" comment="Like last.week reports and stuff">Report</string>
     <string name="weekly">Settimanali</string>
     <string name="weeks">Settimane</string>
@@ -171,14 +166,14 @@
     <string name="months">Mesi</string>
     <string name="days">Giorni</string>
     <string name="years" comment="For the charts menu which displays year by year">Anni</string>
-    <string name="charts_overall">Generale</string>
+    <string name="charts_overall" comment="all time charts">Generale</string>
     <string name="listening_activity" comment="Shows a bar chart of the number of scrobbles each day/week/month/year">Attività di ascolto</string>
     <string name="charts_no_data">Nessun dato per questo periodo</string>
     <string name="charts_custom" comment="Custom date range, but in short, used in the charts menu">Personalizzato</string>
     <string name="charts_continuous" comment="Continuous date ranges, but in short, like last 7 days, last 30 days, etc">Continuo</string>
     <string name="based_on" formatted="true" comment="%1= the word 'artists', 'albums' or 'tracks'">Basato su %1$s</string>
     <string name="not_enough_data" comment="(not enough data to draw a chart etc)">Dati insufficienti</string>
-    <string name="random_text">Casuale</string>
+    <string name="random_text" comment="random scrobble or theme">Casuale</string>
     <string name="original" comment="Original metadata before editing">Originale</string>
     <string name="corrected" comment="Corrected metadata after editing">Corretto</string>
     <string name="tag" comment="last.fm tag">Tag</string>
@@ -193,15 +188,15 @@
     <string name="appwidget_loading">Caricamento…</string>
     <string name="appwidget_period" comment="1 week, 1 month, 1 year etc">Periodo</string>
     <string name="appwidget_shadow">Ombra</string>
-    <string name="appwidget_show">Mostra</string>
-    <string name="light">Chiaro</string>
-    <string name="dark">Scuro</string>
-    <string name="system_colors">Colori del sistema</string>
-    <string name="appwidget_alpha">Opacità sfondo</string>
+    <string name="appwidget_show" comment="to visually show something">Mostra</string>
+    <string name="light" comment="light theme">Chiaro</string>
+    <string name="dark" comment="dark theme">Scuro</string>
+    <string name="system_colors" comment="material you system theme colors">Colori del sistema</string>
+    <string name="appwidget_alpha" comment="app window background opacity">Opacità sfondo</string>
     <string name="appwidget_refresh_every" formatted="true" comment="%1= 'n minutes'; n is &gt;= 45">Il widget si aggiornerà ogni %1$s minuti</string>
     <string name="edit_name" comment="name for regex pattern">Nome descrittivo</string>
     <string name="edit_regex">Modello dell'Espressione Regolare (regex)</string>
-    <string name="edit_replace">Sostituisci</string>
+    <string name="edit_replace" comment="regex replace">Sostituisci</string>
     <string name="edit_first" comment="First occurrence of a pattern">Primo</string>
     <string name="edit_all" comment="All occurrences of a pattern">Tutte</string>
     <string name="edit_extract" comment="To extract sub text from a larger text, in short, used in pattern edits">Estrai</string>
@@ -212,7 +207,7 @@
     <string name="edit_regex_invalid" formatted="true" comment="%1= the regex error message">Regex non valido: %1$s</string>
     <string name="edit_regex_rules_matched" comment="the specific regex patterns that were used">Pattern utilizzati:</string>
     <string name="edit_continue">Se trovato, continua ad abbinare altri regex</string>
-    <string name="edit_case_sensitive">Differenzia maiuscole/minuscole</string>
+    <string name="edit_case_sensitive" comment="currently used for regex edits matching">Differenzia maiuscole/minuscole</string>
     <string name="edit_regex_test" comment="(Test regex rules)">Prova</string>
     <string name="edit_presets" comment="Regex presets">Preset</string>
     <string name="edit_max_patterns" formatted="true" comment="%1= max pattern count">Limite pattern raggiunto (%1$d)</string>
@@ -228,7 +223,7 @@
     <string name="hidden_tags" comment="Tags that should not be shown to the user">Tag nascoste</string>
     <string name="pin" comment="pin a friend to the top">Fissa in primo piano</string>
     <string name="unpin" comment="unpin a friend to the top">Non fissare più</string>
-    <string name="pin_limit_reached" formatted="true">Raggiunto limite di elementi fissati (%1$d)</string>
+    <string name="pin_limit_reached" formatted="true" comment="%1= the max limit">Raggiunto limite di elementi fissati (%1$d)</string>
     <string name="pin_help">Tieni premuti gli elementi in primo piano per riordinarli</string>
     <string name="use_channel" comment="(Use youtube channel name)">Usa il nome del canale YouTube</string>
     <string name="regex_edits_suggestion" formatted="true" comment="%1= the preset name (e.g. Remastered)">Vuoi abilitare la regola di modifica del pattern: %1$s?</string>
@@ -237,7 +232,7 @@
     <string name="persistent_noti_text">Tocca per nascondere</string>
     <string name="scrobbler_off">Scrobbler disattivato</string>
     <string name="scrobbler_on">Scrobbler attivato</string>
-    <string name="duration">Durata</string>
+    <string name="duration" comment="The duration of the track">Durata</string>
     <string name="total_listen_time">Tempo di ascolto totale</string>
     <string name="enable" comment="To enable some feature">Abilita</string>
     <string name="disable" comment="To disable some feature">Disattiva</string>
@@ -247,15 +242,15 @@
     <string name="create_collage">Crea collage</string>
     <string name="captions" comment="Collage image captions such as artist names, play counts">Didascalie immagini</string>
     <string name="username" comment="last.fm Username">Nome utente</string>
-    <string name="pref_master">Scrobbling di musica</string>
+    <string name="pref_master" comment="Switch to enable or disable scrobbling">Scrobbling di musica</string>
     <string name="pref_master_qs_add">Aggiungi il tile impostazioni rapide</string>
     <string name="pref_master_qs_already_addded">Tile impostazioni rapide già aggiunto</string>
     <string name="pref_noti">Notifiche</string>
     <string name="pref_offline_info">ℹ️ I preferiti &amp; gli scrobbling effettuati offline saranno salvati e inviati in seguito.</string>
     <string name="pref_scrobble_from" comment="Scrobble from (these apps)">App per lo scrobbling</string>
     <string name="pref_enabled_apps_summary">ℹ️ Supporta le app che mostrano metadati musicali. Per evitare gli scrobbling duplicati da Spotify, attiva lo scrobbling in un solo posto.</string>
-    <string name="pref_auto_detect">Scrobble automatico da nuove app</string>
-    <string name="pref_spotify_remote">Scrobble di Spotify da altri dispositivi</string>
+    <string name="pref_auto_detect" comment="Automatically scrobble from new apps when they are installed">Scrobble automatico da nuove app</string>
+    <string name="pref_spotify_remote" comment="as in Spotify Connect or whatever it is called">Scrobble di Spotify da altri dispositivi</string>
     <string name="pref_spotify_artist_search_approximate" comment="This feature actually grabs the first result from Spotify artist search regardless of what that result is">Usa ricerca approssimativa per le immagini degli artisti</string>
     <string name="pref_link_heart_button_rating">Usa il cuore nella notifica per impostare come preferito anche nel lettore musicale</string>
     <string name="pref_prevent_duplicate_ambient_scrobbles">Disabilita lo scrobbling continuo dal microfono quando il dispositivo sta riproducendo musica</string>
@@ -263,9 +258,9 @@
     <string name="pref_delay_mins" comment="(Scrobble delay in minutes)">Minuti</string>
     <string name="pref_delay_per" comment="(Scrobble delay in percent)">Percentuale</string>
     <string name="pref_logout">Esci</string>
-    <string name="sure_tap_again">Confermi? Tocca di nuovo</string>
+    <string name="sure_tap_again" comment="tap again to confirm">Confermi? Tocca di nuovo</string>
     <string name="pref_login">Accedi</string>
-    <string name="pref_about" comment="Info about this app">Informazioni</string>
+    <string name="pref_about" comment="the about section at the bottom of the settings screen">Informazioni</string>
     <string name="pref_privacy_policy">Informativa sulla privacy</string>
     <string name="pref_user_label" comment="(Like username)">Utente</string>
     <string name="pref_token_label" comment="For Listenbrainz">Token di autenticazione</string>
@@ -276,12 +271,12 @@
     <string name="pref_fetch_missing_album" formatted="true" comment="%1= the name of a service like last.fm, Deezer etc">Recupera l'album mancante da %1$s</string>
     <string name="pref_locale">Lingua</string>
     <string name="pref_crashlytics_enabled">Invia errori automaticamente</string>
-    <string name="pref_misc">Varie</string>
+    <string name="pref_misc" comment="Miscellaneous settings">Varie</string>
     <string name="pref_first_day_of_week" comment="Sunday, Monday etc">La settimana inizia da</string>
     <string name="pref_imexport" comment="As in backup or restore the settings">Importazione &amp; esportazione</string>
-    <string name="pref_export">Esporta</string>
+    <string name="pref_export" comment="backs up the settings to a file">Esporta</string>
     <string name="pref_export_desc">Esegue il backup delle impostazioni, modifiche e metadati bloccati. Non salva i dati d’accesso per ragioni di sicurezza. Utile per cambiare dispositivo o condividere con amici.</string>
-    <string name="pref_import">Importa</string>
+    <string name="pref_import" comment="restores the settings from a backup/export file">Importa</string>
     <string name="pref_imexport_network" comment="As in backup or restore the settings over network">Network</string>
     <string name="pref_imexport_code" comment="A code shown on the screen to be entered on the other device">Codice</string>
     <string name="pref_imexport_network_notice">Per la modalità network, entrambi i dispositivi devono essere connessi alla stessa rete.</string>
@@ -299,11 +294,11 @@
     <string name="existing_value" comment="starts with lowercase in english because it will be enclosed in angle brackets">dati esistenti</string>
     <string name="pref_translate">Traduci questa app</string>
     <string name="pref_translate_credits">Riconoscimenti traduzione</string>
-    <string name="pref_oss_credits">Riconoscimenti open source</string>
+    <string name="pref_oss_credits" comment="Open source libraries, licenses used in the app">Riconoscimenti open source</string>
     <string name="pref_check_updates">Ricerca degli aggiornamenti</string>
     <string name="no_updates">Nessun aggiornamento disponibile</string>
     <string name="pref_notify_updates">Aggiornamenti automatici</string>
-    <string name="update_downloaded">Aggiornamento scaricato</string>
+    <string name="update_downloaded" comment="app update">Aggiornamento scaricato</string>
     <string name="pref_search_url_template">Template URL di ricerca</string>
     <string name="pref_search_url_template_desc" comment="Do not translate $query as the user has to enter it as it is">Usa $query come placeholder per il termine di ricerca</string>
     <string name="update_available" formatted="true" comment="%1= the version number">Aggiornamento disponibile: %1$s</string>
@@ -319,42 +314,42 @@
     <string name="import_lists_keep">Unisci tenendo modifiche e lista bloccati esistenti</string>
     <string name="import_settings">Importa le configurazioni</string>
     <string name="copied">Copiato!</string>
-    <string name="lastfm_reauth">Devi accedere di nuovo per modificare o eliminare gli scrobbling</string>
+    <string name="lastfm_reauth" comment="The user needs to log out and log in again">Devi accedere di nuovo per modificare o eliminare gli scrobbling</string>
     <string name="like_instance" comment="%1= the scrobbling service name, such as last.fm, ListenBrainz">Istanza simile a %1$s</string>
-    <string name="failed_encode_url">Codificazione dell'URL fallita</string>
+    <string name="failed_encode_url" comment="used for validating url input, in some of the login screens">Codificazione dell'URL fallita</string>
     <string name="check_nls" formatted="true" comment="%1= the name Pano Scrobbler. Asks the user to check the app in notification access settings">Seleziona %1$s</string>
     <string name="no_browser">Nessun browser installato</string>
     <string name="no_player">Nessun lettore musicale installato</string>
-    <string name="not_running">⚠ Il tuo Sistema ha ucciso lo scrobbler</string>
+    <string name="not_running" comment="When the app detects that the scrobbler was not running. Usually killed by OEM-specific battery savers.">⚠ Il tuo Sistema ha ucciso lo scrobbler</string>
     <string name="kill_reason" comment="%1= reason for the app kill" formatted="true">Motivo: %1$s</string>
     <string name="login_submit" comment="Verifies the login details">Verifica</string>
     <string name="submitting_loves" formatted="true">Inviando i preferiti, %1$d rimasti</string>
     <string name="pending_batch" comment="For pending scrobbles">Inviando un insieme</string>
     <string name="bar_chart">Grafico a barre</string>
     <string name="fix_it_title">Possibili soluzioni</string>
-    <string name="fix_it_startup_title">Risparmio energetico / gestori di avvio</string>
+    <string name="fix_it_startup_title" comment="Like non standard OEM-specific battery settings on Xiaomi, Samsung, etc.">Risparmio energetico / gestori di avvio</string>
     <string name="fix_it_battery_title">Disattiva l'ottimizzazione della batteria</string>
-    <string name="fix_it_energy_title">Disattiva ottimizzazione batteria</string>
-    <string name="fix_it_action" comment="(To open an app)">Apri</string>
+    <string name="fix_it_energy_title" comment="Disable battery optimizations equivalent for TVs">Disattiva ottimizzazione batteria</string>
+    <string name="fix_it_action" comment="(To open an app, a link or a screen within pano scrobbler)">Apri</string>
     <string name="delete_account">Cancella il tuo account</string>
-    <string name="delete_account_custom_servers">Per i server personalizzati, controlla le rispettive documentazioni.</string>
+    <string name="delete_account_custom_servers" comment="used in the delete account screen">Per i server personalizzati, controlla le rispettive documentazioni.</string>
     <string name="add_photo" comment="Add or change a photo for the artist or album">Aggiungi o cambia immagine</string>
     <string name="from_gallery" comment="Pick an image for the artist or album from the device gallery">Dalla galleria</string>
-    <string name="square_photo_hint">Usa un'immagine quadrata per risultati migliori</string>
+    <string name="square_photo_hint" comment="for user picked image from their gallery, used for custom artist or album pic">Usa un'immagine quadrata per risultati migliori</string>
     <string name="scrobble_to_file">File</string>
     <string name="password">Password</string>
     <string name="open_existing" comment="Append to an existing file">Concatena a file esistente</string>
     <string name="create" comment="Create a new file">Crea</string>
     <string name="scan_qr">Scansiona per accedere</string>
-    <string name="copy_from">Copia da</string>
-    <string name="nothing" comment="nothing/none">Niente</string>
+    <string name="copy_from" comment="Copy from another edit field, used in regex edits screen">Copia da</string>
+    <string name="nothing" comment="select nothing/none">Niente</string>
     <string name="borders" comment="Borders between images in the generated collage">Bordi</string>
     <string name="ok">OK</string>
     <string name="cancel">Annulla</string>
-    <string name="back">Indietro</string>
-    <string name="done">Fatto</string>
+    <string name="back" comment="back button">Indietro</string>
+    <string name="done" comment="Generic done button, sometimes displayed as a tick icon">Fatto</string>
     <string name="retry" comment="Retry loading data from network after it has failed">Riprova</string>
-    <string name="run_on_start">Esegui all'avvio del computer</string>
+    <string name="run_on_start" comment="used on desktop">Esegui all'avvio del computer</string>
     <string name="save_logs" comment="Debug logs to be saved to a text file">Salva registri di debug</string>
     <string name="contrast" comment="Color contrast, used in the themes screen">Contrasto</string>
     <string name="high" comment="As in high/medium/low">Alto</string>
@@ -362,21 +357,21 @@
     <string name="low" comment="As in high/medium/low">Basso</string>
     <string name="needs_plugin" comment="Used for some desktop media players">Alcune app hanno bisogno di plugin</string>
     <string name="reload" comment="Reload or refresh">Ricarica</string>
-    <string name="pref_tray_icon_theme">Tema barra icone</string>
+    <string name="pref_tray_icon_theme" comment="like dark/light/auto">Tema barra icone</string>
     <string name="min_track_duration">Effettua scrobble di tracce più lunghe di</string>
-    <string name="automation">Controlla Pano Scrobbler dalle app di automazione</string>
+    <string name="automation" comment="automation apps like Tasker on Android, or commandline on desktop">Controlla Pano Scrobbler dalle app di automazione</string>
     <string name="country_for_api" formatted="true" comment="%1$s is the name of the streaming service, like Spotify, Apple Music">Paese per i metadata di %1$s</string>
     <string name="login_in_browser">Completa il login nella finestra del browser</string>
-    <string name="edit_no_save">Questo non sarà salvato per gli scrobble futuri</string>
+    <string name="edit_no_save" comment="used in the edit dialog to not remember the edit">Questo non sarà salvato per gli scrobble futuri</string>
     <string name="also_available_on" formatted="true" comment="%1$s is the platform name, like Android, PC">Scarica quest'app su %1$s</string>
-    <string name="first_artist">Usa solo il primo artista</string>
-    <string name="external_metadata">Fonti esterni di metadata</string>
+    <string name="first_artist" comment="scrobble the first artist from a comma separated string of artists for example">Usa solo il primo artista</string>
+    <string name="external_metadata" comment="Used to supplement partially missing metadata. Sources are Spotify, Deezer etc">Fonti esterni di metadata</string>
     <string name="line_n" formatted="true" comment="%1$s is the line number, currently used in the context of Discord Rich Presence">Riga %1$s</string>
     <string name="album_art_now_playing">Se necessario, recuperare la copertina dell'album dalla sezione "In riproduzione"</string>
     <string name="is_turned_off" formatted="true" comment="%1$s= the name of a web service, e.g. Spotify, %2$s=the section name in settings screen where this setting can be found">%1$s è disattivato in %2$s</string>
     <string name="discord_compact_view_line">Mostra come "in riproduzione":</string>
     <string name="available_placeholders" formatted="true" comment="%1 = placeholder strings, e.g. $artist, $title etc.">Segnaposto disponibili: %1$s</string>
-    <string name="show_paused_for">Mostra il media in pausa per</string>
+    <string name="show_paused_for" comment="Show paused media for n minutes, used for discord rich presence">Mostra il media in pausa per</string>
     <string name="when_using" formatted="true" comment="%1$s is the web service or media player name">Quando si utilizza %1$s</string>
     <string name="when_not_using" formatted="true" comment="%1$s is the web service or media player name">Quando non si utilizza %1$s</string>
     <string name="as_text" comment="Like copy as text, but in short">Come testo</string>

@@ -53,7 +53,7 @@
     <string name="album_art">Albumin kansi</string>
     <string name="artist_image">Esittäjän kuva</string>
     <string name="parse_error" comment="Title parsing error for Youtube etc">Nimeä ei voitu jäsentää</string>
-    <string name="network_error">Verkkovirhe</string>
+    <string name="network_error" comment="Used as a generic fallback error message">Verkkovirhe</string>
     <string name="scrobble_ignored" comment="Will be prefixed by Lastfm: (e.g. Lastfm: Scrobble ignored)">Scrobblaus ohitettu</string>
     <string name="scrobble_ignored_save_edit">Last.fm ohitti muokkauksen todennäköisesti koska scrobblaus on liian vanha. Haluatko sen sijaan tallentaa tämän muokkauksen tulevia scrobblauksia varten?</string>
     <string name="required_fields_empty" comment="Shown on filling a form">Pakollisia kenttiä tyhjänä</string>
@@ -66,12 +66,11 @@
     <string name="album">Albumi</string>
     <string name="albums">Albumit</string>
     <string name="top_albums" comment="top albums the user has listened to, or most scrobbled albums of an artist">Kuunnelluimmat albumit</string>
-    <string name="track">Kappale</string>
+    <string name="track" comment="music track or song">Kappale</string>
     <string name="tracks">Kappaleet</string>
     <string name="top_tracks" comment="top tracks the user has listened to, or most scrobbled tracks of an artist">Kuunnelluimmat kappaleet</string>
     <string name="similar_tracks">Samankaltaiset kappaleet</string>
     <string name="state_scrobbling">Nyt scrobblaa…</string>
-    <string name="state_scrobbled">Scrobblattu</string>
     <string name="state_unscrobbled">Scrobblaus poistettu</string>
     <string name="tap_to_edit">(Muokkaa napauttamalla)</string>
     <string name="recents" comment="Short for recently scrobbled">Viimeaikaiset</string>
@@ -79,8 +78,8 @@
     <string name="auto" comment="automatic or default setting">Automaattinen</string>
     <string name="music_players">Soittimet</string>
     <string name="other_apps" comment="Apps which are not music players or video streaming apps">Muut sovellukset</string>
-    <string name="choose_apps">Valitse sovellukset</string>
-    <string name="choose_an_app">Valitse sovellus</string>
+    <string name="choose_apps" comment="multi select list">Valitse sovellukset</string>
+    <string name="choose_an_app" comment="single select list">Valitse sovellus</string>
     <string name="apps" comment="Currently appears on the regex edit dialog showing the selected apps and allowing the user to add more apps">Sovellukset</string>
     <string name="unavailable_offline">Ei käytettävissä offline-tilassa</string>
     <string name="tv_url_notice">Avaa tämä URL-osoite selaimessa toisella laitteella</string>
@@ -97,17 +96,17 @@
     <string name="rank_change_new">Ei scrobblattu edellisessä jaksossa</string>
     <string name="search">Hae</string>
     <string name="clear_all_history" comment="(talking about search history, tag history)">Tyhjennä koko historia</string>
-    <string name="global" comment="search globally across lastfm">Maailmanlaajuinen</string>
+    <string name="global" comment="something across entire lastfm or the scrobbling service">Maailmanlaajuinen</string>
     <string name="profile">Profiili</string>
     <string name="profile_pic">Profiilikuva</string>
     <string name="item_options" comment="Screen reader text for 3 dots menu button">Tämän kohteen valinnat</string>
     <string name="new_player" formatted="true" comment="(%1 = App name) detected (shown in notification, when a new music player is detected)">%1$s havaittu</string>
-    <string name="new_player_prompt">Jatketaanko tämän sovelluksen scrobblausta?</string>
+    <string name="new_player_prompt" comment="when a new music player is detected on android and auto-detect new apps setting is enabled. The allowlist is opt out">Jatketaanko tämän sovelluksen scrobblausta?</string>
     <string name="no_scrobbles">Ei vielä kappaleita…</string>
     <string name="no_friends">Et seuraa vielä ketään…</string>
     <string name="channel_err" comment="Its a noun">Scrobblausvirheet</string>
-    <string name="new_app">Uusi sovellus</string>
-    <string name="no_apps_enabled">Ei käytössä olevia sovelluksia</string>
+    <string name="new_app" comment="new media player app detected">Uusi sovellus</string>
+    <string name="no_apps_enabled" comment="user hasn't enabled any apps for scrobbling">Ei käytössä olevia sovelluksia</string>
     <string name="n_more" formatted="true" comment="n more( pending scrobbles)">%1$d lisää</string>
     <string name="show_all">Näytä kaikki</string>
     <string name="edit">Muokkaa</string>
@@ -130,7 +129,7 @@
 - Ja muuta
 - Ilmoituksissa ei ole ääntä""</string>
     <string name="will_not_scrobble">Tämän vaiheen ohittaminen poistaa scrobblauksen käytöstä</string>
-    <string name="swap" comment="(Swap title and artist)">Vaihda</string>
+    <string name="swap" comment="button to swap title and artist">Vaihda</string>
     <string name="time_just_now">juuri äsken</string>
     <string name="no_mail_apps">Ei asennettua sähköpostisovellusta</string>
     <string name="loved" comment="Its a noun">Tykätyt</string>
@@ -138,12 +137,10 @@
     <string name="simple_edits">Muokkaukset</string>
     <string name="charts" comment="User's top artists, albums, tracks, line chart of daily scrobble counts and tag cloud">Listat</string>
     <string name="tag_cloud" comment="https://www.google.com/search?&amp;q=tag+cloud">Tunnistepilvi</string>
-    <string name="details">Lisätiedot</string>
     <string name="saved_as_pending">Tallennettu odottavana scrobblauksena</string>
-    <string name="sort">Järjestä</string>
-    <string name="time_jump" comment="Button shows scrobbles from a specific time">Aikahyppy</string>
-    <string name="my_scrobbles">Scrobblaukseni</string>
-    <string name="listeners">Kuuntelijat</string>
+    <string name="sort" comment="to sort a list">Järjestä</string>
+    <string name="time_jump" comment="Time selector dropdown to show scrobbles from a specific time">Aikahyppy</string>
+    <string name="listeners" comment="number of unique users who scrobbled">Kuuntelijat</string>
     <string name="scrobbles">Scrobblaukset</string>
     <string name="collapse" comment="(view only a few items)">Pienennä</string>
     <string name="expand" comment="(view all items)">Laajenna</string>
@@ -151,21 +148,21 @@
     <string name="from" formatted="true" comment="%1= country (displayed in friends popup)">Kotoisin: %1$s</string>
     <string name="not_found" comment="Shown in search">Ei löytynyt</string>
     <string name="save" comment="saves a file">Tallenna</string>
-    <string name="saved_to_gallery">Tallennettu galleriaan</string>
+    <string name="saved_to_gallery" comment="used for the collage generator">Tallennettu galleriaan</string>
     <string name="reports" comment="Like last.week reports and stuff">Raportit</string>
     <string name="weekly">Viikottainen</string>
     <string name="weeks">Viikot</string>
     <string name="monthly">Kuukausittainen</string>
     <string name="months">Kuukaudet</string>
     <string name="years" comment="For the charts menu which displays year by year">Vuodet</string>
-    <string name="charts_overall">Kaikki</string>
+    <string name="charts_overall" comment="all time charts">Kaikki</string>
     <string name="listening_activity" comment="Shows a bar chart of the number of scrobbles each day/week/month/year">Kuuntelutoiminta</string>
     <string name="charts_no_data">Ei tietoja tälle jaksolle</string>
     <string name="charts_custom" comment="Custom date range, but in short, used in the charts menu">Mukautettu</string>
     <string name="charts_continuous" comment="Continuous date ranges, but in short, like last 7 days, last 30 days, etc">Jatkuva</string>
     <string name="based_on" formatted="true" comment="%1= the word 'artists', 'albums' or 'tracks'">Perustuu %1$s</string>
     <string name="not_enough_data" comment="(not enough data to draw a chart etc)">Ei tarpeeksi tietoja</string>
-    <string name="random_text">Satunnainen</string>
+    <string name="random_text" comment="random scrobble or theme">Satunnainen</string>
     <string name="original" comment="Original metadata before editing">Alkuperäinen</string>
     <string name="corrected" comment="Corrected metadata after editing">Korjattu</string>
     <string name="tag" comment="last.fm tag">Tunniste</string>
@@ -179,17 +176,17 @@
     <string name="appwidget_loading">Ladataan…</string>
     <string name="appwidget_period" comment="1 week, 1 month, 1 year etc">Jakso</string>
     <string name="appwidget_shadow">Varjo</string>
-    <string name="appwidget_show">Näytä</string>
-    <string name="light">Vaalea</string>
-    <string name="dark">Tumma</string>
-    <string name="system_colors">Järjestelmän värit</string>
-    <string name="appwidget_alpha">Taustan läpinäkyvyys</string>
+    <string name="appwidget_show" comment="to visually show something">Näytä</string>
+    <string name="light" comment="light theme">Vaalea</string>
+    <string name="dark" comment="dark theme">Tumma</string>
+    <string name="system_colors" comment="material you system theme colors">Järjestelmän värit</string>
+    <string name="appwidget_alpha" comment="app window background opacity">Taustan läpinäkyvyys</string>
     <string name="appwidget_refresh_every" formatted="true" comment="%1= 'n minutes'; n is &gt;= 45">Pienoisohjelma päivittyy %1$s välein</string>
-    <string name="edit_replace">Korvaa</string>
+    <string name="edit_replace" comment="regex replace">Korvaa</string>
     <string name="edit_first" comment="First occurrence of a pattern">Ensimmäinen</string>
     <string name="edit_all" comment="All occurrences of a pattern">Kaikki</string>
     <string name="edit_extract" comment="To extract sub text from a larger text, in short, used in pattern edits">Poimi</string>
-    <string name="edit_case_sensitive">Huomioi kirjainkoko</string>
+    <string name="edit_case_sensitive" comment="currently used for regex edits matching">Huomioi kirjainkoko</string>
     <string name="edit_regex_test" comment="(Test regex rules)">Kokeile</string>
     <string name="edit_presets" comment="Regex presets">Esiasetukset</string>
     <string name="edit_drag_handle" comment="screen reader text for drag and drop button">Järjestä vetämällä</string>
@@ -201,7 +198,7 @@
     <string name="hidden_tags" comment="Tags that should not be shown to the user">Piilotetut tunnisteet</string>
     <string name="pin" comment="pin a friend to the top">Kiinnitä</string>
     <string name="unpin" comment="unpin a friend to the top">Poista kiinnitys</string>
-    <string name="pin_limit_reached" formatted="true">Kiinnitettyjen raja saavutettu (%1$d)</string>
+    <string name="pin_limit_reached" formatted="true" comment="%1= the max limit">Kiinnitettyjen raja saavutettu (%1$d)</string>
     <string name="pin_help">Paina kiinnitettyjä kohteita pitkään järjestääksesi ne uudelleen</string>
     <string name="use_channel" comment="(Use youtube channel name)">Käytä kanavan nimeä</string>
     <string name="show_persistent_noti">Näytä pysyvä ilmoitus</string>
@@ -214,23 +211,23 @@
     <string name="create_collage">Luo kollaasi</string>
     <string name="captions" comment="Collage image captions such as artist names, play counts">Kuvateksti</string>
     <string name="username" comment="last.fm Username">Käyttäjänimi</string>
-    <string name="pref_master">Scrobblaa musiikkia</string>
+    <string name="pref_master" comment="Switch to enable or disable scrobbling">Scrobblaa musiikkia</string>
     <string name="pref_master_qs_add">Lisää painikeruudukkoon</string>
     <string name="pref_master_qs_already_addded">Painike on jo lisätty painikeruudukkoon</string>
     <string name="pref_noti">Ilmoitukset</string>
     <string name="pref_offline_info">ℹ️ Offline-tilan scrobblaukset &amp; tykkäykset tallennetaan myöhemmin lähetettäväksi.</string>
     <string name="pref_scrobble_from" comment="Scrobble from (these apps)">Scrobblaa</string>
     <string name="pref_enabled_apps_summary">ℹ️ Tukee musiikin metadatan paljastavia sovelluksia. Välttääksesi kaksoiscrobblauksia Spotifysta, ota scrobblaus käyttöön vain yhdessä paikassa.</string>
-    <string name="pref_auto_detect">Scrobblaa automaattisesti uusista sovelluksista</string>
-    <string name="pref_spotify_remote">Scrobblaa Spotify muista laitteista</string>
+    <string name="pref_auto_detect" comment="Automatically scrobble from new apps when they are installed">Scrobblaa automaattisesti uusista sovelluksista</string>
+    <string name="pref_spotify_remote" comment="as in Spotify Connect or whatever it is called">Scrobblaa Spotify muista laitteista</string>
     <string name="pref_prevent_duplicate_ambient_scrobbles">Poista käytöstä jatkuva scrobblaus mikrofonista, kun laite toistaa musiikkia</string>
     <string name="pref_delay">Scrobblauksen viive (näistä ensimmäinen)</string>
     <string name="pref_delay_mins" comment="(Scrobble delay in minutes)">Minuuttia</string>
     <string name="pref_delay_per" comment="(Scrobble delay in percent)">Prosenttia</string>
     <string name="pref_logout">Kirjaudu ulos</string>
-    <string name="sure_tap_again">Varma? Napauta uudelleen</string>
+    <string name="sure_tap_again" comment="tap again to confirm">Varma? Napauta uudelleen</string>
     <string name="pref_login">Kirjaudu sisään</string>
-    <string name="pref_about" comment="Info about this app">Tietoja tästä sovelluksesta</string>
+    <string name="pref_about" comment="the about section at the bottom of the settings screen">Tietoja tästä sovelluksesta</string>
     <string name="pref_privacy_policy">Tietosuojakäytäntö</string>
     <string name="pref_user_label" comment="(Like username)">Käyttäjä</string>
     <string name="pref_token_label" comment="For Listenbrainz">Todennustunnus</string>
@@ -240,12 +237,12 @@
     <string name="pref_now_playing">Lähetä nyt soiva</string>
     <string name="pref_locale">Kielet</string>
     <string name="pref_crashlytics_enabled">Ilmoita virheistä automaattisesti</string>
-    <string name="pref_misc">Sekalaista</string>
+    <string name="pref_misc" comment="Miscellaneous settings">Sekalaista</string>
     <string name="pref_first_day_of_week" comment="Sunday, Monday etc">Viikko alkaa</string>
     <string name="pref_imexport" comment="As in backup or restore the settings">Tuonti &amp; vienti</string>
-    <string name="pref_export">Vie</string>
+    <string name="pref_export" comment="backs up the settings to a file">Vie</string>
     <string name="pref_export_desc">Varmuuskopioi asetukset, muokkaukset ja estettyjen listan. Ei tallenna kirjautumistietoja turvallisuussyistä. Hyödyllinen laitteiden välillä siirtymisessä tai kavereille jaettaessa.</string>
-    <string name="pref_import">Tuo</string>
+    <string name="pref_import" comment="restores the settings from a backup/export file">Tuo</string>
     <string name="pref_imexport_network" comment="As in backup or restore the settings over network">Verkko</string>
     <string name="pref_imexport_code" comment="A code shown on the screen to be entered on the other device">Koodi</string>
     <string name="pref_imexport_network_notice">Verkkotilassa molemmat laitteet on yhdistettävä samaan verkkoon.</string>
@@ -260,7 +257,7 @@
     <string name="pref_blocked_metadata" comment="Block things from scrobbling">Estetty metadata</string>
     <string name="pref_translate">Käännä tämä sovellus</string>
     <string name="pref_translate_credits">Käännösten tekijät</string>
-    <string name="pref_oss_credits">Avoimen lähdekoodin tekijät</string>
+    <string name="pref_oss_credits" comment="Open source libraries, licenses used in the app">Avoimen lähdekoodin tekijät</string>
     <string name="pref_check_updates">Tarkista päivitysten varalta</string>
     <string name="update_available" formatted="true" comment="%1= the version number">Päivitys saatavilla: %1$s</string>
     <string name="download" comment="Its a verb">Lataa</string>
@@ -274,25 +271,25 @@
     <string name="import_lists_keep">Yhdistä säilyttäen olemassaolevat muokkaukset ja estettyjen lista</string>
     <string name="import_settings">Tuonnin asetukset</string>
     <string name="copied">Kopioitu!</string>
-    <string name="lastfm_reauth">Sinun täytyy tunnistautua uudelleen muokataksesi tai poistaaksesi scrobblauksia</string>
-    <string name="failed_encode_url">URL-osoitteen koodaus epäonnistui</string>
+    <string name="lastfm_reauth" comment="The user needs to log out and log in again">Sinun täytyy tunnistautua uudelleen muokataksesi tai poistaaksesi scrobblauksia</string>
+    <string name="failed_encode_url" comment="used for validating url input, in some of the login screens">URL-osoitteen koodaus epäonnistui</string>
     <string name="check_nls" formatted="true" comment="%1= the name Pano Scrobbler. Asks the user to check the app in notification access settings">Tarkista %1$s</string>
     <string name="no_browser">Ei asennettua selainta</string>
     <string name="no_player">Ei asennettua musiikkisoitinta</string>
-    <string name="not_running">⚠ Järjestelmäsi tappoi scrobblerin</string>
+    <string name="not_running" comment="When the app detects that the scrobbler was not running. Usually killed by OEM-specific battery savers.">⚠ Järjestelmäsi tappoi scrobblerin</string>
     <string name="login_submit" comment="Verifies the login details">Vahvista</string>
     <string name="submitting_loves" formatted="true">Lähetetään tykkäyksiä, %1$d jäljellä</string>
     <string name="pending_batch" comment="For pending scrobbles">Lähetetään erää</string>
     <string name="bar_chart">Pylväsdiagrammi</string>
     <string name="fix_it_title">Mahdolliset korjaukset</string>
-    <string name="fix_it_startup_title">Virransäästäjät / startup-managerit</string>
+    <string name="fix_it_startup_title" comment="Like non standard OEM-specific battery settings on Xiaomi, Samsung, etc.">Virransäästäjät / startup-managerit</string>
     <string name="fix_it_battery_title">Poista akun optimointi käytöstä</string>
-    <string name="fix_it_action" comment="(To open an app)">Avaa</string>
+    <string name="fix_it_action" comment="(To open an app, a link or a screen within pano scrobbler)">Avaa</string>
     <string name="delete_account">Poista tili</string>
-    <string name="delete_account_custom_servers">Tarkista omia palvelimia varten niitä koskevat asiakirjat.</string>
+    <string name="delete_account_custom_servers" comment="used in the delete account screen">Tarkista omia palvelimia varten niitä koskevat asiakirjat.</string>
     <string name="add_photo" comment="Add or change a photo for the artist or album">Lisää tai vaihda kuva</string>
     <string name="from_gallery" comment="Pick an image for the artist or album from the device gallery">Galleriasta</string>
-    <string name="square_photo_hint">Saat parhaan tuloksen neliön muotoisella kuvalla</string>
+    <string name="square_photo_hint" comment="for user picked image from their gallery, used for custom artist or album pic">Saat parhaan tuloksen neliön muotoisella kuvalla</string>
     <string name="scrobble_to_file">Tiedosto</string>
     <string name="password">Salasana</string>
     <string name="open_existing" comment="Append to an existing file">Lisää olemassaolevaan</string>
@@ -310,7 +307,8 @@ Ostojasi hallinnoi Google Play. Ne on yhdistetty Google Play -tiliin, joka teki 
 • Poista tämän sovelluksen asennus.
 • Avaa Google Playn nettisivu koneellasi.
 • Kirjaudu sisään oston omistavalla tilillä.
-• Asenna tämä sovellus suoraan Google Playn nettisivulta.</string>
+• Asenna tämä sovellus suoraan Google Playn nettisivulta.
+</string>
     <string name="billing_block">Estä esittäjiä/kappaleita ja ohita tai mykistä automaattisesti</string>
     <string name="billing_pin_friends" formatted="true" comment="%1= number of pins, always 10 or more">Kiinnitä enintään %1$d ystävää ja järjestele heidät uudelleen</string>
     <string name="billing_sharing">Poista sovelluksen nimi jaettaessa</string>

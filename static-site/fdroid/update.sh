@@ -40,6 +40,7 @@ cp ../../fastlane/metadata/android/en-US/images/phoneScreenshots/5-random-mobile
 
 # copy icon
 cp ../../fastlane/metadata/android/en-US/images/icon.png "metadata/${PACKAGE}/en-US/icon.png"
+mkdir -p repo/icons
 cp ../../fastlane/metadata/android/en-US/images/icon.png "repo/icons/icon.png"
 
 # Run fdroid update

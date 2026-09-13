@@ -39,9 +39,8 @@ cp ../../fastlane/metadata/android/en-US/images/phoneScreenshots/4-details-mobil
 cp ../../fastlane/metadata/android/en-US/images/phoneScreenshots/5-random-mobile.jpg "metadata/${PACKAGE}/en-US/phoneScreenshots/"
 
 # copy icon
-cp ../../fastlane/metadata/android/en-US/images/icon.png "metadata/${PACKAGE}/en-US/icon.png"
-mkdir -p repo/icons
-cp ../../fastlane/metadata/android/en-US/images/icon.png "repo/icons/icon.png"
+cp ../../fastlane/metadata/android/en-US/images/icon.png metadata/${PACKAGE}/en-US/
+cp ../../fastlane/metadata/android/en-US/images/icon.png .
 
 # Run fdroid update
 fdroid update --create-metadata --use-date-from-apk

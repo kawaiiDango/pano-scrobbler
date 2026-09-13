@@ -84,6 +84,7 @@ import androidx.compose.material3.WideNavigationRailDefaults
 import androidx.compose.material3.WideNavigationRailItem
 import androidx.compose.material3.WideNavigationRailValue
 import androidx.compose.material3.adaptive.currentWindowAdaptiveInfoV2
+import androidx.compose.material3.contentColorFor
 import androidx.compose.material3.pulltorefresh.pullToRefresh
 import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.material3.rememberBottomSheetState
@@ -179,6 +180,7 @@ import com.arn.scrobble.themes.LocalThemeAttributes
 import com.arn.scrobble.ui.AvatarOrInitials
 import com.arn.scrobble.ui.LocalInnerPadding
 import com.arn.scrobble.ui.LocalModalShownTracker
+import com.arn.scrobble.ui.LocalNavDestBackground
 import com.arn.scrobble.ui.PanoPullToRefreshStateForTab
 import com.arn.scrobble.ui.PanoSnackbarVisuals
 import com.arn.scrobble.ui.PanoToggleButtonGroup
@@ -218,11 +220,16 @@ import kotlin.time.Duration.Companion.milliseconds
 fun PanoAppContent(
     draggableWrapper: (@Composable (content: @Composable (windowTitleActions: WindowTitleActions) -> Unit) -> Unit)? = null,
     onCloseLastDialog: (() -> Unit)? = null,
+    fallbackNavigationType: PanoNavigationType? = null,
     viewModel: MainViewModel = viewModel { MainViewModel() },
 ) {
     val isDialogActivity = onCloseLastDialog != null
     val sizeClass = currentWindowAdaptiveInfoV2().windowSizeClass
+
     val navigationType = when {
+        sizeClass.minWidthDp == 0 && sizeClass.minHeightDp == 0 && fallbackNavigationType != null ->
+            fallbackNavigationType
+
         sizeClass.isWidthAtLeastBreakpoint(WIDTH_DP_EXPANDED_LOWER_BOUND)
             -> PanoNavigationType.PERMANENT_NAVIGATION_DRAWER
 
@@ -314,10 +321,7 @@ fun PanoAppContent(
     var profilePopupShown by rememberSaveable { mutableStateOf(false) }
     val drawerDataMap = viewModel.drawerDataMap
 
-    val needsTransparentBg = isDialogActivity &&
-            (backStack.size <= 1 ||
-                    backStack.lastOrNull()?.isModal() == true &&
-                    currentPanoRoute == PanoRoute.Blank)
+    val transparentScaffold = isDialogActivity
 
     var lastTimePeriodDataResult by remember { mutableStateOf<TimePeriodDataResult?>(null) }
     var selectedSubTabId by remember { mutableIntStateOf(-1) }
@@ -544,10 +548,11 @@ fun PanoAppContent(
             LocalModalShownTracker provides modalShownCount,
         ) {
             Scaffold(
-                containerColor = if (needsTransparentBg)
+                containerColor = if (transparentScaffold)
                     Color.Transparent
                 else
                     MaterialTheme.colorScheme.background,
+                contentColor = contentColorFor(MaterialTheme.colorScheme.background),
                 modifier = Modifier
                     .fillMaxSize()
                     .pullToRefresh(
@@ -597,18 +602,17 @@ fun PanoAppContent(
                             scrollBehavior = null,
                             innerPaddingStart = if (navigationType != PanoNavigationType.BOTTOM_NAVIGATION) navRailWidth else 0.dp,
                             windowTitleActions = windowTitleActions,
-                            showBack = !PlatformStuff.isTv && backStack.count { !it.isModal() } > 1,
+                            containerColor = if (transparentScaffold && currentPanoRoute !is PanoRoute.Blank) Color.Unspecified else Color.Transparent,
+                            showBack = !PlatformStuff.isTv && backStack.count { !it.isModal() } > 1 && currentPanoRoute !is PanoRoute.Blank,
                             resultEventBus = resultEventBus,
                             onBack = ::goBack,
                         )
                     }
 
-                    if (!needsTransparentBg) {
-                        if (draggableWrapper != null)
-                            draggableWrapper { topAppBar(it) }
-                        else
-                            topAppBar(null)
-                    }
+                    if (draggableWrapper != null)
+                        draggableWrapper { topAppBar(it) }
+                    else
+                        topAppBar(null)
                 },
                 bottomBar = {
                     val showBottomBar =
@@ -698,6 +702,8 @@ fun PanoAppContent(
             ) { innerPadding ->
                 CompositionLocalProvider(
                     LocalInnerPadding provides innerPadding,
+                    LocalNavDestBackground provides MaterialTheme.colorScheme.background
+                        .let { if (transparentScaffold || it.alpha == 1f) it else Color.Transparent }
                 ) {
                     val topPadding =
                         PaddingValues(top = innerPadding.calculateTopPadding())
@@ -717,7 +723,7 @@ fun PanoAppContent(
                                 } else Modifier
                             )
                     ) {
-                        if (navigationType != PanoNavigationType.BOTTOM_NAVIGATION && !needsTransparentBg) {
+                        AnimatedVisibility(navigationType != PanoNavigationType.BOTTOM_NAVIGATION) {
                             PanoNavigationRail(
                                 tabs = tabData.orEmpty(),
                                 selectedTabIdx = tabIdxMap.getOrDefault(currentPanoRoute, 0),
@@ -747,7 +753,8 @@ fun PanoAppContent(
                                         )
                                     }
                                 },
-                                user = currentUser,
+                                user = if (!transparentScaffold) currentUser else null,
+                                containerColor = if (transparentScaffold && currentPanoRoute !is PanoRoute.Blank) Color.Unspecified else Color.Transparent,
                                 modifier = Modifier
                                     .padding(topPadding)
                                     .consumeWindowInsets(topPadding)
@@ -964,11 +971,11 @@ private fun PanoTopAppBar(
     scrollBehavior: TopAppBarScrollBehavior?,
     innerPaddingStart: Dp,
     resultEventBus: ResultEventBus,
-    modifier: Modifier = Modifier,
+    containerColor: Color
 ) {
-    val colors = TopAppBarDefaults.topAppBarColors().copy(
+    val colors = TopAppBarDefaults.topAppBarColors(
         titleContentColor = MaterialTheme.colorScheme.primary,
-        containerColor = Color.Transparent
+        containerColor = containerColor
     )
 
     val startPadding = innerPaddingStart.let {
@@ -1061,7 +1068,6 @@ private fun PanoTopAppBar(
     val outerTextStyle = LocalTextStyle.current
 
     TopAppBar(
-        modifier = modifier,
         contentPadding = TopAppBarDefaults.ContentPadding + PaddingValues(
             top = (verticalOverscanPadding() - TopAppBarDefaults.ContentPadding.calculateTopPadding())
                 .coerceAtLeast(0.dp),
@@ -1253,6 +1259,7 @@ private fun PanoNavigationRail(
     onProfilePopupShown: () -> Unit,
     profilePopupSlot: @Composable () -> Unit,
     user: UserCached?,
+    containerColor: Color,
     modifier: Modifier = Modifier,
 ) {
     val hasProfileButton = user != null
@@ -1270,8 +1277,8 @@ private fun PanoNavigationRail(
             WideNavigationRailValue.Collapsed
     )
 
-    val colors = WideNavigationRailDefaults.colors().copy(
-        containerColor = Color.Transparent
+    val colors = WideNavigationRailDefaults.colors(
+        containerColor = containerColor
     )
 
     val centerWithPinnedFooter = object : Arrangement.Vertical {

@@ -8,12 +8,12 @@
     <string name="search">Поиск</string>
     <string comment="(%1 = App name) detected (shown in notification, when a new music player is detected)" formatted="true" name="new_player">%1$s обнаружено</string>
     <string comment="Its a noun" name="channel_err">Ошибки скробблинга</string>
-    <string name="new_app">Новое приложение</string>
+    <string comment="new media player app detected" name="new_app">Новое приложение</string>
     <string comment="User's top artists, albums, tracks, line chart of daily scrobble counts and tag cloud" name="charts">Чарты</string>
     <string name="scrobbles">Скробблы</string>
     <string name="weekly">Еженедельно</string>
     <string name="monthly">Ежемесячно</string>
-    <string name="charts_overall">За все время</string>
+    <string comment="all time charts" name="charts_overall">За все время</string>
     <string name="charts_no_data">Нет данных за этот период</string>
     <string comment="%1= the word weekly or monthly" formatted="true" name="s_top_scrobbles">Лучшие скробблы %1$s</string>
     <string name="appwidget_loading">Загрузка…</string>

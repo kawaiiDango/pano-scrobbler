@@ -111,6 +111,20 @@ jobs:
         run: |
           winget install --id JRSoftware.InnoSetup.7 --accept-package-agreements --accept-source-agreements --disable-interactivity
 
+      - name: Download AppImageTool
+        if: matrix.os-name == 'linux'
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          arch=$(uname -m)
+          appImageToolFile="$HOME/appimagetool-$arch.AppImage"
+          gh release download continuous \
+            --repo AppImage/appimagetool \
+            --pattern "appimagetool-$arch.AppImage" \
+            --output "$appImageToolFile"
+          chmod +x "$appImageToolFile"
+
       - name: Build desktop jar and native image
         shell: bash
         run: |

@@ -8,12 +8,12 @@
     <string name="search">Ara</string>
     <string comment="(%1 = App name) detected (shown in notification, when a new music player is detected)" formatted="true" name="new_player">%1$s algılandı</string>
     <string comment="Its a noun" name="channel_err">Skrop hatası</string>
-    <string name="new_app">Yeni uygulama</string>
+    <string comment="new media player app detected" name="new_app">Yeni uygulama</string>
     <string comment="User's top artists, albums, tracks, line chart of daily scrobble counts and tag cloud" name="charts">Listeler</string>
     <string name="scrobbles">Skroplar</string>
     <string name="weekly">Haftalık</string>
     <string name="monthly">Aylık</string>
-    <string name="charts_overall">Genel</string>
+    <string comment="all time charts" name="charts_overall">Genel</string>
     <string name="charts_no_data">Bu dönem için veri yok</string>
     <string comment="%1= the word weekly or monthly" formatted="true" name="s_top_scrobbles">%1$s en çok skroplananlar</string>
     <string name="appwidget_loading">Yükleniyor…</string>

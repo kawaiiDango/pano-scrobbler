@@ -23,11 +23,16 @@ import androidx.compose.material3.FilterChip
 import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Slider
 import androidx.compose.material3.Text
+import androidx.compose.material3.adaptive.currentWindowAdaptiveInfoV2
+import androidx.compose.material3.contentColorFor
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -37,6 +42,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
+import androidx.window.core.layout.WindowSizeClass.Companion.WIDTH_DP_MEDIUM_LOWER_BOUND
 import com.arn.scrobble.R
 import com.arn.scrobble.api.AccountType
 import com.arn.scrobble.icons.Check
@@ -105,148 +111,160 @@ fun ChartsWidgetConfigScreen(
         }
     }
 
-    Column(
+    val sizeClass = currentWindowAdaptiveInfoV2().windowSizeClass
+
+    @Composable
+    fun RowOrColumn(
+        modifier: Modifier = Modifier,
+        widgetPreview: @Composable (Modifier) -> Unit,
+        content: @Composable (Modifier) -> Unit,
+    ) {
+        if (sizeClass.isWidthAtLeastBreakpoint(WIDTH_DP_MEDIUM_LOWER_BOUND)) {
+            Row(modifier = modifier) {
+                widgetPreview(Modifier.align(Alignment.CenterVertically))
+                content(Modifier.weight(1f))
+            }
+        } else {
+            Column(modifier = modifier) {
+                widgetPreview(Modifier.align(Alignment.CenterHorizontally))
+                content(Modifier.weight(1f))
+            }
+        }
+    }
+
+    RowOrColumn(
+        widgetPreview = { modifier ->
+            WidgetPreview(
+                shadow = shadow,
+                bgAlpha = bgAlpha,
+                images = images,
+                modifier = modifier
+                    .size(300.dp, 270.dp)
+            )
+        },
         modifier = Modifier
             .fillMaxSize()
             .safeContentPadding()
-    ) {
-
-        if (shadow) {
-            WidgetPreviewWithShadow(
-                bgAlpha = bgAlpha,
-                images = images,
-                modifier = Modifier
-                    .size(300.dp, 270.dp)
-                    .align(Alignment.CenterHorizontally)
-            )
-        } else {
-            WidgetPreviewWithoutShadow(
-                bgAlpha = bgAlpha,
-                images = images,
-                modifier = Modifier
-                    .size(300.dp, 270.dp)
-                    .align(Alignment.CenterHorizontally)
-            )
-        }
-
+    ) { modifier ->
         Box(
-            modifier = Modifier
-                .weight(1f)
+            modifier = modifier
                 .background(
                     color = MaterialTheme.colorScheme.surfaceContainerLow,
                     shape = MaterialTheme.shapes.large
                 )
         ) {
-            Column(
-                verticalArrangement = Arrangement.spacedBy(4.dp),
-                modifier = Modifier
-                    .fillMaxSize()
-                    .verticalScroll(scrollState)
-                    .padding(top = 16.dp, bottom = 72.dp)
-            ) {
-                Row(
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
-                    verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier.padding(horizontal = 16.dp)
+            CompositionLocalProvider(LocalContentColor provides contentColorFor(MaterialTheme.colorScheme.surfaceContainerLow)) {
+                Column(
+                    verticalArrangement = Arrangement.spacedBy(4.dp),
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .verticalScroll(scrollState)
+                        .padding(top = 16.dp, bottom = 72.dp)
                 ) {
-                    Text(
-                        text = stringResource(Res.string.scrobble_services),
-                        style = MaterialTheme.typography.titleMedium,
-                    )
+                    Row(
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier.padding(horizontal = 16.dp)
+                    ) {
+                        Text(
+                            text = stringResource(Res.string.scrobble_services),
+                            style = MaterialTheme.typography.titleMedium,
+                        )
 
-                    ButtonWithDropdown(
-                        prefixText = null,
-                        itemToTexts = accountTypesWithLabels,
-                        selected = accountType,
-                        onItemSelected = { accountType = it },
-                    )
-                }
-
-                FlowRow(
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
-                    itemVerticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier.padding(horizontal = 16.dp)
-                ) {
-                    Text(
-                        text = stringResource(Res.string.appwidget_period),
-                        style = MaterialTheme.typography.titleMedium,
-                    )
-                    widgetPeriod.forEach { (thisPeriod, thisTimePeriod) ->
-                        FilterChip(
-                            label = { Text(thisTimePeriod.name) },
-                            selected = period == thisPeriod,
-                            shapes = FilterChipDefaults.shapes(),
-                            onClick = { period = thisPeriod }
+                        ButtonWithDropdown(
+                            prefixText = null,
+                            itemToTexts = accountTypesWithLabels,
+                            selected = accountType,
+                            onItemSelected = { accountType = it },
                         )
                     }
-                }
 
-                Column(
-                    modifier = Modifier.padding(horizontal = 16.dp)
-                ) {
-                    Text(
-                        text = stringResource(Res.string.appwidget_alpha) +
-                                ": ${"%.0f".format(bgAlpha * 100)}%",
-                        style = MaterialTheme.typography.titleMedium
-                    )
-                    Slider(
-                        value = bgAlpha,
-                        onValueChange = { bgAlpha = it },
-                        valueRange = 0f..1f,
-                        steps = 100,
-                    )
-                }
-
-                LabeledCheckbox(
-                    text = stringResource(Res.string.album_art),
-                    checked = images,
-                    onCheckedChange = { images = it },
-                    isSwitch = true,
-                    modifier = Modifier.fillMaxWidth(),
-                )
-
-                LabeledCheckbox(
-                    text = stringResource(Res.string.appwidget_shadow),
-                    checked = shadow,
-                    onCheckedChange = { shadow = it },
-                    isSwitch = true,
-                    modifier = Modifier.fillMaxWidth(),
-                )
-
-                Text(
-                    text = stringResource(
-                        Res.string.appwidget_refresh_every,
-                        pluralStringResource(
-                            Res.plurals.num_hours,
-                            Stuff.CHARTS_WIDGET_REFRESH_INTERVAL_HOURS,
-                            Stuff.CHARTS_WIDGET_REFRESH_INTERVAL_HOURS,
+                    FlowRow(
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                        itemVerticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier.padding(horizontal = 16.dp)
+                    ) {
+                        Text(
+                            text = stringResource(Res.string.appwidget_period),
+                            style = MaterialTheme.typography.titleMedium,
                         )
-                    ),
-                    modifier = Modifier.padding(vertical = 8.dp, horizontal = 16.dp)
-                )
-            }
+                        widgetPeriod.forEach { (thisPeriod, thisTimePeriod) ->
+                            FilterChip(
+                                label = { Text(thisTimePeriod.name) },
+                                selected = period == thisPeriod,
+                                shapes = FilterChipDefaults.shapes(),
+                                onClick = { period = thisPeriod }
+                            )
+                        }
+                    }
 
-            FloatingActionButton(
-                onClick = {
-                    onSave(
-                        prefs.copy(
-                            accountType = accountType,
-                            period = period,
-                            images = images,
-                            bgAlpha = bgAlpha,
-                            shadow = shadow
-                        ),
-                        prefs.period != period || accountType != prefs.accountType
+                    Column(
+                        modifier = Modifier.padding(horizontal = 16.dp)
+                    ) {
+                        Text(
+                            text = stringResource(Res.string.appwidget_alpha) +
+                                    ": ${"%.0f".format(bgAlpha * 100)}%",
+                            style = MaterialTheme.typography.titleMedium
+                        )
+                        Slider(
+                            value = bgAlpha,
+                            onValueChange = { bgAlpha = it },
+                            valueRange = 0f..1f,
+                            steps = 100,
+                        )
+                    }
+
+                    LabeledCheckbox(
+                        text = stringResource(Res.string.album_art),
+                        checked = images,
+                        onCheckedChange = { images = it },
+                        isSwitch = true,
+                        modifier = Modifier.fillMaxWidth(),
                     )
-                },
-                modifier = Modifier
-                    .align(Alignment.BottomEnd)
-                    .padding(16.dp)
-            ) {
-                Icon(
-                    imageVector = Icons.Check,
-                    contentDescription = stringResource(Res.string.done)
-                )
+
+                    LabeledCheckbox(
+                        text = stringResource(Res.string.appwidget_shadow),
+                        checked = shadow,
+                        onCheckedChange = { shadow = it },
+                        isSwitch = true,
+                        modifier = Modifier.fillMaxWidth(),
+                    )
+
+                    Text(
+                        text = stringResource(
+                            Res.string.appwidget_refresh_every,
+                            pluralStringResource(
+                                Res.plurals.num_hours,
+                                Stuff.CHARTS_WIDGET_REFRESH_INTERVAL_HOURS,
+                                Stuff.CHARTS_WIDGET_REFRESH_INTERVAL_HOURS,
+                            )
+                        ),
+                        modifier = Modifier.padding(vertical = 8.dp, horizontal = 16.dp)
+                    )
+                }
+
+                FloatingActionButton(
+                    onClick = {
+                        onSave(
+                            prefs.copy(
+                                accountType = accountType,
+                                period = period,
+                                images = images,
+                                bgAlpha = bgAlpha,
+                                shadow = shadow
+                            ),
+                            prefs.period != period || accountType != prefs.accountType
+                        )
+                    },
+                    modifier = Modifier
+                        .align(Alignment.BottomEnd)
+                        .padding(16.dp)
+                ) {
+                    Icon(
+                        imageVector = Icons.Check,
+                        contentDescription = stringResource(Res.string.done)
+                    )
+                }
             }
         }
     }
@@ -259,72 +277,49 @@ private fun WidgetPreview(
     images: Boolean,
     modifier: Modifier = Modifier,
 ) {
-    AndroidView(
-        factory = { context ->
-            val layoutRes = if (shadow) {
-                R.layout.appwidget_charts_dynamic_shadow
-            } else {
-                R.layout.appwidget_charts_dynamic
-            }
-            val layout = LayoutInflater.from(context).inflate(layoutRes, null, false)
+    key(shadow) { // re-inflate the layout when shadow changes
+        AndroidView(
+            factory = { context ->
+                val layoutRes = if (shadow) {
+                    R.layout.appwidget_charts_dynamic_shadow
+                } else {
+                    R.layout.appwidget_charts_dynamic
+                }
+                val layout = LayoutInflater.from(context).inflate(layoutRes, null, false)
 
-            val listView = layout.findViewById<ListView>(R.id.appwidget_list)
-            listView.emptyView = layout.findViewById(R.id.appwidget_status)
-            listView.adapter = FakeChartsAdapter(layout.context)
+                val listView = layout.findViewById<ListView>(R.id.appwidget_list)
+                listView.emptyView = layout.findViewById(R.id.appwidget_status)
+                listView.adapter = FakeChartsAdapter(layout.context)
 
-            val headerLayout = LayoutInflater.from(context)
-                .inflate(R.layout.appwidget_list_header, layout as ViewGroup, false)
-            headerLayout.findViewById<TextView>(R.id.appwidget_period).text =
-                context.resources.getQuantityString(
-                    R.plurals.num_months,
-                    1,
-                    1
-                )
+                val headerLayout = LayoutInflater.from(context)
+                    .inflate(R.layout.appwidget_list_header, layout as ViewGroup, false)
+                headerLayout.findViewById<TextView>(R.id.appwidget_period).text =
+                    context.resources.getQuantityString(
+                        R.plurals.num_months,
+                        1,
+                        1
+                    )
 
-            listView.addHeaderView(headerLayout)
+                listView.addHeaderView(headerLayout)
 
-            layout
-        },
+                layout
+            },
 
-        update = { layout ->
-            val bg = layout.findViewById<ImageView>(R.id.appwidget_bg)
-            bg.alpha = bgAlpha
+            update = { layout ->
+                val bg = layout.findViewById<ImageView>(R.id.appwidget_bg)
+                bg.alpha = bgAlpha
 
-            val listView = layout.findViewById<ListView>(R.id.appwidget_list)
-            ((listView.adapter as? HeaderViewListAdapter)
-                ?.wrappedAdapter as? FakeChartsAdapter)
-                ?.setShowImages(images)
-        },
-        modifier = modifier
-            .padding(horizontal = 16.dp)
-            .padding(bottom = 16.dp)
-    )
-}
-
-@Composable
-fun WidgetPreviewWithShadow(
-    bgAlpha: Float,
-    images: Boolean,
-    modifier: Modifier = Modifier,
-) {
-    WidgetPreview(
-        shadow = true,
-        bgAlpha = bgAlpha,
-        images = images,
-        modifier = modifier
-    )
-}
-
-@Composable
-fun WidgetPreviewWithoutShadow(
-    bgAlpha: Float,
-    images: Boolean,
-    modifier: Modifier = Modifier,
-) {
-    WidgetPreview(
-        shadow = false,
-        bgAlpha = bgAlpha,
-        images = images,
-        modifier = modifier
-    )
+                val listView = layout.findViewById<ListView>(R.id.appwidget_list)
+                ((listView.adapter as? HeaderViewListAdapter)
+                    ?.wrappedAdapter as? FakeChartsAdapter)
+                    ?.setShowImages(images)
+            },
+            onReset = {
+                
+            },
+            modifier = modifier
+                .padding(horizontal = 16.dp)
+                .padding(bottom = 16.dp)
+        )
+    }
 }

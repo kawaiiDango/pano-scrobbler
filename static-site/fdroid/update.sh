@@ -40,9 +40,7 @@ cp ../../fastlane/metadata/android/en-US/images/phoneScreenshots/5-random-mobile
 
 # copy icon
 cp ../../fastlane/metadata/android/en-US/images/icon.png "metadata/${PACKAGE}/en-US/icon.png"
+cp ../../fastlane/metadata/android/en-US/images/icon.png "repo/icons/icon.png"
 
 # Run fdroid update
 fdroid update --create-metadata --use-date-from-apk
-
-# Replace the default icon
-cp ../../fastlane/metadata/android/en-US/images/icon.png repo/icons/icon.png

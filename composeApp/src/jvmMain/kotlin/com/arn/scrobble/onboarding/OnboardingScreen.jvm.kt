@@ -1,6 +1,5 @@
 package com.arn.scrobble.onboarding
 
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
@@ -91,7 +90,6 @@ actual fun OnboardingScreen(
 
     Column(
         modifier = modifier,
-        verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
 
         OnboardingTopRow(

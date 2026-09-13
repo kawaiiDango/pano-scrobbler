@@ -10,7 +10,6 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:importantForAccessibility="no"
-        android:alpha="0.6"
         android:src="@drawable/shape_widget_rounded_bg" />
 
     <LinearLayout

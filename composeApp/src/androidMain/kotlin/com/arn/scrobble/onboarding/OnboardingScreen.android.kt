@@ -333,7 +333,6 @@ actual fun OnboardingScreen(
 
     Column(
         modifier = modifier.testTagsAsResId(),
-        verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
 
         OnboardingTopRow(

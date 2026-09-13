@@ -1,17 +1,11 @@
 package com.arn.scrobble.navigation
 
-import androidx.compose.foundation.ScrollState
-import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.ime
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.max
 import androidx.navigation3.runtime.EntryProviderScope
 import androidx.navigation3.runtime.result.LocalResultEventBus
 import com.arn.scrobble.api.AccountType
@@ -32,7 +26,7 @@ import com.arn.scrobble.onboarding.ShowLinkDialog
 import com.arn.scrobble.pref.MediaSearchPrefDialog
 import com.arn.scrobble.pref.ProxyPrefDialog
 import com.arn.scrobble.ui.getActivityOrNull
-import com.arn.scrobble.ui.panoContentPadding
+import com.arn.scrobble.ui.navModal
 import com.arn.scrobble.ui.verticalOverscanPadding
 import com.arn.scrobble.updates.ChangelogDialog
 import com.arn.scrobble.updates.UpdateAvailableDialog
@@ -247,38 +241,6 @@ fun EntryProviderScope<PanoRoute>.panoModalNavGraph(
         )
     }
 }
-
-
-@Composable
-fun Modifier.navModal(
-    scrollState: ScrollState = rememberScrollState(),
-    sides: Boolean = true,
-    expanded: Boolean = false
-) = fillMaxWidth()
-    .then(
-        if (expanded) Modifier
-            // ime inset gets "stuck" in expanded mode otherwise
-            .padding(
-                bottom = with(LocalDensity.current) {
-                    WindowInsets.ime.getBottom(this)
-                        .coerceAtLeast(0)
-                        .toDp()
-                }
-            )
-        else Modifier
-        // bottom sheets have their own ime padding
-    )
-    .verticalScroll(scrollState)
-    .then(
-        if (expanded)
-            Modifier.padding(panoContentPadding(sides = sides))
-        else
-            Modifier.padding(
-                start = if (sides) 24.dp else 0.dp,
-                end = if (sides) 24.dp else 0.dp,
-                bottom = max(verticalOverscanPadding(), 16.dp)
-            )
-    )
 
 inline fun <reified K : PanoRoute.Modal> EntryProviderScope<PanoRoute>.modalEntry(
     noinline content: @Composable (K) -> Unit,

@@ -8,12 +8,12 @@
     <string name="search">جستجو</string>
     <string comment="(%1 = App name) detected (shown in notification, when a new music player is detected)" formatted="true" name="new_player">%1$s رو تشخیص‌دادم</string>
     <string comment="Its a noun" name="channel_err">خطای اسکرابل</string>
-    <string name="new_app">برنامه جدید</string>
+    <string comment="new media player app detected" name="new_app">برنامه جدید</string>
     <string comment="User's top artists, albums, tracks, line chart of daily scrobble counts and tag cloud" name="charts">نمودارها</string>
     <string name="scrobbles">اسکرابل‌شده</string>
     <string name="weekly">هفتگی</string>
     <string name="monthly">ماهانه</string>
-    <string name="charts_overall">درمجموع</string>
+    <string comment="all time charts" name="charts_overall">درمجموع</string>
     <string name="charts_no_data">چیزی تو این بازه نیست</string>
     <string comment="%1= the word weekly or monthly" formatted="true" name="s_top_scrobbles">%1$s اسکرابل برتر</string>
     <string name="appwidget_loading">درحال بارگیری…</string>

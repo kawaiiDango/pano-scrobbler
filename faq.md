@@ -20,14 +20,14 @@ The location of these settings will depend on your MIUI / HyperOS version
 - Search for "Never sleeping apps" in the system settings
 - Add the app to the list
 
-Go to [dontkillmyapp.com](https://dontkillmyapp.com), click on your mobile
-manufacturer's name on the site and follow all the steps in there.
+Go to [dontkillmyapp.com](https://dontkillmyapp.com), click on your mobile manufacturer's name on
+the site and follow all the steps in there.
 
 It may be impossible to use this app on a stock ROM from certain manufacturers, due to the said
 restrictions.
 
-Most custom ROMs do not have such restrictions, and the app should work out of the box without
-changing any battery settings.
+Most custom ROMs and Pixel stock ROMs do not have such restrictions, and the app should work out of
+the box without changing any battery settings.
 
 ### [android] The app says that scrobbling is disabled
 
@@ -185,8 +185,8 @@ experience, use WebScrobbler on web browsers, instead.
 ### [desktop] The app does not show notifications on Windows
 
 To show notifications on Windows, the app's ID must be registered with the OS and linked to its
-start menu shortcut. This is done by the installer in install mode. So, it won't work if you
-are using it portable mode or have removed the start menu shortcut.
+start menu shortcut. This is done by the installer in install mode. So, it won't work if you are
+using it portable mode or have removed the start menu shortcut.
 
 ### The login WebView does not load [FAQ-wv]
 

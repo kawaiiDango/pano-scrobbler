@@ -8,12 +8,12 @@
     <string name="search">Cerca</string>
     <string comment="(%1 = App name) detected (shown in notification, when a new music player is detected)" formatted="true" name="new_player">%1$s detectat</string>
     <string comment="Its a noun" name="channel_err">Errors d\'scrobble</string>
-    <string name="new_app">Aplicació nova</string>
+    <string comment="new media player app detected" name="new_app">Aplicació nova</string>
     <string comment="User's top artists, albums, tracks, line chart of daily scrobble counts and tag cloud" name="charts">Gràfics</string>
     <string name="scrobbles">Scrobbles</string>
     <string name="weekly">Setmanal</string>
     <string name="monthly">Mensual</string>
-    <string name="charts_overall">Total</string>
+    <string comment="all time charts" name="charts_overall">Total</string>
     <string name="charts_no_data">No hi ha dades d\'aquest període</string>
     <string comment="%1= the word weekly or monthly" formatted="true" name="s_top_scrobbles">Top %1$s de cançons</string>
     <string name="appwidget_loading">S\'està carregant…</string>

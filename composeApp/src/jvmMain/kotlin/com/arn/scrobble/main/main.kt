@@ -25,6 +25,8 @@ import androidx.compose.ui.window.WindowPlacement
 import androidx.compose.ui.window.application
 import androidx.compose.ui.window.rememberWindowState
 import androidx.lifecycle.compose.LifecycleStartEffect
+import androidx.window.core.layout.WindowSizeClass.Companion.WIDTH_DP_EXPANDED_LOWER_BOUND
+import androidx.window.core.layout.WindowSizeClass.Companion.WIDTH_DP_MEDIUM_LOWER_BOUND
 import co.touchlab.kermit.Logger
 import co.touchlab.kermit.Severity
 import com.arn.scrobble.BuildKonfig
@@ -36,6 +38,7 @@ import com.arn.scrobble.discordrpc.DiscordRpc
 import com.arn.scrobble.logger.JavaUtilFileLogger
 import com.arn.scrobble.media.PlayingTrackNotifyEvent
 import com.arn.scrobble.media.notifyPlayingTrackEvent
+import com.arn.scrobble.navigation.PanoNavigationType
 import com.arn.scrobble.pref.AppItem
 import com.arn.scrobble.themes.AppTheme
 import com.arn.scrobble.themes.DayNightMode
@@ -678,8 +681,22 @@ fun main(args: Array<String>) {
                         }
                     }
 
+                    // https://youtrack.jetbrains.com/issue/CMP-8821/LocalWindowInfo.current.containerSize-is-first-initialized-to-00
+                    val initialNavigationType = remember {
+                        when {
+                            windowState.size.width >= WIDTH_DP_EXPANDED_LOWER_BOUND.dp
+                                -> PanoNavigationType.PERMANENT_NAVIGATION_DRAWER
+
+                            windowState.size.width >= WIDTH_DP_MEDIUM_LOWER_BOUND.dp
+                                -> PanoNavigationType.NAVIGATION_RAIL
+
+                            else -> PanoNavigationType.BOTTOM_NAVIGATION
+                        }
+                    }
+
                     PanoAppContent(
                         draggableWrapper = if (isTranslucentAwtWindow) ::draggableWrapper else null,
+                        fallbackNavigationType = initialNavigationType
                     )
                 }
             }

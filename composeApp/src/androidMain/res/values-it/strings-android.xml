@@ -8,12 +8,12 @@
     <string name="search">Cerca</string>
     <string comment="(%1 = App name) detected (shown in notification, when a new music player is detected)" formatted="true" name="new_player">%1$s rilevata</string>
     <string comment="Its a noun" name="channel_err">Errori di scrobbling</string>
-    <string name="new_app">Nuova app</string>
+    <string comment="new media player app detected" name="new_app">Nuova app</string>
     <string comment="User's top artists, albums, tracks, line chart of daily scrobble counts and tag cloud" name="charts">Classifiche</string>
     <string name="scrobbles">Scrobbling</string>
     <string name="weekly">Settimanali</string>
     <string name="monthly">Mensili</string>
-    <string name="charts_overall">Generale</string>
+    <string comment="all time charts" name="charts_overall">Generale</string>
     <string name="charts_no_data">Nessun dato per questo periodo</string>
     <string comment="%1= the word weekly or monthly" formatted="true" name="s_top_scrobbles">Più ascoltati %1$s</string>
     <string name="appwidget_loading">Caricamento…</string>

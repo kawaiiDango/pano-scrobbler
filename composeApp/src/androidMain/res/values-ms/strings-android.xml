@@ -8,12 +8,12 @@
     <string name="search">Cari</string>
     <string comment="(%1 = App name) detected (shown in notification, when a new music player is detected)" formatted="true" name="new_player">%1$s dikesan</string>
     <string comment="Its a noun" name="channel_err">Scrobble ralat</string>
-    <string name="new_app">Aplikasi baru</string>
+    <string comment="new media player app detected" name="new_app">Aplikasi baru</string>
     <string comment="User's top artists, albums, tracks, line chart of daily scrobble counts and tag cloud" name="charts">Carta</string>
     <string name="scrobbles">Scrobble</string>
     <string name="weekly">Mingguan</string>
     <string name="monthly">Bulanan</string>
-    <string name="charts_overall">Kesemua</string>
+    <string comment="all time charts" name="charts_overall">Kesemua</string>
     <string name="charts_no_data">Tiada data untuk masa ini</string>
     <string comment="%1= the word weekly or monthly" formatted="true" name="s_top_scrobbles">%1$s scrobble terbanyak</string>
     <string name="appwidget_loading">Sedang proses…</string>

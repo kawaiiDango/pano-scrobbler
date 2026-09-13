@@ -8,12 +8,12 @@
     <string name="search">ढुंढे</string>
     <string comment="(%1 = App name) detected (shown in notification, when a new music player is detected)" formatted="true" name="new_player">%1$s मिला</string>
     <string comment="Its a noun" name="channel_err">स्क्रौब्ल की त्रुटिया</string>
-    <string name="new_app">नया एप्लिकेशन</string>
+    <string comment="new media player app detected" name="new_app">नया एप्लिकेशन</string>
     <string comment="User's top artists, albums, tracks, line chart of daily scrobble counts and tag cloud" name="charts">चार्ट</string>
     <string name="scrobbles">स्क्रौब्ल</string>
     <string name="weekly">साप्ताहिक</string>
     <string name="monthly">मासिक</string>
-    <string name="charts_overall">सम्पूर्ण काल</string>
+    <string comment="all time charts" name="charts_overall">सम्पूर्ण काल</string>
     <string name="charts_no_data">इस अवधि का डेटा नहीं है</string>
     <string comment="%1= the word weekly or monthly" formatted="true" name="s_top_scrobbles">%1$s शीर्ष स्क्रोबल</string>
     <string name="appwidget_loading">लोड हो रहा है…</string>

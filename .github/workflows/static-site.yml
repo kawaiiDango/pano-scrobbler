@@ -46,6 +46,8 @@ jobs:
         run: bash static-site/fdroid/generate_metadata.sh 2>&1
 
       - name: Run update script
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: cd static-site/fdroid && bash update.sh 2>&1
 
       - name: Generate sitemap

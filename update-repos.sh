@@ -15,7 +15,10 @@ if [[ ! -v NO_CONTAINER && -z "${IN_CONTAINER:-}" ]]; then
     -v "$(realpath "$netlifyDir"):/netlify-root:z" \
     -w /scripts \
     -v "/run/user/$(id -u)/gnupg/S.gpg-agent:/root/.gnupg/S.gpg-agent" \
-    -v ~/.gnupg/pubring.kbx:/root/.gnupg/pubring.kbx:ro \
+    -v "/run/user/$(id -u)/gnupg/S.keyboxd:/root/.gnupg/S.keyboxd" \
+    -v "$HOME/.gnupg/public-keys.d:/root/.gnupg/public-keys.d:ro" \
+    -v "$HOME/.gnupg/trustdb.gpg:/root/.gnupg/trustdb.gpg:ro" \
+    -v "$HOME/.gnupg/common.conf:/root/.gnupg/common.conf:ro" \
     docker.io/archlinux:base \
     bash -c "pacman -Sy --noconfirm jq ed tinyxxd nix git dpkg && bash /scripts/$(basename "$0")"
 fi

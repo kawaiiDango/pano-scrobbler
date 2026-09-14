@@ -432,6 +432,14 @@
     <string name="random_on_start" comment="currently used as a toggle in the themes screen to pick a random theme when the app starts">Случайная при запуске</string>
     <string name="edit_continue_simple" comment="a toggle in the normal edits screen">Если найдено, продолжить редактирование с регулярными выражениями &amp; предустановками</string>
     <string name="edit_continue_regex" comment="a toggle in the regex edits screen">Если найдено, продолжить редактирование с другими регулярными выражениями &amp; предустановками</string>
+    <string name="pause_for" comment="Pause scrobbling for a some time">Приостановить на</string>
+    <string name="button_url" comment="used for the button in discord rich presence">URL-адрес кнопки</string>
+    <string name="websites" comment="websites that user is scrobbling from">Веб-сайты</string>
+    <string name="websites_desc">Применяется ко всем включенным медиаплеерам, которые сообщают о URL страницы через MPRIS.</string>
+    <string name="forget_checked_websites" comment="Forget enabled/allowlisted websites">Забыть проверенные веб-сайты</string>
+    <string name="last_error" comment="most recent error, used for pending scrobbles as of now">Последняя ошибка</string>
+    <string name="rate_limit_warn">Отправка слишком большого количества скробблов в день может привести к тому, что служба скробблинга отклонит их, что увеличит ваш бэклог.</string>
+    <string name="unsupported_api" comment="currently used for custom ListenBrainz-like and last.fm-like logins. This is displayed when custom ones does not support the full feature set">Этот API может не поддерживаться сервером. Посмотреть в сети.</string>
     <string name="get_pro">Поддержите приложение</string>
     <string name="one_time_purchase">Разово</string>
     <string name="help">Помощь</string>

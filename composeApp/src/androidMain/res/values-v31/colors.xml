@@ -2,6 +2,6 @@
 <resources>
     <!-- Copied from jetpack glance -->
     <color name="widgetBg">@android:color/system_accent2_50</color>
-    <color name="widgetFg">@android:color/system_accent2_900</color>
+    <color name="widgetFg">@android:color/system_accent1_900</color>
     <color name="widgetPrimary">@android:color/system_accent3_900</color>
 </resources>

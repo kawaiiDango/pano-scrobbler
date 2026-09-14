@@ -3,13 +3,13 @@
     <objectAnimator
         android:propertyName="scaleX"
         android:valueFrom="0.5"
-        android:valueTo="0.6"
+        android:valueTo="0.7"
         android:duration="@integer/splash_screen_duration"
-        android:interpolator="@android:interpolator/fast_out_slow_in"/>
+        android:interpolator="@android:interpolator/fast_out_slow_in" />
     <objectAnimator
         android:propertyName="scaleY"
         android:valueFrom="0.5"
-        android:valueTo="0.6"
+        android:valueTo="0.7"
         android:duration="@integer/splash_screen_duration"
-        android:interpolator="@android:interpolator/fast_out_slow_in"/>
+        android:interpolator="@android:interpolator/fast_out_slow_in" />
 </set>

@@ -68,13 +68,13 @@ import pano_scrobbler.composeapp.generated.resources.fix_it_startup_title
 import pano_scrobbler.composeapp.generated.resources.grant_notification_access
 import pano_scrobbler.composeapp.generated.resources.grant_notification_access_desc
 import pano_scrobbler.composeapp.generated.resources.notification_access_tv
-import pano_scrobbler.composeapp.generated.resources.persistent_noti_desc
 import pano_scrobbler.composeapp.generated.resources.persistent_noti_fgs
-import pano_scrobbler.composeapp.generated.resources.persistent_noti_oems
+import pano_scrobbler.composeapp.generated.resources.persistent_noti_hide
 import pano_scrobbler.composeapp.generated.resources.pref_login
 import pano_scrobbler.composeapp.generated.resources.pref_scrobble_from
 import pano_scrobbler.composeapp.generated.resources.send_notifications
 import pano_scrobbler.composeapp.generated.resources.send_notifications_desc
+import pano_scrobbler.composeapp.generated.resources.show_persistent_noti
 import pano_scrobbler.composeapp.generated.resources.will_not_scrobble
 
 
@@ -180,10 +180,8 @@ private fun NotificationListenerStep(
                 },
                 supportingContent = {
                     Text(
-                        text = stringResource(
-                            Res.string.persistent_noti_desc,
-                            stringResource(Res.string.persistent_noti_oems)
-                        ),
+                        text = stringResource(Res.string.show_persistent_noti) + "\n" +
+                                stringResource(Res.string.persistent_noti_hide),
                     )
                 },
                 colors = ListItemDefaults.myTransparentCheckableItemColors()

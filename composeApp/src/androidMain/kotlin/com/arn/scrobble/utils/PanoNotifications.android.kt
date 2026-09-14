@@ -77,6 +77,9 @@ actual object PanoNotifications {
             Stuff.MANUFACTURER_TRANSSION,
             Stuff.MANUFACTURER_INFINIX,
         )
+                // even pixels on A17 QPR2 need this now
+                || Build.VERSION.SDK_INT == 37 && Build.getMinorSdkVersion(Build.VERSION.SDK_INT_FULL) >= 2
+                || Build.VERSION.SDK_INT > 37
                 || PlatformStuff.isTv
     }
 

@@ -27,9 +27,8 @@ import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.getString
 import org.jetbrains.compose.resources.stringResource
 import pano_scrobbler.composeapp.generated.resources.Res
-import pano_scrobbler.composeapp.generated.resources.persistent_noti_desc
 import pano_scrobbler.composeapp.generated.resources.persistent_noti_fgs
-import pano_scrobbler.composeapp.generated.resources.persistent_noti_oems
+import pano_scrobbler.composeapp.generated.resources.persistent_noti_hide
 import pano_scrobbler.composeapp.generated.resources.pref_master_qs_add
 import pano_scrobbler.composeapp.generated.resources.pref_master_qs_already_addded
 import pano_scrobbler.composeapp.generated.resources.pref_noti
@@ -140,10 +139,8 @@ actual object PlatformSpecificPrefs {
             ) { title ->
                 SwitchPref(
                     text = title,
-                    summary = stringResource(
-                        Res.string.persistent_noti_desc,
-                        stringResource(Res.string.persistent_noti_oems)
-                    ) + "\n" + stringResource(Res.string.show_persistent_noti),
+                    summary = stringResource(Res.string.show_persistent_noti) + "\n" +
+                            stringResource(Res.string.persistent_noti_hide),
                     value = notiPersistent,
                     copyToSave = {
                         copy(notiPersistent = it)

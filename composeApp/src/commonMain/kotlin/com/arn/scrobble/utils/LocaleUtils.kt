@@ -49,6 +49,8 @@ object LocaleUtils {
     )
     // localesSet end
 
+    val langCodesMap = localesMap.mapKeys { (k, _) -> k.substringBefore('-') }
+
     private val localeFile = File(PlatformStuff.filesDir, "locale.txt")
     val setLocaleFlow = MutableSharedFlow<String?>(extraBufferCapacity = 2)
     val locale = setLocaleFlow

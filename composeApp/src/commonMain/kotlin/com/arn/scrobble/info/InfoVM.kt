@@ -65,11 +65,12 @@ class InfoVM(
                 .first()
 
             if (useLastFm) {
-                _lang.value = PlatformStuff.mainPrefs.data.map { it.wikiLang }.first()
+                _lang.value =
+                    PlatformStuff.mainPrefs.data.map { it.wikiLangs.firstOrNull() }.first()
 
-                _lang.collectLatest {
+                _lang.collectLatest { lang ->
                     _infoMap.value = withContext(Dispatchers.IO) {
-                        fetchInfos(infos, _username, it)
+                        fetchInfos(infos, _username, lang.takeIf { it != "en" })
                     }
                     _infoLoaded.emit(true)
                 }
@@ -83,7 +84,7 @@ class InfoVM(
         }
     }
 
-    fun setLang(lang: String?) {
+    fun setLang(lang: String) {
         _lang.value = lang
     }
 

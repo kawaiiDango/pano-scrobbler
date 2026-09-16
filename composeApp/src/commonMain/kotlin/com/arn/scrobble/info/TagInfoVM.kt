@@ -20,16 +20,18 @@ class TagInfoVM(tag: Tag) : ViewModel() {
 
     init {
         viewModelScope.launch {
-            _lang.value = PlatformStuff.mainPrefs.data.map { it.wikiLang }.first()
+            _lang.value = PlatformStuff.mainPrefs.data.map { it.wikiLangs.firstOrNull() }.first()
 
             _lang.collectLatest { lang ->
-                _info.value = Requesters.lastfmUnauthedRequester.getTagInfo(tag.name, lang = lang)
+                _info.value = Requesters.lastfmUnauthedRequester.getTagInfo(
+                    tag.name,
+                    lang = lang.takeIf { it != "en" })
                     .getOrDefault(tag)
             }
         }
     }
 
-    fun setLang(lang: String?) {
+    fun setLang(lang: String) {
         _lang.value = lang
     }
 }

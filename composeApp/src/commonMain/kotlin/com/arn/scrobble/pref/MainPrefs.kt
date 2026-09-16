@@ -34,7 +34,6 @@ import kotlinx.serialization.json.decodeFromStream
 import kotlinx.serialization.json.encodeToStream
 import java.io.InputStream
 import java.io.OutputStream
-import java.util.Locale
 import kotlin.time.Duration.Companion.days
 
 
@@ -130,8 +129,7 @@ data class MainPrefs(
     val lastfmApiAlways: Boolean = false,
     private val logToFileOnAndroidSince: Long = -1,
     val lovesFetchedForCache: Boolean = false,
-    private val _showWikiLangSelector: Boolean? = null,
-    val wikiLang: String? = null,
+    val wikiLangs: Set<String> = setOf("en"),
     val extractFirstArtistPackages: Set<String> = emptySet(),
     val discordRpc: DiscordRpcPrefs = DiscordRpcPrefs(),
     val proxy: ProxyPrefs = ProxyPrefs(),
@@ -257,9 +255,6 @@ data class MainPrefs(
 
     val logToFileOnAndroid
         get() = (System.currentTimeMillis() - logToFileOnAndroidSince) <= 15.days.inWholeMilliseconds
-
-    val showWikiLangSelectorP
-        get() = _showWikiLangSelector == null && Locale.getDefault().language != "en" || _showWikiLangSelector == true
 
     fun allowOrBlockAppCopied(appId: String, allow: Boolean): MainPrefs {
         //create copies

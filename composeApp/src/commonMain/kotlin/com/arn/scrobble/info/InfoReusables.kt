@@ -45,7 +45,6 @@ import androidx.compose.ui.input.key.type
 import androidx.compose.ui.layout.boundsInParent
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.platform.LocalLocale
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -67,6 +66,7 @@ import com.arn.scrobble.ui.backgroundForShimmer
 import com.arn.scrobble.ui.rememberClippedPainter
 import com.arn.scrobble.ui.shapedClickable
 import com.arn.scrobble.ui.shimmerWindowBounds
+import com.arn.scrobble.utils.LocaleUtils
 import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff
 import com.arn.scrobble.utils.Stuff.format
@@ -76,7 +76,6 @@ import pano_scrobbler.composeapp.generated.resources.Res
 import pano_scrobbler.composeapp.generated.resources.collapse
 import pano_scrobbler.composeapp.generated.resources.expand
 import pano_scrobbler.composeapp.generated.resources.no_wiki
-import java.util.Locale
 
 @Composable
 fun InfoWikiText(
@@ -84,9 +83,9 @@ fun InfoWikiText(
     maxLinesWhenCollapsed: Int,
     expanded: Boolean,
     onExpandToggle: () -> Unit,
-    selectedLang: String?,
-    langOverride: Boolean,
-    onSelectedLang: ((String?) -> Unit)?,
+    wikiLangs: Set<String>,
+    selectedLang: String,
+    onSelectedLang: (String) -> Unit,
     scrollState: ScrollState, // from vertically scrollable column
     modifier: Modifier = Modifier,
 ) {
@@ -103,7 +102,7 @@ fun InfoWikiText(
     val noWikiText = stringResource(Res.string.no_wiki)
 
     val displayText by remember(text) {
-        val t = if (text.isBlank() && langOverride) {
+        val t = if (text.isBlank() && wikiLangs.size > 1) {
             noWikiText
         } else text.replaceFirst(
             """<a href="https?://[^"]+">Read more on Last\.fm</a>""".toRegex(),
@@ -238,9 +237,10 @@ fun InfoWikiText(
                 }
             }
 
-            if (onSelectedLang != null) {
+            if (wikiLangs.size > 1) {
                 WikiLangSelector(
                     selected = selectedLang,
+                    items = wikiLangs,
                     onSelected = onSelectedLang,
                     modifier = Modifier
                         .align(Alignment.TopEnd)
@@ -350,23 +350,12 @@ fun InfoCounts(
 
 @Composable
 private fun WikiLangSelector(
-    selected: String?,
-    onSelected: (String?) -> Unit,
+    selected: String,
+    items: Set<String>,
+    onSelected: (String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     var dropDownShown by remember { mutableStateOf(false) }
-    val currentLocale = LocalLocale.current
-    val nullLang = "en"
-    val items = remember {
-        val (part1, part2) = Stuff.lastfmSupportedLanguageOverrides.partition { it == currentLocale.language }
-        listOf(null) + part1 + part2
-    }
-    val displayLangs = remember {
-        items.map { item ->
-            val locale = Locale(item ?: nullLang)
-            locale.getDisplayLanguage(locale)
-        }
-    }
 
     FilledTonalToggleButton(
         checked = dropDownShown,
@@ -374,7 +363,7 @@ private fun WikiLangSelector(
         buttonSize = ToggleButtonSize.ExtraSmall,
         modifier = modifier
     ) {
-        Text(selected ?: nullLang)
+        Text(selected)
         Icon(
             rememberClippedPainter(Icons.ArrowDropDown, 16.dp),
             contentDescription = null
@@ -384,7 +373,7 @@ private fun WikiLangSelector(
             expanded = dropDownShown,
             onDismissRequest = { dropDownShown = false }
         ) {
-            (items zip displayLangs).forEach { (item, displayLang) ->
+            items.forEach { item ->
                 item(
                     onClick = {
                         onSelected(item)
@@ -392,7 +381,8 @@ private fun WikiLangSelector(
                     },
                     enabled = item != selected,
                     text = {
-                        Text(displayLang)
+                        val displayText = LocaleUtils.langCodesMap[item] ?: item
+                        Text(displayText)
                     }
                 )
             }

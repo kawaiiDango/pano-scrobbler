@@ -132,9 +132,8 @@ fun MusicEntryInfoDialog(
             Stuff.TYPE_ALBUM_ARTISTS,
         )
     }
-    val pLang by PlatformStuff.mainPrefs.data.collectAsStateWithInitialValue { it.wikiLang }
-    val showWikiLangSelector by PlatformStuff.mainPrefs.data.collectAsStateWithInitialValue { it.showWikiLangSelectorP }
-    var selectedLang by rememberSaveable(pLang) { mutableStateOf(pLang) }
+    val wikiLangs by PlatformStuff.mainPrefs.data.collectAsStateWithInitialValue { it.wikiLangs }
+    var selectedLang by rememberSaveable { mutableStateOf(wikiLangs.firstOrNull() ?: "en") }
     var isLoved by rememberSaveable { mutableStateOf<Boolean?>(null) }
     var expandedHeaderType by rememberSaveable { mutableIntStateOf(-1) }
     var expandedWikiType by rememberSaveable { mutableIntStateOf(-1) }
@@ -332,7 +331,7 @@ fun MusicEntryInfoDialog(
                 )
             }
 
-            if (useLastfm) {
+            if (useLastfm && infoLoaded) {
                 InfoWikiText(
                     text = entry.wiki?.content.orEmpty(),
                     maxLinesWhenCollapsed = 3,
@@ -340,14 +339,12 @@ fun MusicEntryInfoDialog(
                     onExpandToggle = {
                         expandedWikiType = if (expandedWikiType == type) -1 else type
                     },
+                    wikiLangs = wikiLangs,
                     selectedLang = selectedLang,
-                    langOverride = pLang != selectedLang,
-                    onSelectedLang = if (showWikiLangSelector) {
-                        {
-                            selectedLang = it
-                            viewModel.setLang(it)
-                        }
-                    } else null,
+                    onSelectedLang = {
+                        selectedLang = it
+                        viewModel.setLang(it)
+                    },
                     scrollState = scrollState,
                     modifier = Modifier
                         .fillMaxWidth()

@@ -195,8 +195,8 @@ fun PrefsScreen(
     mainPrefs.data.collectAsStateWithInitialValue { it.preventDuplicateAmbientScrobbles }
     val submitNowPlaying by
     mainPrefs.data.collectAsStateWithInitialValue { it.submitNowPlaying }
-    val showWikiLangSelector by
-    mainPrefs.data.collectAsStateWithInitialValue { it.showWikiLangSelectorP }
+    val wikiLangs by
+    mainPrefs.data.collectAsStateWithInitialValue { it.wikiLangs }
     val notiPersistent by
     mainPrefs.data.collectAsStateWithInitialValue { it.notiPersistent }
     val checkForUpdates by
@@ -921,10 +921,12 @@ fun PrefsScreen(
         }
 
         filteredItem("languages_lastfm_wiki", Res.string.wiki_lang_selector) { title ->
-            SwitchPref(
+            MultiSelectDropdownPref(
                 text = title,
-                value = showWikiLangSelector,
-                copyToSave = { copy(_showWikiLangSelector = it) },
+                selectedValues = wikiLangs,
+                values = listOf("en") + Stuff.lastfmSupportedLanguageOverrides,
+                toLabel = { LocaleUtils.langCodesMap[it] ?: it },
+                copyToSave = { copy(wikiLangs = it.ifEmpty { setOf("en") }) },
             )
         }
 

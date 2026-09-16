@@ -7,18 +7,23 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.CheckableDropdownMenuItem
 import androidx.compose.material3.DropdownMenuGroup
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.DropdownMenuPopup
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MenuAnchorPosition
 import androidx.compose.material3.MenuDefaults
 import androidx.compose.material3.MenuItemShapes
-import androidx.compose.material3.SelectableDropdownMenuItem
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
+import com.arn.scrobble.icons.Check
+import com.arn.scrobble.icons.Icons
+import com.arn.scrobble.panoicons.CircleMedium
+import com.arn.scrobble.panoicons.PanoIcons
 
 class PanoMenuScope {
     val entries = mutableListOf<@Composable ColumnScope.(shape: MenuItemShapes) -> Unit>()
@@ -27,33 +32,50 @@ class PanoMenuScope {
         text: @Composable () -> Unit,
         onClick: () -> Unit,
         enabled: Boolean = true,
-        selected: Boolean? = null,
         leadingIcon: @Composable (() -> Unit)? = null,
         trailingContent: @Composable (() -> Unit)? = null,
         supportingText: @Composable (() -> Unit)? = null,
     ) {
         entries += { shapes ->
-            if (selected == null)
-                DropdownMenuItem(
-                    onClick = onClick,
-                    enabled = enabled,
-                    text = text,
-                    shape = shapes.shape,
-                    leadingIcon = leadingIcon,
-                    trailingContent = trailingContent,
-                    supportingText = supportingText,
-                )
-            else
-                SelectableDropdownMenuItem(
-                    onClick = onClick,
-                    enabled = enabled,
-                    text = text,
-                    shapes = shapes,
-                    leadingIcon = leadingIcon,
-                    trailingContent = trailingContent,
-                    supportingText = supportingText,
-                    selected = selected
-                )
+            DropdownMenuItem(
+                onClick = onClick,
+                enabled = enabled,
+                text = text,
+                shape = shapes.shape,
+                leadingIcon = leadingIcon,
+                trailingContent = trailingContent,
+                supportingText = supportingText,
+            )
+        }
+    }
+
+    fun checkableItem(
+        text: @Composable () -> Unit,
+        checked: Boolean,
+        onCheckedChange: (Boolean) -> Unit,
+        enabled: Boolean = true,
+        trailingContent: @Composable (() -> Unit)? = null,
+        supportingText: @Composable (() -> Unit)? = null,
+    ) {
+        entries += { shapes ->
+            CheckableDropdownMenuItem(
+                checked = checked,
+                onCheckedChange = onCheckedChange,
+                enabled = enabled,
+                text = text,
+                shapes = shapes,
+                leadingIcon = {
+                    Icon(
+                        imageVector = if (checked)
+                            Icons.Check
+                        else
+                            PanoIcons.CircleMedium,
+                        contentDescription = null
+                    )
+                },
+                trailingContent = trailingContent,
+                supportingText = supportingText,
+            )
         }
     }
 

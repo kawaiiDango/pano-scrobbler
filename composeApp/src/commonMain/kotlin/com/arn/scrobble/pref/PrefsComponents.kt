@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.ListItemDefaults
+import androidx.compose.material3.MenuDefaults
 import androidx.compose.material3.Slider
 import androidx.compose.material3.SplitButtonDefaults
 import androidx.compose.material3.SplitButtonLayout
@@ -191,6 +192,74 @@ fun <T> DropdownPref(
                             },
                             enabled = selectedValue != value
                         )
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun MultiSelectDropdownPref(
+    text: String,
+    selectedValues: Set<String>,
+    values: Iterable<String>,
+    toLabel: (String) -> String,
+    copyToSave: MainPrefs.(Set<String>) -> MainPrefs,
+    modifier: Modifier = Modifier,
+    enabled: Boolean = true,
+) {
+    var expanded by remember { mutableStateOf(false) }
+    var selectedSet by remember { mutableStateOf(selectedValues) }
+
+    ListItem(
+        modifier = modifier,
+        enabled = enabled,
+        checked = expanded,
+        colors = ListItemDefaults.myCheckableItemColors(),
+        verticalAlignment = Alignment.CenterVertically,
+        onCheckedChange = { expanded = it },
+        supportingContent = {
+            Text(
+                text = selectedSet.joinToString(),
+            )
+        },
+    ) {
+        Row(
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Text(text)
+            Icon(
+                imageVector = Icons.ArrowDropDown,
+                contentDescription = null,
+            )
+            Box {
+                PanoDropdownMenu(
+                    expanded = expanded,
+                    onDismissRequest = {
+                        Stuff.appScope.launch { mainPrefs.updateData { it.copyToSave(selectedSet) } }
+                        expanded = false
+                    }
+                ) {
+                    values.forEachIndexed { index, value ->
+                        checkableItem(
+                            text = { Text(text = toLabel(value)) },
+                            checked = value in selectedSet,
+                            onCheckedChange = {
+                                if (it) {
+                                    selectedSet += value
+                                } else {
+                                    selectedSet -= value
+                                }
+                            }
+                        )
+
+                        if (index < values.count() - 1) {
+                            custom {
+                                Spacer(modifier = Modifier.height(MenuDefaults.GroupSpacing))
+                            }
+                        }
                     }
                 }
             }

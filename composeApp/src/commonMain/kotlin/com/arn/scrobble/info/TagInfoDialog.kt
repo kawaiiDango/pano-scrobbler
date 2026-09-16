@@ -41,9 +41,8 @@ fun TagInfoDialog(
 ) {
     val info by viewModel.info.collectAsStateWithLifecycle()
     var wikiExpanded by rememberSaveable(isExpanded) { mutableStateOf(isExpanded) }
-    val pLang by PlatformStuff.mainPrefs.data.collectAsStateWithInitialValue { it.wikiLang }
-    val showWikiLangSelector by PlatformStuff.mainPrefs.data.collectAsStateWithInitialValue { it.showWikiLangSelectorP }
-    var selectedLang by rememberSaveable(pLang) { mutableStateOf(pLang) }
+    val wikiLangs by PlatformStuff.mainPrefs.data.collectAsStateWithInitialValue { it.wikiLangs }
+    var selectedLang by rememberSaveable { mutableStateOf(wikiLangs.firstOrNull() ?: "en") }
 
     Column(
         verticalArrangement = Arrangement.spacedBy(8.dp),
@@ -85,25 +84,25 @@ fun TagInfoDialog(
             }
         }
 
-        InfoWikiText(
-            text = info?.wiki?.content.orEmpty(),
-            maxLinesWhenCollapsed = 10,
-            expanded = wikiExpanded,
-            onExpandToggle = {
-                wikiExpanded = !wikiExpanded
-                onExpand()
-            },
-            selectedLang = selectedLang,
-            langOverride = pLang != selectedLang,
-            onSelectedLang = if (showWikiLangSelector) {
-                {
+        if (info != null) {
+            InfoWikiText(
+                text = info?.wiki?.content.orEmpty(),
+                maxLinesWhenCollapsed = 10,
+                expanded = wikiExpanded,
+                onExpandToggle = {
+                    wikiExpanded = !wikiExpanded
+                    onExpand()
+                },
+                wikiLangs = wikiLangs,
+                selectedLang = selectedLang,
+                onSelectedLang = {
                     selectedLang = it
                     viewModel.setLang(it)
-                }
-            } else null,
-            scrollState = scrollState,
-            modifier = Modifier
-                .fillMaxWidth()
-        )
+                },
+                scrollState = scrollState,
+                modifier = Modifier
+                    .fillMaxWidth()
+            )
+        }
     }
 }

@@ -13,7 +13,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import com.arn.scrobble.icons.ArrowDropDown
-import com.arn.scrobble.icons.Check
 import com.arn.scrobble.icons.Icons
 import com.arn.scrobble.ui.AlertDialogOk
 import com.arn.scrobble.ui.PanoDropdownMenu
@@ -63,21 +62,13 @@ actual fun HelpSaveLogsButton(
                     expanded = menuShown,
                     onDismissRequest = { menuShown = false },
                 ) {
-                    item(
-                        leadingIcon = if (logToFile) {
-                            {
-                                Icon(
-                                    imageVector = Icons.Check,
-                                    contentDescription = null,
-                                )
-                            }
-                        } else null,
+                    checkableItem(
                         text = {
                             Text(stringResource(Res.string.log_to_file))
                         },
-                        selected = logToFile,
-                        onClick = {
-                            newCheckedState = !logToFile
+                        checked = logToFile,
+                        onCheckedChange = {
+                            newCheckedState = it
                         }
                     )
 

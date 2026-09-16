@@ -40,7 +40,10 @@ fun OssCreditsScreen(
         verticalArrangement = Arrangement.spacedBy(2.dp),
         modifier = modifier
     ) {
-        items(libraries?.libraries ?: emptyList()) { library ->
+        items(
+            libraries?.libraries ?: emptyList(),
+            key = { it.uniqueId + it.artifactVersion }
+        ) { library ->
             LibraryItem(
                 library,
                 modifier = Modifier

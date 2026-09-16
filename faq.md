@@ -64,8 +64,9 @@ have a last.fm pro subscription, due to the method used for editing.
 - Check your activity privacy settings (Discord settings > Activity Privacy). "Share my activity"
   should be enabled. Check if "Where I share activity" settings are correct.
 - Make sure that you are not invisible on Discord.
-- The native Discord desktop app (i.e. not the website version) must be running.
-- Do not add Pano scrobbler as a game.
+- The native Discord desktop app, not the website version, must be running.
+- Discord should be running as the same user as Pano Scrobbler (e.g. do not run them as admin)
+- Do not add Pano Scrobbler as a game.
 
 ### Pictures of some artists are missing even though they have a picture on last.fm
 

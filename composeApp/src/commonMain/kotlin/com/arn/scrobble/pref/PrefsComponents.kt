@@ -44,6 +44,7 @@ import com.arn.scrobble.ui.myCheckableItemColors
 import com.arn.scrobble.ui.myTransparentCheckableItemColors
 import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff
+import com.arn.scrobble.utils.Stuff.format
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
@@ -202,15 +203,16 @@ fun <T> DropdownPref(
 @Composable
 fun MultiSelectDropdownPref(
     text: String,
-    selectedValues: Set<String>,
-    values: Iterable<String>,
+    checkedValues: Set<String>,
+    values: Set<String>,
     toLabel: (String) -> String,
     copyToSave: MainPrefs.(Set<String>) -> MainPrefs,
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
 ) {
     var expanded by remember { mutableStateOf(false) }
-    var selectedSet by remember { mutableStateOf(selectedValues) }
+    var checkedSet by remember { mutableStateOf(checkedValues) }
+    val orderedValues = remember(checkedValues) { checkedSet + (values - checkedSet) }
 
     ListItem(
         modifier = modifier,
@@ -221,7 +223,7 @@ fun MultiSelectDropdownPref(
         onCheckedChange = { expanded = it },
         supportingContent = {
             Text(
-                text = selectedSet.joinToString(),
+                text = checkedSet.joinToString(),
             )
         },
     ) {
@@ -238,24 +240,34 @@ fun MultiSelectDropdownPref(
                 PanoDropdownMenu(
                     expanded = expanded,
                     onDismissRequest = {
-                        Stuff.appScope.launch { mainPrefs.updateData { it.copyToSave(selectedSet) } }
+                        Stuff.appScope.launch { mainPrefs.updateData { it.copyToSave(checkedSet) } }
                         expanded = false
                     }
                 ) {
-                    values.forEachIndexed { index, value ->
+                    orderedValues.forEachIndexed { index, value ->
+                        val checked = value in checkedSet
+
                         checkableItem(
                             text = { Text(text = toLabel(value)) },
-                            checked = value in selectedSet,
+                            checked = checked,
                             onCheckedChange = {
                                 if (it) {
-                                    selectedSet += value
+                                    checkedSet += value
                                 } else {
-                                    selectedSet -= value
+                                    checkedSet -= value
                                 }
-                            }
+                            },
+                            trailingContent = if (checked) {
+                                {
+                                    val pos = remember(checkedSet) {
+                                        (checkedSet.indexOf(value) + 1).format()
+                                    }
+                                    Text(text = pos)
+                                }
+                            } else null
                         )
 
-                        if (index < values.count() - 1) {
+                        if (index < values.size - 1) {
                             custom {
                                 Spacer(modifier = Modifier.height(MenuDefaults.GroupSpacing))
                             }

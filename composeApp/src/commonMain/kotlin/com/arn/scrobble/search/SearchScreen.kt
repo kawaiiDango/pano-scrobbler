@@ -147,7 +147,10 @@ fun SearchScreen(
                 emptyText { stringResource(Res.string.not_found) }
 
         } else if (searchResults != null) {
-            items(10) {
+            items(
+                10,
+                key = { "shimmer_$it" }
+            ) {
                 MusicEntryListItem(
                     getMusicEntryPlaceholderItem(Stuff.TYPE_TRACKS),
                     forShimmer = true,

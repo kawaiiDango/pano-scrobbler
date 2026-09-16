@@ -136,10 +136,10 @@ fun FriendsScreen(
     val friendsExtraDataMap by viewModel.friendsExtraDataMap.collectAsStateWithLifecycle()
     val friendsExtraDataMapState = remember { mutableStateMapOf<String, FriendExtraData>() }
     val pinnedFriends by viewModel.pinnedFriends.collectAsStateWithLifecycle()
-    var pinnedFriendsReordered by remember { mutableStateOf(pinnedFriends) }
+    var pinnedFriendsReordered by remember { mutableStateOf(pinnedFriends.orEmpty()) }
 
     val pinnedUsernamesSet by remember(pinnedFriendsReordered) {
-        mutableStateOf(pinnedFriends.map { it.name }.toSet())
+        mutableStateOf(pinnedFriends.orEmpty().map { it.name }.toSet())
     }
     val sortedFriends by viewModel.sortedFriends.collectAsStateWithLifecycle()
     val lastFriendsRefreshTime by viewModel.lastFriendsRefreshTime.collectAsStateWithLifecycle()
@@ -176,8 +176,9 @@ fun FriendsScreen(
     val followingText = stringResource(Res.string.following)
 
     LaunchedEffect(pinnedFriends) {
-        if (showPinned) {
-            pinnedFriendsReordered = pinnedFriends
+        val pf = pinnedFriends
+        if (showPinned && pf != null) {
+            pinnedFriendsReordered = pf
         }
     }
 
@@ -380,7 +381,9 @@ fun FriendsScreen(
 
             friends.apply {
                 when {
-                    loadState.refresh is LoadState.Loading -> {
+                    loadState.refresh is LoadState.Loading &&
+                            pinnedFriendsReordered.size == pinnedFriends?.size // has loaded from disk
+                        -> {
                         items(8) { // don't put key here, top items are not scrolled to initially, otherwise
                             FriendItemShimmer(
                                 modifier = Modifier.animateItem()

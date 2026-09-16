@@ -473,7 +473,10 @@ fun LazyListScope.scrobblesPlaceholdersAndErrors(
 ) {
     when {
         tracks.loadState.refresh is LoadState.Loading -> {
-            items(10) {
+            items(
+                10,
+                key = { "shimmer_$it" }
+            ) {
                 MusicEntryListItem(
                     getMusicEntryPlaceholderItem(Stuff.TYPE_TRACKS),
                     forShimmer = true,

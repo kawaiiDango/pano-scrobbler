@@ -22,6 +22,7 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
@@ -52,7 +53,7 @@ class FriendsVM(user: UserCached, private val showPinned: Boolean) : ViewModel()
                     it.distinctBy { it.name } // hotfix for crash
                         .sortedBy { it.order }
                 }
-                .stateIn(viewModelScope, SharingStarted.Lazily, emptyList())
+                .stateIn(viewModelScope, SharingStarted.Lazily, null)
         else
             MutableStateFlow<List<UserCached>>(emptyList()).asStateFlow()
 
@@ -77,7 +78,7 @@ class FriendsVM(user: UserCached, private val showPinned: Boolean) : ViewModel()
         }
     ).flow
         .cachedIn(viewModelScope)
-        .combine(pinnedFriends) { pagingData, pinnedFriends ->
+        .combine(pinnedFriends.filterNotNull()) { pagingData, pinnedFriends ->
             val keysTillNow = pinnedFriends.map { it.name }.toMutableSet()
 
             pagingData.filter {
@@ -132,10 +133,11 @@ class FriendsVM(user: UserCached, private val showPinned: Boolean) : ViewModel()
 
     fun addPinAndSave(user: UserCached) {
         if (!showPinned) return
+        val pinnedFriends = pinnedFriends.value ?: return
 
-        val newUser = user.copy(order = pinnedFriends.value.size)
+        val newUser = user.copy(order = pinnedFriends.size)
 
-        if (pinnedFriends.value.size < Stuff.MAX_PINNED_FRIENDS) {
+        if (pinnedFriends.size < Stuff.MAX_PINNED_FRIENDS) {
             viewModelScope.launch {
                 mainPrefs.updateData {
                     it.copy(
@@ -216,13 +218,15 @@ class FriendsVM(user: UserCached, private val showPinned: Boolean) : ViewModel()
     }
 
     private suspend fun refreshPins() {
+        val pinnedFriends = pinnedFriends.value ?: return
+
         supervisorScope {
             val lastfmSession =
                 Scrobblables.current as? LastFm
                     ?: return@supervisorScope
             var modifiedCount = 0
             val now = System.currentTimeMillis()
-            val newPinnedFriends = pinnedFriends.value
+            val newPinnedFriends = pinnedFriends
                 .filter { now - it.lastUpdated > Stuff.PINNED_FRIENDS_CACHE_TIME }
                 .mapConcurrently(2) { userSerializable ->
 

@@ -199,7 +199,7 @@ fun ImageSearchScreen(
         } else if (searchError == null && useSpotify) {
             items(
                 10,
-                key = { it }
+                key = { "shimmer_$it" }
             ) {
                 MusicEntryListItem(
                     Track(

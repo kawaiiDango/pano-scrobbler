@@ -1,2 +1,2 @@
 - Language selector in artist, album, track and tag wiki
-- Bug fixes
+- Fixed webview not loading on Windows

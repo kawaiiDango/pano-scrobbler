@@ -939,7 +939,10 @@ fun EntriesRow(
             modifier = if (shimmer) Modifier.shimmerWindowBounds() else Modifier
         ) {
             if (shimmer) {
-                items(4) { idx ->
+                items(
+                    4,
+                    key = { "shimmer_$it" }
+                ) { idx ->
                     MusicEntryGridItem(
                         placeholderItem,
                         forShimmer = true,

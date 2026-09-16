@@ -923,8 +923,8 @@ fun PrefsScreen(
         filteredItem("languages_lastfm_wiki", Res.string.wiki_lang_selector) { title ->
             MultiSelectDropdownPref(
                 text = title,
-                selectedValues = wikiLangs,
-                values = listOf("en") + Stuff.lastfmSupportedLanguageOverrides,
+                checkedValues = wikiLangs,
+                values = setOf("en") + Stuff.lastfmSupportedLanguageOverrides,
                 toLabel = { LocaleUtils.langCodesMap[it] ?: it },
                 copyToSave = { copy(wikiLangs = it.ifEmpty { setOf("en") }) },
             )

@@ -215,7 +215,7 @@ fun AppListScreen(
         ) {
             itemsIndexed(
                 items = items,
-                key = { idx, appItem -> appItem.appId }
+                key = { idx, appItem -> "app_" + appItem.appId }
             ) { idx, appItem ->
 
                 val showAppId =
@@ -251,6 +251,7 @@ fun AppListScreen(
         ) {
             items(
                 count,
+                key = { "shimmer_$it" }
             ) {
                 AppListItem(
                     appItem = null,
@@ -383,7 +384,10 @@ fun AppListScreen(
                     }
 
                     if (pluginsNeededExpanded) {
-                        items(viewModel.pluginsNeeded) { (appName, pluginUrl) ->
+                        items(
+                            viewModel.pluginsNeeded,
+                            key = { (appName, _) -> "plugin_$appName" }
+                        ) { (appName, pluginUrl) ->
                             ListItem(
                                 onClick = {
                                     PlatformStuff.openInBrowser(pluginUrl)

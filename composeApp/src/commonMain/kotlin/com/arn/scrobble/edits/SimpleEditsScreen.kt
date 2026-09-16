@@ -85,6 +85,7 @@ fun SimpleEditsScreen(
                 }
                 items(
                     shimmerEdits,
+                    key = { "shimmer_$it" }
                 ) { edit ->
                     SimpleEditItem(
                         edit,

@@ -249,7 +249,7 @@ object Stuff {
     )
 
     val lastfmSupportedLanguageOverrides = setOf(
-        "de", "es", "fr", "it", "ja", "pl", "pt", "ru", "sv", "tr", "zh"
+        "de", "es", "fr", "it", "pl", "pt", "sv", "tr", "ru", "zh", "ja"
     )
 
     var isRunningInTest = false

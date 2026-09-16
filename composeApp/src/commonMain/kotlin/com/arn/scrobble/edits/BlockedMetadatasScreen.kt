@@ -80,7 +80,10 @@ fun BlockedMetadatasScreen(
                         albumArtist = "",
                     )
                 }
-                items(shimmerEdits) {
+                items(
+                    shimmerEdits,
+                    key = { "shimmer_$it" }
+                ) {
                     BlockedMetadataItem(
                         it,
                         forShimmer = true,

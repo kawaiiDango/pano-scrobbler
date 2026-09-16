@@ -248,7 +248,7 @@ object Stuff {
         "https://libre.fm/reset.php",
     )
 
-    private val lastfmSupportedLanguageOverrides = setOf(
+    val lastfmSupportedLanguageOverrides = setOf(
         "de", "es", "fr", "it", "ja", "pl", "pt", "ru", "sv", "tr", "zh"
     )
 
@@ -419,17 +419,22 @@ object Stuff {
         }
     }
 
-    fun localizeLastfmUrl(url: String): String {
-        if (url.startsWith("https://www.last.fm/") || url.startsWith("https://last.fm/")) {
-            val lang = Locale.getDefault().language
-            return if (lang in lastfmSupportedLanguageOverrides) {
-                url.replace("last.fm/", "last.fm/$lang/")
-            } else {
-                url
-            }
+    fun localizeLastfmUrl(url: String, lang: String? = Locale.getDefault().language): String {
+        val httpsUrl = when {
+            url.startsWith("http://www.last.fm/") -> url.replaceFirst("http://", "https://")
+            url.startsWith("http://last.fm/") -> url.replaceFirst("http://", "https://")
+            else -> url
         }
 
-        return url
+        val prefix = listOf("https://www.last.fm/", "https://last.fm/")
+            .firstOrNull { httpsUrl.startsWith(it) } ?: return url
+
+        if (lang !in lastfmSupportedLanguageOverrides) return httpsUrl
+
+        val rest = httpsUrl.removePrefix(prefix)
+        if (rest.substringBefore('/') in lastfmSupportedLanguageOverrides) return httpsUrl
+
+        return "$prefix$lang/$rest"
     }
 
     fun HttpRequestBuilder.cacheStrategy(cacheStrategy: CacheStrategy) {

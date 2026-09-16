@@ -4,16 +4,32 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.arn.scrobble.api.Requesters
 import com.arn.scrobble.api.lastfm.Tag
-import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.stateIn
+import com.arn.scrobble.utils.PlatformStuff
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.launch
 
 
 class TagInfoVM(tag: Tag) : ViewModel() {
-    val info = flow {
-        val result = Requesters.lastfmUnauthedRequester.tagGetInfo(tag.name)
-            .getOrDefault(tag)
-        emit(result)
-    }.stateIn(viewModelScope, SharingStarted.Lazily, null)
+    private val _lang = MutableStateFlow<String?>(null)
+    private val _info = MutableStateFlow<Tag?>(null)
+    val info = _info.asStateFlow()
 
+    init {
+        viewModelScope.launch {
+            _lang.value = PlatformStuff.mainPrefs.data.map { it.wikiLang }.first()
+
+            _lang.collectLatest { lang ->
+                _info.value = Requesters.lastfmUnauthedRequester.getTagInfo(tag.name, lang = lang)
+                    .getOrDefault(tag)
+            }
+        }
+    }
+
+    fun setLang(lang: String?) {
+        _lang.value = lang
+    }
 }

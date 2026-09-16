@@ -17,6 +17,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
@@ -34,6 +35,7 @@ class InfoVM(
     val infoMap = _infoMap.asStateFlow()
     private val _infoLoaded = MutableStateFlow(false)
     val infoLoaded = _infoLoaded.asStateFlow()
+    private val _lang = MutableStateFlow<String?>(null)
     lateinit var originalEntriesMap: Map<Int, MusicEntry>
 
     private val _userTags = MutableStateFlow<Map<Int, Set<String>>>(emptyMap())
@@ -58,15 +60,20 @@ class InfoVM(
             _userTags.emit(emptyMap())
             _infoMap.emit(infos)
 
-            if (PlatformStuff.mainPrefs.data
-                    .map { it.lastfmApiAlways || it.currentAccountType == AccountType.LASTFM }
-                    .first()
-            ) {
-                _infoMap.value = withContext(Dispatchers.IO) {
-                    fetchInfos(infos, _username)
+            val useLastFm = PlatformStuff.mainPrefs.data
+                .map { it.lastfmApiAlways || it.currentAccountType == AccountType.LASTFM }
+                .first()
+
+            if (useLastFm) {
+                _lang.value = PlatformStuff.mainPrefs.data.map { it.wikiLang }.first()
+
+                _lang.collectLatest {
+                    _infoMap.value = withContext(Dispatchers.IO) {
+                        fetchInfos(infos, _username, it)
+                    }
+                    _infoLoaded.emit(true)
                 }
             }
-            _infoLoaded.emit(true)
         }
     }
 
@@ -74,6 +81,10 @@ class InfoVM(
         viewModelScope.launch(Dispatchers.IO) {
             ScrobbleEverywhere.loveOrUnlove(track, loved)
         }
+    }
+
+    fun setLang(lang: String?) {
+        _lang.value = lang
     }
 
     private fun createInitialData(entryp: MusicEntry): Map<Int, MusicEntry> {
@@ -105,6 +116,7 @@ class InfoVM(
     private suspend fun fetchInfos(
         infoMapp: Map<Int, MusicEntry>,
         username: String?,
+        lang: String?,
     ) = supervisorScope {
         val infoMap = infoMapp.toMutableMap()
 
@@ -115,7 +127,7 @@ class InfoVM(
         var trackFetched: Track? = null
 
         if (track != null) {
-            Requesters.lastfmUnauthedRequester.getTrackInfo(track, username)
+            Requesters.lastfmUnauthedRequester.getTrackInfo(track, username, lang = lang)
                 .onSuccess {
                     infoMap[Stuff.TYPE_TRACKS] = it
                     trackFetched = it
@@ -125,20 +137,25 @@ class InfoVM(
         }
 
         if (artist != null) {
-            Requesters.lastfmUnauthedRequester.getArtistInfo(artist, username).onSuccess {
-                infoMap[Stuff.TYPE_ARTISTS] = it
-            }
+            Requesters.lastfmUnauthedRequester.getArtistInfo(artist, username, lang = lang)
+                .onSuccess {
+                    infoMap[Stuff.TYPE_ARTISTS] = it
+                }
         }
 
         if (trackFetched?.album?.artist != null && trackFetched.album.artist.name.lowercase() != artist?.name?.lowercase()) {
-            Requesters.lastfmUnauthedRequester.getArtistInfo(trackFetched.album.artist, username)
+            Requesters.lastfmUnauthedRequester.getArtistInfo(
+                trackFetched.album.artist,
+                username,
+                lang = lang
+            )
                 .onSuccess {
                     infoMap[Stuff.TYPE_ALBUM_ARTISTS] = it
                 }
         }
 
         if (album != null) {
-            Requesters.lastfmUnauthedRequester.getAlbumInfo(album, username)
+            Requesters.lastfmUnauthedRequester.getAlbumInfo(album, username, lang = lang)
                 .onSuccess {
                     infoMap[Stuff.TYPE_ALBUMS] = it
                 }

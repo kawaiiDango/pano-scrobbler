@@ -1,0 +1,2 @@
+- Language selector in artist, album, track and tag wiki
+- Bug fixes

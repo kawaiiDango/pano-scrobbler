@@ -86,11 +86,12 @@ class LastFmUnauthedRequester {
 
     suspend fun getTrackInfo2(
         musicEntry: Track,
-    ) = getTrackInfo(musicEntry, null)
+    ) = getTrackInfo(musicEntry)
 
     suspend fun getTrackInfo(
         musicEntry: Track,
         username: String? = null,
+        lang: String? = null
     ) = client.getResult<TrackInfoResponse> {
         url(Stuff.LASTFM_API_ROOT)
         parameter("username", username)
@@ -99,6 +100,7 @@ class LastFmUnauthedRequester {
         parameter("method", "track.getInfo")
         doubleEncodePlusParam("artist", musicEntry.artist.name)
         doubleEncodePlusParam("track", musicEntry.name)
+        parameter("lang", lang)
     }.map {
         // fix duration returned in millis
         val track = it.track.copy(duration = it.track.duration?.div(1000))
@@ -124,12 +126,14 @@ class LastFmUnauthedRequester {
     suspend fun getAlbumInfo(
         musicEntry: Album,
         username: String? = null,
+        lang: String? = null
     ) = client.getResult<AlbumInfoResponse> {
         parameter("method", "album.getInfo")
         parameter("username", username)
         // this does not have double encoding bug
         parameter("artist", musicEntry.artist!!.name)
         parameter("album", musicEntry.name)
+        parameter("lang", lang)
         commonReq()
     }.map {
         Logger.d { "getAlbumInfo for ${musicEntry.artist?.name} - ${musicEntry.name}" }
@@ -145,10 +149,12 @@ class LastFmUnauthedRequester {
     suspend fun getArtistInfo(
         musicEntry: Artist,
         username: String? = null,
+        lang: String? = null
     ) = client.getResult<ArtistInfoResponse> {
         parameter("username", username)
         parameter("method", "artist.getInfo")
         doubleEncodePlusParam("artist", musicEntry.name)
+        parameter("lang", lang)
         commonReq()
     }.map {
         Logger.d { "getArtistInfo for ${musicEntry.name}" }
@@ -232,10 +238,14 @@ class LastFmUnauthedRequester {
     }.map { it.similartracks.track }
 
     // tag
-    suspend fun tagGetInfo(tag: String) =
+    suspend fun getTagInfo(
+        tag: String,
+        lang: String? = null
+    ) =
         client.getResult<TagGetInfoResponse> {
             parameter("method", "tag.getInfo")
             parameter("tag", tag)
+            parameter("lang", lang)
             commonReq()
         }.map { it.tag }
 

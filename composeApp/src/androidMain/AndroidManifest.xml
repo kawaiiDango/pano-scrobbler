@@ -127,7 +127,7 @@
         <activity
             android:name="com.arn.scrobble.widget.ChartsWidgetConfigActivity"
             android:configChanges="screenSize|screenLayout|keyboardHidden|mnc|colorMode|density|fontScale|fontWeightAdjustment|keyboard|layoutDirection|locale|mcc|navigation|orientation|smallestScreenSize|touchscreen|uiMode"
-            android:exported="false"
+            android:exported="true"
             android:theme="@style/AppTheme.Wallpaper"
             android:windowSoftInputMode="adjustResize">
             <intent-filter>

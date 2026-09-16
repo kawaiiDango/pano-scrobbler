@@ -3,7 +3,6 @@ package com.arn.scrobble.main
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.window.WindowDraggableArea
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -502,6 +501,23 @@ fun main(args: Array<String>) {
         // have a forever running LaunchedEffect so that application {} doesn't exit when the window is closed
         LaunchedEffect(Unit) {
             openOrQuitTrigger.first { it == OpenOrQuitAction.QUIT }
+
+            val ws = SerializableWindowState(
+                width = windowState.size.width.value,
+                height = windowState.size.height.value,
+                isMaximized = windowState.placement == WindowPlacement.Maximized,
+            )
+
+            if (initialPrefs.windowState != ws) {
+                PlatformStuff.mainPrefs.updateData {
+                    it.copy(
+                        windowState = if (ws.isMaximized)
+                            it.windowState?.copy(isMaximized = true) ?: ws
+                        else
+                            ws
+                    )
+                }
+            }
         }
 
         if (windowCreated) {
@@ -586,27 +602,6 @@ fun main(args: Array<String>) {
                         }
                 }
 
-                DisposableEffect(Unit) {
-                    onDispose {
-                        val ws = SerializableWindowState(
-                            width = windowState.size.width.value,
-                            height = windowState.size.height.value,
-                            isMaximized = windowState.placement == WindowPlacement.Maximized,
-                        )
-
-                        Stuff.appScope.launch {
-                            PlatformStuff.mainPrefs.updateData {
-                                it.copy(
-                                    windowState = if (ws.isMaximized)
-                                        it.windowState?.copy(isMaximized = true) ?: ws
-                                    else
-                                        ws
-                                )
-                            }
-                        }
-                    }
-                }
-
                 val swingDensity = LocalDensity.current
 
                 AppTheme {
@@ -683,11 +678,12 @@ fun main(args: Array<String>) {
 
                     // https://youtrack.jetbrains.com/issue/CMP-8821/LocalWindowInfo.current.containerSize-is-first-initialized-to-00
                     val initialNavigationType = remember {
+                        val w = windowState.size.width / densityMultiplier
                         when {
-                            windowState.size.width >= WIDTH_DP_EXPANDED_LOWER_BOUND.dp
+                            w >= WIDTH_DP_EXPANDED_LOWER_BOUND.dp
                                 -> PanoNavigationType.PERMANENT_NAVIGATION_DRAWER
 
-                            windowState.size.width >= WIDTH_DP_MEDIUM_LOWER_BOUND.dp
+                            w >= WIDTH_DP_MEDIUM_LOWER_BOUND.dp
                                 -> PanoNavigationType.NAVIGATION_RAIL
 
                             else -> PanoNavigationType.BOTTOM_NAVIGATION

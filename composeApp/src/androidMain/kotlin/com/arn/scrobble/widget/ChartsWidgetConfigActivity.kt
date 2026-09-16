@@ -36,6 +36,11 @@ class ChartsWidgetConfigActivity : ComponentActivity() {
             window.isNavigationBarContrastEnforced = false
         }
 
+        if (appWidgetId == AppWidgetManager.INVALID_APPWIDGET_ID) {
+            finish()
+            return
+        }
+
         var initDone = false
         prolongSplashScreen { initDone }
 

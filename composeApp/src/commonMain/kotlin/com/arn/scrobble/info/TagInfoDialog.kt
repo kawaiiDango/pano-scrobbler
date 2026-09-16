@@ -22,6 +22,7 @@ import com.arn.scrobble.icons.Tag
 import com.arn.scrobble.ui.IconButtonWithTooltip
 import com.arn.scrobble.ui.TextWithIcon
 import com.arn.scrobble.utils.PlatformStuff
+import com.arn.scrobble.utils.Stuff.collectAsStateWithInitialValue
 import io.ktor.http.encodeURLPathPart
 import org.jetbrains.compose.resources.stringResource
 import pano_scrobbler.composeapp.generated.resources.Res
@@ -40,6 +41,9 @@ fun TagInfoDialog(
 ) {
     val info by viewModel.info.collectAsStateWithLifecycle()
     var wikiExpanded by rememberSaveable(isExpanded) { mutableStateOf(isExpanded) }
+    val pLang by PlatformStuff.mainPrefs.data.collectAsStateWithInitialValue { it.wikiLang }
+    val showWikiLangSelector by PlatformStuff.mainPrefs.data.collectAsStateWithInitialValue { it.showWikiLangSelectorP }
+    var selectedLang by rememberSaveable(pLang) { mutableStateOf(pLang) }
 
     Column(
         verticalArrangement = Arrangement.spacedBy(8.dp),
@@ -64,7 +68,8 @@ fun TagInfoDialog(
                 ),
                 avatarUrl = null,
                 avatarName = null,
-                forShimmer = info == null
+                forShimmer = info == null,
+                modifier = Modifier.weight(1f)
             )
 
             if (!PlatformStuff.isTv) {
@@ -80,18 +85,25 @@ fun TagInfoDialog(
             }
         }
 
-        info?.wiki?.content?.let {
-            InfoWikiText(
-                text = it,
-                maxLinesWhenCollapsed = 10,
-                expanded = wikiExpanded,
-                onExpandToggle = {
-                    wikiExpanded = !wikiExpanded
-                    onExpand()
-                },
-                scrollState = scrollState,
-                modifier = Modifier.fillMaxWidth()
-            )
-        }
+        InfoWikiText(
+            text = info?.wiki?.content.orEmpty(),
+            maxLinesWhenCollapsed = 10,
+            expanded = wikiExpanded,
+            onExpandToggle = {
+                wikiExpanded = !wikiExpanded
+                onExpand()
+            },
+            selectedLang = selectedLang,
+            langOverride = pLang != selectedLang,
+            onSelectedLang = if (showWikiLangSelector) {
+                {
+                    selectedLang = it
+                    viewModel.setLang(it)
+                }
+            } else null,
+            scrollState = scrollState,
+            modifier = Modifier
+                .fillMaxWidth()
+        )
     }
 }

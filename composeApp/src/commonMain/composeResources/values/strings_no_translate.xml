@@ -59,6 +59,8 @@
     <string name="scrobble_sources">Scrobble sources</string>
     <string name="stop">Stop</string>
     <string name="persistent_noti_hide">You can hide it from system notification settings</string>
+    <string name="no_wiki" comment="artist/album/track wiki does not exist">No wiki</string>
+    <string name="wiki_lang_selector" comment="artist/album/track wiki">Last.fm wiki language selector</string>
     <string name="notification_access_tv">This setting is usually at Apps > Special app access > Notification access</string>
 
     <string name="automation_cp_info">For Tasker, use Action > SQL Query. Set the mode to "URI Formatted", put any name in "Variable Array" and URI to one of these.</string>

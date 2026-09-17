@@ -432,6 +432,14 @@
     <string name="random_on_start" comment="currently used as a toggle in the themes screen to pick a random theme when the app starts">Atsitiktiniai proceso paleidimo metu</string>
     <string name="edit_continue_simple" comment="a toggle in the normal edits screen">Jei rasta, toliau redaguoti su reguliariųjų reiškinių taisyklėmis ir išankstiniais nustatymais</string>
     <string name="edit_continue_regex" comment="a toggle in the regex edits screen">Jei rasta, toliau redaguoti su kitomis reguliariųjų reiškinių taisyklėmis ir nustatymais</string>
+    <string name="pause_for" comment="Pause scrobbling for a some time">Pristabdyti</string>
+    <string name="button_url" comment="used for the button in discord rich presence">Mygtuko URL</string>
+    <string name="websites" comment="websites that user is scrobbling from">Svetainės</string>
+    <string name="websites_desc">Taikoma visiems įjungtiams medijos leistuvėms, kurie per MPRIS perduoda puslapio URL.</string>
+    <string name="forget_checked_websites" comment="Forget enabled/allowlisted websites">Pamiršti patikrintas svetaines</string>
+    <string name="last_error" comment="most recent error, used for pending scrobbles as of now">Paskutinė klaida</string>
+    <string name="rate_limit_warn">Per dieną pateikti per daug skroblų, skroblavimo paslauga gali juos atmesti, padidindant jūsų atgalinius skroblų žurnalą.</string>
+    <string name="unsupported_api" comment="currently used for custom ListenBrainz-like and last.fm-like logins. This is displayed when custom ones does not support the full feature set">Ši PS (API) gali būti nepalaikoma serverio. Peržiūrėkite internete.</string>
     <string name="get_pro">Paremti šią programą</string>
     <string name="one_time_purchase">Vienkartinis</string>
     <string name="help">Pagalba</string>

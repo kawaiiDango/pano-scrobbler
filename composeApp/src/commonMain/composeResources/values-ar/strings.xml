@@ -1,5 +1,110 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
+    <plurals name="num_scrobbles_noti">
+        <item quantity="zero">%1$s سكروبل</item>
+        <item quantity="one">%1$s سكروبل</item>
+        <item quantity="two">%1$s سكروبل</item>
+        <item quantity="few">%1$s سكروبلات</item>
+        <item quantity="many">%1$s سكروبل</item>
+        <item quantity="other">%1$s سكروبل</item>
+    </plurals>
+    <plurals name="num_scrobbles_today" comment="n (scrobbles) today">
+        <item quantity="zero">%1$s اليوم</item>
+        <item quantity="one">%1$s اليوم</item>
+        <item quantity="two">%1$s اليوم</item>
+        <item quantity="few">%1$s اليوم</item>
+        <item quantity="many">%1$s اليوم</item>
+        <item quantity="other">%1$s اليوم</item>
+    </plurals>
+    <plurals name="num_listeners">
+        <item quantity="zero">مستمع
+مستمعين</item>
+        <item quantity="one">%1$s مستمع</item>
+        <item quantity="two">%1$s مستمع</item>
+        <item quantity="few">%1$s مستمعين</item>
+        <item quantity="many">%1$s مستمع</item>
+        <item quantity="other">%1$s مستمع</item>
+    </plurals>
+    <plurals name="num_days">
+        <item quantity="zero">يوم
+أيام</item>
+        <item quantity="one">%1$s يوم</item>
+        <item quantity="two">%1$s يوم</item>
+        <item quantity="few">%1$s أيام</item>
+        <item quantity="many">%1$s يومًا</item>
+        <item quantity="other">%1$s يوم</item>
+    </plurals>
+    <plurals name="num_weeks">
+        <item quantity="zero">أسبوع 
+أسابيع </item>
+        <item quantity="one">%1$s أسبوع</item>
+        <item quantity="two">%1$s أسبوع</item>
+        <item quantity="few">%1$s أسابيع</item>
+        <item quantity="many">%1$s أسبوعًا</item>
+        <item quantity="other">%1$s أسبوع</item>
+    </plurals>
+    <plurals name="num_months">
+        <item quantity="zero">شهر
+شهور</item>
+        <item quantity="one">%1$s شهر</item>
+        <item quantity="two">%1$s شهر</item>
+        <item quantity="few">%1$s أشهر</item>
+        <item quantity="many">%1$s شهرًا</item>
+        <item quantity="other">%1$s شهر</item>
+    </plurals>
+    <plurals name="num_years">
+        <item quantity="zero">%1$s سنة</item>
+        <item quantity="one">%1$s سنة</item>
+        <item quantity="two">سنة
+سنوات</item>
+        <item quantity="few">%1$s سنوات</item>
+        <item quantity="many">%1$s سنة</item>
+        <item quantity="other">%1$s سنة</item>
+    </plurals>
+    <plurals name="num_artists">
+        <item quantity="zero">فنان
+فنانون</item>
+        <item quantity="one">%1$s فنان</item>
+        <item quantity="two">%1$s فنان</item>
+        <item quantity="few">%1$s فنانين</item>
+        <item quantity="many">%1$s فنانًا</item>
+        <item quantity="other">%1$s فنان</item>
+    </plurals>
+    <plurals name="num_albums">
+        <item quantity="zero">ألبوم
+ألبومات </item>
+        <item quantity="one">%1$s ألبوم</item>
+        <item quantity="two">%1$s ألبوم</item>
+        <item quantity="few">%1$s ألبومات</item>
+        <item quantity="many">%1$s ألبومًا</item>
+        <item quantity="other">%1$s ألبوم</item>
+    </plurals>
+    <plurals name="num_tracks">
+        <item quantity="zero">أغنية
+أغاني</item>
+        <item quantity="one">%1$s أغنية</item>
+        <item quantity="two">%1$s أغنية</item>
+        <item quantity="few">%1$s أغاني</item>
+        <item quantity="many">%1$s أغنية</item>
+        <item quantity="other">%1$s أغنية</item>
+    </plurals>
+    <plurals name="num_matches" comment="regex pattern matches">
+        <item quantity="zero">متناسق
+تناسق</item>
+        <item quantity="one">%1$d تطابق</item>
+        <item quantity="two">%1$d تطابق</item>
+        <item quantity="few">%1$d تطابقات</item>
+        <item quantity="many">%1$d تطابق</item>
+        <item quantity="other">%1$d تطابق</item>
+    </plurals>
+    <plurals name="num_hours">
+        <item quantity="zero">%1$d ساعة</item>
+        <item quantity="one">%1$d ساعة</item>
+        <item quantity="two">%1$d ساعة</item>
+        <item quantity="few">%1$d ساعات</item>
+        <item quantity="many">%1$d ساعة</item>
+        <item quantity="other">%1$d ساعة</item>
+    </plurals>
     <string name="yes">تأكيد</string>
     <string name="no">لا</string>
     <string name="reset">إعادة ضبط</string>
@@ -45,10 +150,12 @@
     <string name="share_sig">(عبر بانو سكرببلر)</string>
     <string name="share">مشاركة</string>
     <string name="legend" comment="Chart legend - descriptions of the symbols used">عنوان توضيحي</string>
+    <string name="grid" comment="Grid view">شبكة</string>
     <string name="list" comment="Single column list view">قائمة</string>
     <string name="more_info">معلومات إضافية</string>
     <string name="more" comment="More options menu in short">المزيد</string>
     <string name="hide">إخفاء</string>
+    <string name="rank_change" comment="%1= delta change">تغير الترتيب: %1$s</string>
     <string name="rank_change_no_change">لا تغيير</string>
     <string name="rank_change_new">لم تمسح خلال المدّة السابقة</string>
     <string name="search">البحث</string>
@@ -59,6 +166,7 @@
     <string name="item_options" comment="Screen reader text for 3 dots menu button">خيارات لهذا البند</string>
     <string name="new_player" formatted="true" comment="(%1 = App name) detected (shown in notification, when a new music player is detected)">تم الكشف عن %1$s</string>
     <string name="new_player_prompt" comment="when a new music player is detected on android and auto-detect new apps setting is enabled. The allowlist is opt out">هل تريد الاستمرار في مسح موسيقى هذا التطبيق؟</string>
+    <string name="new_player_prompt_desktop" comment="when a new music player is detected on desktop. The allowlist is opt in">انتقل إلى الإعدادات لبدء تسجيل نشاط الاستماع لهذا التطبيق</string>
     <string name="no_scrobbles">لا توجد أَغَانٍ هنا بعد…</string>
     <string name="no_friends">لا يتابع أي شخص بعد…</string>
     <string name="channel_err" comment="Its a noun">أخطاء مسح الموسيقى</string>
@@ -74,6 +182,8 @@
     <string name="unhate" comment="Undo a hate/dislike and make it neutral. This is not the same as Like">إلغاء الكراهية</string>
     <string name="unlove" comment="Undo a love/like and make it neutral. This is not the same as Dislike">ازالة الحب</string>
     <string name="pending_scrobbles">أسكروبلس معلق</string>
+    <string name="following" comment="accounts you are following on lastfm">المتابَعون</string>
+    <string name="since_time" formatted="true" comment="%1= date of joining lastfm">منذ %1$s</string>
     <string name="grant_notification_access">منح صلاحية الإشعارات</string>
     <string name="grant_notification_access_desc">تحتاج لاسترداد بيانات التعريف الموسيقية. لا يتم قراءة أي إشعارات غير موسيقية</string>
     <string name="send_notifications">السماح بالإشعارات</string>
@@ -88,6 +198,7 @@
     <string name="swap" comment="button to swap title and artist">تبديل</string>
     <string name="time_just_now">قبل لحظات</string>
     <string name="no_mail_apps">لايوجد تطبيق بريد إلكتروني مثبت</string>
+    <string name="add">إضافة عنصر جديد</string>
     <string name="loved" comment="Its a noun">أحببت</string>
     <string name="unloved" comment="Its a noun">ازالة الحب</string>
     <string name="simple_edits">التعديلات</string>
@@ -125,4 +236,263 @@
     <string name="tag" comment="last.fm tag">وسم</string>
     <string name="taggers" comment="(number of) people who have tagged">الواسمون</string>
     <string name="taggings" comment="(total count of) a particular tag">علامات</string>
+    <string name="s_top_scrobbles" formatted="true" comment="%1= the word weekly or monthly">أعلى السكروبلات %1$s</string>
+    <string name="my_tags" comment="Tags, the user has added">وسومي</string>
+    <string name="close" comment="To close a dialog or something">إغلاق</string>
+    <string name="quit" comment="A stronger word than close, used to completely quit the app and stop scrobbling on desktop">إنهاء</string>
+    <string name="user_tags_hint" comment="To add a new tag">وسم جديد</string>
+    <string name="user_tags_empty">لم تضف أي وسوم</string>
+    <string name="appwidget_loading">جارٍ التحميل…</string>
+    <string name="appwidget_period" comment="1 week, 1 month, 1 year etc">الفترة</string>
+    <string name="appwidget_shadow">ظل</string>
+    <string name="appwidget_show" comment="to visually show something">إظهار</string>
+    <string name="light" comment="light theme">فاتح</string>
+    <string name="dark" comment="dark theme">داكن</string>
+    <string name="system_colors" comment="material you system theme colors">ألوان النظام</string>
+    <string name="appwidget_alpha" comment="app window background opacity">شفافية الخلفية</string>
+    <string name="appwidget_refresh_every" formatted="true" comment="%1= 'n minutes'; n is &gt;= 45">ستُحدَّث الودجة كل %1$s</string>
+    <string name="edit_name" comment="name for regex pattern">اسم وصفي</string>
+    <string name="edit_regex">نمط Regex</string>
+    <string name="edit_replace" comment="regex replace">استبدال</string>
+    <string name="edit_first" comment="First occurrence of a pattern">الأول</string>
+    <string name="edit_all" comment="All occurrences of a pattern">الكل</string>
+    <string name="edit_extract" comment="To extract sub text from a larger text, in short, used in pattern edits">استخراج</string>
+    <string name="edit_extract_desc" comment="Do not translate artist, albumArtist, album, track, because the user has to enter them as it is. https://www.google.com/search?q=regex+named+capture+groups">سمِّ مجموعات الالتقاط <i>track, album, artist</i> أو <i>albumArtist</i> لاستخراجها من الحقول الأخرى</string>
+    <string name="edit_extract_example" comment="Do not translate artist, albumArtist, album, track, because the user has to enter them as it is. https://www.google.com/search?q=regex+named+capture+groups">مثال: لعكس الفنان والعنوان، ضع نمط الفنان كـ (?&lt;track&gt;.*) ونمط المقطع كـ (?&lt;artist&gt;.*)</string>
+    <string name="edit_extract_no_groups" comment="Do not translate artist, albumArtist, album, track, because the user has to enter them as it is. https://www.google.com/search?q=regex+named+capture+groups">يجب أن تحتوي أنماطك على الأقل على مجموعات الالتقاط المسماة التالية: "track"، "artist"</string>
+    <string name="edit_extract_extra_groups" formatted="true" comment="%1= the name of the capture group https://www.google.com/search?q=regex+named+capture+groups">تحتوي أنماطك على أكثر من مجموعة التقاط "%1$s"، وهو أمر غير مسموح</string>
+    <string name="edit_regex_invalid" formatted="true" comment="%1= the regex error message">Regex غير صالح: %1$s</string>
+    <string name="edit_regex_rules_matched" comment="the specific regex patterns that were used">الأنماط المستخدمة:</string>
+    <string name="edit_continue">إذا وُجد، تابع مطابقة أنماط Regex الأخرى</string>
+    <string name="edit_case_sensitive" comment="currently used for regex edits matching">حساس لحالة الأحرف</string>
+    <string name="edit_regex_test" comment="(Test regex rules)">اختبار</string>
+    <string name="edit_presets" comment="Regex presets">الإعدادات المسبقة</string>
+    <string name="edit_max_patterns" formatted="true" comment="%1= max pattern count">تم بلوغ حد الأنماط (%1$d)</string>
+    <string name="edit_drag_handle" comment="screen reader text for drag and drop button">مقبض السحب</string>
+    <string name="edit_regex_warning" comment="shown before adding a custom pattern edit">⚠ تأكد من فهمك لـ <a href="https://www.google.com/search?q=regex+tutorial">java regex</a> قبل استخدام هذه الميزة، أو استخدم أحد <b>الإعدادات المسبقة</b> المتوفرة. تتم محاولات مطابقة Regex من الأعلى إلى الأسفل</string>
+    <string name="blocked_metadata_noti" comment="to block and skip a track from scrobbling and playing">اضغط للحظر والتخطي</string>
+    <string name="player_actions" comment="music player actions such as skip/mute">إجراءات مشغل الوسائط</string>
+    <string name="skip" comment="skip to next track">تخطي</string>
+    <string name="mute" comment="mute the sound">كتم الصوت</string>
+    <string name="do_nothing" comment="do nothing on the media player">لا تفعل شيئًا</string>
+    <string name="block" comment="block the track from scrobbling">حظر</string>
+    <string name="copy" comment="copy to clipboard">نسخ</string>
+    <string name="hidden_tags" comment="Tags that should not be shown to the user">الوسوم المخفية</string>
+    <string name="pin" comment="pin a friend to the top">تثبيت</string>
+    <string name="unpin" comment="unpin a friend to the top">إلغاء التثبيت</string>
+    <string name="pin_limit_reached" formatted="true" comment="%1= the max limit">تم بلوغ حد التثبيت (%1$d)</string>
+    <string name="pin_help">اضغط مطولًا على العناصر المثبتة لإعادة ترتيبها</string>
+    <string name="use_channel" comment="(Use youtube channel name)">استخدام اسم القناة</string>
+    <string name="regex_edits_suggestion" formatted="true" comment="%1= the preset name (e.g. Remastered)">هل تريد تفعيل قاعدة تعديل النمط: %1$s؟</string>
+    <string name="show_persistent_noti">إظهار إشعار دائم</string>
+    <string name="fix_it_desc">يمكن أن يساعد ذلك في إبقاء برنامج "السكروبلر" (scrobbler) قيد التشغيل في الخلفية على بعض الأجهزة</string>
+    <string name="persistent_noti_text">اضغط لإخفاء هذا</string>
+    <string name="scrobbler_off">تم تعطيل نظام التتبع (Scrobbler)</string>
+    <string name="scrobbler_on">نظام التتبع (Scrobbler) نشط</string>
+    <string name="duration" comment="The duration of the track">المدة</string>
+    <string name="total_listen_time">إجمالي وقت الاستماع</string>
+    <string name="enable" comment="To enable some feature">تفعيل</string>
+    <string name="disable" comment="To disable some feature">تعطيل</string>
+    <string name="remove" formatted="true" comment="%1= the text to remove. For example, Remove: Remastered">إزالة: %1$s</string>
+    <string name="size" comment="Collage size such as 3x3, 4x4 etc">الحجم</string>
+    <string name="skip_missing_images" comment="(while generating a collage)">تخطي الصور المفقودة</string>
+    <string name="create_collage">إنشاء كولاج</string>
+    <string name="captions" comment="Collage image captions such as artist names, play counts">تسميات الصور</string>
+    <string name="username" comment="last.fm Username">اسم المستخدم</string>
+    <string name="pref_master" comment="Switch to enable or disable scrobbling">تسجيل تشغيل الموسيقى</string>
+    <string name="pref_master_qs_add">إضافة بلاطة الإعدادات السريعة</string>
+    <string name="pref_master_qs_already_addded">بلاطة الإعدادات السريعة مضافة بالفعل</string>
+    <string name="pref_noti">الإشعارات</string>
+    <string name="pref_offline_info">سيتم حفظ سجلات الاستماع (scrobbles) والإعجابات التي تتم دون اتصال بالإنترنت، ليتم إرسالها لاحقاً.</string>
+    <string name="pref_scrobble_from" comment="Scrobble from (these apps)">تسجيل الاستماع من</string>
+    <string name="pref_enabled_apps_summary">يدعم التطبيقات التي تعرض البيانات الوصفية للموسيقى. لتجنب تسجيل الاستماع المزدوج (double scrobbles) من Spotify، قم بتفعيله في مكان واحد فقط.</string>
+    <string name="pref_auto_detect" comment="Automatically scrobble from new apps when they are installed">تسجيل الاستماع تلقائياً من التطبيقات الجديدة</string>
+    <string name="pref_spotify_remote" comment="as in Spotify Connect or whatever it is called">تسجيل تشغيل Spotify على أجهزة أخرى</string>
+    <string name="pref_spotify_artist_search_approximate" comment="This feature actually grabs the first result from Spotify artist search regardless of what that result is">استخدام البحث التقريبي لصور الفنانين</string>
+    <string name="pref_link_heart_button_rating">استخدام زر القلب في الإشعار لإضافته إلى المفضلة في مشغل الوسائط أيضًا</string>
+    <string name="pref_prevent_duplicate_ambient_scrobbles">عطّل ميزة تسجيل الاستماع (scrobbling) من تطبيقات التعرف على الموسيقى إذا كان الجهاز يشغّل الموسيقى بالفعل.</string>
+    <string name="pref_delay">تأخير تسجيل الاستماع (scrobble) (أيهما أسبق)</string>
+    <string name="pref_delay_mins" comment="(Scrobble delay in minutes)">دقائق</string>
+    <string name="pref_delay_per" comment="(Scrobble delay in percent)">نسبة مئوية</string>
+    <string name="pref_logout">تسجيل الخروج</string>
+    <string name="sure_tap_again" comment="tap again to confirm">متأكد؟ اضغط مرة أخرى</string>
+    <string name="pref_login">تسجيل الدخول</string>
+    <string name="pref_about" comment="the about section at the bottom of the settings screen">حول</string>
+    <string name="pref_privacy_policy">سياسة الخصوصية</string>
+    <string name="pref_user_label" comment="(Like username)">المستخدم</string>
+    <string name="pref_token_label" comment="For Listenbrainz">رمز المصادقة</string>
+    <string name="api_url" comment="For Listenbrainz">رابط API</string>
+    <string name="server_url" comment="For self hosted scrobbling services">رابط الخادم</string>
+    <string name="listenbrainz_info" formatted="true" comment="%1 = the link to page containing the token">يمكنك العثور على رمز المصادقة الخاص بك على: %1$s</string>
+    <string name="pref_now_playing">إرسال ما يُشغَّل الآن</string>
+    <string name="pref_fetch_missing_album" formatted="true" comment="%1= the name of a service like last.fm, Deezer etc">جلب الألبوم المفقود من %1$s</string>
+    <string name="pref_locale">اللغات</string>
+    <string name="pref_crashlytics_enabled">الإبلاغ عن الأخطاء تلقائيًا</string>
+    <string name="pref_misc" comment="Miscellaneous settings">متفرقات</string>
+    <string name="pref_first_day_of_week" comment="Sunday, Monday etc">يبدأ الأسبوع يوم</string>
+    <string name="pref_imexport" comment="As in backup or restore the settings">استيراد وتصدير</string>
+    <string name="pref_export" comment="backs up the settings to a file">تصدير</string>
+    <string name="pref_export_desc">ينسخ الإعدادات والتعديلات وقائمة الحظر احتياطيًا. لا يحفظ بيانات تسجيل الدخول لأسباب أمنية. مفيد للنقل بين الأجهزة أو المشاركة مع الأصدقاء.</string>
+    <string name="pref_import" comment="restores the settings from a backup/export file">استيراد</string>
+    <string name="pref_imexport_network" comment="As in backup or restore the settings over network">شبكة</string>
+    <string name="pref_imexport_code" comment="A code shown on the screen to be entered on the other device">رمز</string>
+    <string name="pref_imexport_network_notice">في وضع الشبكة، يجب أن يكون كلا الجهازين متصلين بالشبكة نفسها.</string>
+    <string name="pref_personalization" comment="Such as themes, widgets and some appearance settings">التخصيص</string>
+    <string name="pref_themes" comment="Color themes">المظاهر</string>
+    <string name="pref_widget_charts">ودجة الشاشة الرئيسية - المخططات</string>
+    <string name="pref_show_scrobble_sources">إظهار أيقونات التطبيقات التي تم تسجيل الاستماع منها</string>
+    <string name="pref_show_scrobble_sources_desc" comment="This is a continuation of the string: Show icons of apps you scrobbled from">...بجانب كل عملية تسجيل استماع (scrobble). تظل هذه البيانات على جهازك</string>
+    <string name="pref_search_in_source">البحث والتشغيل في التطبيق الذي تم تسجيل الاستماع منه</string>
+    <string name="pref_search_in_source_desc" comment="This is a continuation of the string: Search &amp; play on the app you scrobbled from">للتطبيقات المدعومة</string>
+    <string name="pref_lists" comment="Such as edits list and block lists">القوائم</string>
+    <string name="regex_rules">قواعد Regex</string>
+    <string name="pref_blocked_metadata" comment="Block things from scrobbling">البيانات الوصفية المحظورة</string>
+    <string name="any_value" comment="as in any value, starts with lowercase in english because it will be enclosed in angle brackets">أي شيء</string>
+    <string name="existing_value" comment="starts with lowercase in english because it will be enclosed in angle brackets">البيانات الحالية</string>
+    <string name="pref_translate">ترجمة هذا التطبيق</string>
+    <string name="pref_translate_credits">شكر المترجمين</string>
+    <string name="pref_oss_credits" comment="Open source libraries, licenses used in the app">شكر المصادر المفتوحة</string>
+    <string name="pref_check_updates">التحقق من التحديثات</string>
+    <string name="no_updates">لا توجد تحديثات متاحة</string>
+    <string name="pref_notify_updates">التحديثات التلقائية</string>
+    <string name="update_downloaded" comment="app update">تم تنزيل التحديث</string>
+    <string name="pref_search_url_template">قالب رابط البحث</string>
+    <string name="pref_search_url_template_desc" comment="Do not translate $query as the user has to enter it as it is">استخدم $query كعنصر نائب لمصطلح البحث</string>
+    <string name="update_available" formatted="true" comment="%1= the version number">يتوفر تحديث: %1$s</string>
+    <string name="downloading">جارٍ التنزيل</string>
+    <string name="download" comment="Its a verb">تنزيل</string>
+    <string name="changelog">سجل التغييرات</string>
+    <string name="import_hey_wtf">من المحتمل أن هذا ليس ملف تصدير Pano Scrobbler</string>
+    <string name="imported">تم الاستيراد</string>
+    <string name="import_options">خيارات الاستيراد</string>
+    <string name="import_lists_nope">عدم استيراد التعديلات وقائمة الحظر</string>
+    <string name="import_lists_replace_all">استبدال جميع التعديلات وقائمة الحظر</string>
+    <string name="import_lists_replace_existing">دمج مع استبدال التعديلات وقائمة الحظر الحالية</string>
+    <string name="import_lists_keep">دمج مع الإبقاء على التعديلات وقائمة الحظر الحالية</string>
+    <string name="import_settings">استيراد الإعدادات</string>
+    <string name="copied">تم النسخ!</string>
+    <string name="lastfm_reauth" comment="The user needs to log out and log in again">تحتاج إلى إعادة المصادقة لتعديل أو حذف سجلات الاستماع (scrobbles)</string>
+    <string name="like_instance" comment="%1= the scrobbling service name, such as last.fm, ListenBrainz">خادم شبيه بـ %1$s</string>
+    <string name="failed_encode_url" comment="used for validating url input, in some of the login screens">فشل ترميز الرابط</string>
+    <string name="check_nls" formatted="true" comment="%1= the name Pano Scrobbler. Asks the user to check the app in notification access settings">تحقق من %1$s</string>
+    <string name="no_browser">لا يوجد متصفح مثبّت</string>
+    <string name="no_player">لا يوجد مشغل موسيقى مثبّت</string>
+    <string name="not_running" comment="When the app detects that the scrobbler was not running. Usually killed by OEM-specific battery savers.">⚠ تم إنهاء برنامج التتبع (Scrobbler) بواسطة نظامك.</string>
+    <string name="kill_reason" comment="%1= reason for the app kill" formatted="true">السبب: %1$s</string>
+    <string name="login_submit" comment="Verifies the login details">تحقق</string>
+    <string name="submitting_loves" formatted="true">جارٍ إرسال الإعجابات، تبقّى %1$d</string>
+    <string name="pending_batch" comment="For pending scrobbles">جارٍ إرسال دفعة</string>
+    <string name="bar_chart">مخطط شريطي</string>
+    <string name="fix_it_title">إصلاحات محتملة</string>
+    <string name="fix_it_startup_title" comment="Like non standard OEM-specific battery settings on Xiaomi, Samsung, etc.">موفّرات الطاقة / مديرو بدء التشغيل</string>
+    <string name="fix_it_battery_title">تعطيل تحسينات البطارية</string>
+    <string name="fix_it_energy_title" comment="Disable battery optimizations equivalent for TVs">تعطيل تحسينات الطاقة</string>
+    <string name="fix_it_action" comment="(To open an app, a link or a screen within pano scrobbler)">فتح</string>
+    <string name="delete_account">حذف حسابك</string>
+    <string name="delete_account_custom_servers" comment="used in the delete account screen">بالنسبة للخوادم المخصصة، راجع وثائقها الخاصة.</string>
+    <string name="add_photo" comment="Add or change a photo for the artist or album">إضافة صورة أو تغييرها</string>
+    <string name="from_gallery" comment="Pick an image for the artist or album from the device gallery">من المعرض</string>
+    <string name="square_photo_hint" comment="for user picked image from their gallery, used for custom artist or album pic">استخدم صورة مربعة للحصول على أفضل النتائج</string>
+    <string name="scrobble_to_file">ملف</string>
+    <string name="password">كلمة المرور</string>
+    <string name="open_existing" comment="Append to an existing file">الإلحاق بملف موجود</string>
+    <string name="create" comment="Create a new file">إنشاء</string>
+    <string name="scan_qr">امسح هذا لتسجيل الدخول</string>
+    <string name="copy_from" comment="Copy from another edit field, used in regex edits screen">نسخ من</string>
+    <string name="nothing" comment="select nothing/none">لا شيء</string>
+    <string name="borders" comment="Borders between images in the generated collage">حدود</string>
+    <string name="ok">موافق</string>
+    <string name="cancel">إلغاء</string>
+    <string name="back" comment="back button">رجوع</string>
+    <string name="done" comment="Generic done button, sometimes displayed as a tick icon">تم</string>
+    <string name="retry" comment="Retry loading data from network after it has failed">إعادة المحاولة</string>
+    <string name="run_on_start" comment="used on desktop">التشغيل عند بدء تشغيل الكمبيوتر</string>
+    <string name="save_logs" comment="Debug logs to be saved to a text file">حفظ السجلات</string>
+    <string name="contrast" comment="Color contrast, used in the themes screen">التباين</string>
+    <string name="high" comment="As in high/medium/low">مرتفع</string>
+    <string name="medium" comment="As in high/medium/low">متوسط</string>
+    <string name="low" comment="As in high/medium/low">منخفض</string>
+    <string name="needs_plugin" comment="Used for some desktop media players">بعض التطبيقات تحتاج إلى إضافات</string>
+    <string name="reload" comment="Reload or refresh">إعادة التحميل</string>
+    <string name="pref_tray_icon_theme" comment="like dark/light/auto">مظهر أيقونة شريط النظام</string>
+    <string name="min_track_duration">تتتبع سكروبل لفترة أطول من</string>
+    <string name="automation" comment="automation apps like Tasker on Android, or commandline on desktop">التحكم في Pano Scrobbler من تطبيقات الأتمتة</string>
+    <string name="country_for_api" formatted="true" comment="%1$s is the name of the streaming service, like Spotify, Apple Music">البلد الخاص ببيانات %1$s الوصفية</string>
+    <string name="login_in_browser">أكمل تسجيل الدخول في نافذة المتصفح</string>
+    <string name="edit_no_save" comment="used in the edit dialog to not remember the edit">لن يتم حفظ هذا لعمليات التسجيل (scrobbles) المستقبلية.</string>
+    <string name="also_available_on" formatted="true" comment="%1$s is the platform name, like Android, PC">احصل على هذا التطبيق على %1$s</string>
+    <string name="first_artist" comment="scrobble the first artist from a comma separated string of artists for example">استخدام الفنان الأول فقط</string>
+    <string name="external_metadata" comment="Used to supplement partially missing metadata. Sources are Spotify, Deezer etc">مصادر البيانات الوصفية الخارجية</string>
+    <string name="line_n" formatted="true" comment="%1$s is the line number, currently used in the context of Discord Rich Presence">السطر %1$s</string>
+    <string name="album_art_now_playing">جلب غلاف الألبوم من "يُشغَّل الآن" عند الحاجة</string>
+    <string name="is_turned_off" formatted="true" comment="%1$s= the name of a web service, e.g. Spotify, %2$s=the section name in settings screen where this setting can be found">%1$s معطّل في %2$s</string>
+    <string name="discord_compact_view_line">إظهار كـ "يستمع إلى":</string>
+    <string name="available_placeholders" formatted="true" comment="%1 = placeholder strings, e.g. $artist, $title etc.">العناصر النائبة المتاحة: %1$s</string>
+    <string name="show_paused_for" comment="Show paused media for n minutes, used for discord rich presence">إظهار الوسائط المتوقفة لمدة</string>
+    <string name="edit_example">مثال: لاستبدال Artist1 بـ Artist2 مع إبقاء بقية البيانات الوصفية دون تغيير، فعّل حقل الفنان فقط، واملأ قيمتي الفنان الأصلية والمصححة، مع ترك الحقول الأخرى معطلة.</string>
+    <string name="when_using" formatted="true" comment="%1$s is the web service or media player name">عند استخدام %1$s</string>
+    <string name="when_not_using" formatted="true" comment="%1$s is the web service or media player name">عند عدم استخدام %1$s</string>
+    <string name="as_text" comment="Like copy as text, but in short">كنص</string>
+    <string name="automation_cli">وسيطات سطر الأوامر</string>
+    <string name="automation_cli_info">شغّل الملف التنفيذي pano-scrobbler بأحد وسيطات سطر الأوامر هذه، أثناء تشغيل نسخة بالفعل.</string>
+    <string name="album_art_now_playing_desc">يتطلب تسجيل الدخول إلى last.fm</string>
+    <string name="spotify_consent">هل تريد جلب صور الفنانين من Spotify؟</string>
+    <string name="show_track_url" comment="Toggle to put the URL of the currently playing track, used for Discord Rich Presence">رابط المقطع</string>
+    <string name="edit_extract_track_example" formatted="true" comment="%1$s is the regex pattern">مثال: لاستخراج البيانات الوصفية من حقل المقطع، إذا كان المقطع يحتوي على "الفنان - المقطع"، فاضبط نمط المقطع على %1$s</string>
+    <string name="search_in_media_player" comment="This launches and searches in the media player app directly instead of opening a browser">البحث في مشغل الوسائط مباشرة</string>
+    <string name="forget_unchecked_apps" comment="Shown in the 'Scrobble From' apps list on desktop">نسيان التطبيقات غير المحددة</string>
+    <string name="discord_app_name" comment="usually the media player app name, shown in discord rich presence">اسم التطبيق</string>
+    <string name="convert_file" formatted="true" comment="%1$s is the file extension, used in the context of converting from one file format to another">التحويل من %1$s</string>
+    <string name="move_up" comment="Screen reader text for drag and drop reordering">نقل لأعلى</string>
+    <string name="move_down" comment="Screen reader text for drag and drop reordering">نقل لأسفل</string>
+    <string name="at_least" formatted="true" comment="%1$s=some number">على الأقل %1$s</string>
+    <string name="code_will_be_sent" formatted="true" comment="%1$s is either Ko-Fi or BuyMeACoffee, %2$s is the donation amount">سيتم إرسال الرمز إلى عنوان البريد الإلكتروني المرتبط بحساب %1$s الخاص بك، إذا كنت قد تبرعت %2$s</string>
+    <string name="proxy" comment="network proxy">وكيل</string>
+    <string name="system" comment="system default settings">النظام</string>
+    <string name="host" comment="proxy host">المضيف</string>
+    <string name="port" comment="proxy port">المنفذ</string>
+    <string name="scanning" comment="finds other instances of Pano Scrobbler import server on the local network">جارٍ الفحص</string>
+    <string name="missing_local_network_permission">تحتاج هذه الميزة إلى إذن للاتصال بالشبكة المحلية</string>
+    <string name="artist_splitting_exceptions" comment="exceptions for the use first artist feature">استثناءات تقسيم الفنانين</string>
+    <string name="add_exception" comment="as in adding an exception to a rule or setting">إضافة استثناء</string>
+    <string name="upto_n" formatted="true" comment="%1 is a number">حتى %1$d</string>
+    <string name="add_to_app_launcher">إضافة اختصار إلى مشغّل التطبيقات</string>
+    <string name="persistent_noti_fgs" comment="Actually displays a persistent notification on android when enabled">أبقِ أداة التتبع (Scrobbler) تعمل في الخلفية</string>
+    <string name="empty_apps_list">ستظهر التطبيقات هنا بمجرد تشغيل شيء فيها</string>
+    <string name="supports_ambient_apps" formatted="true" comment="%1 = comma-separated list of music recognition apps">يدعم أيضًا تطبيقات التعرف على الموسيقى مثل %1$s</string>
+    <string name="persistent_noti_desc" formatted="true" comment="%1 = some names of phone manufacturers">مطلوب على الأجهزة التي تُنهي تطبيقات الخلفية بقوة، مثل %1$s وغيرها</string>
+    <string name="cache" comment="as a noun">ذاكرة التخزين المؤقت</string>
+    <string name="random_on_start" comment="currently used as a toggle in the themes screen to pick a random theme when the app starts">قيمة عشوائية عند بدء العملية</string>
+    <string name="edit_continue_simple" comment="a toggle in the normal edits screen">إذا وُجد، تابع التعديل بقواعد Regex والإعدادات المسبقة</string>
+    <string name="edit_continue_regex" comment="a toggle in the regex edits screen">إذا وُجد، تابع التعديل بقواعد Regex والإعدادات المسبقة الأخرى</string>
+    <string name="pause_for" comment="Pause scrobbling for a some time">إيقاف مؤقت لمدة</string>
+    <string name="button_url" comment="used for the button in discord rich presence">رابط الزر</string>
+    <string name="websites" comment="websites that user is scrobbling from">المواقع</string>
+    <string name="websites_desc">ينطبق على جميع مشغلات الوسائط المفعّلة التي تُبلغ عن رابط الصفحة عبر MPRIS.</string>
+    <string name="forget_checked_websites" comment="Forget enabled/allowlisted websites">انسَ المواقع التي تم التحقق منها</string>
+    <string name="last_error" comment="most recent error, used for pending scrobbles as of now">آخر خطأ</string>
+    <string name="rate_limit_warn">قد يؤدي إرسال عدد كبير جدًا من سجلات الاستماع (scrobbles) في يوم واحد إلى رفض خدمة التسجيل (scrobbling) لها، مما يزيد من تراكمها.</string>
+    <string name="unsupported_api" comment="currently used for custom ListenBrainz-like and last.fm-like logins. This is displayed when custom ones does not support the full feature set">قد لا يدعم الخادم واجهة API هذه. اعرضها على الويب.</string>
+    <string name="get_pro">ادعم هذا التطبيق</string>
+    <string name="one_time_purchase">مرة واحدة</string>
+    <string name="help">مساعدة</string>
+    <string name="pro_support">هذه طريقة بسيطة وسريعة لمستخدمين رائعين مثلك لإظهار الدعم وتقدير القيمة التي يوفرها هذا التطبيق.</string>
+    <string name="pro_also_get">ستحصل أيضًا على الميزات التالية:</string>
+    <string name="thank_you">شكرًا لك!</string>
+    <string name="purchase_pending">لم يتم تأكيد عملية الشراء من مزوّد الدفع بعد. يُرجى المحاولة مجددًا بعد بضع دقائق.</string>
+    <string name="billing_troubleshoot">هل اشتريت بالفعل؟
+
+تُدار عمليات الشراء الخاصة بك بواسطة Google Play. وهي مرتبطة بحساب Google Play أجرى عملية الشراء. عند تثبيت التطبيق على جهاز جديد به حسابات متعددة، قد يربطه Google Play بحساب خاطئ. أفضل حل لاختيار الحساب المالك لعملية الشراء بشكل صريح هو تثبيت التطبيق من جهاز كمبيوتر عبر صفحة Google Play على الويب:
+
+• ألغِ تثبيت هذا التطبيق.
+• افتح صفحة Google Play على الويب من جهاز الكمبيوتر.
+• سجّل الدخول بحساب يملك عملية الشراء.
+• ثبّت هذا التطبيق مباشرة من صفحة Google Play على الويب.
+</string>
+    <string name="billing_block">حظر الفنانين/المقاطع والتخطي أو الكتم تلقائيًا</string>
+    <string name="billing_pin_friends" formatted="true" comment="%1= number of pins, always 10 or more">تثبيت حتى %1$d من الأصدقاء وإعادة ترتيبهم</string>
+    <string name="billing_sharing">إزالة اسم التطبيق عند المشاركة</string>
+    <string name="billing_scrobble_source">تذكّر ورؤية التطبيقات التي تم تسجيل الاستماع منها والبحث فيها مباشرة</string>
+    <string name="billing_regex_extract">كتابة قواعد مخصصة لاستخراج البيانات الوصفية باستخدام Regex</string>
+    <string name="billing_max_devices_reached" formatted="true">تم استخدام هذا الرمز بالفعل على الحد الأقصى (%1$d) من الأجهزة.</string>
 </resources>

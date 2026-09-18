@@ -40,8 +40,8 @@ if [ -f "$pkgbuildDir/PKGBUILD" ]; then
     OWNER="kawaiiDango"
     REPO="pano-scrobbler"
 
-    ASSET_X64="pano-scrobbler-linux-x64.tar.gz"
-    ASSET_ARM64="pano-scrobbler-linux-arm64.tar.gz"
+    ASSET_X64="pano-scrobbler-linux-x64.tar.zst"
+    ASSET_ARM64="pano-scrobbler-linux-arm64.tar.zst"
 
     API="https://api.github.com"
     RELEASES_URL="$API/repos/$OWNER/$REPO/releases/latest"
@@ -217,7 +217,6 @@ for ARCH in amd64 arm64; do
         "${POOL_PATH}" "${APT_FNAME}" \
         "${SIZE}" "${SHA256}" \
         > "${PKG_FILE}"
-    # gzip -cn < "${PKG_FILE}" > "${PKG_FILE}.gz"
 
     # Write _redirects
     printf '/%s/%s  %s/%s  302\n' \
@@ -245,15 +244,13 @@ append_hashes() {
     local header="$1" hash_cmd="$2"
     echo "${header}:" >> "${RELEASE_FILE}"
     for ARCH in amd64 arm64; do
-        # for FNAME in Packages Packages.gz; do
-            local FNAME="Packages"
-            local FILE="${REPO_DIR}/dists/${DIST}/${COMPONENT}/binary-${ARCH}/${FNAME}"
-            local HASH SIZE
-            HASH=$( ${hash_cmd} "${FILE}" | awk '{print $1}' )
-            SIZE=$(stat -c%s "${FILE}")
-            printf ' %s %s %s\n' "${HASH}" "${SIZE}" \
-                "${COMPONENT}/binary-${ARCH}/${FNAME}" >> "${RELEASE_FILE}"
-        # done
+        local FNAME="Packages"
+        local FILE="${REPO_DIR}/dists/${DIST}/${COMPONENT}/binary-${ARCH}/${FNAME}"
+        local HASH SIZE
+        HASH=$( ${hash_cmd} "${FILE}" | awk '{print $1}' )
+        SIZE=$(stat -c%s "${FILE}")
+        printf ' %s %s %s\n' "${HASH}" "${SIZE}" \
+            "${COMPONENT}/binary-${ARCH}/${FNAME}" >> "${RELEASE_FILE}"
     done
 }
 

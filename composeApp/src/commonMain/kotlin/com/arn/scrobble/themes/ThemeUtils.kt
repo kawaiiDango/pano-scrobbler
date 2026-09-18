@@ -166,8 +166,8 @@ object ThemeUtils {
     private val _randomHueForProcess = mutableFloatStateOf((0..360).random().toFloat())
     val randomHueForProcess get() = _randomHueForProcess.asFloatState()
 
-    private val defaultThemeColor = Color(0xFFEA1E63) // HCT(8, 93, 51)
-    private val themeColors = arrayOf(
+    private val oldDefaultThemeColor = Color(0xFFEA1E63) // HCT(8, 93, 51)
+    private val oldThemeColors = arrayOf(
         Color(0xFF4385F6),
         Color(0xFF03A9F5),
         Color(0xFF01BDD6),

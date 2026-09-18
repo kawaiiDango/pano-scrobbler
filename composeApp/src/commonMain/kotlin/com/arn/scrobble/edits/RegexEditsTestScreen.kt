@@ -17,6 +17,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.saveable.rememberSerializable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -35,7 +36,6 @@ import com.arn.scrobble.icons.Icons
 import com.arn.scrobble.icons.Mic
 import com.arn.scrobble.icons.MusicNote
 import com.arn.scrobble.navigation.SelectedPackagesResult
-import com.arn.scrobble.navigation.jsonSerializableSaver
 import com.arn.scrobble.panoicons.AlbumArtist
 import com.arn.scrobble.panoicons.PanoIcons
 import com.arn.scrobble.pref.AppItem
@@ -63,7 +63,7 @@ fun RegexEditsTestScreen(
     viewModel: RegexEditsTestVM = viewModel { RegexEditsTestVM() },
 ) {
     val regexMatches by viewModel.regexResults.collectAsStateWithLifecycle()
-    var appItem by rememberSaveable(saver = jsonSerializableSaver<AppItem?>()) { mutableStateOf(null) }
+    var appItem by rememberSerializable { mutableStateOf<AppItem?>(null) }
     var track by rememberSaveable { mutableStateOf("") }
     var album by rememberSaveable { mutableStateOf("") }
     var artist by rememberSaveable { mutableStateOf("") }

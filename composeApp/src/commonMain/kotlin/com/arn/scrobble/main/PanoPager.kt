@@ -1,6 +1,7 @@
 package com.arn.scrobble.main
 
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.runtime.Composable
@@ -8,6 +9,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.mutableStateSetOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.saveable.rememberSaveableStateHolder
 import androidx.compose.runtime.setValue
@@ -52,12 +54,25 @@ fun PanoPager(
             onSelectPage(pagerState.settledPage)
         }
 
+        // todo remove the hack when https://issuetracker.google.com/issues/549552303 is fixed
+        val activatedPages = rememberSaveable { mutableStateSetOf(selectedPage) }
+
+        LaunchedEffect(pagerState.targetPage) {
+            activatedPages.add(pagerState.targetPage)
+        }
+
         HorizontalPager(
             state = pagerState,
             key = { it },
+            beyondViewportPageCount = totalPages - 1,
             modifier = modifier,
             userScrollEnabled = !PlatformStuff.isDesktop,
         ) { page ->
+            if (page !in activatedPages) {
+                Box(modifier = Modifier.fillMaxSize())
+                return@HorizontalPager
+            }
+
             pageStateHolder.SaveableStateProvider(page) {
                 content(page)
             }

@@ -35,8 +35,8 @@ install -Dm644 -t "${libExecDir}/" "${nativeImageDir}"/${appNameWithoutSpaces}.d
 install -Dm755 -t "${libExecDir}/" "${nativeImageDir}/${appNameWithoutSpaces}"
 
 # Create tarball
-tarFile="$distDir/$appNameWithoutSpaces-$resourcesDirName.tar.gz"
-tar -czf "$tarFile" -C "$libExecDir" .
+tarFile="$distDir/$appNameWithoutSpaces-$resourcesDirName.tar.zst"
+ZSTD_CLEVEL=19 tar --zstd -cf "$tarFile" -C "$libExecDir" .
 
 # Relauncher script for appimage
 echo '#!/bin/bash
@@ -128,4 +128,4 @@ Homepage: https://github.com/kawaiiDango/pano-scrobbler
 Description: Feature packed cross-platform music tracker
 EOF
 
-dpkg-deb -Zzstd -z22 --build --root-owner-group "${debPkgDir}" "${debFile}"
+dpkg-deb -Zzstd -z19 --build --root-owner-group "${debPkgDir}" "${debFile}"

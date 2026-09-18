@@ -21,7 +21,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
-import com.arn.scrobble.navigation.enumSaver
 import com.arn.scrobble.ui.PanoOutlinedTextField
 import com.arn.scrobble.ui.PanoToggleButtonGroup
 import com.arn.scrobble.utils.PlatformStuff
@@ -49,7 +48,7 @@ fun ProxyPrefDialog(modifier: Modifier = Modifier) {
     ) {
         val proxy by PlatformStuff.mainPrefs.data.collectAsStateWithInitialValue { it.proxy }
 
-        var typeEditable by rememberSaveable(saver = enumSaver()) { mutableStateOf(proxy.type) }
+        var typeEditable by rememberSaveable { mutableStateOf(proxy.type) }
         var hostEditable by rememberSaveable { mutableStateOf(proxy.host) }
         var portEditable by rememberSaveable { mutableStateOf(proxy.port.toString()) }
         var userEditable by rememberSaveable { mutableStateOf(proxy.user) }

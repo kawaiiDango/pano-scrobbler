@@ -31,7 +31,6 @@ import com.arn.scrobble.icons.SkipNext
 import com.arn.scrobble.icons.VolumeOffAutoMirrored
 import com.arn.scrobble.media.PlayingTrackNotifyEvent
 import com.arn.scrobble.media.notifyPlayingTrackEvent
-import com.arn.scrobble.navigation.enumSaver
 import com.arn.scrobble.ui.ErrorText
 import com.arn.scrobble.ui.InlineCheckButton
 import com.arn.scrobble.ui.LabeledCheckbox
@@ -82,7 +81,7 @@ private fun BlockedMetadataAddContent(
     var hasTrack by rememberSaveable(blockedMetadata) {
         mutableStateOf(blockedMetadata?.track?.isNotEmpty() ?: true)
     }
-    var blockPlayerAction by rememberSaveable(blockedMetadata, saver = enumSaver()) {
+    var blockPlayerAction by rememberSaveable(blockedMetadata) {
         mutableStateOf(
             blockedMetadata?.blockPlayerAction ?: BlockPlayerAction.ignore
         )

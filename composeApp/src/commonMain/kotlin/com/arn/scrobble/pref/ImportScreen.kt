@@ -25,7 +25,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.arn.scrobble.navigation.enumSaver
 import com.arn.scrobble.ui.ButtonWithDropdown
 import com.arn.scrobble.ui.ErrorText
 import com.arn.scrobble.ui.FilePicker
@@ -183,7 +182,7 @@ fun ImportScreen(
             var userImportTypes by remember(availableImportTypes) {
                 mutableStateOf(availableImportTypes ?: emptySet())
             }
-            var selectedWriteMode by rememberSaveable(saver = enumSaver()) {
+            var selectedWriteMode by rememberSaveable {
                 mutableStateOf(
                     ImExporter.WriteMode.keep_existing
                 )

@@ -18,7 +18,6 @@ import androidx.compose.ui.unit.dp
 import com.arn.scrobble.PanoNativeComponents
 import com.arn.scrobble.main.MainViewModel
 import com.arn.scrobble.navigation.PanoRoute
-import com.arn.scrobble.navigation.enumSaver
 import com.arn.scrobble.utils.DesktopStuff
 import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff.collectAsStateWithInitialValue
@@ -71,7 +70,7 @@ actual fun OnboardingScreen(
         doneStatus[steps.indexOf(step)] = true
     }
 
-    var currentStep by rememberSaveable(saver = enumSaver()) { mutableStateOf(steps.first()) }
+    var currentStep by rememberSaveable { mutableStateOf(steps.first()) }
 
     LaunchedEffect(doneStatus.toList()) {
         if (doneStatus.all { it }) {

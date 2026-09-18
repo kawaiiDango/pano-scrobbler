@@ -131,7 +131,7 @@ fun ScrobblesScreen(
     var scrollToTopOnLoad by rememberSaveable { mutableStateOf(true) }
     var expandedKey by rememberSaveable { mutableStateOf<String?>(null) }
     var lastHandledExpandedKey by rememberSaveable { mutableStateOf(expandedKey) }
-    var canExpandNowPlaying by rememberSaveable { mutableStateOf(true) }
+    val autoExpandNowPlaying by PlatformStuff.mainPrefs.data.collectAsStateWithInitialValue { it.autoExpandNowPlaying }
     var timeJumpMenuShown by rememberSaveable { mutableStateOf(false) }
     val pendingScrobblesHeader =
         stringResource(Res.string.pending_scrobbles) + ": " + pendingScrobblesCount
@@ -238,21 +238,19 @@ fun ScrobblesScreen(
         )
 
         // expand now playing
-        if (tracks.loadState.refresh is LoadState.NotLoading) {
-            if (canExpandNowPlaying && tracks.itemCount > 0 &&
-                (tracks.peek(0) as? TrackWrapper.TrackItem)?.track?.isNowPlaying == true
-            ) {
-                val newKey = tracks.peek(0)?.key
+        if (tracks.loadState.refresh is LoadState.NotLoading && autoExpandNowPlaying && tracks.itemCount > 0 &&
+            (tracks.peek(0) as? TrackWrapper.TrackItem)?.track?.isNowPlaying == true
+        ) {
+            val newKey = tracks.peek(0)?.key
 
-                val newExpandedItemIsVisible = listState.layoutInfo.visibleItemsInfo.find {
-                    it.key == newKey
-                } != null
+            val newExpandedItemIsVisible = listState.layoutInfo.visibleItemsInfo.find {
+                it.key == newKey
+            } != null
 
-                val isAlmostAtTop = listState.firstVisibleItemIndex < 5
+            val isAlmostAtTop = listState.firstVisibleItemIndex < 5
 
-                if (isAlmostAtTop || newExpandedItemIsVisible)
-                    expandedKey = newKey
-            }
+            if (isAlmostAtTop || newExpandedItemIsVisible)
+                expandedKey = newKey
         }
 
         if (tracks.loadState.isIdle && scrollToTopOnLoad) {
@@ -479,10 +477,21 @@ fun ScrobblesScreen(
                     canDelete = canEditOrDelete,
                     canHate = accountType == AccountType.LISTENBRAINZ,
                     expandedKey = { expandedKey },
-                    onExpand = {
-                        canExpandNowPlaying = !(expandedKey != null && it == null)
+                    onExpand = { key, isNowPlaying ->
+                        if (isNowPlaying) {
+                            val updatedAutoExpandNowPlaying = key != null
+                            if (updatedAutoExpandNowPlaying != autoExpandNowPlaying) {
+                                scope.launch {
+                                    PlatformStuff.mainPrefs.updateData {
+                                        it.copy(
+                                            autoExpandNowPlaying = updatedAutoExpandNowPlaying
+                                        )
+                                    }
+                                }
+                            }
+                        }
 
-                        expandedKey = it
+                        expandedKey = key
                     },
                     onNavigate = onNavigate,
                     isLandscape = { isLandscape },

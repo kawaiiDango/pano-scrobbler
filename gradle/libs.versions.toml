@@ -2,7 +2,7 @@
 targetSdk = "37"
 minSdk = "24"
 minSdkBaselineProfile = "28"
-android-application = "9.5.0-alpha05"
+android-application = "9.5.0-alpha06"
 compose-multiplatform = "1.13.0-alpha01"
 
 kotlin = "2.4.20"
@@ -14,7 +14,7 @@ test-junit = "1.3.0"
 benchmark = "1.5.0"
 billing = "9.1.0"
 buildkonfig = "0.22.0"
-coil = "3.6.2"
+coil = "3.6.3"
 core = "1.19.0"
 core-remoteviews = "1.1.0"
 coroutines = "1.11.0"
@@ -24,7 +24,7 @@ datastore = "1.3.0-alpha11"
 espresso-core = "3.7.0"
 firebase-bom = "34.19.0"
 google-services = "4.5.0"
-graalvm-native = "1.1.12"
+graalvm-native = "1.1.13"
 jmdns = "3.6.3"
 kermit = "2.2.0"
 koalaplot = "0.12.1"
@@ -34,11 +34,12 @@ ktor = "3.6.0"
 lifecycle = "2.11.0"
 material3 = "1.13.0-alpha01"
 nanohttpd = "2.3.1"
-nav3 = "1.2.0-beta01"
+navigation3 = "1.2.0-beta01"
+navigation-event-android = "1.2.0-alpha04"
 okhttp = "5.5.0"
 paging = "3.5.1"
 play-publisher = "4.1.1"
-play-services = "18.10.1"
+play-services = "18.11.0"
 profileinstaller = "1.4.1"
 qrcode = "4.5.0"
 review = "2.0.2"
@@ -94,8 +95,9 @@ firebase-bom = { module = "com.google.firebase:firebase-bom", version.ref = "fir
 crashlytics = { module = "com.google.firebase:firebase-crashlytics" }
 kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "serialization-json" }
 lifecycle-viewmodel = { module = "org.jetbrains.androidx.lifecycle:lifecycle-viewmodel-compose", version.ref = "lifecycle" }
-lifecycle-viewmodel-nav3 = { module = "org.jetbrains.androidx.lifecycle:lifecycle-viewmodel-navigation3", version.ref = "lifecycle" }
-nav3-ui = { module = "org.jetbrains.androidx.navigation3:navigation3-ui", version.ref = "nav3" }
+lifecycle-viewmodel-navigation3 = { module = "org.jetbrains.androidx.lifecycle:lifecycle-viewmodel-navigation3", version.ref = "lifecycle" }
+navigation3-ui = { module = "org.jetbrains.androidx.navigation3:navigation3-ui", version.ref = "navigation3" }
+navigation-event-android = { module = "androidx.navigationevent:navigationevent-compose", version.ref = "navigation-event-android" }
 lifecycle-runtime = { module = "org.jetbrains.androidx.lifecycle:lifecycle-runtime-compose", version.ref = "lifecycle" }
 okhttp = { module = "com.squareup.okhttp3:okhttp", version.ref = "okhttp" }
 profileinstaller = { module = "androidx.profileinstaller:profileinstaller", version.ref = "profileinstaller" }

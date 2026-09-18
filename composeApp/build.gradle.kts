@@ -86,6 +86,7 @@ kotlin {
             implementation(libs.coil.gif)
             implementation(libs.qrcode)
             implementation(libs.webkit)
+            implementation(libs.navigation.event.android) // todo predictive back crash fix, remove when they update
             implementation(projects.extrasAndroid)
         }
 
@@ -99,7 +100,7 @@ kotlin {
             implementation(libs.resources)
             implementation(libs.tooling.preview)
             implementation(libs.kotlinx.serialization.json)
-            implementation(libs.lifecycle.viewmodel.nav3)
+            implementation(libs.lifecycle.viewmodel.navigation3)
             implementation(libs.lifecycle.viewmodel)
             implementation(libs.lifecycle.runtime)
             implementation(libs.coil.compose)
@@ -116,7 +117,7 @@ kotlin {
             implementation(libs.datastore.core)
             implementation(libs.paging.common)
             implementation(libs.paging.compose)
-            implementation(libs.nav3.ui)
+            implementation(libs.navigation3.ui)
             implementation(libs.adaptive)
             implementation(libs.adaptive.layout)
             implementation(libs.adaptive.nav3)
@@ -147,7 +148,6 @@ kotlin {
 
 
 dependencies {
-//    "baselineProfile"(projects.baselineprofile)
     add("kspAndroid", libs.room.compiler)
     add("kspJvm", libs.room.compiler)
     "androidRuntimeClasspath"(libs.tooling)

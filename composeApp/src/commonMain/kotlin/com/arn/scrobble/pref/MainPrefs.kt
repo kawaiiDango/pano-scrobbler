@@ -130,6 +130,7 @@ data class MainPrefs(
     private val logToFileOnAndroidSince: Long = -1,
     val lovesFetchedForCache: Boolean = false,
     val wikiLangs: Set<String> = setOf("en"),
+    val autoExpandNowPlaying: Boolean = true,
     val extractFirstArtistPackages: Set<String> = emptySet(),
     val discordRpc: DiscordRpcPrefs = DiscordRpcPrefs(),
     val proxy: ProxyPrefs = ProxyPrefs(),

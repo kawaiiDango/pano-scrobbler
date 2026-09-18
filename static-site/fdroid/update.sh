@@ -27,9 +27,9 @@ readarray -t ASSET_URLS < <(
 
 readarray -t DATES < <(jq -r '.[0:3][] | .created_at' <<<"$JSON")
 
-# Download the last 3 assets and create the changelogs
+# Download the last 2 assets and create the changelogs
 mkdir -p "metadata/${PACKAGE}/en-US/changelogs"
-for ((i=0; i<${#ASSET_URLS[@]} && i<3; i++)); do
+for ((i=0; i<${#ASSET_URLS[@]} && i<2; i++)); do
     curl -L --create-dirs -o "repo/${REPO}-${TAGS[$i]}.apk" "${ASSET_URLS[$i]}"
     touch -d "${DATES[$i]}" "repo/${REPO}-${TAGS[$i]}.apk"
     CHANGELOG=$(echo "$JSON" | jq -r ".[$i] | .body")

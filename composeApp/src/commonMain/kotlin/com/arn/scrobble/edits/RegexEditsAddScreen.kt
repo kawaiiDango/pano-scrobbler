@@ -24,6 +24,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.mutableStateSetOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -56,7 +57,6 @@ import com.arn.scrobble.icons.SwipeLeftAlt
 import com.arn.scrobble.navigation.FabClickedResult
 import com.arn.scrobble.navigation.PanoRoute
 import com.arn.scrobble.navigation.SelectedPackagesResult
-import com.arn.scrobble.navigation.jsonSerializableSaver
 import com.arn.scrobble.panoicons.AlbumArtist
 import com.arn.scrobble.panoicons.PanoIcons
 import com.arn.scrobble.pref.AppItem
@@ -124,7 +124,7 @@ fun RegexEditsAddScreen(
     val regexLearnt by PlatformStuff.mainPrefs.data.collectAsStateWithInitialValue { it.regexLearnt }
     val fetchAlbumGlobal by PlatformStuff.mainPrefs.data.collectAsStateWithInitialValue { it.fetchAlbum }
     var name by rememberSaveable { mutableStateOf(regexEdit?.name ?: "") }
-    var appItems by rememberSaveable(saver = jsonSerializableSaver()) { mutableStateOf(emptySet<AppItem>()) }
+    val appItems = rememberSaveable { mutableStateSetOf<AppItem>() }
     val dao = remember { PanoDb.db.getRegexEditsDao() }
 
     var appItemsInited by rememberSaveable { mutableStateOf(false) }
@@ -244,7 +244,8 @@ fun RegexEditsAddScreen(
     }
 
     ResultEffect<SelectedPackagesResult> { res ->
-        appItems = res.checked.toSet()
+        appItems.clear()
+        appItems.addAll(res.checked)
     }
 
     ResultEffect<FabClickedResult> {
@@ -268,13 +269,15 @@ fun RegexEditsAddScreen(
     LaunchedEffect(Unit) {
         if (!appItemsInited) {
             appItemsInited = true
-            appItems = withContext(Dispatchers.IO) {
-                regexEdit?.appIds?.map {
-                    AppItem(
-                        it,
-                        PlatformStuff.loadApplicationLabel(it)
-                    )
-                }?.toSet() ?: emptySet()
+            withContext(Dispatchers.IO) {
+                appItems.addAll(
+                    regexEdit?.appIds?.map {
+                        AppItem(
+                            it,
+                            PlatformStuff.loadApplicationLabel(it)
+                        )
+                    }?.toSet() ?: emptySet()
+                )
             }
         }
     }
@@ -620,7 +623,7 @@ fun RegexEditsAddScreen(
                 )
             },
             onAppItemRemoved = {
-                appItems = appItems - it
+                appItems.remove(it)
             }
         )
 

@@ -44,7 +44,6 @@ import com.arn.scrobble.main.ScrobblerState
 import com.arn.scrobble.media.PlayingTrackNotifyEvent
 import com.arn.scrobble.media.notifyPlayingTrackEvent
 import com.arn.scrobble.navigation.PanoRoute
-import com.arn.scrobble.navigation.enumSaver
 import com.arn.scrobble.pref.AppListSaveType
 import com.arn.scrobble.ui.AlertDialogOk
 import com.arn.scrobble.ui.myTransparentCheckableItemColors
@@ -275,7 +274,7 @@ actual fun OnboardingScreen(
         doneStatus[steps.indexOf(step)] = true
     }
 
-    var currentStep by rememberSaveable(saver = enumSaver()) { mutableStateOf(steps.first()) }
+    var currentStep by rememberSaveable { mutableStateOf(steps.first()) }
 
     val isLoggedIn by PlatformStuff.mainPrefs.data.collectAsStateWithInitialValue { it.scrobbleAccounts.isNotEmpty() }
     val appListWasRun by PlatformStuff.mainPrefs.data.collectAsStateWithInitialValue { it.appListWasRun }

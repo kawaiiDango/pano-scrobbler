@@ -180,19 +180,27 @@ fun <T> DropdownPref(
                 contentDescription = null,
             )
             Box {
-                PanoDropdownMenu(
-                    expanded = expanded,
-                    onDismissRequest = { expanded = false }
-                ) {
-                    values.forEach { value ->
-                        item(
-                            text = { Text(text = toLabel(value)) },
-                            onClick = {
-                                Stuff.appScope.launch { mainPrefs.updateData { it.copyToSave(value) } }
-                                expanded = false
-                            },
-                            enabled = selectedValue != value
-                        )
+                if (expanded) {
+                    PanoDropdownMenu(
+                        expanded = true,
+                        onDismissRequest = { expanded = false }
+                    ) {
+                        values.forEach { value ->
+                            item(
+                                text = { Text(text = toLabel(value)) },
+                                onClick = {
+                                    Stuff.appScope.launch {
+                                        mainPrefs.updateData {
+                                            it.copyToSave(
+                                                value
+                                            )
+                                        }
+                                    }
+                                    expanded = false
+                                },
+                                enabled = selectedValue != value
+                            )
+                        }
                     }
                 }
             }
@@ -237,39 +245,41 @@ fun MultiSelectDropdownPref(
                 contentDescription = null,
             )
             Box {
-                PanoDropdownMenu(
-                    expanded = expanded,
-                    onDismissRequest = {
-                        Stuff.appScope.launch { mainPrefs.updateData { it.copyToSave(checkedSet) } }
-                        expanded = false
-                    }
-                ) {
-                    orderedValues.forEachIndexed { index, value ->
-                        val checked = value in checkedSet
+                if (expanded) {
+                    PanoDropdownMenu(
+                        expanded = true,
+                        onDismissRequest = {
+                            Stuff.appScope.launch { mainPrefs.updateData { it.copyToSave(checkedSet) } }
+                            expanded = false
+                        }
+                    ) {
+                        orderedValues.forEachIndexed { index, value ->
+                            val checked = value in checkedSet
 
-                        checkableItem(
-                            text = { Text(text = toLabel(value)) },
-                            checked = checked,
-                            onCheckedChange = {
-                                if (it) {
-                                    checkedSet += value
-                                } else {
-                                    checkedSet -= value
-                                }
-                            },
-                            trailingContent = if (checked) {
-                                {
-                                    val pos = remember(checkedSet) {
-                                        (checkedSet.indexOf(value) + 1).format()
+                            checkableItem(
+                                text = { Text(text = toLabel(value)) },
+                                checked = checked,
+                                onCheckedChange = {
+                                    if (it) {
+                                        checkedSet += value
+                                    } else {
+                                        checkedSet -= value
                                     }
-                                    Text(text = pos)
-                                }
-                            } else null
-                        )
+                                },
+                                trailingContent = if (checked) {
+                                    {
+                                        val pos = remember(checkedSet) {
+                                            (checkedSet.indexOf(value) + 1).format()
+                                        }
+                                        Text(text = pos)
+                                    }
+                                } else null
+                            )
 
-                        if (index < values.size - 1) {
-                            custom {
-                                Spacer(modifier = Modifier.height(MenuDefaults.GroupSpacing))
+                            if (index < values.size - 1) {
+                                custom {
+                                    Spacer(modifier = Modifier.height(MenuDefaults.GroupSpacing))
+                                }
                             }
                         }
                     }

@@ -131,24 +131,28 @@ jobs:
           ./gradlew desktopApp:packageNativeImage --no-daemon
 
       - if: matrix.os-name == 'linux'
+        name: Upload .AppImage
         uses: actions/upload-artifact@v7
         with:
           path: dist/*.AppImage
           archive: false
           
       - if: matrix.os-name == 'linux'
+        name: Upload .deb
         uses: actions/upload-artifact@v7
         with:
           path: dist/*.deb
           archive: false
           
       - if: matrix.os-name == 'linux'
+        name: Upload .tar.zst
         uses: actions/upload-artifact@v7
         with:
-          path: dist/*.tar.gz
+          path: dist/*.tar.zst
           archive: false
 
       - if: matrix.os-name == 'windows'
+        name: Upload .exe
         uses: actions/upload-artifact@v7
         with:
           path: dist/*.exe

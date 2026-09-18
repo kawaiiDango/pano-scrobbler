@@ -126,7 +126,9 @@ fun TrackHistoryScreen(
                 canLove = false,
                 canHate = false,
                 expandedKey = { expandedKey },
-                onExpand = { expandedKey = it },
+                onExpand = { key, _ ->
+                    expandedKey = key
+                },
                 onNavigate = onNavigate,
                 isLandscape = { isLandscape },
                 maxHeight = { listMaxHeight },

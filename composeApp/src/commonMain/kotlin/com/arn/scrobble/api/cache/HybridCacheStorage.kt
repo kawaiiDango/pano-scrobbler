@@ -5,6 +5,7 @@ import io.ktor.client.plugins.cache.storage.CachedResponseData
 import io.ktor.client.plugins.cache.storage.FileStorage
 import io.ktor.http.Url
 import kotlinx.coroutines.sync.Semaphore
+import kotlinx.io.files.Path
 import java.io.File
 
 class HybridCacheStorage(
@@ -13,8 +14,8 @@ class HybridCacheStorage(
     private val minAgeSeconds: Long = 300,
     private val maxSizeMb: Long = 40,
 ) : CacheStorage {
-    private val fileCache = FileStorage(cacheDir)
-    private var initalTrimmedSemaphore = Semaphore(1)
+    private val fileCache = FileStorage(Path(cacheDir.absolutePath))
+    private var initialTrimmedSemaphore = Semaphore(1)
 
     override suspend fun store(url: Url, data: CachedResponseData) {
         val maxAgeSeconds = data.headers["Cache-Control"]
@@ -24,7 +25,7 @@ class HybridCacheStorage(
             ?.substringAfter("=")
             ?.toIntOrNull() ?: 0
 
-        if (initalTrimmedSemaphore.tryAcquire()) {
+        if (initialTrimmedSemaphore.tryAcquire()) {
             cleanupCache()
         }
 

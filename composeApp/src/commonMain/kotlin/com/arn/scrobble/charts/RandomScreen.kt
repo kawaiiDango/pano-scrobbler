@@ -20,7 +20,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.saveable.rememberSerializable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -39,7 +39,6 @@ import com.arn.scrobble.icons.Icons
 import com.arn.scrobble.icons.Mic
 import com.arn.scrobble.icons.MusicNote
 import com.arn.scrobble.navigation.PanoRoute
-import com.arn.scrobble.navigation.jsonSerializableSaver
 import com.arn.scrobble.ui.ErrorText
 import com.arn.scrobble.ui.MusicEntryListItem
 import com.arn.scrobble.ui.PanoDropdownMenu
@@ -75,9 +74,7 @@ fun RandomScreen(
     val hasLoaded by viewModel.hasLoaded.collectAsStateWithLifecycle()
     val error by viewModel.error.collectAsStateWithLifecycle()
     val type by PlatformStuff.mainPrefs.data.collectAsStateWithInitialValue { it.randomType }
-    var timePeriod by rememberSaveable(saver = jsonSerializableSaver<TimePeriod?>()) {
-        mutableStateOf(null)
-    }
+    var timePeriod by rememberSerializable { mutableStateOf<TimePeriod?>(null) }
 
     val isTimePeriodContinuous = timePeriod?.lastfmPeriod != null
 

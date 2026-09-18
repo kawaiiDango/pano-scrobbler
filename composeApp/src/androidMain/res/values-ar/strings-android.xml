@@ -15,4 +15,37 @@
     <string name="monthly">شهرياً</string>
     <string comment="all time charts" name="charts_overall">الإجمالي</string>
     <string name="charts_no_data">لا يوجد بيانات في هذه الفترة</string>
+    <string comment="%1= the word weekly or monthly" formatted="true" name="s_top_scrobbles">أعلى السكروبلات %1$s</string>
+    <string name="appwidget_loading">جارٍ التحميل…</string>
+    <string name="show_persistent_noti">إظهار إشعار دائم</string>
+    <string name="scrobbler_off">تم تعطيل نظام التتبع (Scrobbler)</string>
+    <string name="scrobbler_on">نظام التتبع (Scrobbler) نشط</string>
+    <string name="pref_noti">الإشعارات</string>
+    <plurals name="num_weeks">
+        <item quantity="zero">أسبوع 
+أسابيع </item>
+        <item quantity="one">%1$s أسبوع</item>
+        <item quantity="two">%1$s أسبوع</item>
+        <item quantity="few">%1$s أسابيع</item>
+        <item quantity="many">%1$s أسبوعًا</item>
+        <item quantity="other">%1$s أسبوع</item>
+    </plurals>
+    <plurals name="num_months">
+        <item quantity="zero">شهر
+شهور</item>
+        <item quantity="one">%1$s شهر</item>
+        <item quantity="two">%1$s شهر</item>
+        <item quantity="few">%1$s أشهر</item>
+        <item quantity="many">%1$s شهرًا</item>
+        <item quantity="other">%1$s شهر</item>
+    </plurals>
+    <plurals name="num_years">
+        <item quantity="zero">%1$s سنة</item>
+        <item quantity="one">%1$s سنة</item>
+        <item quantity="two">سنة
+سنوات</item>
+        <item quantity="few">%1$s سنوات</item>
+        <item quantity="many">%1$s سنة</item>
+        <item quantity="other">%1$s سنة</item>
+    </plurals>
 </resources>

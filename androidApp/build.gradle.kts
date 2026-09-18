@@ -92,11 +92,9 @@ android {
                 enableSplit = false
             }
         }
-    }
 
-    testOptions {
-        unitTests {
-            isIncludeAndroidResources = true
+        dex {
+            useLegacyPackaging = false
         }
     }
 

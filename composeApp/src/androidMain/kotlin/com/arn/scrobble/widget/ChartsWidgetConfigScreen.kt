@@ -47,7 +47,6 @@ import com.arn.scrobble.R
 import com.arn.scrobble.api.AccountType
 import com.arn.scrobble.icons.Check
 import com.arn.scrobble.icons.Icons
-import com.arn.scrobble.navigation.enumSaver
 import com.arn.scrobble.pref.WidgetPrefs
 import com.arn.scrobble.ui.ButtonWithDropdown
 import com.arn.scrobble.ui.LabeledCheckbox
@@ -74,7 +73,7 @@ fun ChartsWidgetConfigScreen(
     onCancel: () -> Unit,
 ) {
 
-    var period by rememberSaveable(saver = enumSaver()) { mutableStateOf(prefs.period) }
+    var period by rememberSaveable { mutableStateOf(prefs.period) }
     var bgAlpha by rememberSaveable { mutableFloatStateOf(prefs.bgAlpha) }
     var shadow by rememberSaveable { mutableStateOf(prefs.shadow) }
     var images by rememberSaveable { mutableStateOf(prefs.images) }
@@ -315,7 +314,7 @@ private fun WidgetPreview(
                     ?.setShowImages(images)
             },
             onReset = {
-                
+
             },
             modifier = modifier
                 .padding(horizontal = 16.dp)

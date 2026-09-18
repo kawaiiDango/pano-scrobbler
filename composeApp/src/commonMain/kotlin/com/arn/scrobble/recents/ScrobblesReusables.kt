@@ -604,7 +604,7 @@ fun LazyListScope.scrobblesListItems(
     canEdit: Boolean,
     canDelete: Boolean,
     expandedKey: () -> String?,
-    onExpand: (String?) -> Unit,
+    onExpand: (String?, Boolean) -> Unit,
     onNavigate: (PanoRoute) -> Unit,
     isLandscape: () -> Boolean,
     maxHeight: () -> Dp,
@@ -653,10 +653,10 @@ fun LazyListScope.scrobblesListItems(
                 fixedImageHeight = !isExpanded,
                 onImageClick = if (!isPlaceholder) {
                     {
-                        if (isExpanded)
-                            onExpand(null)
-                        else {
-                            onExpand(item.key)
+                        if (isExpanded) {
+                            onExpand(null, item.track.isNowPlaying)
+                        } else {
+                            onExpand(item.key, item.track.isNowPlaying)
                         }
                     }
                 } else null,

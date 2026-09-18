@@ -1,2 +1,5 @@
+- Remembers the now playing card expanded state
 - Language selector in artist, album, track and tag wiki
 - Fixed webview not loading on Windows
+- The .apk dex is now uncompressed
+- Switched to .tar.zst downloads instead of .tar.gz

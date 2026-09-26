@@ -67,7 +67,7 @@ jobs:
       - name: Install GraalVM CE
         uses: graalvm/setup-graalvm@v1
         with:
-          version: '25'
+          version: '25.4'
           distribution: 'graalvm-community'
           github-token: ${{ github.token }}
 
@@ -136,14 +136,14 @@ jobs:
         with:
           path: dist/*.AppImage
           archive: false
-          
+
       - if: matrix.os-name == 'linux'
         name: Upload .deb
         uses: actions/upload-artifact@v7
         with:
           path: dist/*.deb
           archive: false
-          
+
       - if: matrix.os-name == 'linux'
         name: Upload .tar.zst
         uses: actions/upload-artifact@v7

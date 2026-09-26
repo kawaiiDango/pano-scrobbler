@@ -54,7 +54,7 @@ kotlin {
     android {
         compileSdk {
             version = release(libs.versions.targetSdk.get().toInt()) {
-//                minorApiLevel = libs.versions.sdkMinor.get().toInt()
+                minorApiLevel = libs.versions.sdkMinor.get().toInt()
             }
         }
         namespace = APP_ID

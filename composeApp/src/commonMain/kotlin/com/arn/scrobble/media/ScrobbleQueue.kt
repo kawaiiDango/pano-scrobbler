@@ -142,9 +142,16 @@ class ScrobbleQueue(
             }
 
             // tick every n milliseconds
+            var prevLockedHash: Int? = null
             while (submitAtTime > PlatformStuff.monotonicTimeMs() || hash == lockedHash) {
+                if (hash == lockedHash)
+                    prevLockedHash = lockedHash
+
                 delay(tickEveryMs.milliseconds)
             }
+
+            if (trackInfo.hash == prevLockedHash && !trackInfo.isPlaying)
+                return@coroutineScope
 
             // launch it in a separate scope, so that it does not get cancelled
             scope.launch(Dispatchers.IO) {

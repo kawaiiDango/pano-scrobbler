@@ -2383,7 +2383,7 @@
       "type": "org.jetbrains.skiko.SkiaLayer$1"
     },
     {
-      "type": "org.jetbrains.skiko.redrawer.Direct3DRedrawer",
+      "type": "org.jetbrains.skiko.renderer.Direct3DRenderer",
       "jniAccessible": true,
       "methods": [
         {

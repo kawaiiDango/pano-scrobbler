@@ -276,9 +276,11 @@ object ScrobbleEverywhere {
     }
 
     suspend fun nowPlaying(scrobbleData: ScrobbleData): Map<Scrobblable, Result<ScrobbleResult>> {
-        return Scrobblables.all.mapConcurrently(5) {
-            it to it.updateNowPlaying(scrobbleData)
-        }.toMap()
+        return Scrobblables.all
+            .filter { it.userAccount.canScrobble }
+            .mapConcurrently(5) {
+                it to it.updateNowPlaying(scrobbleData)
+            }.toMap()
     }
 
     suspend fun scrobble(scrobbleData: ScrobbleData) {
@@ -295,9 +297,12 @@ object ScrobbleEverywhere {
                 .insert(scrobbleSource)
         }
 
-        val scrobbleResults = Scrobblables.all.mapConcurrently(5) {
-            it to it.scrobble(scrobbleData)
-        }.toMap()
+        val scrobblelables = Scrobblables.all.filter { it.userAccount.canScrobble }
+
+        val scrobbleResults = scrobblelables
+            .mapConcurrently(5) {
+                it to it.scrobble(scrobbleData)
+            }.toMap()
 
         val pendingScrobblesDao = PanoDb.db.getPendingScrobblesDao()
 
@@ -305,8 +310,7 @@ object ScrobbleEverywhere {
 
         if (failed) {
             val services = if (scrobbleResults.isEmpty())
-                PlatformStuff.mainPrefs.data
-                    .map { it.scrobbleAccounts.map { it.type } }.first()
+                scrobblelables.map { it.userAccount.type }
             else
                 scrobbleResults
                     .mapNotNull { (scrobblable, result) ->
@@ -470,7 +474,7 @@ object ScrobbleEverywhere {
             albumArtist = albumArtistName,
         )
 
-        val artUrl = track.album?.image?.lastOrNull()?.url?.let {
+        val artUrl = track.album?.image?.medium?.let {
             it.takeIf { StarMapper.STAR_PATTERN !in it }
         }
 
@@ -500,7 +504,7 @@ object ScrobbleEverywhere {
         if (album != null) {
             return AdditionalMetadataResult(
                 scrobbleData = null,
-                artUrl = album.image?.lastOrNull()?.url?.let {
+                artUrl = album.image?.medium?.let {
                     it.takeIf { StarMapper.STAR_PATTERN !in it }
                 },
             )

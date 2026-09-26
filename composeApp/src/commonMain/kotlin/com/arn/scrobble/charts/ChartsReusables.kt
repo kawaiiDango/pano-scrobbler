@@ -63,9 +63,9 @@ import com.arn.scrobble.navigation.TimePeriodTypeClickedResult
 import com.arn.scrobble.ui.PanoDropdownMenu
 import com.arn.scrobble.ui.myColors
 import com.arn.scrobble.ui.rememberClippedPainter
+import com.arn.scrobble.utils.LocaleUtils.format
 import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff.collectAsStateWithInitialValue
-import com.arn.scrobble.utils.Stuff.format
 import com.arn.scrobble.utils.Stuff.setMidnight
 import com.arn.scrobble.utils.Stuff.timeToLocal
 import com.arn.scrobble.utils.Stuff.timeToUTC

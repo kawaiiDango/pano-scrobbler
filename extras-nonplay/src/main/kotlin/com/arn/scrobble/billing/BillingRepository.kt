@@ -27,7 +27,7 @@ class BillingRepository(
     override val purchaseMethods = listOf(
         PurchaseMethod(
             displayName = "Ko-fi",
-            displayDesc = "Uses Paypal",
+            displayDesc = "Uses PayPal",
             link = "https://ko-fi.com/kawaiiDango"
         ),
         PurchaseMethod(

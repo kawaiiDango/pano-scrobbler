@@ -30,9 +30,9 @@ abstract class MediaListener(
     protected val allowedPackages = mainPrefs.data.stateInWithCache(scope) { it.allowedPackages }
 
     protected val scrobblerEnabled =
-        mainPrefs.data.stateInWithCache(scope) { it.scrobblerEnabled && it.scrobbleAccounts.isNotEmpty() }
+        mainPrefs.data.stateInWithCache(scope) { it.scrobblerEnabled && it.scrobbleAccounts.count { it.canScrobble } > 0 }
     protected val scrobbleSpotifyRemote =
-        mainPrefs.data.stateInWithCache(scope) { it.scrobbleSpotifyRemoteP }
+        mainPrefs.data.stateInWithCache(scope) { it.scrobbleSpotifyRemote }
 
     private var scrobblerPausedTill = -1L
 

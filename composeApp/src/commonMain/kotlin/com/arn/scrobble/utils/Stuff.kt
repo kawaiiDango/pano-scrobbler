@@ -34,7 +34,6 @@ import kotlinx.coroutines.sync.withPermit
 import kotlinx.serialization.json.Json
 import java.security.MessageDigest
 import java.text.DecimalFormat
-import java.text.NumberFormat
 import java.util.Calendar
 import java.util.Locale
 import java.util.TimeZone
@@ -285,19 +284,13 @@ object Stuff {
         Base64.withPadding(PaddingOption.ABSENT)
     }
 
-    private val numberFormat by lazy {
-        NumberFormat.getInstance()
-    }
-
     private var mainPrefsCachedValue = MainPrefs()
 
     val globalExceptionFlow by lazy { MutableSharedFlow<Throwable>(extraBufferCapacity = 1) }
 
-    val globalSnackbarFlow by lazy { MutableSharedFlow<PanoSnackbarVisuals>(extraBufferCapacity = 1) }
+    val globalSnackbarFlow by lazy { MutableSharedFlow<PanoSnackbarVisuals>() }
 
     val globalUpdateAction by lazy { MutableStateFlow<UpdateAction?>(null) }
-
-    fun Number.format() = numberFormat.format(this)!!
 
     val receiptFlow
         get() = PlatformStuff.mainPrefs.data.map { it.receipt to it.receiptSignature }

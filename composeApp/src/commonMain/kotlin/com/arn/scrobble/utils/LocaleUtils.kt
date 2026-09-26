@@ -7,6 +7,7 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
 import java.io.File
+import java.text.NumberFormat
 import java.util.Locale
 
 
@@ -55,6 +56,14 @@ object LocaleUtils {
     val setLocaleFlow = MutableSharedFlow<String?>(extraBufferCapacity = 2)
     val locale = setLocaleFlow
         .distinctUntilChanged()
+        .onEach {
+            numberFormat = NumberFormat.getNumberInstance(
+                if (it != null)
+                    Locale(it)
+                else
+                    Locale.getDefault()
+            )
+        }
         .let {
             if (PlatformStuff.hasSystemLocaleStore)
                 it.onStart {
@@ -73,6 +82,9 @@ object LocaleUtils {
             else
                 null
         )
+
+    private var numberFormat = NumberFormat.getInstance()
+    fun Number.format() = numberFormat.format(this)!!
 }
 
 expect fun LocaleUtils.setAppLocale(lang: String?, activityContext: Any?)

@@ -67,9 +67,9 @@ import com.arn.scrobble.ui.rememberClippedPainter
 import com.arn.scrobble.ui.shapedClickable
 import com.arn.scrobble.ui.shimmerWindowBounds
 import com.arn.scrobble.utils.LocaleUtils
+import com.arn.scrobble.utils.LocaleUtils.format
 import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff
-import com.arn.scrobble.utils.Stuff.format
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
 import pano_scrobbler.composeapp.generated.resources.Res

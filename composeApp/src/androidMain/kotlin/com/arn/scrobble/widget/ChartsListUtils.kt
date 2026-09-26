@@ -11,8 +11,8 @@ import com.arn.scrobble.R
 import com.arn.scrobble.navigation.DeepLinkUtils
 import com.arn.scrobble.pref.WidgetPrefs
 import com.arn.scrobble.utils.AndroidStuff
+import com.arn.scrobble.utils.LocaleUtils.format
 import com.arn.scrobble.utils.Stuff
-import com.arn.scrobble.utils.Stuff.format
 
 object ChartsListUtils {
     const val EXTRA_TAB = "widget_tab"

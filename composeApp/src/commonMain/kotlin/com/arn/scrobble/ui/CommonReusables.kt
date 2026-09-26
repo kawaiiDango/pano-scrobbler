@@ -22,9 +22,13 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.text.input.InputTransformation
+import androidx.compose.foundation.text.input.KeyboardActionHandler
+import androidx.compose.foundation.text.input.OutputTransformation
+import androidx.compose.foundation.text.input.TextFieldLineLimits
 import androidx.compose.foundation.text.input.TextFieldState
+import androidx.compose.foundation.text.input.byValue
 import androidx.compose.foundation.text.input.setTextAndPlaceCursorAtEnd
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.AlertDialog
@@ -51,14 +55,16 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.MenuDefaults
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedIconToggleButton
+import androidx.compose.material3.OutlinedSecureTextField
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.OutlinedToggleButton
 import androidx.compose.material3.OutlinedToggleButtonDefaults
 import androidx.compose.material3.PlainTooltip
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.TextFieldDefaults
+import androidx.compose.material3.TextFieldLabelScope
 import androidx.compose.material3.ToggleButtonColors
 import androidx.compose.material3.ToggleButtonDefaults
 import androidx.compose.material3.TooltipAnchorPosition
@@ -104,7 +110,6 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
@@ -462,29 +467,23 @@ fun SearchEffect(
 
 @Composable
 fun PanoOutlinedTextField(
-    value: String,
-    onValueChange: (String) -> Unit,
+    state: TextFieldState,
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
     enabledOnTv: Boolean = true,
     placeholder: @Composable (() -> Unit)? = null,
-    label: @Composable (() -> Unit)? = null,
+    label: @Composable (TextFieldLabelScope.() -> Unit)? = null,
     singleLine: Boolean = false,
     leadingIcon: @Composable (() -> Unit)? = null,
     trailingIcon: @Composable (() -> Unit)? = null,
     supportingText: @Composable (() -> Unit)? = null,
     isError: Boolean = false,
-    visualTransformation: VisualTransformation = VisualTransformation.None,
+    outputTransformation: OutputTransformation? = null,
     keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
-    keyboardActions: KeyboardActions = KeyboardActions.Default,
+    onKeyboardAction: KeyboardActionHandler? = null,
 ) {
     OutlinedTextField(
-        value = value,
-        onValueChange = {
-            onValueChange(
-                it.filterNot { it == '\n' || it == '\r' }
-            )
-        },
+        state = state,
         label = label,
         modifier = modifier then
                 if (!singleLine) {
@@ -499,19 +498,42 @@ fun PanoOutlinedTextField(
                     }
                 } else
                     Modifier,
-        shape = TextFieldDefaults.roundedShape,
+        shape = OutlinedTextFieldDefaults.roundedShape,
         enabled = enabled && (!PlatformStuff.isTv || enabledOnTv),
 //        readOnly = PlatformStuff.isTv,
         placeholder = placeholder,
-        singleLine = singleLine,
-        maxLines = if (singleLine) 1 else 10,
+        lineLimits = if (singleLine)
+            TextFieldLineLimits.SingleLine
+        else
+            TextFieldLineLimits.MultiLine(maxHeightInLines = 10),
         leadingIcon = leadingIcon,
         trailingIcon = trailingIcon,
         supportingText = supportingText,
         isError = isError,
-        visualTransformation = visualTransformation,
+        inputTransformation = InputTransformation.byValue { _, proposed -> proposed.filterNot { it == '\n' || it == '\r' } },
+        outputTransformation = outputTransformation,
         keyboardOptions = keyboardOptions,
-        keyboardActions = keyboardActions,
+        onKeyboardAction = onKeyboardAction,
+    )
+}
+
+@Composable
+fun PanoOutlinedSecureTextField(
+    state: TextFieldState,
+    modifier: Modifier = Modifier,
+    enabled: Boolean = true,
+    label: @Composable (TextFieldLabelScope.() -> Unit)? = null,
+    isError: Boolean = false,
+    onKeyboardAction: KeyboardActionHandler? = null,
+) {
+    OutlinedSecureTextField(
+        state = state,
+        modifier = modifier,
+        enabled = enabled,
+        label = label,
+        isError = isError,
+        shape = OutlinedTextFieldDefaults.roundedShape,
+        onKeyboardAction = onKeyboardAction,
     )
 }
 

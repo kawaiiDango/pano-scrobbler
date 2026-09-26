@@ -90,10 +90,10 @@ import com.arn.scrobble.ui.getMusicEntryPlaceholderItem
 import com.arn.scrobble.ui.myColors
 import com.arn.scrobble.ui.rememberDragDropState
 import com.arn.scrobble.ui.shimmerWindowBounds
+import com.arn.scrobble.utils.LocaleUtils.format
 import com.arn.scrobble.utils.PanoTimeFormatter
 import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff
-import com.arn.scrobble.utils.Stuff.format
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.pluralStringResource
@@ -234,7 +234,7 @@ fun FriendsScreen(
 
     ResultEffect<PullToRefreshResult> {
         if (it.tab == PanoTab.Following) {
-            if (friends.loadState.refresh is LoadState.NotLoading) {
+            if (friends.loadState.refresh !is LoadState.Loading) {
                 viewModel.markExtraDataAsStale()
                 viewModel.clearSortedFriends()
                 friends.refresh()

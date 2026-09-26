@@ -52,6 +52,7 @@ keyboard_arrow_up
 keyboard_double_arrow_down
 keyboard_double_arrow_up
 lock
+logout
 match_case
 menu
 mic

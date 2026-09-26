@@ -37,7 +37,7 @@ import javax.swing.JWindow
 
 // forked from https://github.com/MayakaApps/ComposeWindowStyler/blob/main/window-styler/src/jvmMain/kotlin/com/mayakapps/compose/windowstyler/TransparencyUtils.kt
 
-val Window.isUndecorated: Boolean
+private val Window.isUndecorated: Boolean
     get() = when (this) {
         is ComposeWindow -> isUndecorated
         is ComposeDialog -> isUndecorated

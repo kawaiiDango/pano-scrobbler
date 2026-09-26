@@ -35,9 +35,7 @@ fun AutoRefreshEffect(
 
                 delay(delay)
 
-                if (lazyPagingItems.loadState.refresh is LoadState.NotLoading &&
-                    !lazyPagingItems.loadState.hasError
-                ) {
+                if (lazyPagingItems.loadState.refresh is LoadState.NotLoading) {
                     if (doRefresh())
                         tryAgain = false
                 }

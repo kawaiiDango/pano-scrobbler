@@ -38,6 +38,7 @@ import androidx.compose.foundation.layout.ime
 import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.plus
+import androidx.compose.foundation.layout.requiredSize
 import androidx.compose.foundation.layout.safeContentPadding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.union
@@ -1030,10 +1031,15 @@ private fun PanoTopAppBar(
         if (windowTitleActions != null) {
             // show manual minimize, maximize, close buttons
 
+            val iconModifier = Modifier
+                .requiredSize(IconButtonDefaults.smallContainerSize())
+                .pointerHoverIcon(PointerIcon.Default)
+                .align(Alignment.Top)
+
             IconButton(
                 shapes = IconButtonDefaults.shapes(),
                 onClick = windowTitleActions::minimize,
-                modifier = Modifier.pointerHoverIcon(PointerIcon.Default)
+                modifier = iconModifier
             ) {
                 Icon(
                     imageVector = Icons.Minimize,
@@ -1044,7 +1050,7 @@ private fun PanoTopAppBar(
 //            IconButton(
 //                shapes = IconButtonDefaults.shapes(),
 //                onClick = windowTitleActions::maximizeRestore,
-//                modifier = Modifier.pointerHoverIcon(PointerIcon.Default)
+//                modifier = iconModifier
 //            ) {
 //                Icon(
 //                    imageVector = Icons.Fullscreen,
@@ -1055,7 +1061,7 @@ private fun PanoTopAppBar(
             IconButton(
                 shapes = IconButtonDefaults.shapes(),
                 onClick = windowTitleActions::close,
-                modifier = Modifier.pointerHoverIcon(PointerIcon.Default)
+                modifier = iconModifier
             ) {
                 Icon(
                     imageVector = Icons.Close,

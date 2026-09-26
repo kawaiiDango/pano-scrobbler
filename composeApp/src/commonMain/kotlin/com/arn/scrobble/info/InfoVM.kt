@@ -69,11 +69,14 @@ class InfoVM(
                     PlatformStuff.mainPrefs.data.map { it.wikiLangs.firstOrNull() }.first()
 
                 _lang.collectLatest { lang ->
+                    _infoLoaded.emit(false)
                     _infoMap.value = withContext(Dispatchers.IO) {
                         fetchInfos(infos, _username, lang.takeIf { it != "en" })
                     }
                     _infoLoaded.emit(true)
                 }
+            } else {
+                _infoLoaded.emit(true)
             }
         }
     }

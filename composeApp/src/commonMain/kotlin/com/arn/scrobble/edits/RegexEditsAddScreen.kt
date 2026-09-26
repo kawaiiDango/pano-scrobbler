@@ -10,6 +10,9 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.text.input.TextFieldState
+import androidx.compose.foundation.text.input.rememberTextFieldState
+import androidx.compose.foundation.text.input.setTextAndPlaceCursorAtEnd
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.FilterChipDefaults
@@ -33,7 +36,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.navigation3.runtime.result.ResultEffect
 import com.arn.scrobble.billing.LocalLicenseValidState
@@ -63,7 +65,7 @@ import com.arn.scrobble.pref.AppItem
 import com.arn.scrobble.pref.AppListSaveType
 import com.arn.scrobble.ui.DismissableNotice
 import com.arn.scrobble.ui.ErrorText
-import com.arn.scrobble.ui.HighlighterVisualTransformation
+import com.arn.scrobble.ui.HighlighterOutputTransformation
 import com.arn.scrobble.ui.LabeledCheckbox
 import com.arn.scrobble.ui.PanoDropdownMenu
 import com.arn.scrobble.ui.PanoOutlinedTextField
@@ -123,7 +125,7 @@ fun RegexEditsAddScreen(
     val scope = rememberCoroutineScope()
     val regexLearnt by PlatformStuff.mainPrefs.data.collectAsStateWithInitialValue { it.regexLearnt }
     val fetchAlbumGlobal by PlatformStuff.mainPrefs.data.collectAsStateWithInitialValue { it.fetchAlbum }
-    var name by rememberSaveable { mutableStateOf(regexEdit?.name ?: "") }
+    val name = rememberTextFieldState(regexEdit?.name ?: "")
     val appItems = rememberSaveable { mutableStateSetOf<AppItem>() }
     val dao = remember { PanoDb.db.getRegexEditsDao() }
 
@@ -138,35 +140,25 @@ fun RegexEditsAddScreen(
     var caseSensitive by rememberSaveable { mutableStateOf(regexEdit?.caseSensitive ?: false) }
     var continueMatching by rememberSaveable { mutableStateOf(regexEdit?.continueMatching ?: true) }
 
-    var searchTrack by rememberSaveable { mutableStateOf(regexEdit?.search?.searchTrack ?: "") }
-    var searchAlbum by rememberSaveable { mutableStateOf(regexEdit?.search?.searchAlbum ?: "") }
-    var searchArtist by rememberSaveable { mutableStateOf(regexEdit?.search?.searchArtist ?: "") }
-    var searchAlbumArtist by rememberSaveable {
-        mutableStateOf(
-            regexEdit?.search?.searchAlbumArtist.orEmpty()
-        )
-    }
+    val searchTrack = rememberTextFieldState(regexEdit?.search?.searchTrack ?: "")
+    val searchAlbum = rememberTextFieldState(regexEdit?.search?.searchAlbum ?: "")
+    val searchArtist = rememberTextFieldState(regexEdit?.search?.searchArtist ?: "")
+    val searchAlbumArtist = rememberTextFieldState(
+        regexEdit?.search?.searchAlbumArtist.orEmpty()
+    )
 
-    var replacementTrack by rememberSaveable {
-        mutableStateOf(
-            regexEdit?.replacement?.replacementTrack.orEmpty()
-        )
-    }
-    var replacementAlbum by rememberSaveable {
-        mutableStateOf(
-            regexEdit?.replacement?.replacementAlbum.orEmpty()
-        )
-    }
-    var replacementArtist by rememberSaveable {
-        mutableStateOf(
-            regexEdit?.replacement?.replacementArtist.orEmpty()
-        )
-    }
-    var replacementAlbumArtist by rememberSaveable {
-        mutableStateOf(
-            regexEdit?.replacement?.replacementAlbumArtist.orEmpty()
-        )
-    }
+    val replacementTrack = rememberTextFieldState(
+        regexEdit?.replacement?.replacementTrack.orEmpty()
+    )
+    val replacementAlbum = rememberTextFieldState(
+        regexEdit?.replacement?.replacementAlbum.orEmpty()
+    )
+    val replacementArtist = rememberTextFieldState(
+        regexEdit?.replacement?.replacementArtist.orEmpty()
+    )
+    val replacementAlbumArtist = rememberTextFieldState(
+        regexEdit?.replacement?.replacementAlbumArtist.orEmpty()
+    )
 
     var fetchAlbum by rememberSaveable {
         mutableStateOf(
@@ -188,10 +180,10 @@ fun RegexEditsAddScreen(
 
     fun buildRegexEdit(): RegexEdit {
         val search = RegexEdit.SearchPatterns(
-            searchTrack,
-            searchAlbum,
-            searchArtist,
-            searchAlbumArtist
+            searchTrack.text.toString(),
+            searchAlbum.text.toString(),
+            searchArtist.text.toString(),
+            searchAlbumArtist.text.toString()
         )
 
         return when (regexMode) {
@@ -199,7 +191,7 @@ fun RegexEditsAddScreen(
                 RegexEdit(
                     _id = regexEdit?._id ?: 0,
                     order = regexEdit?.order ?: -1,
-                    name = name,
+                    name = name.text.toString(),
                     search = search,
                     appIds = appItems.map { it.appId }.toSet(),
                     caseSensitive = caseSensitive,
@@ -211,13 +203,13 @@ fun RegexEditsAddScreen(
                 RegexEdit(
                     _id = regexEdit?._id ?: 0,
                     order = regexEdit?.order ?: -1,
-                    name = name,
+                    name = name.text.toString(),
                     search = search,
                     replacement = RegexEdit.ReplacementPatterns(
-                        replacementTrack,
-                        replacementAlbum.takeIf { !fetchAlbum }.orEmpty(),
-                        replacementArtist,
-                        replacementAlbumArtist,
+                        replacementTrack.text.toString(),
+                        replacementAlbum.text.toString().takeIf { !fetchAlbum }.orEmpty(),
+                        replacementArtist.text.toString(),
+                        replacementAlbumArtist.text.toString(),
                         replaceAll,
                         fetchAlbum
                     ),
@@ -231,7 +223,7 @@ fun RegexEditsAddScreen(
                 RegexEdit(
                     _id = regexEdit?._id ?: 0,
                     order = regexEdit?.order ?: -1,
-                    name = name,
+                    name = name.text.toString(),
                     search = search,
                     appIds = appItems.map { it.appId }.toSet(),
                     blockPlayerAction = blockPlayerAction,
@@ -289,18 +281,18 @@ fun RegexEditsAddScreen(
 
         when (trackCopyFrom) {
             RegexEdit.Field.album -> {
-                searchTrack = searchAlbum
-                replacementTrack = replacementAlbum
+                searchTrack.setTextAndPlaceCursorAtEnd(searchAlbum.text.toString())
+                replacementTrack.setTextAndPlaceCursorAtEnd(replacementAlbum.text.toString())
             }
 
             RegexEdit.Field.artist -> {
-                searchTrack = searchArtist
-                replacementTrack = replacementArtist
+                searchTrack.setTextAndPlaceCursorAtEnd(searchArtist.text.toString())
+                replacementTrack.setTextAndPlaceCursorAtEnd(replacementArtist.text.toString())
             }
 
             RegexEdit.Field.albumArtist -> {
-                searchTrack = searchAlbumArtist
-                replacementTrack = replacementAlbumArtist
+                searchTrack.setTextAndPlaceCursorAtEnd(searchAlbumArtist.text.toString())
+                replacementTrack.setTextAndPlaceCursorAtEnd(replacementAlbumArtist.text.toString())
             }
 
             else -> {}
@@ -313,18 +305,18 @@ fun RegexEditsAddScreen(
 
         when (artistCopyFrom) {
             RegexEdit.Field.track -> {
-                searchArtist = searchTrack
-                replacementArtist = replacementTrack
+                searchArtist.setTextAndPlaceCursorAtEnd(searchTrack.text.toString())
+                replacementArtist.setTextAndPlaceCursorAtEnd(replacementTrack.text.toString())
             }
 
             RegexEdit.Field.album -> {
-                searchArtist = searchAlbum
-                replacementArtist = replacementAlbum
+                searchArtist.setTextAndPlaceCursorAtEnd(searchAlbum.text.toString())
+                replacementArtist.setTextAndPlaceCursorAtEnd(replacementAlbum.text.toString())
             }
 
             RegexEdit.Field.albumArtist -> {
-                searchArtist = searchAlbumArtist
-                replacementArtist = replacementAlbumArtist
+                searchArtist.setTextAndPlaceCursorAtEnd(searchAlbumArtist.text.toString())
+                replacementArtist.setTextAndPlaceCursorAtEnd(replacementAlbumArtist.text.toString())
             }
 
             else -> {}
@@ -337,18 +329,18 @@ fun RegexEditsAddScreen(
 
         when (albumCopyFrom) {
             RegexEdit.Field.track -> {
-                searchAlbum = searchTrack
-                replacementAlbum = replacementTrack
+                searchAlbum.setTextAndPlaceCursorAtEnd(searchTrack.text.toString())
+                replacementAlbum.setTextAndPlaceCursorAtEnd(replacementTrack.text.toString())
             }
 
             RegexEdit.Field.artist -> {
-                searchAlbum = searchArtist
-                replacementAlbum = replacementArtist
+                searchAlbum.setTextAndPlaceCursorAtEnd(searchArtist.text.toString())
+                replacementAlbum.setTextAndPlaceCursorAtEnd(replacementArtist.text.toString())
             }
 
             RegexEdit.Field.albumArtist -> {
-                searchAlbum = searchAlbumArtist
-                replacementAlbum = replacementAlbumArtist
+                searchAlbum.setTextAndPlaceCursorAtEnd(searchAlbumArtist.text.toString())
+                replacementAlbum.setTextAndPlaceCursorAtEnd(replacementAlbumArtist.text.toString())
             }
 
             else -> {}
@@ -361,18 +353,18 @@ fun RegexEditsAddScreen(
 
         when (albumArtistCopyFrom) {
             RegexEdit.Field.track -> {
-                searchAlbumArtist = searchTrack
-                replacementAlbumArtist = replacementTrack
+                searchAlbumArtist.setTextAndPlaceCursorAtEnd(searchTrack.text.toString())
+                replacementAlbumArtist.setTextAndPlaceCursorAtEnd(replacementTrack.text.toString())
             }
 
             RegexEdit.Field.artist -> {
-                searchAlbumArtist = searchArtist
-                replacementAlbumArtist = replacementArtist
+                searchAlbumArtist.setTextAndPlaceCursorAtEnd(searchArtist.text.toString())
+                replacementAlbumArtist.setTextAndPlaceCursorAtEnd(replacementArtist.text.toString())
             }
 
             RegexEdit.Field.album -> {
-                searchAlbumArtist = searchAlbum
-                replacementAlbumArtist = replacementAlbum
+                searchAlbumArtist.setTextAndPlaceCursorAtEnd(searchAlbum.text.toString())
+                replacementAlbumArtist.setTextAndPlaceCursorAtEnd(replacementAlbum.text.toString())
             }
 
             else -> {}
@@ -399,8 +391,7 @@ fun RegexEditsAddScreen(
         }
 
         PanoOutlinedTextField(
-            value = name,
-            onValueChange = { name = it },
+            name,
             label = { Text(stringResource(Res.string.edit_name)) },
             enabledOnTv = false,
             keyboardOptions = KeyboardOptions.Default.copy(
@@ -458,8 +449,6 @@ fun RegexEditsAddScreen(
                             label = stringResource(Res.string.track),
                             searchRegex = searchTrack,
                             replacementRegex = replacementTrack,
-                            onSearchChange = { searchTrack = it },
-                            onReplacementChange = { replacementTrack = it },
                             copyFromField = trackCopyFrom,
                             onCopyFromSelected = { trackCopyFrom = it }
                         )
@@ -468,8 +457,6 @@ fun RegexEditsAddScreen(
                             label = stringResource(Res.string.artist),
                             searchRegex = searchArtist,
                             replacementRegex = replacementArtist,
-                            onSearchChange = { searchArtist = it },
-                            onReplacementChange = { replacementArtist = it },
                             copyFromField = artistCopyFrom,
                             onCopyFromSelected = { artistCopyFrom = it }
                         )
@@ -478,8 +465,6 @@ fun RegexEditsAddScreen(
                             label = stringResource(Res.string.album),
                             searchRegex = searchAlbum,
                             replacementRegex = replacementAlbum,
-                            onSearchChange = { searchAlbum = it },
-                            onReplacementChange = { replacementAlbum = it },
                             copyFromField = albumCopyFrom,
                             onCopyFromSelected = { albumCopyFrom = it },
                             replacementRegexEnabled = !fetchAlbum
@@ -516,8 +501,6 @@ fun RegexEditsAddScreen(
                             label = stringResource(Res.string.album_artist),
                             searchRegex = searchAlbumArtist,
                             replacementRegex = replacementAlbumArtist,
-                            onSearchChange = { searchAlbumArtist = it },
-                            onReplacementChange = { replacementAlbumArtist = it },
                             copyFromField = albumArtistCopyFrom,
                             onCopyFromSelected = { albumArtistCopyFrom = it }
                         )
@@ -558,12 +541,6 @@ fun RegexEditsAddScreen(
                             album = searchAlbum,
                             artist = searchArtist,
                             albumArtist = searchAlbumArtist,
-                            onValueChange = { track, album, artist, albumArtist ->
-                                searchTrack = track
-                                searchAlbum = album
-                                searchArtist = artist
-                                searchAlbumArtist = albumArtist
-                            },
                             enabled = isLicenseValid,
                             highlightCaptureGroups = true,
                             modifier = Modifier.fillMaxWidth()
@@ -585,12 +562,6 @@ fun RegexEditsAddScreen(
                             album = searchAlbum,
                             artist = searchArtist,
                             albumArtist = searchAlbumArtist,
-                            onValueChange = { track, album, artist, albumArtist ->
-                                searchTrack = track
-                                searchAlbum = album
-                                searchArtist = artist
-                                searchAlbumArtist = albumArtist
-                            },
                             enabled = isLicenseValid,
                             highlightCaptureGroups = false,
                             modifier = Modifier.fillMaxWidth()
@@ -650,10 +621,8 @@ fun RegexEditsAddScreen(
 @Composable
 private fun SearchAndReplacePair(
     label: String,
-    searchRegex: String,
-    replacementRegex: String,
-    onSearchChange: (String) -> Unit,
-    onReplacementChange: (String) -> Unit,
+    searchRegex: TextFieldState,
+    replacementRegex: TextFieldState,
     copyFromField: RegexEdit.Field?,
     onCopyFromSelected: (RegexEdit.Field?) -> Unit,
     modifier: Modifier = Modifier,
@@ -691,8 +660,7 @@ private fun SearchAndReplacePair(
         }
 
         PanoOutlinedTextField(
-            value = searchRegex,
-            onValueChange = onSearchChange,
+            searchRegex,
             enabled = copyFromField == null,
             label = { Text(stringResource(Res.string.search)) },
             enabledOnTv = false,
@@ -704,8 +672,7 @@ private fun SearchAndReplacePair(
         )
 
         PanoOutlinedTextField(
-            value = replacementRegex,
-            onValueChange = onReplacementChange,
+            replacementRegex,
             enabled = copyFromField == null && replacementRegexEnabled,
             label = { Text(stringResource(Res.string.edit_replace)) },
             enabledOnTv = false,
@@ -721,16 +688,10 @@ private fun SearchAndReplacePair(
 @Composable
 private fun SearchFields(
     headerText: String,
-    track: String,
-    album: String,
-    artist: String,
-    albumArtist: String,
-    onValueChange: (
-        track: String,
-        album: String,
-        artist: String,
-        albumArtist: String,
-    ) -> Unit,
+    track: TextFieldState,
+    album: TextFieldState,
+    artist: TextFieldState,
+    albumArtist: TextFieldState,
     enabled: Boolean,
     highlightCaptureGroups: Boolean,
     modifier: Modifier = Modifier
@@ -738,14 +699,14 @@ private fun SearchFields(
     val labelPrefix = stringResource(Res.string.edit_regex) + ": "
 
     val tertiaryColor = MaterialTheme.colorScheme.tertiary
-    val captureGroupsVisualTransformation = remember(highlightCaptureGroups) {
+    val captureGroupsOutputTransformation = remember(highlightCaptureGroups) {
         if (highlightCaptureGroups)
-            HighlighterVisualTransformation(
+            HighlighterOutputTransformation(
                 stringsToHighlight = RegexEdit.Field.entries.map { "?<" + it.name + ">" },
                 highlightColor = tertiaryColor
             )
         else
-            VisualTransformation.None
+            null
     }
 
     Column(
@@ -762,12 +723,11 @@ private fun SearchFields(
         )
 
         PanoOutlinedTextField(
-            value = track,
-            onValueChange = { onValueChange(it, album, artist, albumArtist) },
+            track,
             label = { Text(labelPrefix + stringResource(Res.string.track)) },
             enabledOnTv = false,
             modifier = Modifier.fillMaxWidth(),
-            visualTransformation = captureGroupsVisualTransformation,
+            outputTransformation = captureGroupsOutputTransformation,
             keyboardOptions = KeyboardOptions.Default.copy(
                 imeAction = ImeAction.Next
             ),
@@ -775,12 +735,11 @@ private fun SearchFields(
         )
 
         PanoOutlinedTextField(
-            value = artist,
-            onValueChange = { onValueChange(track, album, it, albumArtist) },
+            artist,
             label = { Text(labelPrefix + stringResource(Res.string.artist)) },
             enabledOnTv = false,
             modifier = Modifier.fillMaxWidth(),
-            visualTransformation = captureGroupsVisualTransformation,
+            outputTransformation = captureGroupsOutputTransformation,
             keyboardOptions = KeyboardOptions.Default.copy(
                 imeAction = ImeAction.Next
             ),
@@ -788,12 +747,11 @@ private fun SearchFields(
         )
 
         PanoOutlinedTextField(
-            value = album,
-            onValueChange = { onValueChange(track, it, artist, albumArtist) },
+            album,
             label = { Text(labelPrefix + stringResource(Res.string.album)) },
             enabledOnTv = false,
             modifier = Modifier.fillMaxWidth(),
-            visualTransformation = captureGroupsVisualTransformation,
+            outputTransformation = captureGroupsOutputTransformation,
             keyboardOptions = KeyboardOptions.Default.copy(
                 imeAction = ImeAction.Next
             ),
@@ -801,12 +759,11 @@ private fun SearchFields(
         )
 
         PanoOutlinedTextField(
-            value = albumArtist,
-            onValueChange = { onValueChange(track, album, artist, it) },
+            albumArtist,
             label = { Text(labelPrefix + stringResource(Res.string.album_artist)) },
             enabledOnTv = false,
             modifier = Modifier.fillMaxWidth(),
-            visualTransformation = captureGroupsVisualTransformation,
+            outputTransformation = captureGroupsOutputTransformation,
             keyboardOptions = KeyboardOptions.Default.copy(
                 imeAction = ImeAction.Done
             ),
@@ -822,7 +779,7 @@ private fun ExtractOptions(
     val tertiaryColor = MaterialTheme.colorScheme.tertiary
 
     val captureGroupsHighlighter = remember {
-        HighlighterVisualTransformation(
+        HighlighterOutputTransformation(
             stringsToHighlight = listOf(
                 RegexEdit.Field.track.name,
                 RegexEdit.Field.album.name,
@@ -838,7 +795,7 @@ private fun ExtractOptions(
         modifier = modifier
     ) {
         Text(
-            text = captureGroupsHighlighter.highlight(stringResource(Res.string.edit_extract_desc)),
+            text = captureGroupsHighlighter.highlightToAnnotatedString(stringResource(Res.string.edit_extract_desc)),
             style = MaterialTheme.typography.bodyMedium,
             modifier = Modifier.fillMaxWidth()
         )

@@ -86,6 +86,16 @@ actual object PlatformStuff {
         val desktop = if (Desktop.isDesktopSupported()) Desktop.getDesktop() else null
 
         when {
+            DesktopStuff.IS_LINUX -> {
+                // some systems report desktop.isSupported = true but it does nothing
+                // so force xdg open
+                val url2 = if (url.startsWith("http", ignoreCase = true))
+                    Stuff.localizeLastfmUrl(url)
+                else
+                    url
+                PanoNativeComponents.openUrlLinux(url2)
+            }
+
             desktop != null &&
                     url.startsWith("mailto:", ignoreCase = true) &&
                     desktop.isSupported(Desktop.Action.MAIL)
@@ -105,10 +115,6 @@ actual object PlatformStuff {
                     desktop.isSupported(Desktop.Action.OPEN)
                 -> {
                 desktop.open(File(URI(url)))
-            }
-
-            desktop == null && DesktopStuff.IS_LINUX -> {
-                PanoNativeComponents.openUrlLinux(url)
             }
         }
     }

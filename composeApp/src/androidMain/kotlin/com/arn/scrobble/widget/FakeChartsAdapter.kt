@@ -9,7 +9,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import com.arn.scrobble.R
 import com.arn.scrobble.pref.WidgetPrefs
-import com.arn.scrobble.utils.Stuff.format
+import com.arn.scrobble.utils.LocaleUtils.format
 
 
 class FakeChartsAdapter(

@@ -45,7 +45,6 @@ import com.arn.scrobble.api.lastfm.Artist
 import com.arn.scrobble.api.lastfm.MusicEntry
 import com.arn.scrobble.api.lastfm.PageResult
 import com.arn.scrobble.api.lastfm.Track
-import com.arn.scrobble.api.lastfm.webp300
 import com.arn.scrobble.imageloader.MusicEntryImageReq
 import com.arn.scrobble.ui.colorSeed
 import com.arn.scrobble.utils.PlatformFile
@@ -313,7 +312,7 @@ class CollageGeneratorVM(private val isLicenseValid: Boolean) : ViewModel() {
                     data(
                         MusicEntryImageReq(
                             entry,
-                            fetchAlbumInfoIfMissing = (entry is Album && entry.webp300 == null) || (entry is Track && entry.album == null),
+                            fetchAlbumInfoIfMissing = (entry is Album && entry.image == null) || (entry is Track && entry.album == null),
                             accountType = accountType
                         )
                     )

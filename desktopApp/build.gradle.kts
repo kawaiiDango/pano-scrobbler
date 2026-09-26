@@ -246,7 +246,7 @@ graalvmNative {
                     "-J-Dnative.encoding=UTF-8",
                     "-J-Dsun.java2d.dpiaware=true",
                     "--exact-reachability-metadata",
-                    "-H:MissingRegistrationReportingMode=Warn",
+                    "-R:MissingRegistrationReportingMode=Warn",
                     "-R:MaxHeapSize=300M",
                     "--initialize-at-build-time=kotlin.text.Charsets",
                     "-H:+AddAllCharsets",

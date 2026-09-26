@@ -29,13 +29,12 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Slider
 import androidx.compose.material3.SliderDefaults
 import androidx.compose.material3.Text
+import androidx.compose.material3.rememberSliderState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableFloatStateOf
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -520,6 +519,11 @@ fun HueSlider(
     enabled: Boolean,
     modifier: Modifier = Modifier,
 ) {
+    val state = rememberSliderState(
+        value = hue,
+        trackRange = 0f..360f,
+    )
+
     // Precompute the rainbow gradient stops once
     val step = 15
     val stops = remember {
@@ -532,21 +536,19 @@ fun HueSlider(
         Brush.horizontalGradient(stops)
     }
 
-    var internalHue by remember(hue) { mutableFloatStateOf(hue) }
     val interactionSource: MutableInteractionSource = remember { MutableInteractionSource() }
-    val thumbColor by remember(internalHue / step) {
-        mutableStateOf(
-            stops[(internalHue / step).toInt().coerceIn(0, stops.size - 1)]
-        )
+    val thumbColor by remember {
+        derivedStateOf {
+            stops[(state.value / step).toInt().coerceIn(0, stops.size - 1)]
+        }
     }
     val colors = SliderDefaults.colors(thumbColor = thumbColor)
 
     Slider(
-        value = internalHue,
+        state,
         enabled = enabled,
-        onValueChange = { internalHue = it },
-        onValueChangeFinished = { onHueChange(internalHue) },
-        valueRange = 0f..360f,
+        onValueChange = { state.value = it },
+        onValueChangeFinished = { onHueChange(state.value) },
         interactionSource = interactionSource,
         modifier = modifier.fillMaxWidth(),
         track = { sliderState ->

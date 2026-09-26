@@ -6,6 +6,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.text.input.rememberTextFieldState
+import androidx.compose.foundation.text.input.setTextAndPlaceCursorAtEnd
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.ListItemDefaults
@@ -15,13 +17,11 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.arn.scrobble.ui.HighlighterVisualTransformation
+import com.arn.scrobble.ui.HighlighterOutputTransformation
 import com.arn.scrobble.ui.PanoOutlinedTextField
 import com.arn.scrobble.ui.myCheckableItemColors
 import com.arn.scrobble.utils.PlatformStuff
@@ -49,26 +49,24 @@ fun MediaSearchPrefDialog(modifier: Modifier = Modifier) {
     ) {
         val usePlayFromSearch by PlatformStuff.mainPrefs.data.collectAsStateWithInitialValue { it.usePlayFromSearchP }
         val searchUrlTemplate by PlatformStuff.mainPrefs.data.collectAsStateWithInitialValue { it.searchUrlTemplate }
-        var searchUrlTemplateText by remember {
-            mutableStateOf(
-                if (usePlayFromSearch)
-                    null
-                else
-                    searchUrlTemplate
-            )
-        }
+        val searchUrlTemplateText = rememberTextFieldState(
+            if (usePlayFromSearch)
+                ""
+            else
+                searchUrlTemplate
+        )
         val queryText = "\$query"
         val tertiaryColor = MaterialTheme.colorScheme.tertiary
 
-        val visualTransformation = remember {
-            HighlighterVisualTransformation(
+        val outputTransformation = remember {
+            HighlighterOutputTransformation(
                 stringsToHighlight = listOf(queryText),
                 highlightColor = tertiaryColor
             )
         }
 
         fun isError(): Boolean {
-            return searchUrlTemplateText?.contains(queryText) == false
+            return !searchUrlTemplateText.text.contains(queryText)
         }
 
         DisposableEffect(Unit) {
@@ -76,11 +74,11 @@ fun MediaSearchPrefDialog(modifier: Modifier = Modifier) {
                 Stuff.appScope.launch {
                     PlatformStuff.mainPrefs.updateData {
                         it.copy(
-                            usePlayFromSearch = isError() || searchUrlTemplateText.isNullOrBlank(),
-                            searchUrlTemplate = if (isError() || searchUrlTemplateText.isNullOrBlank())
+                            usePlayFromSearch = isError() || searchUrlTemplateText.text.isBlank(),
+                            searchUrlTemplate = if (isError() || searchUrlTemplateText.text.isBlank())
                                 it.searchUrlTemplate
                             else
-                                searchUrlTemplateText!!,
+                                searchUrlTemplateText.text.toString(),
                         )
                     }
                 }
@@ -109,12 +107,12 @@ fun MediaSearchPrefDialog(modifier: Modifier = Modifier) {
         ) {
             textToUrls.forEach { (text, url) ->
                 ListItem(
-                    selected = searchUrlTemplateText == url,
-                    onClick = { searchUrlTemplateText = url },
+                    selected = searchUrlTemplateText.text == url,
+                    onClick = { searchUrlTemplateText.setTextAndPlaceCursorAtEnd(url ?: "") },
                     colors = ListItemDefaults.myCheckableItemColors(),
                     leadingContent = {
                         RadioButton(
-                            selected = searchUrlTemplateText == url,
+                            selected = searchUrlTemplateText.text == url,
                             onClick = null,
                         )
                     },
@@ -126,15 +124,14 @@ fun MediaSearchPrefDialog(modifier: Modifier = Modifier) {
         }
 
         PanoOutlinedTextField(
-            value = searchUrlTemplateText ?: "",
-            onValueChange = { searchUrlTemplateText = it },
+            searchUrlTemplateText,
             label = {
                 Text(stringResource(Res.string.pref_search_url_template))
             },
             supportingText = {
                 Text(stringResource(Res.string.pref_search_url_template_desc))
             },
-            visualTransformation = visualTransformation,
+            outputTransformation = outputTransformation,
             isError = isError(),
             modifier = Modifier.fillMaxWidth()
         )

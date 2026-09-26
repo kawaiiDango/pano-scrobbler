@@ -1,5 +1,6 @@
 package com.arn.scrobble.api.lastfm
 
+import co.touchlab.kermit.Logger
 import com.arn.scrobble.api.AccountType
 import com.arn.scrobble.api.DrawerData
 import com.arn.scrobble.api.Requesters
@@ -294,7 +295,7 @@ open class LastFm(userAccount: UserAccountSerializable) : Scrobblable(userAccoun
                 artistCount = user.artist_count ?: 0,
                 albumCount = user.album_count ?: 0,
                 trackCount = user.track_count ?: 0,
-                profilePicUrl = user.webp300
+                profilePicUrl = user.image?.medium
             )
         }
     }
@@ -590,8 +591,11 @@ open class LastFm(userAccount: UserAccountSerializable) : Scrobblable(userAccoun
                 if (response.status == HttpStatusCode.OK) {
                     val success = response.parseJsonBody<DeleteScrobbleResponse>().result
 
-                    if (!success)
-                        throw IllegalStateException("LastfmUnscrobbler: error unscrobbling")
+                    // seems to return {"result": true} even for things that were already deleted
+                    if (!success) {
+                        Logger.e { "LastfmUnscrobbler: error unscrobbling" }
+                        throw CookiesInvalidatedException(getString(Res.string.lastfm_reauth))
+                    }
                 } else if (response.status == HttpStatusCode.Forbidden) {
                     cookieStorage.clear()
                     throw CookiesInvalidatedException(getString(Res.string.lastfm_reauth))

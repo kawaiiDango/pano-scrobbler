@@ -114,11 +114,11 @@ import com.arn.scrobble.panoicons.RectFilled
 import com.arn.scrobble.panoicons.StonksNew
 import com.arn.scrobble.pref.AppItem
 import com.arn.scrobble.themes.LocalThemeAttributes
+import com.arn.scrobble.utils.LocaleUtils.format
 import com.arn.scrobble.utils.PanoTimeFormatter
 import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff
 import com.arn.scrobble.utils.Stuff.collectAsStateWithInitialValue
-import com.arn.scrobble.utils.Stuff.format
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.pluralStringResource
@@ -527,6 +527,7 @@ fun MusicEntryGridItem(
         containerColor = MaterialTheme.colorScheme.inverseSurface.copy(alpha = 0.07f)
     )
 
+    // dont use supportingContent https://issuetracker.google.com/issues/549552303
     ListItem(
         modifier = modifier.padding(8.dp),
         enabled = !forShimmer,
@@ -534,11 +535,32 @@ fun MusicEntryGridItem(
         contentPadding = PaddingValues.Zero,
         colors = colors,
         shapes = ListItemDefaults.myBigImageShapes(),
-        supportingContent = {
+    ) {
+        Column {
+            AsyncImage(
+                model = if (forShimmer)
+                    null
+                else imageUrlOverride
+                    ?: MusicEntryImageReq(
+                        entry,
+                        accountType = accountType,
+                        isHeroImage = isHero,
+                        fetchAlbumInfoIfMissing = fetchAlbumImageIfMissing
+                    ),
+                fallback = placeholderImageVectorPainter(null),
+                error = placeholderImageVectorPainter(entry),
+                placeholder = placeholderPainter(),
+                contentDescription = stringResource(Res.string.album_art),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .aspectRatio(1f)
+                    .backgroundForShimmer(forShimmer)
+            )
+
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(top = 2.dp, start = 8.dp, end = 8.dp, bottom = 8.dp)
+                    .padding(top = 4.dp, start = 8.dp, end = 8.dp, bottom = 8.dp)
             ) {
 
                 val firstText = when (entry) {
@@ -628,26 +650,6 @@ fun MusicEntryGridItem(
                 ScrobblesCountProgress(progress)
             }
         }
-    ) {
-        AsyncImage(
-            model = if (forShimmer)
-                null
-            else imageUrlOverride
-                ?: MusicEntryImageReq(
-                    entry,
-                    accountType = accountType,
-                    isHeroImage = isHero,
-                    fetchAlbumInfoIfMissing = fetchAlbumImageIfMissing
-                ),
-            fallback = placeholderImageVectorPainter(null),
-            error = placeholderImageVectorPainter(entry),
-            placeholder = placeholderPainter(),
-            contentDescription = stringResource(Res.string.album_art),
-            modifier = Modifier
-                .fillMaxWidth()
-                .aspectRatio(1f)
-                .backgroundForShimmer(forShimmer)
-        )
     }
 }
 
@@ -952,7 +954,6 @@ fun EntriesRow(
                         stonksDelta = null,
                         index = null,
                         modifier = Modifier
-                            .animateItem()
                             .width(minGridSize())
                     )
                 }
@@ -977,7 +978,6 @@ fun EntriesRow(
                     showArtist = showArtists,
                     index = idx,
                     modifier = Modifier
-                        .animateItem()
                         .width(minGridSize())
                 )
             }
@@ -993,7 +993,6 @@ fun EntriesRow(
                     item {
                         ListLoadError(
                             modifier = Modifier
-                                .animateItem()
                                 .height(150.dp)
                                 .fillParentMaxWidth(),
                             throwable = error.error,

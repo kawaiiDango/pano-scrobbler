@@ -9,11 +9,11 @@ import android.os.Bundle
 import android.view.WindowManager
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.activity.enableEdgeToEdge
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
+import androidx.core.view.WindowCompat.enableEdgeToEdge
 import androidx.core.view.WindowInsetsControllerCompat
 import com.arn.scrobble.R
 import com.arn.scrobble.navigation.LocalActivityRestoredFlag
@@ -34,7 +34,8 @@ open class MainActivity : ComponentActivity() {
 
         super.onCreate(restoredState)
 
-        enableEdgeToEdge()
+        enableEdgeToEdge(window)
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             window.isNavigationBarContrastEnforced = false
         }

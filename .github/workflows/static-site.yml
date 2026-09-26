@@ -67,7 +67,8 @@ jobs:
             static-site/fdroid/update.sh \
             static-site/fdroid/generate_metadata.sh \
             static-site/fdroid/metadata \
-            static-site/generate_sitemap.sh
+            static-site/generate_sitemap.sh \
+            static-site/fdroid/icon.png
 
       - name: Copy static site assets
         run: |

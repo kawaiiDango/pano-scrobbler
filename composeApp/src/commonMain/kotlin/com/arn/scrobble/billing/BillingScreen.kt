@@ -6,8 +6,8 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.MediumExtendedFloatingActionButton
@@ -107,14 +107,14 @@ fun BillingScreen(
     )
 
     var purchaseMethodsExpanded by rememberSaveable { mutableStateOf(false) }
-    var code by rememberSaveable { mutableStateOf("") }
+    val code = rememberTextFieldState()
     val purchaseMethods = remember { VariantStuff.billingRepository.purchaseMethods }
     val needsActivationCode = remember { VariantStuff.billingRepository.needsActivationCode }
     var purchaseMethodClicked by rememberSaveable { mutableStateOf<PurchaseMethod?>(null) }
 
     fun verifyLicenseOnline() {
-        code.trim().ifEmpty { null }?.let {
-            viewModel.checkAndStoreLicense(it)
+        code.text.trim().ifEmpty { null }?.let {
+            viewModel.checkAndStoreLicense(it.toString())
         }
     }
 
@@ -176,7 +176,7 @@ fun BillingScreen(
             )
         }
 
-        if (code.isEmpty()) {
+        if (code.text.isEmpty()) {
             Box(
                 modifier = Modifier.align(Alignment.CenterHorizontally)
             ) {
@@ -249,21 +249,16 @@ fun BillingScreen(
 
         if (needsActivationCode) {
             PanoOutlinedTextField(
-                value = code,
-                onValueChange = {
-                    code = it
-                    errorText = null
-                },
+                code,
                 label = { Text(stringResource(Res.string.pref_imexport_code)) },
                 keyboardOptions = KeyboardOptions(
                     imeAction = ImeAction.Done,
                     keyboardType = KeyboardType.Ascii
                 ),
-                keyboardActions = KeyboardActions(
-                    onDone = {
-                        verifyLicenseOnline()
-                    }
-                ),
+                onKeyboardAction = { performDefaultAction ->
+                    verifyLicenseOnline()
+                    performDefaultAction()
+                },
                 trailingIcon = if (!PlatformStuff.isTv) {
                     {
                         IconButtonWithTooltip(

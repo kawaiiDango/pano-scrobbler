@@ -78,10 +78,10 @@ import com.arn.scrobble.ui.accountTypeLabel
 import com.arn.scrobble.ui.drawSnowflake
 import com.arn.scrobble.ui.generateRandomSnowflake
 import com.arn.scrobble.ui.shapedClickable
+import com.arn.scrobble.utils.LocaleUtils.format
 import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff
 import com.arn.scrobble.utils.Stuff.collectAsStateWithInitialValue
-import com.arn.scrobble.utils.Stuff.format
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.pluralStringResource
 import org.jetbrains.compose.resources.stringResource

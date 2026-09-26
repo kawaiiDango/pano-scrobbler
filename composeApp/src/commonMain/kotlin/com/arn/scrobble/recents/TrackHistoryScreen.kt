@@ -27,10 +27,10 @@ import com.arn.scrobble.icons.Icons
 import com.arn.scrobble.navigation.PanoRoute
 import com.arn.scrobble.ui.PanoLazyColumn
 import com.arn.scrobble.ui.myTransparentCheckableItemColors
+import com.arn.scrobble.utils.LocaleUtils.format
 import com.arn.scrobble.utils.PanoTimeFormatter
 import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff.collectAsStateWithInitialValue
-import com.arn.scrobble.utils.Stuff.format
 import kotlinx.coroutines.flow.Flow
 import org.jetbrains.compose.resources.getPluralString
 import org.jetbrains.compose.resources.stringResource

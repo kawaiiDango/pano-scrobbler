@@ -8,8 +8,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.text.input.clearText
+import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButtonDefaults
@@ -19,10 +20,7 @@ import androidx.compose.material3.OutlinedIconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.ImeAction
@@ -47,15 +45,15 @@ import pano_scrobbler.composeapp.generated.resources.user_tags_empty
 @Composable
 fun HiddenTagsDialog(modifier: Modifier = Modifier) {
     val hiddenTags by PlatformStuff.mainPrefs.data.collectAsStateWithInitialValue { it.hiddenTags }
-    var tagInput by rememberSaveable { mutableStateOf("") }
+    val tagInput = rememberTextFieldState()
     val scope = rememberCoroutineScope()
     val scrollState = rememberScrollState()
 
     fun addTag(tag: String) {
-        if (tagInput.isNotBlank()) {
+        if (tagInput.text.isNotBlank()) {
             scope.launch {
                 PlatformStuff.mainPrefs.updateData { it.copy(hiddenTags = it.hiddenTags + tag) }
-                tagInput = ""
+                tagInput.clearText()
             }
         }
     }
@@ -111,26 +109,24 @@ fun HiddenTagsDialog(modifier: Modifier = Modifier) {
         }
 
         PanoOutlinedTextField(
+            tagInput,
             modifier = Modifier.widthIn(max = 200.dp),
-            value = tagInput,
             singleLine = true,
-            onValueChange = { tagInput = it },
             label = { Text(stringResource(Res.string.tag)) },
             keyboardOptions = KeyboardOptions(
                 keyboardType = KeyboardType.Text,
                 capitalization = KeyboardCapitalization.None,
                 imeAction = ImeAction.Done
             ),
-            keyboardActions = KeyboardActions(
-                onDone = {
-                    addTag(tagInput)
-                }
-            )
+            onKeyboardAction = { performDefaultAction ->
+                addTag(tagInput.text.toString())
+                performDefaultAction()
+            }
         )
 
         OutlinedIconButton(
             onClick = {
-                addTag(tagInput)
+                addTag(tagInput.text.toString())
             },
             shapes = IconButtonDefaults.shapes(),
             modifier = Modifier

@@ -27,7 +27,7 @@ android {
 
     compileSdk {
         version = release(libs.versions.targetSdk.get().toInt()) {
-//            minorApiLevel = libs.versions.sdkMinor.get().toInt()
+            minorApiLevel = libs.versions.sdkMinor.get().toInt()
         }
     }
 
@@ -39,7 +39,6 @@ android {
         versionCode = VER_CODE
         versionName = VER_NAME
         base.archivesName = APP_NAME_NO_SPACES
-//        ndkVersion = "29.0.14206865"
     }
 
     buildFeatures {

@@ -26,11 +26,9 @@ import com.arn.scrobble.api.AccountType
 import com.arn.scrobble.api.Scrobblables
 import com.arn.scrobble.api.lastfm.Album
 import com.arn.scrobble.api.lastfm.Artist
-import com.arn.scrobble.api.lastfm.ImageSize
-import com.arn.scrobble.api.lastfm.LastFmImage
+import com.arn.scrobble.api.lastfm.ImagesUrls
 import com.arn.scrobble.api.lastfm.MusicEntry
 import com.arn.scrobble.api.lastfm.Track
-import com.arn.scrobble.api.lastfm.webp300
 import com.arn.scrobble.charts.TimePeriod
 import com.arn.scrobble.imageloader.MusicEntryImageReq
 import com.arn.scrobble.imageloader.PanoImageLoader
@@ -238,8 +236,8 @@ class ChartsWidgetUpdaterWorker(appContext: Context, workerParams: WorkerParamet
                             }
 
                             val imgUrl =
-                                if (entry is Album && entry.webp300?.contains(StarMapper.STAR_PATTERN) == false)
-                                    entry.webp300
+                                if (entry is Album && entry.image?.medium?.contains(StarMapper.STAR_PATTERN) == false)
+                                    entry.image.medium
                                 else
                                     null
 
@@ -345,9 +343,9 @@ class ChartsWidgetUpdaterWorker(appContext: Context, workerParams: WorkerParamet
             name = title,
             artist = Artist(subtitle!!),
             image = if (!imageUrl.isNullOrBlank())
-                listOf(LastFmImage(ImageSize.extralarge.name, imageUrl))
+                ImagesUrls(imageUrl, imageUrl)
             else
-                emptyList()
+                null
         )
 
         Stuff.TYPE_TRACKS -> Track(

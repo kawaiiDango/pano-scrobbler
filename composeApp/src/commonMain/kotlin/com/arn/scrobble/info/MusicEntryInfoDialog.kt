@@ -15,8 +15,10 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.requiredHeightIn
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.text.input.clearText
+import androidx.compose.foundation.text.input.rememberTextFieldState
+import androidx.compose.foundation.text.input.setTextAndPlaceCursorAtEnd
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExposedDropdownMenu
 import androidx.compose.material3.ExposedDropdownMenuAnchorType
@@ -82,10 +84,10 @@ import com.arn.scrobble.ui.myTransparentCheckableItemColors
 import com.arn.scrobble.ui.placeholderImageVectorPainter
 import com.arn.scrobble.ui.placeholderPainter
 import com.arn.scrobble.ui.shimmerWindowBounds
+import com.arn.scrobble.utils.LocaleUtils.format
 import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff
 import com.arn.scrobble.utils.Stuff.collectAsStateWithInitialValue
-import com.arn.scrobble.utils.Stuff.format
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.pluralStringResource
 import org.jetbrains.compose.resources.stringResource
@@ -556,7 +558,7 @@ private fun ColumnScope.InfoTags(
         return
     }
 
-    var userTagInput by rememberSaveable { mutableStateOf("") }
+    val userTagInput = rememberTextFieldState()
     var dropdownShown by rememberSaveable { mutableStateOf(false) }
 
     FlowRow(
@@ -606,23 +608,22 @@ private fun ColumnScope.InfoTags(
                 .width(200.dp)
         ) {
             PanoOutlinedTextField(
-                value = userTagInput,
-                onValueChange = { userTagInput = it },
+                userTagInput,
                 label = { Text(stringResource(Res.string.user_tags_hint)) },
                 trailingIcon = {
                     ExposedDropdownMenuDefaults.TrailingIcon(expanded = dropdownShown)
                 },
                 keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Done),
-                keyboardActions = KeyboardActions(
-                    onDone = {
-                        if (userTagInput.isNotBlank() &&
-                            userTagInput.split(",").all { it.isNotBlank() }
-                        ) {
-                            onUserTagAdd(userTagInput)
-                            userTagInput = ""
-                        }
+                onKeyboardAction = { performDefaultAction ->
+                    if (userTagInput.text.isNotBlank() &&
+                        userTagInput.text.split(",").all { it.isNotBlank() }
+                    ) {
+                        onUserTagAdd(userTagInput.text.toString())
+                        userTagInput.clearText()
                     }
-                ),
+
+                    performDefaultAction()
+                },
                 singleLine = true,
                 modifier = Modifier.menuAnchor(ExposedDropdownMenuAnchorType.PrimaryEditable)
             )
@@ -632,7 +633,7 @@ private fun ColumnScope.InfoTags(
                 userTagsHistory.forEachIndexed { index, tag ->
                     DropdownMenuItem(
                         onClick = {
-                            userTagInput = tag
+                            userTagInput.setTextAndPlaceCursorAtEnd(tag)
                             dropdownShown = false
                         },
                         shape = MenuDefaults.itemShape(index, userTagsHistory.size).shape,

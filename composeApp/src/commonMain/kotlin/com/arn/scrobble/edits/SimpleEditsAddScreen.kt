@@ -8,6 +8,10 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.text.input.TextFieldState
+import androidx.compose.foundation.text.input.delete
+import androidx.compose.foundation.text.input.rememberTextFieldState
+import androidx.compose.foundation.text.input.setTextAndPlaceCursorAtEnd
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledIconToggleButton
@@ -97,19 +101,19 @@ fun SimpleEditsAddScreen(
     viewModel: MainViewModel,
 ) {
     var hasOrigTrack by rememberSaveable { mutableStateOf(simpleEdit?.hasOrigTrack ?: true) }
-    var origTrack by rememberSaveable { mutableStateOf(simpleEdit?.origTrack ?: "") }
+    val origTrack = rememberTextFieldState(simpleEdit?.origTrack ?: "")
     var hasTrack by rememberSaveable { mutableStateOf(simpleEdit == null || simpleEdit.track != null) }
-    var track by rememberSaveable { mutableStateOf(simpleEdit?.track ?: "") }
+    val track = rememberTextFieldState(simpleEdit?.track ?: "")
 
     var hasOrigAlbum by rememberSaveable { mutableStateOf(simpleEdit?.hasOrigAlbum ?: true) }
-    var origAlbum by rememberSaveable { mutableStateOf(simpleEdit?.origAlbum ?: "") }
+    val origAlbum = rememberTextFieldState(simpleEdit?.origAlbum ?: "")
     var hasAlbum by rememberSaveable { mutableStateOf(simpleEdit == null || simpleEdit.album != null) }
-    var album by rememberSaveable { mutableStateOf(simpleEdit?.album ?: "") }
+    val album = rememberTextFieldState(simpleEdit?.album ?: "")
 
     var hasOrigArtist by rememberSaveable { mutableStateOf(simpleEdit?.hasOrigArtist ?: true) }
-    var origArtist by rememberSaveable { mutableStateOf(simpleEdit?.origArtist ?: "") }
+    val origArtist = rememberTextFieldState(simpleEdit?.origArtist ?: "")
     var hasArtist by rememberSaveable { mutableStateOf(simpleEdit == null || simpleEdit.artist != null) }
-    var artist by rememberSaveable { mutableStateOf(simpleEdit?.artist ?: "") }
+    val artist = rememberTextFieldState(simpleEdit?.artist ?: "")
 
     var continueMatching by rememberSaveable {
         mutableStateOf(simpleEdit?.continueMatching ?: true)
@@ -122,9 +126,9 @@ fun SimpleEditsAddScreen(
     var hasOrigAlbumArtist by rememberSaveable {
         mutableStateOf(simpleEdit?.hasOrigAlbumArtist ?: false)
     }
-    var origAlbumArtist by rememberSaveable { mutableStateOf(simpleEdit?.origAlbumArtist ?: "") }
+    val origAlbumArtist = rememberTextFieldState(simpleEdit?.origAlbumArtist ?: "")
     var hasAlbumArtist by rememberSaveable { mutableStateOf(simpleEdit == null || simpleEdit.albumArtist != null) }
-    var albumArtist by rememberSaveable { mutableStateOf(simpleEdit?.albumArtist ?: "") }
+    val albumArtist = rememberTextFieldState(simpleEdit?.albumArtist ?: "")
 
     val anythingText = "< " + stringResource(Res.string.any_value) + " >"
     val existingText = "< " + stringResource(Res.string.existing_value) + " >"
@@ -142,10 +146,10 @@ fun SimpleEditsAddScreen(
             !hasTrack && !hasArtist && !hasAlbum && !hasAlbumArtist ||
 
             // artist and track cannot be empty if enabled
-            hasOrigTrack && origTrack.isEmpty() ||
-            hasTrack && track.isEmpty() ||
-            hasOrigArtist && origArtist.isEmpty() ||
-            hasArtist && artist.isEmpty()
+            hasOrigTrack && origTrack.text.isEmpty() ||
+            hasTrack && track.text.isEmpty() ||
+            hasOrigArtist && origArtist.text.isEmpty() ||
+            hasArtist && artist.text.isEmpty()
         ) {
             errorText = missingFieldsText
         } else if (
@@ -161,20 +165,20 @@ fun SimpleEditsAddScreen(
                 _id = simpleEdit?._id ?: 0,
 
                 hasOrigTrack = hasOrigTrack,
-                origTrack = origTrack,
-                track = track.takeIf { hasTrack },
+                origTrack = origTrack.text.toString(),
+                track = track.text.toString().takeIf { hasTrack },
 
                 hasOrigArtist = hasOrigArtist,
-                origArtist = origArtist,
-                artist = artist.takeIf { hasArtist },
+                origArtist = origArtist.text.toString(),
+                artist = artist.text.toString().takeIf { hasArtist },
 
                 hasOrigAlbum = hasOrigAlbum,
-                origAlbum = origAlbum,
-                album = album.takeIf { hasAlbum },
+                origAlbum = origAlbum.text.toString(),
+                album = album.text.toString().takeIf { hasAlbum },
 
                 hasOrigAlbumArtist = hasOrigAlbumArtist,
-                origAlbumArtist = origAlbumArtist,
-                albumArtist = albumArtist.takeIf { hasAlbumArtist },
+                origAlbumArtist = origAlbumArtist.text.toString(),
+                albumArtist = albumArtist.text.toString().takeIf { hasAlbumArtist },
 
                 continueMatching = continueMatching,
             )
@@ -197,17 +201,16 @@ fun SimpleEditsAddScreen(
     @Composable
     fun TextFieldWrapper(
         enabled: Boolean,
-        value: String,
-        onValueChange: (String) -> Unit,
+        state: TextFieldState,
+        disabledText: String,
         onCheckedChange: (Boolean) -> Unit,
         labelStr: String,
         isLast: Boolean = false,
     ) {
         key(forceRecomposed) {
             PanoOutlinedTextField(
+                state,
                 enabled = enabled,
-                value = value,
-                onValueChange = onValueChange,
                 leadingIcon = {
                     InlineCheckButton(
                         checked = enabled,
@@ -215,6 +218,12 @@ fun SimpleEditsAddScreen(
                     )
                 },
                 label = { Text(labelStr) },
+                outputTransformation = if (!enabled) {
+                    {
+                        delete(0, length)
+                        append(disabledText)
+                    }
+                } else null,
                 enabledOnTv = false,
                 keyboardOptions = KeyboardOptions.Default.copy(imeAction = if (isLast) ImeAction.Done else ImeAction.Next),
                 modifier = Modifier.fillMaxWidth()
@@ -267,14 +276,14 @@ fun SimpleEditsAddScreen(
     LaunchedEffect(Unit) {
         viewModel.editScrobbleUtils.updatedAlbum.collect { (origSd, it) ->
             if (origSd == origScrobbleData)
-                album = it
+                album.setTextAndPlaceCursorAtEnd(it)
         }
     }
 
     LaunchedEffect(Unit) {
         viewModel.editScrobbleUtils.updatedAlbumArtist.collect { (origSd, it) ->
             if (origSd == origScrobbleData)
-                albumArtist = it
+                albumArtist.setTextAndPlaceCursorAtEnd(it)
         }
     }
 
@@ -316,33 +325,33 @@ fun SimpleEditsAddScreen(
 
             TextFieldWrapper(
                 enabled = hasOrigTrack,
-                value = if (hasOrigTrack) origTrack else anythingText,
-                onValueChange = { origTrack = it },
+                state = origTrack,
                 onCheckedChange = { hasOrigTrack = it },
+                disabledText = anythingText,
                 labelStr = stringResource(Res.string.track),
             )
 
             TextFieldWrapper(
                 enabled = hasOrigArtist,
-                value = if (hasOrigArtist) origArtist else anythingText,
-                onValueChange = { origArtist = it },
+                state = origArtist,
                 onCheckedChange = { hasOrigArtist = it },
+                disabledText = anythingText,
                 labelStr = stringResource(Res.string.artist),
             )
 
             TextFieldWrapper(
                 enabled = hasOrigAlbum,
-                value = if (hasOrigAlbum) origAlbum else anythingText,
-                onValueChange = { origAlbum = it },
+                state = origAlbum,
                 onCheckedChange = { hasOrigAlbum = it },
+                disabledText = anythingText,
                 labelStr = stringResource(Res.string.album),
             )
 
             TextFieldWrapper(
                 enabled = hasOrigAlbumArtist,
-                value = if (hasOrigAlbumArtist) origAlbumArtist else anythingText,
-                onValueChange = { origAlbumArtist = it },
+                state = origAlbumArtist,
                 onCheckedChange = { hasOrigAlbumArtist = it },
+                disabledText = anythingText,
                 labelStr = stringResource(Res.string.album_artist),
             )
 
@@ -363,24 +372,24 @@ fun SimpleEditsAddScreen(
 
         TextFieldWrapper(
             enabled = hasTrack,
-            value = if (hasTrack) track else existingText,
-            onValueChange = { track = it },
+            state = track,
+            disabledText = existingText,
             onCheckedChange = { hasTrack = it },
             labelStr = stringResource(Res.string.track),
         )
 
         TextFieldWrapper(
             enabled = hasArtist,
-            value = if (hasArtist) artist else existingText,
-            onValueChange = { artist = it },
+            state = artist,
+            disabledText = existingText,
             onCheckedChange = { hasArtist = it },
             labelStr = stringResource(Res.string.artist),
         )
 
         TextFieldWrapper(
             enabled = hasAlbum,
-            value = if (hasAlbum) album else existingText,
-            onValueChange = { album = it },
+            state = album,
+            disabledText = existingText,
             onCheckedChange = { hasAlbum = it },
             labelStr = stringResource(Res.string.album),
             isLast = (isExpanded || !origScrobbleData?.albumArtist.isNullOrEmpty())
@@ -390,8 +399,8 @@ fun SimpleEditsAddScreen(
         if (isExpanded || !origScrobbleData?.albumArtist.isNullOrEmpty()) {
             TextFieldWrapper(
                 enabled = hasAlbumArtist,
-                value = if (hasAlbumArtist) albumArtist else existingText,
-                onValueChange = { albumArtist = it },
+                state = albumArtist,
+                disabledText = existingText,
                 onCheckedChange = { hasAlbumArtist = it },
                 labelStr = stringResource(Res.string.album_artist),
                 isLast = true
@@ -486,9 +495,9 @@ fun SimpleEditsAddScreen(
                     IconButtonWithTooltip(
                         onClick = {
                             // swap track and artist
-                            val temp = track
-                            track = artist
-                            artist = temp
+                            val temp = track.text.toString()
+                            track.setTextAndPlaceCursorAtEnd(artist.text.toString())
+                            artist.setTextAndPlaceCursorAtEnd(temp)
                         },
                         icon = Icons.SwapVert,
                         contentDescription = stringResource(Res.string.swap),

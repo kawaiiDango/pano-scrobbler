@@ -9,7 +9,6 @@ import com.arn.scrobble.api.Requesters
 import com.arn.scrobble.api.lastfm.Album
 import com.arn.scrobble.api.lastfm.Artist
 import com.arn.scrobble.api.lastfm.Track
-import com.arn.scrobble.api.lastfm.webp300
 import com.arn.scrobble.api.spotify.SpotifySearchType
 import com.arn.scrobble.db.PanoDb
 import com.arn.scrobble.utils.PlatformStuff
@@ -179,11 +178,12 @@ class MusicEntryImageInterceptor : Interceptor {
                     if (customMappingUrls != null) {
                         fetchedAlbumImageUrls = customMappingUrls
                     } else {
-                        val needFetch = album?.webp300 == null ||
-                                album.webp300?.contains(StarMapper.STAR_PATTERN) == true
+                        val needFetch =
+                            album?.image?.medium == null || album.image.medium.contains(StarMapper.STAR_PATTERN)
 
                         if (!needFetch) {
-                            fetchedAlbumImageUrls = FetchedImageUrls(album.webp300)
+                            fetchedAlbumImageUrls =
+                                FetchedImageUrls(album.image.medium, album.image.large)
                         } else if (musicEntryImageReq.fetchAlbumInfoIfMissing &&
                             musicEntryImageReq.accountType == AccountType.LASTFM
                         ) {
@@ -210,7 +210,9 @@ class MusicEntryImageInterceptor : Interceptor {
                             }
 
                             if (seenAlbum != null)
-                                fetchedAlbumImageUrls = FetchedImageUrls(seenAlbum.artUrl)
+                                fetchedAlbumImageUrls = if (seenAlbum.artUrl != null)
+                                    FetchedImageUrls.upgradeStoredUrl(seenAlbum.artUrl)
+                                else FetchedImageUrls(null)
 
                             // if the image from cache was still a placeholder, don't do a lookup
 
@@ -220,7 +222,7 @@ class MusicEntryImageInterceptor : Interceptor {
                                         fetchedAlbumImageUrls = networkCallWithSemaphore {
                                             Requesters.lastfmUnauthedRequester.getAlbumInfo(entry)
                                         }?.map {
-                                            FetchedImageUrls(it.webp300)
+                                            FetchedImageUrls(it.image?.medium, it.image?.large)
                                         }?.recover {
                                             FetchedImageUrls(null)
                                         }?.getOrNull()
@@ -239,7 +241,10 @@ class MusicEntryImageInterceptor : Interceptor {
                                                     entry
                                                 )
                                             }?.map {
-                                                FetchedImageUrls(it.album?.webp300)
+                                                FetchedImageUrls(
+                                                    it.album?.image?.medium,
+                                                    it.album?.image?.large
+                                                )
                                             }?.recover {
                                                 FetchedImageUrls(null)
                                             }?.getOrNull()
@@ -263,7 +268,10 @@ class MusicEntryImageInterceptor : Interceptor {
                                                         )
                                                     )
                                                 }?.map {
-                                                    FetchedImageUrls(it.webp300)
+                                                    FetchedImageUrls(
+                                                        it.image?.medium,
+                                                        it.image?.large
+                                                    )
                                                 }?.recover {
                                                     FetchedImageUrls(null)
                                                 }?.getOrNull()
@@ -299,11 +307,29 @@ class MusicEntryImageInterceptor : Interceptor {
     }
 
     data class FetchedImageUrls(val mediumImage: String?, val largeImage: String?) {
-        constructor(webp300: String?) : this(
-            webp300,
-            webp300
-                ?.takeIf { it.startsWith("https://lastfm.freetls.fastly.net") }
-                ?.replace("300x300", "600x600")
-        )
+        constructor(singleSizeImg: String?) : this(singleSizeImg, singleSizeImg)
+
+        companion object {
+            fun upgradeStoredUrl(storedUrl: String): FetchedImageUrls {
+                var url = storedUrl
+                val largeUrl: String
+
+                val domain = url.removePrefix("https://").substringBefore("/")
+                if ("lastfm" in domain.substringBefore(".") && domain.endsWith(".fastly.net")) {
+                    url = url.replaceFirst(
+                        "https://lastfm.freetls.fastly.net/",
+                        "https://lastfm-img.freetls.fastly.net/"
+                    )
+
+                    if (arrayOf(".jpg", ".jpeg", ".png").any { url.endsWith(it) })
+                        url = url.substringBeforeLast(".") + ".webp"
+
+                    largeUrl = url.replaceFirst("300x300", "600x600")
+                } else
+                    largeUrl = url
+
+                return FetchedImageUrls(url, largeUrl)
+            }
+        }
     }
 }

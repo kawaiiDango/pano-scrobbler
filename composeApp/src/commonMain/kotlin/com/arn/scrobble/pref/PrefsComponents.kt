@@ -10,16 +10,17 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.ListItemDefaults
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.MenuDefaults
 import androidx.compose.material3.Slider
 import androidx.compose.material3.SplitButtonDefaults
 import androidx.compose.material3.SplitButtonLayout
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
+import androidx.compose.material3.rememberSliderState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -29,12 +30,16 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.unit.dp
 import com.arn.scrobble.api.AccountType
 import com.arn.scrobble.api.Scrobblables
+import com.arn.scrobble.api.UserAccountSerializable
 import com.arn.scrobble.icons.ArrowDropDown
 import com.arn.scrobble.icons.Icons
 import com.arn.scrobble.icons.KeyboardArrowLeftAutoMirrored
 import com.arn.scrobble.icons.KeyboardArrowRightAutoMirrored
 import com.arn.scrobble.icons.Lock
+import com.arn.scrobble.icons.Logout
 import com.arn.scrobble.icons.ResetSettings
+import com.arn.scrobble.icons.ToggleOff
+import com.arn.scrobble.icons.ToggleOn
 import com.arn.scrobble.navigation.PanoRoute
 import com.arn.scrobble.onboarding.LoginDestinations
 import com.arn.scrobble.ui.AppIcon
@@ -42,10 +47,9 @@ import com.arn.scrobble.ui.IconButtonWithTooltip
 import com.arn.scrobble.ui.PanoDropdownMenu
 import com.arn.scrobble.ui.myCheckableItemColors
 import com.arn.scrobble.ui.myTransparentCheckableItemColors
+import com.arn.scrobble.utils.LocaleUtils.format
 import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff
-import com.arn.scrobble.utils.Stuff.format
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
 import pano_scrobbler.composeapp.generated.resources.Res
@@ -54,9 +58,8 @@ import pano_scrobbler.composeapp.generated.resources.move_right
 import pano_scrobbler.composeapp.generated.resources.no_apps_enabled
 import pano_scrobbler.composeapp.generated.resources.pref_logout
 import pano_scrobbler.composeapp.generated.resources.reset
-import pano_scrobbler.composeapp.generated.resources.sure_tap_again
-import kotlin.math.roundToInt
-import kotlin.time.Duration.Companion.seconds
+import pano_scrobbler.composeapp.generated.resources.scrobbler_off
+import pano_scrobbler.composeapp.generated.resources.scrobbler_on
 
 private val mainPrefs get() = PlatformStuff.mainPrefs
 
@@ -357,7 +360,11 @@ fun SliderPref(
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
 ) {
-    var internalValue by remember(value) { mutableFloatStateOf(value) }
+    val state = rememberSliderState(
+        value = value,
+        trackRange = min.toFloat()..max.toFloat(),
+        steps = ((max - min) / increments) - 1,
+    )
 
     ListItem(
         modifier = modifier,
@@ -365,13 +372,11 @@ fun SliderPref(
         supportingContent = if (!PlatformStuff.isTv) {
             {
                 Slider(
-                    value = internalValue.coerceIn(min.toFloat(), max.toFloat()),
-                    onValueChange = { internalValue = it },
+                    state = state,
+                    onValueChange = { state.value = it },
                     onValueChangeFinished = {
-                        Stuff.appScope.launch { mainPrefs.updateData { it.copyToSave(internalValue.roundToInt()) } }
+                        Stuff.appScope.launch { mainPrefs.updateData { it.copyToSave(state.value.toInt()) } }
                     },
-                    valueRange = min.toFloat()..max.toFloat(),
-                    steps = ((max - min) / increments) - 1,
                     enabled = enabled,
                 )
             }
@@ -387,11 +392,11 @@ fun SliderPref(
                             leadingButton = {
                                 SplitButtonDefaults.OutlinedLeadingButton(
                                     onClick = {
-                                        internalValue -= increments
+                                        state.value -= increments
                                         Stuff.appScope.launch {
                                             mainPrefs.updateData {
                                                 it.copyToSave(
-                                                    internalValue.toInt()
+                                                    state.value.toInt()
                                                 )
                                             }
                                         }
@@ -406,11 +411,11 @@ fun SliderPref(
                             trailingButton = {
                                 SplitButtonDefaults.OutlinedTrailingButton(
                                     onCheckedChange = {
-                                        internalValue += increments
+                                        state.value += increments
                                         Stuff.appScope.launch {
                                             mainPrefs.updateData {
                                                 it.copyToSave(
-                                                    internalValue.toInt()
+                                                    state.value.toInt()
                                                 )
                                             }
                                         }
@@ -428,7 +433,7 @@ fun SliderPref(
 
                     if (default != null) {
                         IconButtonWithTooltip(
-                            enabled = enabled && internalValue.roundToInt() != default,
+                            enabled = enabled && state.value.toInt() != default,
                             icon = Icons.ResetSettings,
                             contentDescription = stringResource(Res.string.reset),
                             onClick = {
@@ -446,7 +451,7 @@ fun SliderPref(
             Text(text)
             Spacer(modifier = Modifier.weight(1f))
             Text(
-                text = stringRepresentation(internalValue.roundToInt()),
+                text = stringRepresentation(state.value.toInt()),
             )
         }
     }
@@ -456,36 +461,114 @@ fun SliderPref(
 fun AccountPref(
     title: String,
     type: AccountType,
-    usernamesMap: Map<AccountType, String>,
+    userAccount: UserAccountSerializable?,
     onNavigate: (PanoRoute) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val logoutString = stringResource(Res.string.pref_logout)
-    var canLogoutNow by remember { mutableStateOf(false) }
+    var dropdownShown by remember { mutableStateOf(false) }
 
-    TextPref(
-        text = title,
-        summary = if (canLogoutNow) {
-            stringResource(Res.string.sure_tap_again)
-        } else {
-            usernamesMap[type]?.let { "$logoutString [$it]" }
-        },
+    ListItem(
+        modifier = modifier.alpha(if (userAccount?.canScrobble == false) 0.5f else 1f),
         onClick = {
-            if (usernamesMap[type] == null) {
+            if (userAccount == null) {
                 onNavigate(LoginDestinations.route(type))
-            } else if (canLogoutNow) {
-                Stuff.appScope.launch {
-                    Scrobblables.deleteAllByType(type)
-                    canLogoutNow = false
-                }
             } else {
-                Stuff.appScope.launch {
-                    canLogoutNow = true
-                    delay(3.seconds)
-                    canLogoutNow = false
-                }
+                dropdownShown = !dropdownShown
             }
         },
-        modifier = modifier
-    )
+        colors = ListItemDefaults.myCheckableItemColors(),
+        verticalAlignment = Alignment.CenterVertically,
+        supportingContent = if (userAccount != null) {
+            {
+                var text =
+                    stringResource(Res.string.pref_logout) + " [" + userAccount.user.name + "]"
+
+                if (!userAccount.canScrobble) {
+                    text += " • " + stringResource(Res.string.scrobbler_off)
+                }
+
+                Text(text)
+            }
+        } else null
+    ) {
+        Row(
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Text(title)
+
+            if (userAccount != null) {
+                Icon(
+                    imageVector = Icons.ArrowDropDown,
+                    contentDescription = null,
+                )
+
+                if (dropdownShown) {
+                    Box {
+                        PanoDropdownMenu(
+                            expanded = true,
+                            onDismissRequest = {
+                                dropdownShown = false
+                            }
+                        ) {
+                            item(
+                                text = {
+                                    Text(
+                                        stringResource(Res.string.pref_logout),
+                                        color = MaterialTheme.colorScheme.error
+                                    )
+                                },
+                                leadingIcon = {
+                                    Icon(
+                                        imageVector = Icons.Logout,
+                                        contentDescription = null,
+                                        tint = MaterialTheme.colorScheme.error
+                                    )
+                                },
+                                onClick = {
+                                    dropdownShown = false
+                                    Stuff.appScope.launch {
+                                        Scrobblables.deleteAllByType(type)
+                                    }
+                                }
+                            )
+
+                            item(
+                                text = {
+                                    Text(
+                                        stringResource(
+                                            if (userAccount.canScrobble)
+                                                Res.string.scrobbler_on
+                                            else
+                                                Res.string.scrobbler_off
+                                        )
+                                    )
+                                },
+                                leadingIcon = {
+                                    Icon(
+                                        imageVector = if (userAccount.canScrobble)
+                                            Icons.ToggleOn
+                                        else
+                                            Icons.ToggleOff,
+                                        contentDescription = null,
+                                    )
+                                },
+                                onClick = {
+                                    dropdownShown = false
+                                    Stuff.appScope.launch {
+                                        PlatformStuff.mainPrefs.updateData { p ->
+                                            val accounts =
+                                                p.scrobbleAccounts.filter { it.type != type } +
+                                                        userAccount.copy(canScrobble = !userAccount.canScrobble)
+                                            p.copy(scrobbleAccounts = accounts)
+                                        }
+                                    }
+                                }
+                            )
+                        }
+                    }
+                }
+            }
+        }
+    }
 }

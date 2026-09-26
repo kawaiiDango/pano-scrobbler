@@ -6,9 +6,11 @@ import kotlinx.serialization.Transient
 import kotlinx.serialization.json.JsonNames
 
 
-enum class ImageSize {
-    small, medium, large, extralarge
-}
+@Serializable
+data class ImagesUrls(
+    val medium: String,
+    val large: String,
+)
 
 @Serializable
 sealed class MusicEntry {
@@ -28,22 +30,8 @@ sealed class MusicEntry {
 }
 
 interface IHasImage {
-    val image: List<LastFmImage>?
+    val image: ImagesUrls?
 }
-
-val IHasImage.webp300
-    get() = image
-        ?.find { it.size == ImageSize.extralarge.name }
-        ?.let {
-            val url = it.url
-            if (url.startsWith("https://lastfm.freetls.fastly.net") &&
-                (url.endsWith(".png") || url.endsWith(".jpg"))
-            )
-                url.substringBeforeLast('.') + ".webp" // lastfm
-//                "$url.webp"
-            else
-                url
-        }
 
 @Serializable
 data class Wiki(
@@ -76,13 +64,6 @@ data class Stats(
     val playcount: Long,
     @Serializable(with = StringOrIntSerializer::class)
     val userplaycount: Int?,
-)
-
-@Serializable
-data class LastFmImage(
-    val size: String,
-    @SerialName("#text")
-    val url: String,
 )
 
 @Serializable
@@ -123,7 +104,8 @@ data class Album(
     @Serializable(with = ArtistOrStringSerializer::class)
     val artist: Artist? = null,
     override val url: String? = null,
-    override val image: List<LastFmImage>? = null,
+    @Serializable(with = LastFmImageSerializer::class)
+    override val image: ImagesUrls? = null,
     @Transient
     override val mbid: String? = null, // lastfm sometimes provides invalid mbids, so we ignore them
     @Transient
@@ -158,7 +140,8 @@ data class Track(
     @Serializable(with = LastfmUnixTimestampSerializer::class)
     val date: Long? = null,
     @SerialName("image")
-    private val _image: List<LastFmImage>? = null,
+    @Serializable(with = LastFmImageSerializer::class)
+    private val _images: ImagesUrls? = null,
     @Transient
     override val mbid: String? = null, // lastfm sometimes provides invalid mbids, so we ignore them
     @Transient
@@ -188,8 +171,8 @@ data class Track(
     val isNowPlaying: Boolean = _attr?.nowplaying == true,
 ) : MusicEntry() {
     fun copyImageToAlbum(): Track {
-        if (album != null && _image != null) {
-            val newAlbum = album.copy(image = _image)
+        if (album != null && _images != null) {
+            val newAlbum = album.copy(image = _images)
             return copy(album = newAlbum)
         } else {
             return this
@@ -277,7 +260,8 @@ data class User(
     val track_count: Int? = null,
     @Serializable(with = StringOrIntSerializer::class)
     val album_count: Int? = null,
-    override val image: List<LastFmImage>? = null,
+    @Serializable(with = LastFmImageSerializer::class)
+    override val image: ImagesUrls? = null,
     @Serializable(with = LastfmUnixTimestampSerializer::class)
     val registered: Long? = null,
     @Serializable(with = LastfmUnixTimestampSerializer::class)

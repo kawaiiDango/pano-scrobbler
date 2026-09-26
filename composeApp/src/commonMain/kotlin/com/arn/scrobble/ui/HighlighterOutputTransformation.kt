@@ -1,19 +1,18 @@
 package com.arn.scrobble.ui
 
+import androidx.compose.foundation.text.input.OutputTransformation
+import androidx.compose.foundation.text.input.TextFieldBuffer
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.OffsetMapping
-import androidx.compose.ui.text.input.TransformedText
-import androidx.compose.ui.text.input.VisualTransformation
 
-class HighlighterVisualTransformation(
+class HighlighterOutputTransformation(
     private val stringsToHighlight: List<String>,
     private val highlightColor: Color
-) : VisualTransformation {
+) : OutputTransformation {
 
-    fun highlight(text: String): AnnotatedString {
+    fun highlightToAnnotatedString(text: String): AnnotatedString {
         val annotatedString = AnnotatedString.Builder(text)
         stringsToHighlight.forEach { strToHighlight ->
             var startIndex = text.indexOf(strToHighlight, 0)
@@ -30,6 +29,19 @@ class HighlighterVisualTransformation(
         return annotatedString.toAnnotatedString()
     }
 
-    override fun filter(text: AnnotatedString) =
-        TransformedText(highlight(text.text), OffsetMapping.Identity)
+    override fun TextFieldBuffer.transformOutput() {
+        val text = asCharSequence()
+        stringsToHighlight.forEach { strToHighlight ->
+            var startIndex = text.indexOf(strToHighlight, 0)
+            while (startIndex >= 0) {
+                val endIndex = startIndex + strToHighlight.length
+                addStyle(
+                    spanStyle = SpanStyle(color = highlightColor, fontWeight = FontWeight.Bold),
+                    start = startIndex,
+                    end = endIndex
+                )
+                startIndex = text.indexOf(strToHighlight, endIndex)
+            }
+        }
+    }
 }

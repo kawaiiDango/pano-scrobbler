@@ -1,7 +1,6 @@
 package com.arn.scrobble.api
 
 import com.arn.scrobble.api.lastfm.User
-import com.arn.scrobble.api.lastfm.webp300
 import com.arn.scrobble.utils.Stuff
 import kotlinx.serialization.Serializable
 
@@ -32,7 +31,7 @@ data class UserCached(
             realname = realname ?: "",
             country = country ?: "None", // gnufm
             registeredTime = registered ?: Stuff.TIME_2002, // gnufm
-            largeImage = webp300 ?: ""
+            largeImage = image?.medium ?: ""
         )
     }
 }
@@ -44,6 +43,7 @@ data class UserAccountSerializable(
     val authKey: String,
     val apiRoot: String? = null,
     val tlsTrustAll: Boolean = false,
+    val canScrobble: Boolean = true,
 )
 
 @Serializable

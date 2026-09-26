@@ -19,8 +19,7 @@ import com.arn.scrobble.api.cache.CacheStrategy
 import com.arn.scrobble.api.lastfm.Album
 import com.arn.scrobble.api.lastfm.ApiException
 import com.arn.scrobble.api.lastfm.Artist
-import com.arn.scrobble.api.lastfm.ImageSize
-import com.arn.scrobble.api.lastfm.LastFmImage
+import com.arn.scrobble.api.lastfm.ImagesUrls
 import com.arn.scrobble.api.lastfm.MusicEntry
 import com.arn.scrobble.api.lastfm.PageAttr
 import com.arn.scrobble.api.lastfm.PageEntries
@@ -137,20 +136,10 @@ class ListenBrainz(userAccount: UserAccountSerializable) : Scrobblable(userAccou
 //        200 OK – lookup succeeded, does not indicate whether a match was found or not
     }
 
-    private fun createImageMap(releaseMbid: String?): List<LastFmImage>? {
-        return if (releaseMbid != null) listOf(
-            LastFmImage(
-                ImageSize.medium.name,
-                "https://coverartarchive.org/release/$releaseMbid/front-250"
-            ),
-            LastFmImage(
-                ImageSize.large.name,
-                "https://coverartarchive.org/release/$releaseMbid/front-500"
-            ),
-            LastFmImage(
-                ImageSize.extralarge.name,
-                "https://coverartarchive.org/release/$releaseMbid/front-500"
-            ),
+    private fun createImageUrls(releaseMbid: String?): ImagesUrls? {
+        return if (releaseMbid != null) ImagesUrls(
+            "https://coverartarchive.org/release/$releaseMbid/front-250",
+            "https://coverartarchive.org/release/$releaseMbid/front-500",
         )
         else
             null
@@ -226,7 +215,7 @@ class ListenBrainz(userAccount: UserAccountSerializable) : Scrobblable(userAccou
                     name = it.track_metadata.release_name,
                     mbid = it.track_metadata.mbid_mapping?.release_mbid,
                     artist = artist,
-                    image = createImageMap(it.track_metadata.mbid_mapping?.release_mbid),
+                    image = createImageUrls(it.track_metadata.mbid_mapping?.release_mbid),
                 )
             else
                 null
@@ -344,7 +333,7 @@ class ListenBrainz(userAccount: UserAccountSerializable) : Scrobblable(userAccou
                     name = it.track_metadata.release_name,
                     mbid = it.track_metadata.mbid_mapping?.release_mbid,
                     artist = artist!!,
-                    image = createImageMap(it.track_metadata.mbid_mapping?.release_mbid),
+                    image = createImageUrls(it.track_metadata.mbid_mapping?.release_mbid),
                 )
             else
                 null
@@ -451,7 +440,7 @@ class ListenBrainz(userAccount: UserAccountSerializable) : Scrobblable(userAccou
                         mbid = it.release_mbid,
                         playcount = it.listen_count.toLong(),
                         userplaycount = it.listen_count,
-                        image = createImageMap(it.release_mbid),
+                        image = createImageUrls(it.release_mbid),
                     )
                 }
 
@@ -466,7 +455,7 @@ class ListenBrainz(userAccount: UserAccountSerializable) : Scrobblable(userAccou
                             name = albumName,
                             artist = artist,
                             mbid = it.release_mbid,
-                            image = createImageMap(it.release_mbid),
+                            image = createImageUrls(it.release_mbid),
                         )
                     }
 

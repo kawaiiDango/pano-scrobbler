@@ -16,6 +16,7 @@ import androidx.compose.ui.input.pointer.PointerIcon
 import androidx.compose.ui.input.pointer.pointerHoverIcon
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.pollSystemTheme
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
@@ -52,8 +53,6 @@ import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff
 import com.arn.scrobble.utils.Stuff.stateInWithCache
 import com.arn.scrobble.utils.VariantStuff
-import com.arn.scrobble.utils.findSkiaLayer
-import com.arn.scrobble.utils.hackContentPane
 import com.arn.scrobble.utils.setAppLocale
 import com.arn.scrobble.work.DesktopWorkManager
 import com.arn.scrobble.work.UpdaterWork
@@ -548,10 +547,16 @@ fun main(args: Array<String>) {
             }
 
             val isTranslucentAwtWindow = remember {
-                (isTranslucent.value && !isBlur.value || isBlur.value && DesktopStuff.IS_LINUX) &&
-                        VariantStuff.billingRepository.licenseState.value == LicenseState.VALID
+                (isTranslucent.value || isBlur.value) && VariantStuff.billingRepository.licenseState.value == LicenseState.VALID
             }
             val minDim = 480
+
+            fun isDark() = dayNightPref.value == DayNightMode.DARK ||
+                    dayNightPref.value == DayNightMode.SYSTEM &&
+                    PanoNativeComponents.onDarkModeChangeFlow.value == true
+
+            fun isBlur() = isBlur.value &&
+                    VariantStuff.billingRepository.licenseState.value == LicenseState.VALID
 
             SwingWindow(
                 onCloseRequest = { windowShown = false },
@@ -570,26 +575,21 @@ fun main(args: Array<String>) {
                         window.exceptionHandler = null
                     }
 
-                    val isBlur = isBlur.value &&
-                            VariantStuff.billingRepository.licenseState.value == LicenseState.VALID
 
-                    if (isBlur && !isTranslucentAwtWindow) {
-                        window.background = java.awt.Color.BLACK
-                        window.findSkiaLayer()?.transparency = true
-                        window.hackContentPane()
-                    }
+//                    if (isBlur && !isTranslucentAwtWindow) {
+//                        window.background = java.awt.Color.BLACK
+//                        window.findSkiaLayer()?.transparency = true
+//                        window.hackContentPane()
+//                    }
 
-                    SwingUtilities.invokeLater {
-
-                        val isDark = dayNightPref.value == DayNightMode.DARK ||
-                                dayNightPref.value == DayNightMode.SYSTEM &&
-                                PanoNativeComponents.onDarkModeChangeFlow.value == true
-
-                        PanoNativeComponents.applyWindowEffects(
-                            window.windowHandle,
-                            isDark,
-                            isBlur
-                        )
+                    if (DesktopStuff.IS_WINDOWS && !isBlur() || !DesktopStuff.IS_WINDOWS) {
+                        SwingUtilities.invokeLater {
+                            PanoNativeComponents.applyWindowEffects(
+                                window.windowHandle,
+                                isDark(),
+                                isBlur()
+                            )
+                        }
                     }
                 }
             ) {
@@ -622,6 +622,18 @@ fun main(args: Array<String>) {
                     }
 
                     if (DesktopStuff.IS_WINDOWS) {
+                        var applyBlurFix by remember { mutableStateOf(isBlur()) }
+                        val windowFocused = LocalWindowInfo.current.isWindowFocused
+
+                        if (applyBlurFix && windowFocused) {
+                            PanoNativeComponents.applyWindowEffects(
+                                window.windowHandle,
+                                isDark(),
+                                true
+                            )
+                            applyBlurFix = false
+                        }
+
                         LaunchedEffect(Unit) {
                             combine(
                                 dayNightPref,
@@ -767,7 +779,7 @@ private suspend fun trayMenuClickListener(
                     }
 
                     PanoTrayUtils.ItemId.Copy -> {
-                        val text = "${scrobbleData.artist} - ${scrobbleData.track}"
+                        val text = "${scrobbleData.artist} ${scrobbleData.track}"
                         PlatformStuff.copyToClipboard(text)
                     }
 

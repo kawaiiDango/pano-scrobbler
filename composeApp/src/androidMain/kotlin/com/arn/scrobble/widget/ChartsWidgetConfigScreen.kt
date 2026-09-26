@@ -29,6 +29,7 @@ import androidx.compose.material3.Slider
 import androidx.compose.material3.Text
 import androidx.compose.material3.adaptive.currentWindowAdaptiveInfoV2
 import androidx.compose.material3.contentColorFor
+import androidx.compose.material3.rememberSliderState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
@@ -205,11 +206,18 @@ fun ChartsWidgetConfigScreen(
                                     ": ${"%.0f".format(bgAlpha * 100)}%",
                             style = MaterialTheme.typography.titleMedium
                         )
-                        Slider(
+
+                        val sliderState = rememberSliderState(
                             value = bgAlpha,
-                            onValueChange = { bgAlpha = it },
-                            valueRange = 0f..1f,
+                            trackRange = 0f..1f,
                             steps = 100,
+                        )
+                        Slider(
+                            state = sliderState,
+                            onValueChange = {
+                                sliderState.value = it
+                                bgAlpha = it
+                            },
                         )
                     }
 

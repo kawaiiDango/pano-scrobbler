@@ -62,11 +62,11 @@ import com.arn.scrobble.ui.PanoDropdownMenu
 import com.arn.scrobble.ui.PanoLazyColumn
 import com.arn.scrobble.ui.PanoPullToRefreshStateForTab
 import com.arn.scrobble.ui.emptyText
+import com.arn.scrobble.utils.LocaleUtils.format
 import com.arn.scrobble.utils.PanoTimeFormatter
 import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff
 import com.arn.scrobble.utils.Stuff.collectAsStateWithInitialValue
-import com.arn.scrobble.utils.Stuff.format
 import com.arn.scrobble.utils.Stuff.timeToLocal
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
@@ -268,7 +268,7 @@ fun ScrobblesScreen(
 
     ResultEffect<PullToRefreshResult> {
         if (it.tab == PanoTab.Scrobbles || it.tab == PanoTab.ScrobblesNoSubtabs) {
-            if (tracks.loadState.refresh is LoadState.NotLoading) {
+            if (tracks.loadState.refresh !is LoadState.Loading) {
                 tracks.refresh()
             }
         }
@@ -296,7 +296,7 @@ fun ScrobblesScreen(
     ResultEffect<SubTabClickedResult> { res ->
         when (res.id) {
             PanoTab.Scrobbles.ScrobblesSubTabType.REFRESH.ordinal -> {
-                if (tracks.loadState.refresh is LoadState.NotLoading) {
+                if (tracks.loadState.refresh !is LoadState.Loading) {
                     tracks.refresh()
                     scrollToTopOnLoad = true
                 }

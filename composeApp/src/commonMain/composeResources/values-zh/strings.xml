@@ -396,6 +396,11 @@
     <string name="random_on_start" comment="currently used as a toggle in the themes screen to pick a random theme when the app starts">进程启动时随机</string>
     <string name="edit_continue_simple" comment="a toggle in the normal edits screen">如果找到，继续使用正则表达式规则和预设进行编辑</string>
     <string name="edit_continue_regex" comment="a toggle in the regex edits screen">如果找到，继续使用其他正则表达式规则和预设进行编辑</string>
+    <string name="pause_for" comment="Pause scrobbling for a some time">暂停记录</string>
+    <string name="button_url" comment="used for the button in discord rich presence">按钮 URL</string>
+    <string name="websites" comment="websites that user is scrobbling from">网站</string>
+    <string name="rate_limit_warn">一天内提交过多记录可能会导致记录服务器拒收记录，从而增加待提交记录的积压量。</string>
+    <string name="unsupported_api" comment="currently used for custom ListenBrainz-like and last.fm-like logins. This is displayed when custom ones does not support the full feature set">服务器可能不支持此 API。请在相应网站查看。</string>
     <string name="get_pro">支持本应用</string>
     <string name="one_time_purchase">1次</string>
     <string name="help">帮助</string>

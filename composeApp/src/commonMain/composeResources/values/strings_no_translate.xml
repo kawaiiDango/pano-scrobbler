@@ -38,7 +38,7 @@
     <string name="desktop" translatable="false">Windows &amp; Linux</string>
     <string name="android" translatable="false">Android</string>
     <string name="persistent_noti_oems" translatable="false">Xiaomi, Samsung, Huawei</string>
-    <string name="ambient_apps" translatable="false">Shazam, Audile, Ambient Music Mod</string>
+    <string name="ambient_apps" translatable="false">Pixel Now Playing, Shazam, Audile, Ambient Music Mod</string>
     <string name="crashlytics" translatable="false">Crashlytics</string>
     <string name="experimental" translatable="false">Experimental options</string>
 
@@ -62,6 +62,7 @@
     <string name="no_wiki" comment="artist/album/track wiki does not exist">No wiki</string>
     <string name="wiki_lang_selector" comment="artist/album/track wiki">Last.fm wiki languages</string>
     <string name="notification_access_tv">This setting is usually at Apps > Special app access > Notification access</string>
+    <string name="supports_ambient_apps_desc">Requires notifications from these apps to be enabled.</string>
 
     <string name="automation_cp_info">For Tasker, use Action > SQL Query. Set the mode to "URI Formatted", put any name in "Variable Array" and URI to one of these.</string>
     <string name="automation_replace_app_id" formatted="true" comment="%1$s is the literal text package_name on Android, APP_ID or MPRIS_ID on desktop">Replace %1$s with that of the app.</string>

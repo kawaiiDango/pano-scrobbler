@@ -238,6 +238,7 @@ object Stuff {
         PACKAGE_PIXEL_NP,
         PACKAGE_PIXEL_NP_R,
         PACKAGE_PIXEL_NP_AMM,
+//        "com.arn.notification.test",
     )
 
     val disallowedWebviewUrls = listOf(

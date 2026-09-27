@@ -26,7 +26,10 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-class ImageSearchVM : ViewModel() {
+class ImageSearchVM(
+    private val musicEntry: MusicEntry,
+    private val originalMusicEntry: MusicEntry?
+) : ViewModel() {
     private val _searchTerm = MutableStateFlow("" to -1)
     private val _searchResults = MutableStateFlow<SpotifySearchResponse?>(null)
     val searchResultsWithImages = _searchResults.map {
@@ -40,12 +43,15 @@ class ImageSearchVM : ViewModel() {
     }
     private val _searchError = MutableStateFlow<Throwable?>(null)
     val searchError = _searchError.asStateFlow()
-    private val _hasRedirect = MutableStateFlow(false)
+    private val hasRedirect =
+        (musicEntry is Artist && originalMusicEntry is Artist && musicEntry.name != originalMusicEntry.name) ||
+                (musicEntry is Album && originalMusicEntry is Album &&
+                        (musicEntry.name != originalMusicEntry.name ||
+                                musicEntry.artist!!.name != originalMusicEntry.artist!!.name))
+
     private val _existingMappings = MutableStateFlow<List<CustomSpotifyMapping>>(emptyList())
     val existingMappings = _existingMappings.asStateFlow()
-    private var searchType: Int = -1
-    private var musicEntry: MusicEntry? = null
-    private var originalMusicEntry: MusicEntry? = null
+    private val searchType = if (musicEntry is Album) Stuff.TYPE_ALBUMS else Stuff.TYPE_ARTISTS
 
     init {
         viewModelScope.launch {
@@ -80,32 +86,8 @@ class ImageSearchVM : ViewModel() {
                     }
                 }
         }
-    }
-
-    fun search(term: String) {
-        _searchTerm.value = term to searchType
-    }
-
-    fun setMusicEntries(
-        musicEntry: MusicEntry,
-        originalMusicEntry: MusicEntry?,
-    ) {
-        fun hasRedirect(): Boolean {
-            return (musicEntry is Artist && originalMusicEntry is Artist && musicEntry.name != originalMusicEntry.name) ||
-                    (musicEntry is Album && originalMusicEntry is Album &&
-                            (musicEntry.name != originalMusicEntry.name ||
-                                    musicEntry.artist!!.name != originalMusicEntry.artist!!.name))
-
-        }
-
-        this.musicEntry = musicEntry
-        this.originalMusicEntry = originalMusicEntry
-
-        _hasRedirect.value = hasRedirect()
-        searchType = if (musicEntry is Album) Stuff.TYPE_ALBUMS else Stuff.TYPE_ARTISTS
 
         viewModelScope.launch {
-
             val customSpotifyMapping = withContext(Dispatchers.IO) {
                 when (musicEntry) {
                     is Album -> PanoDb.db.getCustomSpotifyMappingsDao()
@@ -118,7 +100,7 @@ class ImageSearchVM : ViewModel() {
                 }
             }
 
-            val customSpotifyMappingOrig = if (_hasRedirect.value)
+            val customSpotifyMappingOrig = if (hasRedirect)
                 withContext(Dispatchers.IO) {
                     when (originalMusicEntry) {
                         is Album -> PanoDb.db.getCustomSpotifyMappingsDao()
@@ -135,6 +117,10 @@ class ImageSearchVM : ViewModel() {
 
             _existingMappings.value = listOfNotNull(customSpotifyMapping, customSpotifyMappingOrig)
         }
+    }
+
+    fun search(term: String) {
+        _searchTerm.value = term to searchType
     }
 
     fun deleteExistingMappings() {
@@ -178,8 +164,6 @@ class ImageSearchVM : ViewModel() {
         spotifyItem: SpotifyMusicItem?,
         fileUri: String?,
     ) {
-        val musicEntry = musicEntry ?: return // has to be initialized
-
         val mappings = mutableListOf<CustomSpotifyMapping>()
         mappings += createCustomMapping(musicEntry, spotifyItem, fileUri)
 
@@ -189,7 +173,7 @@ class ImageSearchVM : ViewModel() {
         }
 
         // create another mapping for the redirected artist/album
-        if (_hasRedirect.value)
+        if (hasRedirect)
             mappings += createCustomMapping(originalMusicEntry!!, spotifyItem, fileUri)
 
         viewModelScope.launch {

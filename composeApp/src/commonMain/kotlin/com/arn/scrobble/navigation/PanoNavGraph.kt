@@ -363,13 +363,14 @@ object PanoNavGraph {
                 stringResource(Res.string.search) + ": " + stringResource(Res.string.spotify)
             )
 
+            val musicEntry = remember { route.artist ?: route.album!! }
+            val originalMusicEntry = remember { route.originalArtist ?: route.originalAlbum }
+
             ImageSearchScreen(
                 searchFieldState = searchFieldState,
                 onBack = goBack,
-                artist = route.artist,
-                originalArtist = route.originalArtist,
-                album = route.album,
-                originalAlbum = route.originalAlbum,
+                musicEntry = musicEntry,
+                originalMusicEntry = originalMusicEntry,
                 modifier = Modifier.navColumn()
             )
         }

@@ -2,7 +2,7 @@
 
 #### Last updated
 
-2026, March 15 UTC
+2026, September 27 UTC
 
 ### Introduction
 
@@ -77,7 +77,7 @@ these apps, if they have been enabled for scrobbling by the user:
 - Shazam
 - Ambient Music Mod
 - Audile
-- Pixel's Now Playing (before the March 2026 Pixel Feature Drop)
+- Pixel's Now Playing
 
 ### Links to Other Sites
 

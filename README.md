@@ -139,7 +139,8 @@ you **automatic updates**.
 
 ### Android only (except TV):
 
-- Scrobble from apps that identify music playing around you: Shazam, Ambient Music Mod and Audile
+- Scrobble from apps that identify music playing around you: Pixel Now Playing, Shazam, Ambient
+  Music Mod and Audile.
 - Charts as a customizable home-screen widget
 - Get your top scrobbles digests as a notification at the end of every week, month and year
 

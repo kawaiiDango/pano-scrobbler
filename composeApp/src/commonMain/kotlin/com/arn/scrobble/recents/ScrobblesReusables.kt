@@ -22,7 +22,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
@@ -115,7 +114,6 @@ private fun TrackDropdownMenu(
     onDismissRequest: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-
     var menuLevel by remember(expanded) {
         mutableStateOf(
             if (editDialogArgs == null && onLove == null && onHate == null && onDelete == null)
@@ -125,30 +123,12 @@ private fun TrackDropdownMenu(
         )
     }
 
-    val moreFocusRequester = remember { FocusRequester() }
-    val blockFocusRequester = remember { FocusRequester() }
     val scope = rememberCoroutineScope()
     val isLicenseValid = LocalLicenseValidState.current
     val searchInSource by
     PlatformStuff.mainPrefs.data.collectAsStateWithInitialValue { it.searchInSource && isLicenseValid }
     val shareSig =
         stringResource(Res.string.share_sig).takeIf { !isLicenseValid }
-
-    LaunchedEffect(menuLevel) {
-        when (menuLevel) {
-            TrackMenuLevel.More -> {
-                moreFocusRequester.requestFocus()
-            }
-
-            TrackMenuLevel.Block -> {
-                blockFocusRequester.requestFocus()
-            }
-
-            TrackMenuLevel.Root -> {
-                // nothing
-            }
-        }
-    }
 
     PanoDropdownMenu(
         expanded = expanded,
@@ -350,7 +330,6 @@ private fun TrackDropdownMenu(
                                 contentDescription = null
                             )
                         },
-//                        modifier = Modifier.focusRequester(moreFocusRequester)
                     )
 
                     if (onHate != null) {
@@ -418,8 +397,6 @@ private fun TrackDropdownMenu(
                                 contentDescription = null
                             )
                         },
-//                        modifier = Modifier.focusRequester(blockFocusRequester)
-                        // todo fix focusrequester
                     )
 
                     item(

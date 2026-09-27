@@ -11,7 +11,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -25,6 +24,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.arn.scrobble.api.lastfm.Album
 import com.arn.scrobble.api.lastfm.Artist
+import com.arn.scrobble.api.lastfm.MusicEntry
 import com.arn.scrobble.api.lastfm.Track
 import com.arn.scrobble.api.spotify.AlbumItem
 import com.arn.scrobble.api.spotify.ArtistItem
@@ -59,16 +59,12 @@ import pano_scrobbler.composeapp.generated.resources.square_photo_hint
 @Composable
 fun ImageSearchScreen(
     searchFieldState: TextFieldState,
-    artist: Artist?,
-    originalArtist: Artist?,
-    album: Album?,
-    originalAlbum: Album?,
+    musicEntry: MusicEntry,
+    originalMusicEntry: MusicEntry?,
     onBack: () -> Unit,
     modifier: Modifier = Modifier,
-    viewModel: ImageSearchVM = viewModel { ImageSearchVM() },
+    viewModel: ImageSearchVM = viewModel { ImageSearchVM(musicEntry, originalMusicEntry) },
 ) {
-    val musicEntry = artist ?: album!!
-    val originalMusicEntry = originalArtist ?: originalAlbum
     val accountType by
     PlatformStuff.mainPrefs.data.collectAsStateWithInitialValue { it.currentAccountType }
 
@@ -94,10 +90,6 @@ fun ImageSearchScreen(
     var showSquarePhotoDialog by rememberSaveable { mutableStateOf(false) }
     val scope = rememberCoroutineScope()
     var filePickerShown by remember { mutableStateOf(false) }
-
-    LaunchedEffect(musicEntry, originalMusicEntry) {
-        viewModel.setMusicEntries(musicEntry, originalMusicEntry)
-    }
 
     if (useSpotify) {
         SearchEffect(

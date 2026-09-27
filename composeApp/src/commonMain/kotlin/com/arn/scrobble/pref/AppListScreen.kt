@@ -71,6 +71,7 @@ import pano_scrobbler.composeapp.generated.resources.music_players
 import pano_scrobbler.composeapp.generated.resources.needs_plugin
 import pano_scrobbler.composeapp.generated.resources.other_apps
 import pano_scrobbler.composeapp.generated.resources.supports_ambient_apps
+import pano_scrobbler.composeapp.generated.resources.supports_ambient_apps_desc
 import pano_scrobbler.composeapp.generated.resources.websites
 import pano_scrobbler.composeapp.generated.resources.websites_desc
 
@@ -354,7 +355,7 @@ fun AppListScreen(
                             text = stringResource(
                                 Res.string.supports_ambient_apps,
                                 stringResource(Res.string.ambient_apps),
-                            ),
+                            ) + "\n" + stringResource(Res.string.supports_ambient_apps_desc),
                         )
                     }
                 }

@@ -13,7 +13,8 @@ class DeezerRequester {
         limit: Int
     ) =
         client.getResult<DeezerSearchResponse>("https://api.deezer.com/search") {
-            parameter("q", "artist:\"$artist\" track:\"$track\"")
+//            parameter("q", "artist:\"$artist\" track:\"$track\"") // {"data":[],"total":0}
+            parameter("q", "\"$artist\" \"$track\"") // {"data":[],"total":0}
             parameter("order", "RANKING")
             parameter("limit", limit)
         }

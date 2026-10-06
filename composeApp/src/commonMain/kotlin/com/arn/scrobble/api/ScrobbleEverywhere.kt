@@ -256,7 +256,7 @@ object ScrobbleEverywhere {
                                 ignoreCase = true
                             )
                     ) -> {
-                return fetchFromDeezer(scrobbleData, canRequest)
+                return fetchFromDeezer(scrobbleData)
             }
 
             PlatformStuff.mainPrefs.data.map { it.tidalSteelSeriesApi }.first() && (
@@ -554,15 +554,11 @@ object ScrobbleEverywhere {
 
     private suspend fun fetchFromDeezer(
         scrobbleData: ScrobbleData,
-        canRequest: suspend () -> Boolean = ::throttledRequest,
     ): AdditionalMetadataResult {
         val cacheKey = createCacheKey(scrobbleData.artist, scrobbleData.track)
         var track = deezerTracksCache[cacheKey]
 
         if (track == null) {
-            if (!canRequest())
-                return AdditionalMetadataResult.FetchAgain
-
             Requesters.deezerRequester.searchTrack(
                 scrobbleData.artist,
                 scrobbleData.track,

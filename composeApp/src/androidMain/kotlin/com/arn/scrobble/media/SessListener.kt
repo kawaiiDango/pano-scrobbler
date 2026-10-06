@@ -21,13 +21,14 @@ import com.arn.scrobble.utils.Stuff
 import com.arn.scrobble.utils.Stuff.stateInWithCache
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.getString
 import pano_scrobbler.composeapp.generated.resources.Res
 import pano_scrobbler.composeapp.generated.resources.mute
 import pano_scrobbler.composeapp.generated.resources.skip
+import java.util.Objects
 
 class SessListener(
     scope: CoroutineScope,
@@ -55,19 +56,23 @@ class SessListener(
     init {
         scope.launch {
             combine(
+                scrobblerEnabled, // also done in NLService
                 allowedPackages,
                 blockedPackages,
                 autoDetectApps,
-                scrobblerEnabled, // also done in NLService
-            ) { allowed, blocked, autoDetect, scrobblerEnabled ->
-                onActiveSessionsChanged(platformControllers)
-                val tokensToKeep = sessionTrackers
-                    .filter { (k, v) ->
-                        shouldScrobble(v.trackInfo.appId)
-                    }
-                    .keys
-                removeSessions(tokensToKeep)
-            }.collect()
+            ) { scrobblerEnabled, allowed, blocked, autoDetect ->
+                Objects.hash(scrobblerEnabled, allowed, blocked, autoDetect)
+            }
+                .distinctUntilChanged()
+                .collect {
+                    onActiveSessionsChanged(platformControllers)
+                    val tokensToKeep = sessionTrackers
+                        .filter { (k, v) ->
+                            shouldScrobble(v.trackInfo.appId)
+                        }
+                        .keys
+                    removeSessions(tokensToKeep)
+                }
         }
     }
 

@@ -282,6 +282,9 @@ abstract class MediaListener(
                 if (mutedHash != null && trackInfo.hash != mutedHash && lastPlaybackState == CommonPlaybackState.Playing)
                     unmute(clearMutedHash = isMuted)
 
+                if (System.currentTimeMillis() < scrobblerPausedTill)
+                    return
+
                 if (ignoreScrobble || metadata.artist.isEmpty() || metadata.title.isEmpty()) {
                     ignoreScrobble()
                 } else if ((!scrobbleQueue.has(trackInfo.hash) || onlyDurationUpdated) &&

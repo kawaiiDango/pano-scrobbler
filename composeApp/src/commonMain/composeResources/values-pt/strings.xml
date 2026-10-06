@@ -408,6 +408,14 @@
     <string name="random_on_start" comment="currently used as a toggle in the themes screen to pick a random theme when the app starts">Aleatório ao abrir a aplicação</string>
     <string name="edit_continue_simple" comment="a toggle in the normal edits screen">Se encontrado, continue a editar com as regras regex &amp; predefinições</string>
     <string name="edit_continue_regex" comment="a toggle in the regex edits screen">Se encontrado, continue a editar com outras regras regex &amp; predefinições</string>
+    <string name="pause_for" comment="Pause scrobbling for a some time">Suspender durante</string>
+    <string name="button_url" comment="used for the button in discord rich presence">URL do botão</string>
+    <string name="websites" comment="websites that user is scrobbling from">Sítios</string>
+    <string name="websites_desc">Aplicável a todos os leitores multimédia ativados que relatam a URL da página via MPRIS.</string>
+    <string name="forget_checked_websites" comment="Forget enabled/allowlisted websites">Esquecer sítios verificados</string>
+    <string name="last_error" comment="most recent error, used for pending scrobbles as of now">Último erro</string>
+    <string name="rate_limit_warn">Enviar muitos scrobbles num dia pode fazer com que o serviço os rejeite, aumentando a sua acumulação.</string>
+    <string name="unsupported_api" comment="currently used for custom ListenBrainz-like and last.fm-like logins. This is displayed when custom ones does not support the full feature set">Esta API pode não ser suportada pelo servidor. Veja na web.</string>
     <string name="get_pro">Apoiar a aplicação</string>
     <string name="one_time_purchase">Compra única</string>
     <string name="help">Ajuda</string>

@@ -37,7 +37,7 @@ class BillingRepository(
         )
     )
 
-    override val needsActivationCode = true
+    override val isNonPlay = true
     private val serverUrl = "https://license-sever.kawaiidango.workers.dev"
 
     override fun initBillingClient() {

@@ -7,7 +7,6 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.listSaver
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
@@ -20,6 +19,7 @@ import com.arn.scrobble.main.MainViewModel
 import com.arn.scrobble.navigation.PanoRoute
 import com.arn.scrobble.utils.DesktopStuff
 import com.arn.scrobble.utils.PlatformStuff
+import com.arn.scrobble.utils.Stuff
 import com.arn.scrobble.utils.Stuff.collectAsStateWithInitialValue
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
@@ -63,8 +63,6 @@ actual fun OnboardingScreen(
     ) {
         mutableStateListOf(*steps.map { false }.toTypedArray())
     }
-
-    val scope = rememberCoroutineScope()
 
     fun markAsDone(step: OnboardingStepType) {
         doneStatus[steps.indexOf(step)] = true
@@ -123,7 +121,7 @@ actual fun OnboardingScreen(
                         description = null,
                         openButtonText = stringResource(Res.string.enable),
                         openAction = {
-                            scope.launch {
+                            Stuff.appScope.launch {
                                 PlatformStuff.mainPrefs.updateData { p ->
                                     p.copy(discordRpc = p.discordRpc.copy(enabled = true))
                                 }

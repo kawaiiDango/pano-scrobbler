@@ -437,6 +437,7 @@ fun SliderPref(
                             icon = Icons.ResetSettings,
                             contentDescription = stringResource(Res.string.reset),
                             onClick = {
+                                state.value = default.toFloat()
                                 Stuff.appScope.launch { mainPrefs.updateData { it.copyToSave(default) } }
                             },
                         )

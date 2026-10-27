@@ -3,6 +3,7 @@ package com.arn.scrobble.media
 
 import co.touchlab.kermit.Logger
 import com.arn.scrobble.BuildKonfig
+import com.arn.scrobble.discordrpc.DiscordRpc
 import com.arn.scrobble.utils.PanoNotifications
 import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff.stateInWithCache
@@ -429,13 +430,17 @@ abstract class MediaListener(
                 unmute(clearMutedHash = false)
 
             releaseScrobbleLockIfHeldBy(key)
+
+            DiscordRpc.paused(trackInfo.hash)
+        }
+
+        open fun stop() {
+            DiscordRpc.paused(trackInfo.hash)
         }
 
         abstract fun love()
-
         abstract fun unlove()
         abstract fun skip()
-        abstract fun stop()
         abstract fun onBeforeScrobble()
     }
 

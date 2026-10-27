@@ -203,11 +203,6 @@ class DesktopMediaListener(
             PanoNativeComponents.skip(trackInfo.notiKey)
         }
 
-        override fun pause() {
-            super.pause()
-            DiscordRpc.paused(trackInfo.hash)
-        }
-
         override fun stop() {
             super.pause()
             DiscordRpc.clearPaused(trackInfo.hash)

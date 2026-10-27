@@ -54,6 +54,7 @@ import com.arn.scrobble.utils.PanoNotifications
 import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff
 import com.arn.scrobble.utils.Stuff.collectAsStateWithInitialValue
+import com.arn.scrobble.utils.VariantStuff
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -62,6 +63,8 @@ import pano_scrobbler.composeapp.generated.resources.Res
 import pano_scrobbler.composeapp.generated.resources.add_exception
 import pano_scrobbler.composeapp.generated.resources.check_nls
 import pano_scrobbler.composeapp.generated.resources.choose_apps
+import pano_scrobbler.composeapp.generated.resources.discord_rich_presence
+import pano_scrobbler.composeapp.generated.resources.enable
 import pano_scrobbler.composeapp.generated.resources.fix_it_battery_title
 import pano_scrobbler.composeapp.generated.resources.fix_it_startup_title
 import pano_scrobbler.composeapp.generated.resources.grant_notification_access
@@ -255,6 +258,9 @@ actual fun OnboardingScreen(
                 OnboardingStepType.BATTERY_OPTIMIZATIONS_IGNORE
             else null,
             OnboardingStepType.CHOOSE_APPS,
+            if (VariantStuff.isNonPlay)
+                OnboardingStepType.DISCORD_RICH_PRESENCE
+            else null,
             if (!PlatformStuff.isTv && Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU)
                 OnboardingStepType.SEND_NOTIFICATIONS
             else null,
@@ -446,6 +452,27 @@ actual fun OnboardingScreen(
                         },
                         isDone = isDone,
                         isExpanded = step == currentStep,
+                    )
+                }
+
+                OnboardingStepType.DISCORD_RICH_PRESENCE -> {
+                    VerticalStepperItem(
+                        titleRes = Res.string.discord_rich_presence,
+                        description = null,
+                        openButtonText = stringResource(Res.string.enable),
+                        openAction = {
+                            Stuff.appScope.launch {
+                                PlatformStuff.mainPrefs.updateData { p ->
+                                    p.copy(discordRpc = p.discordRpc.copy(enabled = true))
+                                }
+                            }
+                            markAsDone(OnboardingStepType.DISCORD_RICH_PRESENCE)
+                        },
+                        isDone = isDone,
+                        onSkip = {
+                            markAsDone(OnboardingStepType.DISCORD_RICH_PRESENCE)
+                        },
+                        isExpanded = step == currentStep
                     )
                 }
 

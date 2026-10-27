@@ -65,6 +65,7 @@ import com.arn.scrobble.utils.PanoNotifications
 import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff
 import com.arn.scrobble.utils.Stuff.collectAsStateWithInitialValue
+import com.arn.scrobble.utils.VariantStuff
 import com.arn.scrobble.utils.setAppLocale
 import com.arn.scrobble.work.CommonWorkState
 import com.arn.scrobble.work.DigestWork
@@ -99,6 +100,7 @@ import pano_scrobbler.composeapp.generated.resources.delete_receipt
 import pano_scrobbler.composeapp.generated.resources.demo_mode
 import pano_scrobbler.composeapp.generated.resources.desktop
 import pano_scrobbler.composeapp.generated.resources.disable
+import pano_scrobbler.composeapp.generated.resources.discord_rich_presence
 import pano_scrobbler.composeapp.generated.resources.external_metadata
 import pano_scrobbler.composeapp.generated.resources.first_artist
 import pano_scrobbler.composeapp.generated.resources.grant_notification_access
@@ -619,7 +621,14 @@ fun PrefsScreen(
             )
         }
 
-        PlatformSpecificPrefs.discordRpc(::filteredItem, onNavigate)
+        if (!PlatformStuff.isTv && VariantStuff.isNonPlay) {
+            filteredItem("discord_rich_presence", Res.string.discord_rich_presence, null) { title ->
+                TextPref(
+                    text = title,
+                    onClick = { onNavigate(PanoRoute.DiscordRpcSettings) }
+                )
+            }
+        }
 
         PlatformSpecificPrefs.prefPersistentNotification(::filteredItem, notiPersistent)
 

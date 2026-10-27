@@ -17,15 +17,15 @@ import pano_scrobbler.composeapp.generated.resources.update_downloaded
 actual object PanoNotifications {
     actual val forcePersistentNoti = false
 
-    private val _playingTrackTrayInfo =
+    private val _playingTrackStates =
         MutableStateFlow<Map<String, PlayingTrackNotifyEvent.PlayingTrackState>>(emptyMap())
-    val playingTrackTrayInfo = _playingTrackTrayInfo.asStateFlow()
+    actual val playingTrackStates = _playingTrackStates.asStateFlow()
     actual suspend fun notifyScrobble(event: PlayingTrackNotifyEvent.TrackPlaying) {
-        _playingTrackTrayInfo.value += event.notiKey to event
+        _playingTrackStates.value += event.notiKey to event
     }
 
     actual suspend fun notifyError(event: PlayingTrackNotifyEvent.Error) {
-        _playingTrackTrayInfo.value += event.notiKey to event
+        _playingTrackStates.value += event.notiKey to event
     }
 
     actual suspend fun notifyAppDetected(appId: String, appLabel: String) {
@@ -69,6 +69,6 @@ actual object PanoNotifications {
 
 
     actual fun removeNotificationByKey(key: String) {
-        _playingTrackTrayInfo.value -= key
+        _playingTrackStates.value -= key
     }
 }

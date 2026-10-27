@@ -38,7 +38,7 @@ actual object BugReportUtils {
 
         var text = ""
         text += BuildKonfig.APP_NAME + " v" + BuildKonfig.VER_NAME +
-                (if (VariantStuff.billingRepository.needsActivationCode) " GH" else "") + "\n"
+                (if (VariantStuff.isNonPlay) " GH" else "") + "\n"
         text += "Android " + Build.VERSION.RELEASE + "\n"
         text += "Device: " + Build.BRAND + " " + Build.MODEL + " / " + Build.DEVICE + "\n" //Build.PRODUCT is obsolete
 

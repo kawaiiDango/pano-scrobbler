@@ -113,6 +113,7 @@ object Stuff {
     const val PACKAGE_PIXEL_NP_AMM = "com.kieronquinn.app.pixelambientmusic"
     const val PACKAGE_SHAZAM = "com.shazam.android"
     const val PACKAGE_AUDILE = "com.mrsep.musicrecognizer"
+    const val PACKAGE_DISCORD = "com.discord"
     const val CHANNEL_SHAZAM = "notification_shazam_match_v1" //"auto_shazam_v2"
     const val CHANNEL_SHAZAM2 = "notification_shazam_foreground_match_v2"
     const val AUDILE_METADATA_KEY_TRACK_TITLE = "com.mrsep.musicrecognizer.track_metadata.title"

@@ -18,10 +18,6 @@ fun MdNode.Block.toAnnotatedString(style: MarkdownStyle = MarkdownStyle()): Anno
             is MdNode.Block.UnorderedList -> withBulletList {
                 block.items.forEach {
                     withBulletListItem {
-                        // bullets don't render on desktop
-                        if (PlatformStuff.isDesktop)
-                            append(style.bulletText)
-
                         appendInlineNodes(it.children, style)
                     }
                 }

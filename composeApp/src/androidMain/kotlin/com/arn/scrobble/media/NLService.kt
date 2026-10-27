@@ -12,6 +12,7 @@ import co.touchlab.kermit.Logger
 import com.arn.scrobble.BuildKonfig
 import com.arn.scrobble.R
 import com.arn.scrobble.api.lastfm.ScrobbleData
+import com.arn.scrobble.discordrpc.DiscordRpc
 import com.arn.scrobble.logger.JavaUtilFileLogger
 import com.arn.scrobble.utils.AndroidStuff
 import com.arn.scrobble.utils.AndroidStuff.toast
@@ -19,6 +20,7 @@ import com.arn.scrobble.utils.MetadataUtils
 import com.arn.scrobble.utils.PanoNotifications
 import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff
+import com.arn.scrobble.utils.VariantStuff
 import com.arn.scrobble.utils.applyAndroidLocaleLegacy
 import com.arn.scrobble.utils.getStringInDeviceLocale
 import kotlinx.coroutines.CoroutineScope
@@ -152,7 +154,7 @@ class NLService : NotificationListenerService() {
             // Media controller needs notification listener service permissions.
         }
 
-//      Don't instantiate BillingRepository in this service, it causes unexplained ANRs
+//      Don't connect to the heavyweight google play billing in this process
 
         if (BuildKonfig.DEBUG && Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
             AndroidStuff.getScrobblerExitReasons().let {
@@ -165,6 +167,9 @@ class NLService : NotificationListenerService() {
         coroutineScope.launch {
             listenForPlayingTrackEvents(scrobbleQueue, sessListener!!)
         }
+
+        if (VariantStuff.isNonPlay)
+            DiscordRpc.start()
 
         Logger.i { "init" }
     }

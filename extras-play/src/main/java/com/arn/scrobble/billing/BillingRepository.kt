@@ -51,7 +51,7 @@ class BillingRepository(
             link = null
         ),
     )
-    override val needsActivationCode = false
+    override val isNonPlay = false
     private lateinit var playStoreBillingClient: BillingClient
     private val PENDING_PURCHASE_NOTIFY_THRESHOLD = 60 * 1000L
 

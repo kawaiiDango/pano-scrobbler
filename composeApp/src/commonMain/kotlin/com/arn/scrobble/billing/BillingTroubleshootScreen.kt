@@ -24,7 +24,7 @@ fun BillingTroubleshootScreen(
     Column(
         modifier = modifier
     ) {
-        val text = if (VariantStuff.billingRepository.needsActivationCode) {
+        val text = if (VariantStuff.isNonPlay) {
             stringResource(Res.string.billing_troubleshoot_github, 5, "July 2025")
         } else {
             stringResource(Res.string.billing_troubleshoot) + "\n" + stringResource(Res.string.billing_troubleshoot_non_play_purchases)

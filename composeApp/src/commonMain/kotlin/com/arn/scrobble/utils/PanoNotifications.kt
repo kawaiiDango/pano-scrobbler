@@ -4,9 +4,11 @@ import com.arn.scrobble.api.lastfm.LastfmPeriod
 import com.arn.scrobble.api.lastfm.ScrobbleData
 import com.arn.scrobble.media.PlayingTrackNotifyEvent
 import com.arn.scrobble.updates.UpdateAction
+import kotlinx.coroutines.flow.StateFlow
 
 expect object PanoNotifications {
     val forcePersistentNoti: Boolean
+    val playingTrackStates: StateFlow<Map<String, PlayingTrackNotifyEvent.PlayingTrackState>>
     suspend fun notifyScrobble(event: PlayingTrackNotifyEvent.TrackPlaying)
 
     suspend fun notifyError(event: PlayingTrackNotifyEvent.Error)

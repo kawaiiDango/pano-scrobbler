@@ -62,5 +62,4 @@ data class MarkdownStyle(
     val link: SpanStyle = SpanStyle(
         textDecoration = TextDecoration.Underline,
     ),
-    val bulletText: String = "• ",
 )

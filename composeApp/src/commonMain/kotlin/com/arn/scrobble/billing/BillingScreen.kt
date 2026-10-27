@@ -109,7 +109,7 @@ fun BillingScreen(
     var purchaseMethodsExpanded by rememberSaveable { mutableStateOf(false) }
     val code = rememberTextFieldState()
     val purchaseMethods = remember { VariantStuff.billingRepository.purchaseMethods }
-    val needsActivationCode = remember { VariantStuff.billingRepository.needsActivationCode }
+    val needsActivationCode = remember { VariantStuff.isNonPlay }
     var purchaseMethodClicked by rememberSaveable { mutableStateOf<PurchaseMethod?>(null) }
 
     fun verifyLicenseOnline() {

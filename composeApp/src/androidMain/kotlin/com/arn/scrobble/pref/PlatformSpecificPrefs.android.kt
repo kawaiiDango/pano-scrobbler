@@ -14,7 +14,6 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.platform.LocalContext
 import com.arn.scrobble.MasterSwitchQS
 import com.arn.scrobble.R
-import com.arn.scrobble.navigation.PanoRoute
 import com.arn.scrobble.ui.PanoSnackbarVisuals
 import com.arn.scrobble.utils.AndroidStuff
 import com.arn.scrobble.utils.PlatformStuff
@@ -153,10 +152,6 @@ actual object PlatformSpecificPrefs {
     actual fun prefAutostart(filteredItem: FilteredItem) {}
 
     actual fun prefAddToAppLauncher(filteredItem: FilteredItem) {}
-
-    actual fun discordRpc(filteredItem: FilteredItem, onNavigate: (PanoRoute) -> Unit) {
-        // no-op
-    }
 
     actual fun tidalSteelSeries(filteredItem: FilteredItem, enabled: Boolean) {
     }

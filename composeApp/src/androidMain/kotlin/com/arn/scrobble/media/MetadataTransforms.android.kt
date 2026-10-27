@@ -1,6 +1,7 @@
 package com.arn.scrobble.media
 
 import android.media.MediaMetadata
+import androidx.core.net.toUri
 import com.arn.scrobble.utils.MetadataUtils
 import com.arn.scrobble.utils.Stuff
 
@@ -16,7 +17,14 @@ actual fun transformMediaMetadata(
     var album = metadata.getString(MediaMetadata.METADATA_KEY_ALBUM)?.trim() ?: ""
     var title = metadata.getString(MediaMetadata.METADATA_KEY_TITLE)?.trim() ?: ""
     val trackNumber = metadata.getLong(MediaMetadata.METADATA_KEY_TRACK_NUMBER).toInt()
-//    val artUrl = metadata.getString(MediaMetadata.METADATA_KEY_ART_URI)?.trim() ?: ""
+    // only remote images, used for the Discord Rich Presence
+    val artUrl = arrayOf(
+        MediaMetadata.METADATA_KEY_ART_URI,
+        MediaMetadata.METADATA_KEY_ALBUM_ART_URI,
+        MediaMetadata.METADATA_KEY_DISPLAY_ICON_URI,
+    ).firstNotNullOfOrNull { key ->
+        metadata.getString(key)?.trim()?.let(::toRemoteImageUrl)
+    }
     var durationMillis = metadata.getLong(MediaMetadata.METADATA_KEY_DURATION)
     if (durationMillis < -1 || trackInfo.appId in Stuff.IGNORE_DURATION)
         durationMillis = -1
@@ -152,11 +160,29 @@ actual fun transformMediaMetadata(
         albumArtist = albumArtist,
         trackNumber = trackNumber,
         duration = durationMillis,
-        artUrl = null,
+        artUrl = artUrl,
         normalizedUrlHost = null,
     )
 
     return metadataInfo to ignoreScrobble
+}
+
+/**
+ * Accepts https urls, and unwraps content:// urls from image proxy providers
+ * that carry the original location in the _HOST_ and _PROTOCOL_ query params,
+ * like content://com.soundcloud.android.imageProvider/a/b.jpg?_HOST_=i1.sndcdn.com&_PROTOCOL_=https
+ */
+
+private fun toRemoteImageUrl(uriString: String): String? {
+    if (uriString.startsWith("https://")) return uriString
+
+    val uri = uriString.toUri()
+    if (uri.scheme != "content") return null
+
+    val host = uri.getQueryParameter("_HOST_")?.takeIf { it.isNotEmpty() } ?: return null
+    if (uri.getQueryParameter("_PROTOCOL_") != "https") return null
+
+    return "https://$host${uri.encodedPath.orEmpty()}"
 }
 
 private const val METADATA_KEY_ADVERTISEMENT = "android.media.metadata.ADVERTISEMENT"

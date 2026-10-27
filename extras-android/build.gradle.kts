@@ -1,5 +1,6 @@
 plugins {
     alias(libs.plugins.android.library)
+    alias(libs.plugins.kotlin.serialization)
 }
 
 android {
@@ -28,11 +29,17 @@ android {
         create("releaseGithub") {
         }
     }
+
+    buildFeatures {
+        aidl = true
+    }
 }
 
 dependencies {
     implementation(libs.kotlinx.coroutines.android)
     implementation(projects.extrasCommon)
+    implementation(libs.kotlinx.serialization.json)
+    implementation(libs.kermit)
     releaseImplementation(projects.extrasPlay)
 //    debugImplementation(projects.extrasNonplay)
     debugImplementation(projects.extrasPlay)

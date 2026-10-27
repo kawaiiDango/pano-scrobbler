@@ -20,7 +20,7 @@ abstract class BaseBillingRepository {
     protected val _licenseError = MutableSharedFlow<LicenseError>()
     val licenseError = _licenseError.asSharedFlow()
     abstract val purchaseMethods: List<PurchaseMethod>
-    abstract val needsActivationCode: Boolean
+    abstract val isNonPlay: Boolean
     val licenseState by lazy {
         receipt.map { (receipt, signature) ->
             withContext(Dispatchers.IO) {

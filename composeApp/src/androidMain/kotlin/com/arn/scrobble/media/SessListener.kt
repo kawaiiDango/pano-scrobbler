@@ -39,7 +39,7 @@ class SessListener(
         AndroidStuff.applicationContext.getSystemService(AudioManager::class.java)!!
     }
 
-    override val notifyTimelineUpdates = false
+    override val notifyTimelineUpdates = true
     private val mainPrefs = PlatformStuff.mainPrefs
     private var platformControllers = emptyList<MediaController>()
 

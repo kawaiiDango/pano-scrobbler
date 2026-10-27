@@ -8,4 +8,6 @@ interface VariantStuffInterface {
     val billingRepository: BaseBillingRepository
     val reviewPrompter: BaseReviewPrompter
     val githubApiUrl: String?
+    val isNonPlay: Boolean
+        get() = billingRepository.isNonPlay
 }

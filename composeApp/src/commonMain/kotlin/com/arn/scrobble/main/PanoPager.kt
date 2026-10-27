@@ -52,27 +52,12 @@ fun PanoPager(
             onSelectPage(pagerState.settledPage)
         }
 
-        // todo remove the hack when https://issuetracker.google.com/issues/549552303 is fixed
-//        val activatedPages = rememberSaveable { mutableStateSetOf(selectedPage) }
-
-//        LaunchedEffect(pagerState.targetPage, pagerState.settledPage) {
-//            activatedPages.add(pagerState.targetPage)
-//            activatedPages.add(pagerState.settledPage)
-//            activatedPages.removeIf { it != pagerState.targetPage && it != pagerState.settledPage }
-//        }
-
         HorizontalPager(
             state = pagerState,
             key = { it },
-//            beyondViewportPageCount = totalPages - 1,
             modifier = modifier,
             userScrollEnabled = !PlatformStuff.isDesktop,
         ) { page ->
-//            if (page !in activatedPages) {
-//                Box(modifier = Modifier.fillMaxSize())
-//                return@HorizontalPager
-//            }
-
             pageStateHolder.SaveableStateProvider(page) {
                 content(page)
             }

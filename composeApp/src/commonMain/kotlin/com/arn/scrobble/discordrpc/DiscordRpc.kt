@@ -2,7 +2,6 @@ package com.arn.scrobble.discordrpc
 
 import co.touchlab.kermit.Logger
 import com.arn.scrobble.BuildKonfig
-import com.arn.scrobble.PanoNativeComponents
 import com.arn.scrobble.api.AccountType
 import com.arn.scrobble.api.Scrobblables
 import com.arn.scrobble.api.ScrobbleEverywhere
@@ -26,14 +25,16 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.scan
+import kotlinx.coroutines.flow.transformLatest
 import kotlinx.coroutines.withTimeoutOrNull
 import org.jetbrains.compose.resources.getString
 import pano_scrobbler.composeapp.generated.resources.Res
 import pano_scrobbler.composeapp.generated.resources.profile
 import kotlin.time.Duration.Companion.milliseconds
+import kotlin.time.Duration.Companion.minutes
 import kotlin.time.Duration.Companion.seconds
 
-private sealed interface DiscordActivity {
+sealed interface DiscordActivity {
     // https://discord.com/developers/docs/social-sdk/classdiscordpp_1_1ActivityAssets.html
     data class Activity(
         val discordClientId: String,
@@ -60,7 +61,29 @@ private sealed interface DiscordActivity {
         val isPlaying: Boolean,
         val showPausedForSecs: Int,
         val canFetchArt: Boolean
-    ) : DiscordActivity
+    ) : DiscordActivity {
+
+        /** Returns the start and end times. The end time is 0 if it is unknown. */
+        fun timestampsMillis(now: Long): Pair<Long, Long> {
+            val startTimeMillis = if (isPlaying || durationMillis == null)
+                startTimeMillis
+            else
+                now - durationMillis
+
+            val startTime = startTimeMillis
+
+            val endTime = if (durationMillis != null && durationMillis > 0) {
+                if (isPlaying)
+                    startTime + (durationMillis)
+                else
+                    now
+            } else {
+                0
+            }
+
+            return startTime to endTime
+        }
+    }
 
     data object Clear : DiscordActivity
     data object Stop : DiscordActivity
@@ -89,9 +112,10 @@ object DiscordRpc {
     private val _lastStatus = MutableStateFlow(DiscordRpcStatus.ACTIVITY_STOPPED)
     val wasSuccessful = _lastStatus.map { it == DiscordRpcStatus.ACTIVITY_SET }
     private val retryDelay = 10.seconds
+    private val clearIdleTimeout = 5.minutes
 
     fun start() {
-        PanoNotifications.playingTrackTrayInfo
+        PanoNotifications.playingTrackStates
             .mapLatest {
                 delay(500.milliseconds) // debounce the source
                 it.values
@@ -186,6 +210,14 @@ object DiscordRpc {
                 current
             }
             .distinctUntilChanged()
+            .transformLatest { activity ->
+                // After staying on Clear for some time, disconnect.
+                emit(activity)
+                if (activity is DiscordActivity.Clear) {
+                    delay(clearIdleTimeout)
+                    emit(DiscordActivity.Stop)
+                }
+            }
             .mapLatest { activity ->
                 Logger.d { "DiscordRpc: activity=$activity" }
 
@@ -196,7 +228,7 @@ object DiscordRpc {
                 do {
                     if (!succ)
                         delay(retryDelay)
-                    succ = updateActivity(activity)
+                    succ = DiscordRpcPlatform.update(activity)
                     _lastStatus.value = when {
                         succ && activity is DiscordActivity.Activity -> DiscordRpcStatus.ACTIVITY_SET
                         succ && activity is DiscordActivity.Clear -> DiscordRpcStatus.ACTIVITY_CLEARED
@@ -221,65 +253,22 @@ object DiscordRpc {
                         withTimeoutOrNull(activity.showPausedForSecs.seconds) {
                             pausedHash.first { it != activity.hash }
                         }
-                        succ = updateActivity(DiscordActivity.Clear)
+                        succ = DiscordRpcPlatform.update(DiscordActivity.Clear)
                         _lastStatus.value = if (succ)
                             DiscordRpcStatus.ACTIVITY_CLEARED
                         else
                             DiscordRpcStatus.FAILED
+
+                        if (succ) {
+                            delay(clearIdleTimeout)
+                            if (DiscordRpcPlatform.update(DiscordActivity.Stop))
+                                _lastStatus.value = DiscordRpcStatus.ACTIVITY_STOPPED
+                        }
                     }
                 } while (!succ)
             }
             .launchIn(Stuff.appScope)
     }
-
-    private fun updateActivity(activity: DiscordActivity): Boolean =
-        when (activity) {
-            is DiscordActivity.Activity -> {
-                val now = System.currentTimeMillis()
-
-                val startTimeMillis = if (activity.isPlaying || activity.durationMillis == null)
-                    activity.startTimeMillis
-                else
-                    now - activity.durationMillis
-
-                val startTimeSecs = startTimeMillis / 1000
-
-                val endTimeSecs =
-                    if (activity.durationMillis != null && activity.durationMillis > 0) {
-                        if (activity.isPlaying)
-                            startTimeSecs + (activity.durationMillis / 1000)
-                        else
-                            now / 1000
-                    } else {
-                        0
-                    }
-
-                PanoNativeComponents.updateDiscordActivity(
-                    clientId = activity.discordClientId,
-                    name = activity.name,
-                    state = activity.state,
-                    details = activity.details,
-                    largeText = activity.largeText,
-                    startTime = startTimeSecs,
-                    endTime = endTimeSecs,
-                    artUrl = activity.artUrl,
-                    detailsUrl = activity.detailsUrl,
-                    isPlaying = activity.isPlaying,
-                    statusLine = activity.statusLine,
-                    buttonText = activity.buttonText,
-                    buttonUrl = activity.buttonUrl,
-                )
-
-            }
-
-            is DiscordActivity.Clear -> {
-                PanoNativeComponents.clearDiscordActivity(false)
-            }
-
-            is DiscordActivity.Stop -> {
-                PanoNativeComponents.clearDiscordActivity(true)
-            }
-        }
 
     // call this only on isPlaying=true. The art is from now playing
     private suspend fun fetchArt(scrobbleData: ScrobbleData, hash: Int) {

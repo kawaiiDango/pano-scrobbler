@@ -26,7 +26,7 @@ actual fun NavFromOutsideEffect(
             val splits = id.split(":", limit = 2)
             val itemId = splits.first().let { PanoTrayUtils.ItemId.valueOf(it) }
             val suffix = splits.getOrNull(1)
-            val playingTrackTrayInfo = PanoNotifications.playingTrackTrayInfo.value
+            val playingTrackTrayInfo = PanoNotifications.playingTrackStates.value
 
             val user = PlatformStuff.mainPrefs.data.map { it.currentAccount?.user }.first()
                 ?: return@collect

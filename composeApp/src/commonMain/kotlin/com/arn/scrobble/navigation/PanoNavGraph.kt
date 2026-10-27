@@ -16,6 +16,7 @@ import com.arn.scrobble.billing.BillingScreen
 import com.arn.scrobble.billing.BillingTroubleshootScreen
 import com.arn.scrobble.charts.ChartsPagerScreen
 import com.arn.scrobble.charts.RandomScreen
+import com.arn.scrobble.discordrpc.DiscordRpcScreen
 import com.arn.scrobble.edits.ArtistsWithDelimitersScreen
 import com.arn.scrobble.edits.BlockedMetadatasScreen
 import com.arn.scrobble.edits.RegexEditsAddScreen
@@ -68,6 +69,7 @@ import pano_scrobbler.composeapp.generated.resources.automation_cp
 import pano_scrobbler.composeapp.generated.resources.choose_an_app
 import pano_scrobbler.composeapp.generated.resources.choose_apps
 import pano_scrobbler.composeapp.generated.resources.delete_account
+import pano_scrobbler.composeapp.generated.resources.discord_rich_presence
 import pano_scrobbler.composeapp.generated.resources.edit
 import pano_scrobbler.composeapp.generated.resources.edit_regex
 import pano_scrobbler.composeapp.generated.resources.edit_regex_test
@@ -635,6 +637,13 @@ object PanoNavGraph {
             ArtistsWithDelimitersScreen(
                 searchFieldState = searchFieldState,
                 modifier = Modifier.navColumn().padding(panoContentPadding())
+            )
+        }
+
+        entry<PanoRoute.DiscordRpcSettings> { route ->
+            onSetTitleRes(route, Res.string.discord_rich_presence)
+            DiscordRpcScreen(
+                modifier = Modifier.navScrollableColumn()
             )
         }
 

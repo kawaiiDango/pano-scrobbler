@@ -34,7 +34,7 @@ class MdViewerVM(
         else -> MdTag.android
     }
 
-    private val nonPlayTag = if (VariantStuff.billingRepository.needsActivationCode)
+    private val nonPlayTag = if (VariantStuff.isNonPlay)
         MdTag.nonplay
     else
         null

@@ -28,6 +28,8 @@ import com.arn.scrobble.navigation.DeepLinkUtils
 import com.arn.scrobble.navigation.PanoRoute
 import com.arn.scrobble.updates.UpdateAction
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
@@ -56,7 +58,9 @@ actual object PanoNotifications {
         AndroidStuff.applicationContext.getSystemService(NotificationManager::class.java)!!
     }
     private val notiColor by lazy { context.getColor(R.color.pinkNoti) }
-    private val nowPlayingData = mutableMapOf<String, PlayingTrackNotifyEvent.TrackPlaying>()
+    private val _playingTrackStates =
+        MutableStateFlow<Map<String, PlayingTrackNotifyEvent.PlayingTrackState>>(emptyMap())
+    actual val playingTrackStates = _playingTrackStates.asStateFlow()
     private val activeScrobbleNotifications = linkedMapOf<String, Notification.Builder>()
     private var channelsCreated = false
     var fgNotiShown = false
@@ -130,10 +134,7 @@ actual object PanoNotifications {
     }
 
     actual suspend fun notifyScrobble(event: PlayingTrackNotifyEvent.TrackPlaying) {
-        if (event.nowPlaying)
-            nowPlayingData[event.notiKey] = event
-        else
-            nowPlayingData.remove(event.notiKey)
+        _playingTrackStates.value += (event.notiKey to event)
 
 //        if (!isNotiChannelEnabled(Stuff.CHANNEL_NOTI_SCROBBLING))
 //            return
@@ -274,6 +275,8 @@ actual object PanoNotifications {
     actual suspend fun notifyError(event: PlayingTrackNotifyEvent.Error) {
 //        if (!isNotiChannelEnabled(Stuff.CHANNEL_NOTI_SCROBBLING))
 //            return
+
+        _playingTrackStates.value += event.notiKey to event
 
         val subtitle = event.scrobbleError.description
             ?: Stuff.formatBigHyphen(
@@ -548,7 +551,7 @@ actual object PanoNotifications {
     }
 
     actual fun removeNotificationByKey(key: String) {
-        nowPlayingData.remove(key)
+        _playingTrackStates.value -= key
 
         val wasFirst = activeScrobbleNotifications.keys.firstOrNull() == key
         activeScrobbleNotifications.remove(key)
@@ -573,7 +576,9 @@ actual object PanoNotifications {
     }
 
     fun getNowPlayingFromBackgroundProcess(): PlayingTrackNotifyEvent.TrackPlaying? {
-        return nowPlayingData.values.firstOrNull()
+        return _playingTrackStates.value.values.firstOrNull {
+            it is PlayingTrackNotifyEvent.TrackPlaying && it.nowPlaying
+        } as? PlayingTrackNotifyEvent.TrackPlaying
     }
 
     fun createForegroundInfo(title: String): ForegroundInfo {

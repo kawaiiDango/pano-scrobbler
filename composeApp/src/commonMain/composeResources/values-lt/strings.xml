@@ -396,7 +396,7 @@
     <string name="discord_compact_view_line">Rodyti kaip „Klausausi“:</string>
     <string name="available_placeholders" formatted="true" comment="%1 = placeholder strings, e.g. $artist, $title etc.">Galimi reikšmių laikikliai: %1$s</string>
     <string name="show_paused_for" comment="Show paused media for n minutes, used for discord rich presence">Rodyti pristabdytą mediją, skirta</string>
-    <string name="edit_example">pvz., kad pakeistumėte Atlikėją1 su Atlikėju2, paliekant kitus metaduomenis nepakitusius, įjunkite tik atlikėjo lauką ir užpildykite originalią ir pataisytą atlikėjo reikšmę, palikdami kitus laukus išjungtus.</string>
+    <string name="edit_example">pvz., kad pakeistumėte 1Atlikėją su 2Atlikėju, paliekant kitus metaduomenis nepakitusius, įjunkite tik atlikėjo lauką ir užpildykite originalią ir pataisytą atlikėjo reikšmę, palikdami kitus laukus išjungtus.</string>
     <string name="when_using" formatted="true" comment="%1$s is the web service or media player name">Kai naudojant „%1$s“.</string>
     <string name="when_not_using" formatted="true" comment="%1$s is the web service or media player name">Kai nenaudojant „%1$s“.</string>
     <string name="as_text" comment="Like copy as text, but in short">kaip tekstą</string>

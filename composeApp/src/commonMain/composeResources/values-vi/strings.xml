@@ -160,13 +160,24 @@
     <string name="edit_regex_invalid" formatted="true" comment="%1= the regex error message">Regex không hợp lệ: %1$s</string>
     <string name="edit_regex_test" comment="(Test regex rules)">Thử</string>
     <string name="edit_presets" comment="Regex presets">Mẫu thiết lập</string>
+    <string name="skip" comment="skip to next track">Bỏ qua</string>
     <string name="mute" comment="mute the sound">Tắt tiếng</string>
+    <string name="do_nothing" comment="do nothing on the media player">Không làm gì</string>
     <string name="block" comment="block the track from scrobbling">Chặn</string>
+    <string name="copy" comment="copy to clipboard">Sao chép</string>
+    <string name="hidden_tags" comment="Tags that should not be shown to the user">Thẻ ẩn</string>
     <string name="pin" comment="pin a friend to the top">Ghim</string>
     <string name="unpin" comment="unpin a friend to the top">Bỏ ghim</string>
+    <string name="pin_limit_reached" formatted="true" comment="%1= the max limit">Đã chạm giới hạn ghim (%1$d)</string>
+    <string name="pin_help">Giữ mục được ghim để thay đổi thứ tự</string>
+    <string name="use_channel" comment="(Use youtube channel name)">Dùng tên của kênh</string>
+    <string name="persistent_noti_text">Bấm để ẩn</string>
+    <string name="scrobbler_off">Đã vô hiệu hoá trình scrobble</string>
+    <string name="scrobbler_on">Trình Scrobble đang hoạt động</string>
     <string name="duration" comment="The duration of the track">Thời lượng</string>
     <string name="total_listen_time">Tổng thời lượng nghe</string>
     <string name="enable" comment="To enable some feature">Bật</string>
+    <string name="disable" comment="To disable some feature">Vô hiệu hoá</string>
     <string name="remove" formatted="true" comment="%1= the text to remove. For example, Remove: Remastered">Loại bỏ: %1$s</string>
     <string name="size" comment="Collage size such as 3x3, 4x4 etc">Kích cỡ</string>
     <string name="skip_missing_images" comment="(while generating a collage)">Bỏ qua những ảnh bị thiếu</string>
@@ -178,6 +189,7 @@
     <string name="pref_delay_mins" comment="(Scrobble delay in minutes)">Phút</string>
     <string name="pref_delay_per" comment="(Scrobble delay in percent)">Phần trăm</string>
     <string name="pref_logout">Đăng xuất</string>
+    <string name="sure_tap_again" comment="tap again to confirm">Bạn chắc chứ? Bấm lại lần nữa</string>
     <string name="pref_login">Đăng nhập</string>
     <string name="pref_about" comment="the about section at the bottom of the settings screen">Giới thiệu</string>
     <string name="pref_privacy_policy">Chính sách quyền riêng tư</string>
@@ -211,11 +223,13 @@
     <string name="import_hey_wtf">Đó có lẽ không phải là 1 file export từ Pano Scrobbler</string>
     <string name="imported">Đã nhập</string>
     <string name="import_options">Tùy chọn nhập</string>
+    <string name="import_settings">Nhập thiết lập</string>
     <string name="copied">Đã sao chép!</string>
     <string name="check_nls" formatted="true" comment="%1= the name Pano Scrobbler. Asks the user to check the app in notification access settings">Kiểm tra %1$s</string>
     <string name="no_browser">Không có trình duyệt trên thiết bị</string>
     <string name="kill_reason" comment="%1= reason for the app kill" formatted="true">Lý do: %1$s</string>
     <string name="login_submit" comment="Verifies the login details">Xác thực</string>
+    <string name="bar_chart">Biểu đồ cột</string>
     <string name="fix_it_battery_title">Tắt tối ưu hoá pin</string>
     <string name="fix_it_energy_title" comment="Disable battery optimizations equivalent for TVs">Tắt tối ưu hoá pin</string>
     <string name="fix_it_action" comment="(To open an app, a link or a screen within pano scrobbler)">Mở</string>
@@ -225,7 +239,12 @@
     <string name="square_photo_hint" comment="for user picked image from their gallery, used for custom artist or album pic">Chọn ảnh vuông để có kết quả tốt nhất</string>
     <string name="scrobble_to_file">Tập tin</string>
     <string name="password">Mật khẩu</string>
+    <string name="open_existing" comment="Append to an existing file">Nối vào hiện có</string>
     <string name="create" comment="Create a new file">Tạo mới</string>
+    <string name="scan_qr">Quét cái này để đăng nhập</string>
+    <string name="copy_from" comment="Copy from another edit field, used in regex edits screen">Sao chép từ</string>
+    <string name="nothing" comment="select nothing/none">Không gì cả</string>
+    <string name="borders" comment="Borders between images in the generated collage">Viền</string>
     <string name="ok">Đồng ý</string>
     <string name="cancel">Hủy</string>
     <string name="back" comment="back button">Quay lại</string>
@@ -245,8 +264,29 @@
     <string name="external_metadata" comment="Used to supplement partially missing metadata. Sources are Spotify, Deezer etc">Nguồn dữ liệu ngoài</string>
     <string name="line_n" formatted="true" comment="%1$s is the line number, currently used in the context of Discord Rich Presence">Dòng %1$s</string>
     <string name="available_placeholders" formatted="true" comment="%1 = placeholder strings, e.g. $artist, $title etc.">Các trường có thể sử dụng: %1$s</string>
+    <string name="when_using" formatted="true" comment="%1$s is the web service or media player name">Khi dùng %1$s</string>
+    <string name="when_not_using" formatted="true" comment="%1$s is the web service or media player name">Khi không dùng %1$s</string>
     <string name="as_text" comment="Like copy as text, but in short">Dưới dạng văn bản</string>
+    <string name="spotify_consent">Lấy ảnh nghệ sĩ từ Spotify?</string>
+    <string name="show_track_url" comment="Toggle to put the URL of the currently playing track, used for Discord Rich Presence">URL bài hát</string>
+    <string name="search_in_media_player" comment="This launches and searches in the media player app directly instead of opening a browser">Tìm kiếm trực tiếp từ trình nghe nhạc</string>
+    <string name="discord_app_name" comment="usually the media player app name, shown in discord rich presence">Tên ứng dụng</string>
+    <string name="convert_file" formatted="true" comment="%1$s is the file extension, used in the context of converting from one file format to another">Chuyển đổi từ %1$s</string>
+    <string name="move_up" comment="Screen reader text for drag and drop reordering">Di chuyển lên</string>
+    <string name="move_down" comment="Screen reader text for drag and drop reordering">Di chuyển xuống</string>
+    <string name="at_least" formatted="true" comment="%1$s=some number">Ít nhất %1$s</string>
+    <string name="code_will_be_sent" formatted="true" comment="%1$s is either Ko-Fi or BuyMeACoffee, %2$s is the donation amount">Mã sẽ được gửi tới email sử dụng cho tài khoản %1$s của bạn, nếu bạn đã đóng góp %2$s</string>
+    <string name="proxy" comment="network proxy">Proxy</string>
+    <string name="system" comment="system default settings">Hệ thống</string>
+    <string name="port" comment="proxy port">Cổng</string>
+    <string name="scanning" comment="finds other instances of Pano Scrobbler import server on the local network">Đang quét</string>
+    <string name="upto_n" formatted="true" comment="%1 is a number">Lên tới %1$d</string>
+    <string name="cache" comment="as a noun">Bộ nhớ đệm</string>
+    <string name="pause_for" comment="Pause scrobbling for a some time">Tạm dừng trong</string>
+    <string name="websites" comment="websites that user is scrobbling from">Những trang web</string>
+    <string name="last_error" comment="most recent error, used for pending scrobbles as of now">Lỗi gần nhất</string>
     <string name="get_pro">Ủng hộ ứng dụng</string>
+    <string name="one_time_purchase">Một lần</string>
     <string name="help">Hỗ trợ</string>
     <string name="thank_you">Cảm ơn bạn!</string>
 </resources>

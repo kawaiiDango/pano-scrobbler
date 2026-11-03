@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
+    <plurals name="num_scrobbles_noti">
+        <item quantity="other">%1$s lượt scrobble</item>
+    </plurals>
     <plurals name="num_scrobbles_today" comment="n (scrobbles) today">
         <item quantity="other">%1$s hôm nay</item>
     </plurals>
@@ -27,6 +30,9 @@
     <plurals name="num_tracks">
         <item quantity="other">%1$s bài hát</item>
     </plurals>
+    <plurals name="num_hours">
+        <item quantity="other">%1$d giờ</item>
+    </plurals>
     <string name="yes">Có</string>
     <string name="no">Không</string>
     <string name="reset">Đặt lại</string>
@@ -36,10 +42,13 @@
     <string name="album_art">Ảnh bìa</string>
     <string name="artist_image">Ảnh bìa nghệ sĩ</string>
     <string name="network_error" comment="Used as a generic fallback error message">Lỗi kết nối mạng</string>
+    <string name="scrobble_ignored" comment="Will be prefixed by Lastfm: (e.g. Lastfm: Scrobble ignored)">Bỏ qua lượt scrobble</string>
+    <string name="scrobble_ignored_save_edit">Lastfm đã bỏ qua chỉnh sửa của bạn vì lượt scrobble quá cũ. Bạn có muốn lưu lại cho những lượt scrobble sau?</string>
     <string name="required_fields_empty" comment="Shown on filling a form">Yêu cầu ô này là trống</string>
     <string name="artist">Nghệ sĩ</string>
     <string name="artists">Nghệ sĩ</string>
     <string name="top_artists" comment="Top artists the user has listened to">Nghệ sĩ hàng đầu</string>
+    <string name="album_artist">Album của nghệ sĩ</string>
     <string name="artist_channel" comment="Artist or youtube channel">Tác giả</string>
     <string name="similar_artists">Nghệ sĩ tương tự</string>
     <string name="album">Album</string>
@@ -49,8 +58,11 @@
     <string name="tracks">Bài hát</string>
     <string name="top_tracks" comment="top tracks the user has listened to, or most scrobbled tracks of an artist">Bài hát hàng đầu</string>
     <string name="similar_tracks">Bài hát phổ biến</string>
+    <string name="state_scrobbling">Đang scrobble...</string>
+    <string name="state_unscrobbled">Đã ngưng scrobble</string>
     <string name="tap_to_edit">(Chạm để sửa)</string>
     <string name="recents" comment="Short for recently scrobbled">Gần đây</string>
+    <string name="first_scrobbled_on" formatted="true" comment="%1= date">Lượt scrobble đầu tại %1$s</string>
     <string name="auto" comment="automatic or default setting">Tự động</string>
     <string name="music_players">Trình phát nhạc</string>
     <string name="other_apps" comment="Apps which are not music players or video streaming apps">Ứng dụng khác</string>
@@ -63,6 +75,7 @@
     <string name="share_sig">(bởi Pano Scrobbler)</string>
     <string name="share">Chia sẻ</string>
     <string name="legend" comment="Chart legend - descriptions of the symbols used">Chú thích</string>
+    <string name="grid" comment="Grid view">Lưới</string>
     <string name="list" comment="Single column list view">Danh sách</string>
     <string name="more_info">Thông tin chi tiết</string>
     <string name="more" comment="More options menu in short">Khác</string>
@@ -85,13 +98,18 @@
     <string name="delete_all">Xóa tất cả</string>
     <string name="love" comment="Love/like a song">Yêu thích</string>
     <string name="hate" comment="Hate or dislike a song">Không thích</string>
+    <string name="unhate" comment="Undo a hate/dislike and make it neutral. This is not the same as Like">Bỏ ghét</string>
+    <string name="unlove" comment="Undo a love/like and make it neutral. This is not the same as Dislike">Bỏ yêu thích</string>
     <string name="following" comment="accounts you are following on lastfm">Đang theo dõi</string>
     <string name="grant_notification_access">Cấp quyền truy cập thông báo</string>
     <string name="send_notifications">Cho phép gửi thông báo</string>
     <string name="swap" comment="button to swap title and artist">Hoán đổi</string>
     <string name="time_just_now">mới đây</string>
     <string name="loved" comment="Its a noun">Đã yêu thích</string>
+    <string name="unloved" comment="Its a noun">Đã bỏ thích</string>
     <string name="simple_edits">Chỉnh sửa </string>
+    <string name="charts" comment="User's top artists, albums, tracks, line chart of daily scrobble counts and tag cloud">Biểu đồ</string>
+    <string name="tag_cloud" comment="https://www.google.com/search?&amp;q=tag+cloud">Thẻ đám mây</string>
     <string name="sort" comment="to sort a list">Sắp xếp</string>
     <string name="listeners" comment="number of unique users who scrobbled">Thính giả</string>
     <string name="scrobbles">Scrobbles</string>
@@ -121,6 +139,9 @@
     <string name="corrected" comment="Corrected metadata after editing">Đã sửa</string>
     <string name="tag" comment="last.fm tag">Tag</string>
     <string name="close" comment="To close a dialog or something">Đóng</string>
+    <string name="quit" comment="A stronger word than close, used to completely quit the app and stop scrobbling on desktop">Thoát</string>
+    <string name="user_tags_hint" comment="To add a new tag">Thẻ mới</string>
+    <string name="user_tags_empty">Bạn chưa thêm thẻ nào</string>
     <string name="appwidget_loading">Đang tải…</string>
     <string name="appwidget_period" comment="1 week, 1 month, 1 year etc">Khoảng thời gian</string>
     <string name="appwidget_shadow">Bóng</string>
@@ -128,10 +149,15 @@
     <string name="light" comment="light theme">Sáng</string>
     <string name="dark" comment="dark theme">Tối</string>
     <string name="system_colors" comment="material you system theme colors">Màu hệ thống</string>
+    <string name="appwidget_alpha" comment="app window background opacity">Độ trong suốt nền</string>
+    <string name="appwidget_refresh_every" formatted="true" comment="%1= 'n minutes'; n is &gt;= 45">Widget sẽ làm mới mỗi %1$s</string>
+    <string name="edit_name" comment="name for regex pattern">Tên hiển thị</string>
+    <string name="edit_regex">Mẫu regex</string>
     <string name="edit_replace" comment="regex replace">Thay thế</string>
     <string name="edit_first" comment="First occurrence of a pattern">Đầu tiên</string>
     <string name="edit_all" comment="All occurrences of a pattern">Tất cả</string>
     <string name="edit_extract" comment="To extract sub text from a larger text, in short, used in pattern edits">Trích xuất</string>
+    <string name="edit_regex_invalid" formatted="true" comment="%1= the regex error message">Regex không hợp lệ: %1$s</string>
     <string name="edit_regex_test" comment="(Test regex rules)">Thử</string>
     <string name="edit_presets" comment="Regex presets">Mẫu thiết lập</string>
     <string name="mute" comment="mute the sound">Tắt tiếng</string>
@@ -141,8 +167,14 @@
     <string name="duration" comment="The duration of the track">Thời lượng</string>
     <string name="total_listen_time">Tổng thời lượng nghe</string>
     <string name="enable" comment="To enable some feature">Bật</string>
+    <string name="remove" formatted="true" comment="%1= the text to remove. For example, Remove: Remastered">Loại bỏ: %1$s</string>
+    <string name="size" comment="Collage size such as 3x3, 4x4 etc">Kích cỡ</string>
+    <string name="skip_missing_images" comment="(while generating a collage)">Bỏ qua những ảnh bị thiếu</string>
+    <string name="create_collage">Tạo ảnh ghép</string>
+    <string name="captions" comment="Collage image captions such as artist names, play counts">Chú thích ảnh</string>
     <string name="username" comment="last.fm Username">Tên người dùng</string>
     <string name="pref_noti">Thông báo</string>
+    <string name="pref_scrobble_from" comment="Scrobble from (these apps)">Scrobble từ</string>
     <string name="pref_delay_mins" comment="(Scrobble delay in minutes)">Phút</string>
     <string name="pref_delay_per" comment="(Scrobble delay in percent)">Phần trăm</string>
     <string name="pref_logout">Đăng xuất</string>
@@ -153,19 +185,32 @@
     <string name="pref_token_label" comment="For Listenbrainz">Token xác thực</string>
     <string name="api_url" comment="For Listenbrainz">API URL</string>
     <string name="server_url" comment="For self hosted scrobbling services">URL máy chủ</string>
+    <string name="listenbrainz_info" formatted="true" comment="%1 = the link to page containing the token">Bạn có thể tìm thấy token xác thực tại: %1$s</string>
+    <string name="pref_fetch_missing_album" formatted="true" comment="%1= the name of a service like last.fm, Deezer etc">Thu thập album bị thiếu từ %1$s</string>
     <string name="pref_locale">Ngôn ngữ</string>
     <string name="pref_misc" comment="Miscellaneous settings">Khác</string>
     <string name="pref_first_day_of_week" comment="Sunday, Monday etc">Tuần mới bắt đầu vào</string>
+    <string name="pref_imexport" comment="As in backup or restore the settings">Nhập &amp; xuất</string>
     <string name="pref_export" comment="backs up the settings to a file">Xuất</string>
     <string name="pref_import" comment="restores the settings from a backup/export file">Nhập</string>
+    <string name="pref_imexport_network" comment="As in backup or restore the settings over network">Mạng</string>
+    <string name="pref_imexport_code" comment="A code shown on the screen to be entered on the other device">Mã</string>
     <string name="pref_personalization" comment="Such as themes, widgets and some appearance settings">Cá nhân hoá</string>
     <string name="pref_themes" comment="Color themes">Chủ đề</string>
+    <string name="pref_search_in_source_desc" comment="This is a continuation of the string: Search &amp; play on the app you scrobbled from">Ứng dụng được hỗ trợ</string>
     <string name="pref_lists" comment="Such as edits list and block lists">Danh sách</string>
     <string name="pref_translate">Đóng góp bản dịch</string>
+    <string name="pref_translate_credits">Dịch giả</string>
     <string name="pref_check_updates">Kiểm tra bản cập nhật</string>
+    <string name="no_updates">Không có bản cập nhật mới</string>
+    <string name="pref_notify_updates">Tự động cập nhật</string>
+    <string name="update_downloaded" comment="app update">Đã tải xuống cập nhật</string>
+    <string name="downloading">Đang tải xuống</string>
     <string name="download" comment="Its a verb">Tải về</string>
     <string name="changelog">Nhật kí thay đổi</string>
+    <string name="import_hey_wtf">Đó có lẽ không phải là 1 file export từ Pano Scrobbler</string>
     <string name="imported">Đã nhập</string>
+    <string name="import_options">Tùy chọn nhập</string>
     <string name="copied">Đã sao chép!</string>
     <string name="check_nls" formatted="true" comment="%1= the name Pano Scrobbler. Asks the user to check the app in notification access settings">Kiểm tra %1$s</string>
     <string name="no_browser">Không có trình duyệt trên thiết bị</string>
@@ -192,6 +237,15 @@
     <string name="high" comment="As in high/medium/low">Cao</string>
     <string name="medium" comment="As in high/medium/low">Vừa</string>
     <string name="low" comment="As in high/medium/low">Thấp</string>
+    <string name="reload" comment="Reload or refresh">Tải lại</string>
+    <string name="automation" comment="automation apps like Tasker on Android, or commandline on desktop">Điều khiển Pano Scrobbler từ những ứng dụng tự động hoá</string>
+    <string name="login_in_browser">Hoàn thiện đăng nhập từ cửa sổ trình duyệt</string>
+    <string name="edit_no_save" comment="used in the edit dialog to not remember the edit">Sẽ không được lưu cho những lần scrobble tới</string>
+    <string name="also_available_on" formatted="true" comment="%1$s is the platform name, like Android, PC">Tải ứng dụng này tại %1$s</string>
+    <string name="external_metadata" comment="Used to supplement partially missing metadata. Sources are Spotify, Deezer etc">Nguồn dữ liệu ngoài</string>
+    <string name="line_n" formatted="true" comment="%1$s is the line number, currently used in the context of Discord Rich Presence">Dòng %1$s</string>
+    <string name="available_placeholders" formatted="true" comment="%1 = placeholder strings, e.g. $artist, $title etc.">Các trường có thể sử dụng: %1$s</string>
+    <string name="as_text" comment="Like copy as text, but in short">Dưới dạng văn bản</string>
     <string name="get_pro">Ủng hộ ứng dụng</string>
     <string name="help">Hỗ trợ</string>
     <string name="thank_you">Cảm ơn bạn!</string>

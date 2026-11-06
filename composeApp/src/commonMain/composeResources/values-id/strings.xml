@@ -396,6 +396,14 @@
     <string name="random_on_start" comment="currently used as a toggle in the themes screen to pick a random theme when the app starts">Random ketika proses dimulai</string>
     <string name="edit_continue_simple" comment="a toggle in the normal edits screen">Jika ditemukan, lanjutkan penyuntingan dengan preset &amp; aturan regex</string>
     <string name="edit_continue_regex" comment="a toggle in the regex edits screen">Jika ditemukan, lanjutkan penyuntingan dengan preset &amp; aturan regex lainnya</string>
+    <string name="pause_for" comment="Pause scrobbling for a some time">Hentikan selama</string>
+    <string name="button_url" comment="used for the button in discord rich presence">URL tombol</string>
+    <string name="websites" comment="websites that user is scrobbling from">Situs</string>
+    <string name="websites_desc">Berlaku untuk semua pemutar media yang lapor ke URL halaman via MPRIS.</string>
+    <string name="forget_checked_websites" comment="Forget enabled/allowlisted websites">Lupa memeriksa situs</string>
+    <string name="last_error" comment="most recent error, used for pending scrobbles as of now">Eror terakhir</string>
+    <string name="rate_limit_warn">Mengirimkan terlalu banyak scrobble dalam satu hari dapat menyebabkan layanan scrobbling untuk menolaknya, sehingga menambah jumlah backlog Anda.</string>
+    <string name="unsupported_api" comment="currently used for custom ListenBrainz-like and last.fm-like logins. This is displayed when custom ones does not support the full feature set">API ini mungkin tidak didukung oleh server. Lihat di web.</string>
     <string name="get_pro">Dukung aplikasi ini</string>
     <string name="one_time_purchase">Satu kali</string>
     <string name="help">Bantuan</string>

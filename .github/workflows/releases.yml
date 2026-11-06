@@ -67,7 +67,7 @@ jobs:
       - name: Install GraalVM CE
         uses: graalvm/setup-graalvm@v1
         with:
-          version: '25.4'
+          version: '25.5'
           distribution: 'graalvm-community'
           github-token: ${{ github.token }}
 

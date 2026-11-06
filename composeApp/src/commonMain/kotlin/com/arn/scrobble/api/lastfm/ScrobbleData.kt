@@ -1,6 +1,9 @@
 package com.arn.scrobble.api.lastfm
 
 import androidx.annotation.Keep
+import androidx.room3.ColumnInfo
+import androidx.room3.ColumnTypeConverters
+import com.arn.scrobble.db.StringMapTypeConverter
 import kotlinx.serialization.Serializable
 
 @Keep
@@ -13,7 +16,11 @@ data class ScrobbleData(
     val trackNumber: Int? = null,
     val albumArtist: String?,
     val duration: Long?,
-    val appId: String?
+    val appId: String?,
+
+    @ColumnInfo(defaultValue = "")
+    @field:ColumnTypeConverters(StringMapTypeConverter::class)
+    val extraTags: Map<String, String> = emptyMap(),
 ) {
     fun safeDuration() = duration?.takeIf { it in (30_000..3600_000) }
 

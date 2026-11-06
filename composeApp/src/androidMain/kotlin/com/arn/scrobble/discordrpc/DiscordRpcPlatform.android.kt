@@ -11,11 +11,13 @@ actual object DiscordRpcPlatform {
         json = Stuff.myJson
     )
 
-    actual fun update(activity: DiscordActivity): Boolean {
-        // todo return and handle errors
-        // todo do not retry too often when connection fails (e.g. discord is not installed, user logged out)
-
-        when (activity) {
+    /**
+     * Activity: true only once Discord acknowledged it. While the backoff gate in [DiscordRpcAndroid]
+     * is closed this returns false immediately without touching Discord, so the caller's retry loop
+     * is free to poll. Clear / Stop never connect and always return true.
+     */
+    actual suspend fun update(activity: DiscordActivity): Boolean {
+        return when (activity) {
             is DiscordActivity.Activity -> {
                 val now = System.currentTimeMillis()
                 val (startTimeMillis, endTimeMillis) = activity.timestampsMillis(now)
@@ -37,14 +39,14 @@ actual object DiscordRpcPlatform {
             }
 
             is DiscordActivity.Clear -> {
-                discordRpc.clearActivity(false)
+                discordRpc.clearActivity(disconnect = false)
+                true
             }
 
             is DiscordActivity.Stop -> {
-                discordRpc.clearActivity(true)
+                discordRpc.clearActivity(disconnect = true)
+                true
             }
         }
-
-        return true
     }
 }

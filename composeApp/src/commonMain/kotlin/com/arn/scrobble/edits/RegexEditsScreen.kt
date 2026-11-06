@@ -173,13 +173,8 @@ private fun RegexEditsList(
     val isLicenseValid = LocalLicenseValidState.current
     val maxPatterns = if (isLicenseValid) Stuff.MAX_PATTERNS_HIGH else Stuff.MAX_PATTERNS
     val scope = rememberCoroutineScope()
-    val nonRegexItemsCount = remember {
-        RegexPresets.filteredPresets.size + listOfNotNull(
-            if (!PlatformStuff.isTv) 1 else null, // Test button
-            1, // presets_header
-            1, // custom_header
-        ).sum()
-    }
+    val nonRegexItemsCount = RegexPresets.filteredPresets.size +
+            1 + 1 // presets_header, custom_header
 
     val listState = rememberLazyListState()
     val dragDropState =

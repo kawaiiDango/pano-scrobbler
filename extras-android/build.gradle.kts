@@ -41,7 +41,7 @@ dependencies {
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.kermit)
     releaseImplementation(projects.extrasPlay)
-//    debugImplementation(projects.extrasNonplay)
-    debugImplementation(projects.extrasPlay)
+    debugImplementation(projects.extrasNonplay)
+//    debugImplementation(projects.extrasPlay)
     "releaseGithubImplementation"(projects.extrasNonplay)
 }

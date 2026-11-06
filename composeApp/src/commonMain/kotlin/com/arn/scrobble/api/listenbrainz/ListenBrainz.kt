@@ -95,6 +95,18 @@ class ListenBrainz(userAccount: UserAccountSerializable) : Scrobblable(userAccou
                         track_name = scrobbleData.track,
                         additional_info = ListenBrainzAdditionalInfo(
                             duration_ms = scrobbleData.safeDuration(),
+                            recording_mbid = scrobbleData.extraTags[MUSICBRAINZ_TRACKID],
+                            release_mbid = scrobbleData.extraTags[MUSICBRAINZ_ALBUMID],
+                            artist_mbids = setOfNotNull(
+                                // unique values only
+                                scrobbleData.extraTags[MUSICBRAINZ_ARTISTID],
+                                scrobbleData.extraTags[MUSICBRAINZ_ALBUMARTISTID],
+                            )
+                                .takeIf { it.isNotEmpty() }
+                                ?.toList(),
+                            release_group_mbid = scrobbleData.extraTags[MUSICBRAINZ_RELEASEGROUPID],
+                            track_mbid = scrobbleData.extraTags[MUSICBRAINZ_RELEASETRACKID],
+                            isrc = scrobbleData.extraTags[ISRC],
                             submission_client = BuildKonfig.APP_NAME,
                             submission_client_version = BuildKonfig.VER_NAME,
                         )
@@ -641,5 +653,31 @@ class ListenBrainz(userAccount: UserAccountSerializable) : Scrobblable(userAccou
 
             return profileUrl
         }
+
+//        https://github.com/OxygenCobalt/Auxio/issues/1268#issuecomment-6152376651
+
+        const val MUSICBRAINZ_TRACKID = "org.musicbrainz.MUSICBRAINZ_TRACKID"
+        const val MUSICBRAINZ_RELEASETRACKID = "org.musicbrainz.MUSICBRAINZ_RELEASETRACKID"
+        const val MUSICBRAINZ_ALBUMID = "org.musicbrainz.MUSICBRAINZ_ALBUMID"
+        const val MUSICBRAINZ_ALBUMARTISTID = "org.musicbrainz.MUSICBRAINZ_ALBUMARTISTID"
+        const val MUSICBRAINZ_ARTISTID = "org.musicbrainz.MUSICBRAINZ_ARTISTID"
+        const val MUSICBRAINZ_RELEASEGROUPID = "org.musicbrainz.MUSICBRAINZ_RELEASEGROUPID"
+        const val ACOUSTID_ID = "org.musicbrainz.ACOUSTID_ID"
+        const val ISRC = "org.musicbrainz.ISRC"
+        const val BARCODE = "org.musicbrainz.BARCODE"
+        const val CATALOGNUMBER = "org.musicbrainz.CATALOGNUMBER"
+
+        val MUSICBRAINZ_KEY_SET = setOf(
+            MUSICBRAINZ_TRACKID,
+            MUSICBRAINZ_RELEASETRACKID,
+            MUSICBRAINZ_ALBUMID,
+            MUSICBRAINZ_ALBUMARTISTID,
+            MUSICBRAINZ_ARTISTID,
+            MUSICBRAINZ_RELEASEGROUPID,
+            ACOUSTID_ID,
+            ISRC,
+            BARCODE,
+            CATALOGNUMBER
+        )
     }
 }

@@ -839,12 +839,9 @@
     {
       "type": "java.lang.String",
       "jniAccessible": true,
-      "methods": [
-        {
-          "name": "intern",
-          "parameterTypes": []
-        }
-      ]
+      "serializable": true,
+      "allDeclaredMethods": true,
+      "allDeclaredFields": true
     },
     {
       "type": "java.lang.String[]"
@@ -2866,6 +2863,24 @@
     },
     {
       "type": "sun.security.provider.SHA2$SHA256",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "type": "sun.security.provider.SHA3$SHA256",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "type": "sun.security.provider.SHA3$SHA512",
       "methods": [
         {
           "name": "<init>",

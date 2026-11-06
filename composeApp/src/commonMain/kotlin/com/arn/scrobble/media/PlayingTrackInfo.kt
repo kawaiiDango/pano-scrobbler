@@ -72,6 +72,8 @@ class PlayingTrackInfo(
     var durationMillis: Long = 0
         private set
 
+    private val extraTags: MutableMap<String, String> = mutableMapOf()
+
     var hash: Int = 0
         private set
 
@@ -107,6 +109,7 @@ class PlayingTrackInfo(
         durationMillis: Long,
         normalizedUrlHost: String?,
         artUrl: String?,
+        extraTags: Map<String, String>,
         setPlayStartTime: Boolean = true
     ) {
         origArtist = artist
@@ -125,6 +128,9 @@ class PlayingTrackInfo(
 
         this.artUrlState = ArtUrlState(artUrl)
 
+        this.extraTags.clear()
+        this.extraTags.putAll(extraTags)
+
         scrobbledState = ScrobbledState.NONE
         msid = null
 
@@ -133,6 +139,7 @@ class PlayingTrackInfo(
             segmentStartTime = playStartTime
         }
     }
+
 
     fun setArtUrlState(artUrlState: ArtUrlState) {
         this.artUrlState = artUrlState
@@ -191,6 +198,20 @@ class PlayingTrackInfo(
         segmentStartTime = playStartTime
     }
 
+    fun resetMetadata() {
+        putOriginals(
+            artist = origArtist,
+            title = origTitle,
+            album = origAlbum,
+            albumArtist = origAlbumArtist,
+            trackNumber = trackNumber,
+            durationMillis = durationMillis,
+            normalizedUrlHost = normalizedUrlHost,
+            artUrl = artUrlState.url,
+            extraTags = extraTags,
+        )
+    }
+
     fun addTimePlayed() {
         if (segmentStartTime > 0L)
             timePlayed += System.currentTimeMillis() - segmentStartTime
@@ -217,6 +238,7 @@ class PlayingTrackInfo(
         timestamp = playStartTime,
         duration = durationMillis.takeIf { it > 0 },
         appId = appId,
+        extraTags = extraTags,
     )
 
     fun toTrackPlayingEvent() = PlayingTrackNotifyEvent.TrackPlaying(

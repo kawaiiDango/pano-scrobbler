@@ -2,6 +2,7 @@ package com.arn.scrobble.media
 
 import android.media.MediaMetadata
 import androidx.core.net.toUri
+import com.arn.scrobble.api.listenbrainz.ListenBrainz
 import com.arn.scrobble.utils.MetadataUtils
 import com.arn.scrobble.utils.Stuff
 
@@ -28,6 +29,18 @@ actual fun transformMediaMetadata(
     var durationMillis = metadata.getLong(MediaMetadata.METADATA_KEY_DURATION)
     if (durationMillis < -1 || trackInfo.appId in Stuff.IGNORE_DURATION)
         durationMillis = -1
+
+    val extraTags = mutableMapOf<String, String>()
+
+    metadata.keySet()
+        .filter {
+            it in ListenBrainz.MUSICBRAINZ_KEY_SET
+        }
+        .forEach { key ->
+            metadata.getString(key)?.ifEmpty { null }?.let { value ->
+                extraTags[key] = value
+            }
+        }
 
 //    metadata.getLong(Stuff.METADATA_KEY_YOUTUBE_WIDTH).takeIf { it != 0L }
 //        ?.let { extrasMap[Stuff.METADATA_KEY_YOUTUBE_WIDTH] = it.toString() }
@@ -162,12 +175,14 @@ actual fun transformMediaMetadata(
         duration = durationMillis,
         artUrl = artUrl,
         normalizedUrlHost = null,
+        extraTags = extraTags
     )
 
     return metadataInfo to ignoreScrobble
 }
 
 /**
+ * from bl4zee1g's fork
  * Accepts https urls, and unwraps content:// urls from image proxy providers
  * that carry the original location in the _HOST_ and _PROTOCOL_ query params,
  * like content://com.soundcloud.android.imageProvider/a/b.jpg?_HOST_=i1.sndcdn.com&_PROTOCOL_=https

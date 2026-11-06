@@ -12,6 +12,7 @@ import com.arn.scrobble.charts.TimePeriod
 import com.arn.scrobble.utils.Stuff
 import io.ktor.client.request.forms.FormDataContent
 import io.ktor.client.request.setBody
+import io.ktor.client.request.url
 
 class GnuFm(userAccount: UserAccountSerializable) : LastFm(userAccount) {
     override val apiKey: String = Stuff.LIBREFM_KEY
@@ -30,6 +31,7 @@ class GnuFm(userAccount: UserAccountSerializable) : LastFm(userAccount) {
         )
 
         val result = client.postResult<GnuFmResult> {
+            url(apiRoot)
             setBody(FormDataContent(toFormParametersWithSig(params, apiSecret)))
         }
 

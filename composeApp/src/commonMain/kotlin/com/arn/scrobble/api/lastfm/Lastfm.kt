@@ -60,7 +60,7 @@ open class LastFm(userAccount: UserAccountSerializable) : Scrobblable(userAccoun
     protected open val apiKey = Requesters.lastfmUnauthedRequester.apiKey
     protected open val apiSecret = Requesters.lastfmUnauthedRequester.apiSecret
 
-    private val apiRoot = when (userAccount.type) {
+    protected val apiRoot = when (userAccount.type) {
         AccountType.LASTFM -> Stuff.LASTFM_API_ROOT
         AccountType.LIBREFM -> Stuff.LIBREFM_API_ROOT
         else -> userAccount.apiRoot!!

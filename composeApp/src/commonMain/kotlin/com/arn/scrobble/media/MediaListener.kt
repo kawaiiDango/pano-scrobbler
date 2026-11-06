@@ -278,6 +278,7 @@ abstract class MediaListener(
                     durationMillis = metadata.duration,
                     normalizedUrlHost = metadata.normalizedUrlHost,
                     artUrl = if (onlyDurationUpdated) trackInfo.artUrlState.url else metadata.artUrl,
+                    extraTags = metadata.extraTags,
                 )
 
                 if (mutedHash != null && trackInfo.hash != mutedHash && lastPlaybackState == CommonPlaybackState.Playing)
@@ -382,18 +383,10 @@ abstract class MediaListener(
                             if (isPossiblyAtStart &&
                                 trackInfo.lastScrobbleHash == trackInfo.hash &&
                                 trackInfo.scrobbledState == PlayingTrackInfo.ScrobbledState.SCROBBLE_SUBMITTED
-                            )
-                            // normal repeat. Run edits, now playing etc. again
-                                trackInfo.putOriginals(
-                                    artist = trackInfo.origArtist,
-                                    title = trackInfo.origTitle,
-                                    album = trackInfo.origAlbum,
-                                    albumArtist = trackInfo.origAlbumArtist,
-                                    trackNumber = trackInfo.trackNumber,
-                                    durationMillis = trackInfo.durationMillis,
-                                    normalizedUrlHost = trackInfo.normalizedUrlHost,
-                                    artUrl = trackInfo.artUrlState.url,
-                                )
+                            ) {
+                                // normal repeat. Run edits, now playing etc. again
+                                trackInfo.resetMetadata()
+                            }
 
                             scrobble()
                         } else if ((timelineChanged && notifyTimelineUpdates || playbackStateChanged) &&

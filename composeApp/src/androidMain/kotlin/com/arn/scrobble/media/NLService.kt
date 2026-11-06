@@ -347,6 +347,7 @@ class NLService : NotificationListenerService() {
             durationMillis = scrobbleData.duration ?: 0L,
             normalizedUrlHost = null,
             artUrl = null,
+            extraTags = emptyMap(),
             setPlayStartTime = false
         )
 

@@ -1,2 +1,0 @@
-- Bug fixes
-- Translation updates by the translators on Crowdin

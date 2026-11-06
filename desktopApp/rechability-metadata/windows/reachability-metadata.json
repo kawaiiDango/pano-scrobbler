@@ -1341,17 +1341,9 @@
     {
       "type": "java.lang.String",
       "jniAccessible": true,
-      "fields": [
-        {
-          "name": "serialVersionUID"
-        }
-      ],
-      "methods": [
-        {
-          "name": "intern",
-          "parameterTypes": []
-        }
-      ]
+      "serializable": true,
+      "allDeclaredMethods": true,
+      "allDeclaredFields": true
     },
     {
       "type": "java.lang.String[]"

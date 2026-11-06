@@ -3,7 +3,7 @@ package com.arn.scrobble.discordrpc
 import com.arn.scrobble.PanoNativeComponents
 
 actual object DiscordRpcPlatform {
-    actual fun update(activity: DiscordActivity): Boolean =
+    actual suspend fun update(activity: DiscordActivity): Boolean =
         when (activity) {
             is DiscordActivity.Activity -> {
                 val now = System.currentTimeMillis()
@@ -29,10 +29,12 @@ actual object DiscordRpcPlatform {
 
             is DiscordActivity.Clear -> {
                 PanoNativeComponents.clearDiscordActivity(false)
+                true
             }
 
             is DiscordActivity.Stop -> {
                 PanoNativeComponents.clearDiscordActivity(true)
+                true
             }
         }
 }

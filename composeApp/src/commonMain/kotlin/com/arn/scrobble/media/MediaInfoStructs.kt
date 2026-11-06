@@ -15,6 +15,7 @@ data class MetadataInfo(
     val duration: Long,
     val artUrl: String?,
     val normalizedUrlHost: String?,
+    val extraTags: Map<String, String> = emptyMap(),
 )
 
 data class PlaybackInfo(

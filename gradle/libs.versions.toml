@@ -3,7 +3,9 @@ targetSdk = "37"
 minSdk = "24"
 sdkMinor = "1"
 minSdkBaselineProfile = "28"
-android-application = "9.6.0-alpha03"
+# has an R8 optimization crash
+#android-application = "9.6.0-alpha03"
+android-application = "9.5.1"
 compose-multiplatform = "1.13.0-beta02"
 
 kotlin = "2.4.21"

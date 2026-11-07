@@ -33,8 +33,11 @@ import com.arn.scrobble.charts.TimePeriod
 import com.arn.scrobble.charts.TimePeriodType
 import com.arn.scrobble.db.PanoDb
 import com.arn.scrobble.db.SeenTrackAlbumAssociation
+import com.arn.scrobble.pref.AppItem
+import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff
 import com.arn.scrobble.utils.Stuff.cacheStrategy
+import com.arn.scrobble.utils.VariantStuff
 import com.arn.scrobble.utils.determineLocalNetworkPermissionException
 import com.arn.scrobble.utils.wrapLocalNetworkHandshakeException
 import io.ktor.client.request.HttpRequestBuilder
@@ -74,6 +77,21 @@ class ListenBrainz(userAccount: UserAccountSerializable) : Scrobblable(userAccou
         )
     }
 
+    private fun extractMbids(raw: String?): List<String>? =
+        if (raw.isNullOrEmpty()) null
+        else MBID_REGEX.findAll(raw)
+            .map { it.value }
+            .distinct()
+            .toList()
+            .ifEmpty { null }
+
+    private fun appIdToName(appId: String?): String? =
+        if (appId == null || !VariantStuff.isNonPlay)
+            null
+        else
+            AppItem(appId, label = PlatformStuff.loadApplicationLabel(appId))
+                .friendlyLabel
+
     private suspend fun submitListens(
         scrobbleDatas: List<ScrobbleData>,
         listenType: ListenBrainzListenType,
@@ -85,8 +103,6 @@ class ListenBrainz(userAccount: UserAccountSerializable) : Scrobblable(userAccou
             listenType,
             scrobbleDatas.map { scrobbleData ->
 
-//                val pkgName = scrobbleData.pkgName?.let { PackageName(it) }
-
                 ListenBrainzPayload(
                     scrobbleData.timestamp.takeIf { listenType != ListenBrainzListenType.playing_now },
                     ListenBrainzTrackMetadata(
@@ -97,16 +113,12 @@ class ListenBrainz(userAccount: UserAccountSerializable) : Scrobblable(userAccou
                             duration_ms = scrobbleData.safeDuration(),
                             recording_mbid = scrobbleData.extraTags[MUSICBRAINZ_TRACKID],
                             release_mbid = scrobbleData.extraTags[MUSICBRAINZ_ALBUMID],
-                            artist_mbids = setOfNotNull(
-                                // unique values only
-                                scrobbleData.extraTags[MUSICBRAINZ_ARTISTID],
-                                scrobbleData.extraTags[MUSICBRAINZ_ALBUMARTISTID],
-                            )
-                                .takeIf { it.isNotEmpty() }
-                                ?.toList(),
+                            // is multi-value
+                            artist_mbids = extractMbids(scrobbleData.extraTags[MUSICBRAINZ_ARTISTID]),
                             release_group_mbid = scrobbleData.extraTags[MUSICBRAINZ_RELEASEGROUPID],
                             track_mbid = scrobbleData.extraTags[MUSICBRAINZ_RELEASETRACKID],
                             isrc = scrobbleData.extraTags[ISRC],
+                            media_player = appIdToName(scrobbleData.appId),
                             submission_client = BuildKonfig.APP_NAME,
                             submission_client_version = BuildKonfig.VER_NAME,
                         )
@@ -654,6 +666,13 @@ class ListenBrainz(userAccount: UserAccountSerializable) : Scrobblable(userAccou
             return profileUrl
         }
 
+        // MBIDs are UUIDs: 8-4-4-4-12 hex, lookarounds stop matching inside a longer hex run, but still allow any non-hex delimiter
+        private val MBID_REGEX = Regex(
+            "(?<![0-9a-fA-F])" +
+                    "[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}" +
+                    "(?![0-9a-fA-F])"
+        )
+
 //        https://github.com/OxygenCobalt/Auxio/issues/1268#issuecomment-6152376651
 
         const val MUSICBRAINZ_TRACKID = "org.musicbrainz.MUSICBRAINZ_TRACKID"
@@ -674,10 +693,7 @@ class ListenBrainz(userAccount: UserAccountSerializable) : Scrobblable(userAccou
             MUSICBRAINZ_ALBUMARTISTID,
             MUSICBRAINZ_ARTISTID,
             MUSICBRAINZ_RELEASEGROUPID,
-            ACOUSTID_ID,
             ISRC,
-            BARCODE,
-            CATALOGNUMBER
         )
     }
 }

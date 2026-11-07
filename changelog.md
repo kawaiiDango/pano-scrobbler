@@ -1,4 +1,5 @@
-- Discord Rich Presence on Android (non Play Store version only)
-- Supports scrobbling MusicBrainz tags to ListenBrainz if the media player exposes them to Pano
+- Non Play Store version only: Discord Rich Presence on Android
+- Non Play Store version only: Scrobbles the media player name to ListenBrainz
+- Scrobbles MusicBrainz tags to ListenBrainz, on Android, if the media player exposes them to Pano. Currently supported by Namida beta.
 - Bug fixes
 - Translation updates by the translators on Crowdin

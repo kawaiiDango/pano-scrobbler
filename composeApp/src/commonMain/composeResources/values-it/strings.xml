@@ -377,6 +377,9 @@
     <string name="as_text" comment="Like copy as text, but in short">Come testo</string>
     <string name="automation_cli">Argomenti della riga di comando</string>
     <string name="spotify_consent">Recuperare le immagini degli artisti da Spotify?</string>
+    <string name="websites" comment="websites that user is scrobbling from">Siti web</string>
+    <string name="websites_desc">Si applica a tutti i lettori di media abilitati che segnalano la pagina URL via MPRIS.</string>
+    <string name="unsupported_api" comment="currently used for custom ListenBrainz-like and last.fm-like logins. This is displayed when custom ones does not support the full feature set">Questo API potrebbe non essere supportato dal server. Vedi sul sito.</string>
     <string name="get_pro">Sostieni questa app</string>
     <string name="one_time_purchase">Solo una volta</string>
     <string name="help">Aiuto</string>

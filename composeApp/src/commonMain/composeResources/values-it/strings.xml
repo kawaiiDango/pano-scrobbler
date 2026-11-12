@@ -151,7 +151,7 @@
     <string name="sort" comment="to sort a list">Ordina</string>
     <string name="time_jump" comment="Time selector dropdown to show scrobbles from a specific time">Salto temporale</string>
     <string name="listeners" comment="number of unique users who scrobbled">Ascoltatori</string>
-    <string name="scrobbles">Scrobbling</string>
+    <string name="scrobbles">Scrobble</string>
     <string name="collapse" comment="(view only a few items)">Riduci</string>
     <string name="expand" comment="(view all items)">Espandi</string>
     <string name="user_loved" formatted="true" comment="%1= username">%1$s l'ha aggiunto ai preferiti</string>
@@ -376,10 +376,35 @@
     <string name="when_not_using" formatted="true" comment="%1$s is the web service or media player name">Quando non si utilizza %1$s</string>
     <string name="as_text" comment="Like copy as text, but in short">Come testo</string>
     <string name="automation_cli">Argomenti della riga di comando</string>
+    <string name="album_art_now_playing_desc">Richiede il login a last.fm</string>
     <string name="spotify_consent">Recuperare le immagini degli artisti da Spotify?</string>
+    <string name="discord_app_name" comment="usually the media player app name, shown in discord rich presence">Nome app</string>
+    <string name="move_up" comment="Screen reader text for drag and drop reordering">Muovi in alto</string>
+    <string name="move_down" comment="Screen reader text for drag and drop reordering">Muovi in basso</string>
+    <string name="at_least" formatted="true" comment="%1$s=some number">Almeno %1$s</string>
+    <string name="code_will_be_sent" formatted="true" comment="%1$s is either Ko-Fi or BuyMeACoffee, %2$s is the donation amount">Il codice verrà inviato all'indirizzo mail associato al tuo %1$s account, se donato in precedenza %2$s</string>
+    <string name="proxy" comment="network proxy">Proxy</string>
+    <string name="system" comment="system default settings">Sistema</string>
+    <string name="host" comment="proxy host">Host</string>
+    <string name="port" comment="proxy port">Porta di rete</string>
+    <string name="scanning" comment="finds other instances of Pano Scrobbler import server on the local network">Scansione</string>
+    <string name="missing_local_network_permission">Questa funzione richiede la connessione alla rete locale</string>
+    <string name="add_exception" comment="as in adding an exception to a rule or setting">Aggiungi un'eccezione</string>
+    <string name="upto_n" formatted="true" comment="%1 is a number">Fino a %1$d</string>
+    <string name="add_to_app_launcher">Aggiungi una scorciatoia al launcher dell'applicazione</string>
+    <string name="persistent_noti_fgs" comment="Actually displays a persistent notification on android when enabled">Mantieni in vita lo scrobbler anche in background</string>
+    <string name="supports_ambient_apps" formatted="true" comment="%1 = comma-separated list of music recognition apps">Supporta anche app di riconoscimento musica come %1$s</string>
+    <string name="cache" comment="as a noun">Cache</string>
+    <string name="edit_continue_simple" comment="a toggle in the normal edits screen">Se presente, continua editando con le regole di regex &amp; i preset</string>
+    <string name="edit_continue_regex" comment="a toggle in the regex edits screen">Se presenti, continua editando con altre regole di regex &amp; i preset</string>
+    <string name="pause_for" comment="Pause scrobbling for a some time">In pausa per</string>
+    <string name="button_url" comment="used for the button in discord rich presence">URL</string>
     <string name="websites" comment="websites that user is scrobbling from">Siti web</string>
     <string name="websites_desc">Si applica a tutti i lettori di media abilitati che segnalano la pagina URL via MPRIS.</string>
-    <string name="unsupported_api" comment="currently used for custom ListenBrainz-like and last.fm-like logins. This is displayed when custom ones does not support the full feature set">Questo API potrebbe non essere supportato dal server. Vedi sul sito.</string>
+    <string name="forget_checked_websites" comment="Forget enabled/allowlisted websites">Dimentica i siti web visitati</string>
+    <string name="last_error" comment="most recent error, used for pending scrobbles as of now">Ultimo errore</string>
+    <string name="rate_limit_warn">Accumulare troppi scrobble in un giorno potrebbe tradursi in un warn e conseguente rifiuto di essi da parte del servizio di scrobbling.</string>
+    <string name="unsupported_api" comment="currently used for custom ListenBrainz-like and last.fm-like logins. This is displayed when custom ones does not support the full feature set">Questo API potrebbe non essere supportato dal server. Controlla sul sito.</string>
     <string name="get_pro">Sostieni questa app</string>
     <string name="one_time_purchase">Solo una volta</string>
     <string name="help">Aiuto</string>

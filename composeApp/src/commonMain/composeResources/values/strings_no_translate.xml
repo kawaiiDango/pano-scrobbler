@@ -13,7 +13,6 @@
     <string name="itunes" translatable="false">iTunes</string>
     <string name="apple_music" translatable="false">Apple Music</string>
     <string name="deezer" translatable="false">Deezer</string>
-    <string name="tidal_steelseries" translatable="false">Tidal's SteelSeries Engine API</string>
     <string name="tidal" translatable="false">Tidal</string>
     <string name="yt_music" translatable="false">YouTube Music</string>
     <string name="bandcamp" translatable="false">Bandcamp</string>

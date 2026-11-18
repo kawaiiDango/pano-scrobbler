@@ -18,8 +18,6 @@ import pano_scrobbler.composeapp.generated.resources.pref_check_updates
 import pano_scrobbler.composeapp.generated.resources.pref_fetch_missing_album
 import pano_scrobbler.composeapp.generated.resources.pref_notify_updates
 import pano_scrobbler.composeapp.generated.resources.run_on_start
-import pano_scrobbler.composeapp.generated.resources.tidal
-import pano_scrobbler.composeapp.generated.resources.tidal_steelseries
 import pano_scrobbler.composeapp.generated.resources.when_using
 
 actual object PlatformSpecificPrefs {
@@ -83,26 +81,6 @@ actual object PlatformSpecificPrefs {
                         val snackbarData = PanoSnackbarVisuals(doneString)
                         Stuff.globalSnackbarFlow.tryEmit(snackbarData)
                     }
-                )
-            }
-        }
-    }
-
-    actual fun tidalSteelSeries(filteredItem: FilteredItem, enabled: Boolean) {
-        if (DesktopStuff.IS_WINDOWS) {
-            filteredItem(
-                "tidal_steelseries",
-                Res.string.pref_fetch_missing_album,
-                Res.string.tidal_steelseries
-            ) { title ->
-                SwitchPref(
-                    text = title,
-                    summary = stringResource(
-                        Res.string.when_using,
-                        stringResource(Res.string.tidal)
-                    ),
-                    value = enabled,
-                    copyToSave = { copy(tidalSteelSeriesApi = it) }
                 )
             }
         }

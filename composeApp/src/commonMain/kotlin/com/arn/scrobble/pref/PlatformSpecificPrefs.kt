@@ -15,8 +15,6 @@ expect object PlatformSpecificPrefs {
 
     fun prefAutostart(filteredItem: FilteredItem)
     fun prefAddToAppLauncher(filteredItem: FilteredItem)
-    fun tidalSteelSeries(filteredItem: FilteredItem, enabled: Boolean)
-
     fun deezerApi(filteredItem: FilteredItem, enabled: Boolean)
 
     fun updateCheck(

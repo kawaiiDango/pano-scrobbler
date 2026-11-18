@@ -124,7 +124,6 @@ data class MainPrefs(
     private val itunesCountry: String? = null,
     val spotifyApi: Boolean = false,
     private val spotifyCountry: String? = null,
-    val tidalSteelSeriesApi: Boolean = true,
     val deezerApi: Boolean = true,
     val lastfmApiAlways: Boolean = false,
     private val logToFileOnAndroidSince: Long = -1,
@@ -221,7 +220,6 @@ data class MainPrefs(
         val regexPresetsApps: Map<String, Set<String>> = defaultMainPrefs.regexPresetsApps,
         val spotifyApi: Boolean = defaultMainPrefs.spotifyApi,
         val spotifyCountry: String? = defaultMainPrefs.spotifyCountry,
-        val tidalSteelSeriesApi: Boolean = defaultMainPrefs.tidalSteelSeriesApi,
         val deezerApi: Boolean = defaultMainPrefs.deezerApi,
         val lastfmApiAlways: Boolean = defaultMainPrefs.lastfmApiAlways,
         val discordRpc: DiscordRpcPrefs = defaultMainPrefs.discordRpc,
@@ -303,7 +301,6 @@ data class MainPrefs(
         discordRpc = prefs.discordRpc,
         spotifyApi = prefs.spotifyApi,
         spotifyCountry = prefs.spotifyCountry,
-        tidalSteelSeriesApi = prefs.tidalSteelSeriesApi,
         deezerApi = prefs.deezerApi,
         lastfmApiAlways = prefs.lastfmApiAlways,
     )
@@ -338,7 +335,6 @@ data class MainPrefs(
         discordRpc = discordRpc,
         spotifyApi = spotifyApi,
         spotifyCountry = spotifyCountry,
-        tidalSteelSeriesApi = tidalSteelSeriesApi,
         deezerApi = deezerApi,
         lastfmApiAlways = lastfmApiAlways,
     )

@@ -7,7 +7,6 @@ import com.arn.scrobble.api.lastfm.Album
 import com.arn.scrobble.api.lastfm.Artist
 import com.arn.scrobble.api.lastfm.ScrobbleData
 import com.arn.scrobble.api.lastfm.Track
-import com.arn.scrobble.api.steelseries.SteelSeriesReceiverServer
 import com.arn.scrobble.db.BlockPlayerAction
 import com.arn.scrobble.db.BlockedMetadataDao.Companion.getBlockedEntry
 import com.arn.scrobble.db.PanoDb
@@ -257,18 +256,6 @@ object ScrobbleEverywhere {
                             )
                     ) -> {
                 return fetchFromDeezer(scrobbleData)
-            }
-
-            PlatformStuff.mainPrefs.data.map { it.tidalSteelSeriesApi }.first() && (
-                    scrobbleData.appId == Stuff.PACKAGE_TIDAL_WIN ||
-                            scrobbleData.appId == Stuff.PACKAGE_TIDAL_WIN_EXE ||
-                            scrobbleData.appId.equals(
-                                Stuff.PACKAGE_TIDAL_WIN_STORE,
-                                ignoreCase = true
-                            )
-                    ) -> {
-
-                return SteelSeriesReceiverServer.getAdditionalData(scrobbleData)
             }
         }
 

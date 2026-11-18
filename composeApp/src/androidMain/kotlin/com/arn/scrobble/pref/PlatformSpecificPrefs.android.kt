@@ -153,9 +153,6 @@ actual object PlatformSpecificPrefs {
 
     actual fun prefAddToAppLauncher(filteredItem: FilteredItem) {}
 
-    actual fun tidalSteelSeries(filteredItem: FilteredItem, enabled: Boolean) {
-    }
-
     actual fun deezerApi(filteredItem: FilteredItem, enabled: Boolean) {
     }
 

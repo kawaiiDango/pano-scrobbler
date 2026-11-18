@@ -2,12 +2,10 @@ package com.arn.scrobble.media
 
 import co.touchlab.kermit.Logger
 import com.arn.scrobble.PanoNativeComponents
-import com.arn.scrobble.api.steelseries.SteelSeriesReceiverServer
 import com.arn.scrobble.discordrpc.DiscordRpc
 import com.arn.scrobble.utils.DesktopStuff
 import com.arn.scrobble.utils.PanoNotifications
 import com.arn.scrobble.utils.PlatformStuff
-import com.arn.scrobble.utils.Stuff
 import com.arn.scrobble.utils.Stuff.stateInWithCache
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
@@ -98,13 +96,6 @@ class DesktopMediaListener(
 
         // Now remove old sessions that are no longer active.
         val shouldScrobbleSessionsAppIds = shouldScrobbleSessions.map { it.rawAppId }.toSet()
-
-        // stop server when tidal stops
-        if (!(Stuff.PACKAGE_TIDAL_WIN in shouldScrobbleSessionsAppIds ||
-                    Stuff.PACKAGE_TIDAL_WIN_EXE in shouldScrobbleSessionsAppIds ||
-                    Stuff.PACKAGE_TIDAL_WIN_STORE in shouldScrobbleSessionsAppIds)
-        )
-            SteelSeriesReceiverServer.stopServer()
 
         removeSessions(shouldScrobbleSessionsAppIds)
     }

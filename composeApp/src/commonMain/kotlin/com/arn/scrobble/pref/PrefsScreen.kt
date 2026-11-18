@@ -192,7 +192,6 @@ fun PrefsScreen(
     val locale by LocaleUtils.locale.collectAsStateWithLifecycle()
     val lastfmApiAlways by mainPrefs.data.collectAsStateWithInitialValue { it.lastfmApiAlways }
     val fetchAlbum by mainPrefs.data.collectAsStateWithInitialValue { it.fetchAlbum }
-    val tidalSteelSeries by mainPrefs.data.collectAsStateWithInitialValue { it.tidalSteelSeriesApi }
     val spotifyArtistSearchApproximate by
     mainPrefs.data.collectAsStateWithInitialValue { it.spotifyArtistSearchApproximate }
     val preventDuplicateAmbientScrobbles by
@@ -904,8 +903,6 @@ fun PrefsScreen(
         }
 
         PlatformSpecificPrefs.deezerApi(::filteredItem, deezerApi)
-
-        PlatformSpecificPrefs.tidalSteelSeries(::filteredItem, tidalSteelSeries)
 
         filteredHeader("languages", Res.string.pref_locale, Icons.Translate)
 

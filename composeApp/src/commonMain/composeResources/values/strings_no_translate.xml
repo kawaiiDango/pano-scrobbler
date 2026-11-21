@@ -43,11 +43,9 @@
 
     <!--  strings for unfinalized stuff  -->
 
-    <string name="alpha_notice" comment="transparency and blur effect in theme">Looks best with higher contrast and blur.</string>
-    <string name="blur_notice" comment="transparency and blur effect in theme">Blur needs Windows 11, KDE or Android 12+ on supported hardware</string>
-    <string name="blur" comment="blur effect in theme">Blur</string>
-    <string name="blur_main_window" comment="os level blur effect behind the main window">Cross-app</string>
-    <string name="blur_sub_window" comment="blur effect within the app">In-app</string>
+    <string name="blur_notice" comment="transparency and blur effect in theme">Blur looks best with higher contrast. Needs Windows 11, KDE or Android 12+ on supported hardware</string>
+    <string name="blur_main_window" comment="os level blur effect behind the main window">Window blur</string>
+    <string name="blur_sub_window" comment="blur effect within the app">In-app blur</string>
     <string name="minimize" comment="minimize the window on desktop">Minimize</string>
     <string name="palette_tonal_spot">Pastel</string>
     <string name="palette_expressive">Bold</string>
@@ -62,6 +60,9 @@
     <string name="wiki_lang_selector" comment="artist/album/track wiki">Last.fm wiki languages</string>
     <string name="notification_access_tv">This setting is usually at Apps > Special app access > Notification access</string>
     <string name="supports_ambient_apps_desc">Requires notifications from these apps to be enabled.</string>
+    <string name="blur" comment="blur effect in theme">Blur</string>
+    <string name="pref_link_rating_to_loved">Liking a track on the media player also loves it on Pano Scrobbler</string>
+    <string name="apps_that_support_this">For apps that support this</string>
 
     <string name="automation_cp_info">For Tasker, use Action > SQL Query. Set the mode to "URI Formatted", put any name in "Variable Array" and URI to one of these.</string>
     <string name="automation_replace_app_id" formatted="true" comment="%1$s is the literal text package_name on Android, APP_ID or MPRIS_ID on desktop">Replace %1$s with that of the app.</string>

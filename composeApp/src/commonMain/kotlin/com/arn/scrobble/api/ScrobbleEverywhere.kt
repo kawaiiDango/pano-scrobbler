@@ -247,7 +247,8 @@ object ScrobbleEverywhere {
         canRequest: suspend () -> Boolean = ::throttledRequest,
     ): AdditionalMetadataResult {
         when {
-            PlatformStuff.mainPrefs.data.map { it.deezerApi }.first() && (
+            scrobbleData.album.isNullOrEmpty() &&
+                    PlatformStuff.mainPrefs.data.map { it.deezerApi }.first() && (
                     scrobbleData.appId == Stuff.PACKAGE_DEEZER_WIN ||
                             scrobbleData.appId == Stuff.PACKAGE_DEEZER_WIN_EXE ||
                             scrobbleData.appId.equals(

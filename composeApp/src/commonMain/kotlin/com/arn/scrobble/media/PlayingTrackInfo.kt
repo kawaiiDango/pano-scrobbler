@@ -83,6 +83,9 @@ class PlayingTrackInfo(
     var userLoved: Boolean = false
         private set
 
+    var userLovedMayEcho: Boolean = false
+        private set
+
     // cached values
     private var timelineStartTime: Long = cachedTrackInfo?.timelineStartTime ?: 0L
     var playStartTime: Long = cachedTrackInfo?.playStartTime ?: 0L
@@ -177,6 +180,7 @@ class PlayingTrackInfo(
             album = MetadataUtils.sanitizeAlbum(origAlbum)
             albumArtist = MetadataUtils.sanitizeAlbumArtist(origAlbumArtist)
             userLoved = false
+            userLovedMayEcho = false
             scrobbledState = ScrobbledState.PREPARED
         }
 
@@ -188,8 +192,9 @@ class PlayingTrackInfo(
             segmentStartTime = System.currentTimeMillis()
     }
 
-    fun updateUserProps(userLoved: Boolean) {
+    fun loved(userLoved: Boolean, mayEcho: Boolean) {
         this.userLoved = userLoved
+        this.userLovedMayEcho = mayEcho
     }
 
     fun resetTimePlayed() {
@@ -264,6 +269,7 @@ class PlayingTrackInfo(
         artist = sd.artist
         albumArtist = sd.albumArtist.orEmpty()
         userLoved = loved
+        userLovedMayEcho = false
 
         scrobbledState = if (additionalMetadataFetched)
             ScrobbledState.ADDITIONAL_METADATA_FETCHED
@@ -285,6 +291,6 @@ class PlayingTrackInfo(
     }
 
     override fun toString(): String {
-        return "PlayingTrackInfo(appId='$appId', notiKey='$notiKey', title='$title', origTitle='$origTitle', album='$album', origAlbum='$origAlbum', artist='$artist', origArtist='$origArtist', albumArtist='$albumArtist', origAlbumArtist='$origAlbumArtist', trackNumber=$trackNumber, artUrl=$artUrlState, normalizedUrlHost=$normalizedUrlHost, msid=$msid, durationMillis=$durationMillis, hash=${hash.toHexString()}, isPlaying=$isPlaying, userLoved=$userLoved, timelineStartTime=$timelineStartTime, playStartTime=$playStartTime, scrobbledState=$scrobbledState, timePlayed=$timePlayed, lastScrobbleHash=${lastScrobbleHash.toHexString()})"
+        return "PlayingTrackInfo(appId='$appId', notiKey='$notiKey', title='$title', origTitle='$origTitle', album='$album', origAlbum='$origAlbum', artist='$artist', origArtist='$origArtist', albumArtist='$albumArtist', origAlbumArtist='$origAlbumArtist', trackNumber=$trackNumber, artUrl=$artUrlState, normalizedUrlHost=$normalizedUrlHost, msid=$msid, durationMillis=$durationMillis, hash=${hash.toHexString()}, isPlaying=$isPlaying, userLoved=$userLoved, userLovedMayEcho=$userLovedMayEcho, timelineStartTime=$timelineStartTime, playStartTime=$playStartTime, scrobbledState=$scrobbledState, timePlayed=$timePlayed, lastScrobbleHash=${lastScrobbleHash.toHexString()})"
     }
 }

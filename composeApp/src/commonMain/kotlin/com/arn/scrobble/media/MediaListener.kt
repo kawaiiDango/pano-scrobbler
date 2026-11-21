@@ -299,6 +299,8 @@ abstract class MediaListener(
                 }
             }
 
+            checkRatingChanged(sameAsOld)
+
             lastDuration = metadata.duration
         }
 
@@ -430,6 +432,8 @@ abstract class MediaListener(
         open fun stop() {
             DiscordRpc.paused(trackInfo.hash)
         }
+
+        protected open fun checkRatingChanged(trackIsSame: Boolean) {}
 
         abstract fun love()
         abstract fun unlove()

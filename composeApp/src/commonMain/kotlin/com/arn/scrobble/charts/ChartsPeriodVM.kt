@@ -113,12 +113,12 @@ class ChartsPeriodVM : ViewModel() {
                         periodType == TimePeriodType.YEAR ||
                         periodType == TimePeriodType.CONTINUOUS && selectedPeriod.lastfmPeriod == null)
             ) {
-                val selectedPeriodStart =
-                    selectedPeriod.lastfmPeriod?.toTimePeriod()?.start ?: selectedPeriod.start
+                val selectedPeriodEnd =
+                    selectedPeriod.lastfmPeriod?.toTimePeriod()?.end ?: selectedPeriod.end
                 val insertionIdx = timePeriods.binarySearch { period ->
                     // list is descending, compare in reverse
-                    val periodStart = period.lastfmPeriod?.toTimePeriod()?.start ?: period.start
-                    selectedPeriodStart.compareTo(periodStart)
+                    val periodEnd = period.lastfmPeriod?.toTimePeriod()?.end ?: period.end
+                    selectedPeriodEnd.compareTo(periodEnd)
                 }
 
                 if (insertionIdx >= 0) {
@@ -127,8 +127,8 @@ class ChartsPeriodVM : ViewModel() {
                     val hi = -insertionIdx - 1
                     val lo = hi - 1
 
-                    timePeriods.getOrNull(hi)
-                        ?: timePeriods.getOrNull(lo)
+                    timePeriods.getOrNull(lo)
+                        ?: timePeriods.getOrNull(hi)
                         ?: timePeriods.firstOrNull()
                 }
             } else if (selectedPeriod !in timePeriods) {

@@ -33,6 +33,8 @@ object PlayerActions {
         Stuff.PACKAGE_APPLE_MUSIC to CustomRatingAction("com.apple.android.music.playback.action.FAVORITE"),
         Stuff.PACKAGE_TIDAL to CustomRatingAction("com.aspiro.tidal.player.action.TOGGLE_FAVORITE"),
         Stuff.PACKAGE_OMNIA to CustomRatingAction("action_favorite", threshold = 0.15f),
+        Stuff.PACKAGE_BITCHORD to CustomRatingAction("com.music.bitchord.action.TOGGLE_FAVORITE"),
+        Stuff.PACKAGE_DIAL to CustomRatingAction("com.music.bitchord.action.TOGGLE_FAVORITE"),
     )
 
     // default rating tested working on:

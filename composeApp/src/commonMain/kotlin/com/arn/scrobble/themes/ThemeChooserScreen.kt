@@ -60,16 +60,13 @@ import com.arn.scrobble.utils.Stuff.collectAsStateWithInitialValue
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
 import pano_scrobbler.composeapp.generated.resources.Res
-import pano_scrobbler.composeapp.generated.resources.alpha_notice
 import pano_scrobbler.composeapp.generated.resources.appwidget_alpha
 import pano_scrobbler.composeapp.generated.resources.auto
-import pano_scrobbler.composeapp.generated.resources.blur
 import pano_scrobbler.composeapp.generated.resources.blur_main_window
 import pano_scrobbler.composeapp.generated.resources.blur_notice
 import pano_scrobbler.composeapp.generated.resources.blur_sub_window
 import pano_scrobbler.composeapp.generated.resources.contrast
 import pano_scrobbler.composeapp.generated.resources.dark
-import pano_scrobbler.composeapp.generated.resources.experimental
 import pano_scrobbler.composeapp.generated.resources.high
 import pano_scrobbler.composeapp.generated.resources.light
 import pano_scrobbler.composeapp.generated.resources.low
@@ -289,16 +286,16 @@ fun ThemeChooserScreen(
             )
         }
 
-        if (enableExperimental && !PlatformStuff.isTv) {
+        if (!PlatformStuff.isTv) {
             Column(
                 modifier = Modifier
                     .align(Alignment.Start)
             ) {
-                Text(
-                    text = "ⓘ " + stringResource(Res.string.experimental) + ":",
-                    modifier = Modifier
-                        .padding(horizontal = 16.dp)
-                )
+//                Text(
+//                    text = stringResource(Res.string.experimental) + ":",
+//                    modifier = Modifier
+//                        .padding(horizontal = 16.dp)
+//                )
 
                 if (PlatformStuff.supportsBlur) {
                     Row(
@@ -308,10 +305,10 @@ fun ThemeChooserScreen(
 //                            .fillMaxWidth()
                             .padding(horizontal = 16.dp)
                     ) {
-                        Text(
-                            text = stringResource(Res.string.blur),
-                            style = MaterialTheme.typography.bodyLarge,
-                        )
+//                        Text(
+//                            text = stringResource(Res.string.blur),
+//                            style = MaterialTheme.typography.bodyLarge,
+//                        )
 
                         LabeledCheckbox(
                             text = stringResource(Res.string.blur_main_window),
@@ -334,20 +331,22 @@ fun ThemeChooserScreen(
                                 .width(IntrinsicSize.Max)
                         )
 
-                        LabeledCheckbox(
-                            text = stringResource(Res.string.blur_sub_window),
-                            checked = themeAttributes.blurSubWindow,
-                            enabled = isLicenseValid,
-                            maxLines = 1,
-                            onCheckedChange = {
-                                val newState = !themeAttributes.blurSubWindow
-                                save {
-                                    copy(themeBlurSubWindow = newState)
-                                }
-                            },
-                            modifier = Modifier
-                                .width(IntrinsicSize.Max)
-                        )
+                        if (enableExperimental) {
+                            LabeledCheckbox(
+                                text = stringResource(Res.string.blur_sub_window),
+                                checked = themeAttributes.blurSubWindow,
+                                enabled = isLicenseValid,
+                                maxLines = 1,
+                                onCheckedChange = {
+                                    val newState = !themeAttributes.blurSubWindow
+                                    save {
+                                        copy(themeBlurSubWindow = newState)
+                                    }
+                                },
+                                modifier = Modifier
+                                    .width(IntrinsicSize.Max)
+                            )
+                        }
                     }
                 }
 
@@ -370,7 +369,7 @@ fun ThemeChooserScreen(
                 )
 
                 Text(
-                    text = stringResource(Res.string.alpha_notice) + "\n" + stringResource(Res.string.blur_notice),
+                    text = stringResource(Res.string.blur_notice),
                     style = MaterialTheme.typography.bodyMedium,
                     modifier = Modifier
                         .padding(horizontal = 16.dp)

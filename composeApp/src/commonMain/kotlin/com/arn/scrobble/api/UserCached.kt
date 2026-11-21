@@ -25,13 +25,14 @@ data class UserCached(
         "UserCached(hashcode=${hashCode()}, order=$order, lastUpdated=$lastUpdated)"
 
     companion object {
-        fun User.toUserCached() = UserCached(
+        fun User.toUserCached(order: Int? = null) = UserCached(
             name = name,
             url = url,
             realname = realname ?: "",
             country = country ?: "None", // gnufm
             registeredTime = registered ?: Stuff.TIME_2002, // gnufm
-            largeImage = image?.medium ?: ""
+            largeImage = image?.medium ?: "",
+            order = order,
         )
     }
 }

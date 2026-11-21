@@ -155,6 +155,8 @@ object Stuff {
     const val PACKAGE_APPLE_MUSIC_CLASSICAL = "com.apple.android.music.classical"
     const val PACKAGE_TIDAL = "com.aspiro.tidal"
     const val PACKAGE_OMNIA = "com.rhmsoft.omnia"
+    const val PACKAGE_BITCHORD = "com.music.bitchord"
+    const val PACKAGE_DIAL = "com.steeben.dial"
     const val PACKAGE_CHROMECAST_PLAYER = "com.google.android.apps.mediashell"
     const val PACKAGE_APPLE_MUSIC_WIN_EXE = "AppleMusic.exe"
     const val PACKAGE_APPLE_MUSIC_WIN_STORE = "AppleInc.AppleMusicWin_nzyj5cx40ttqa!App"

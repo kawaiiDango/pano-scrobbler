@@ -86,6 +86,7 @@ import pano_scrobbler.composeapp.generated.resources.Res
 import pano_scrobbler.composeapp.generated.resources.album_art
 import pano_scrobbler.composeapp.generated.resources.also_available_on
 import pano_scrobbler.composeapp.generated.resources.android
+import pano_scrobbler.composeapp.generated.resources.apps_that_support_this
 import pano_scrobbler.composeapp.generated.resources.artist_image
 import pano_scrobbler.composeapp.generated.resources.auto
 import pano_scrobbler.composeapp.generated.resources.automation
@@ -124,6 +125,7 @@ import pano_scrobbler.composeapp.generated.resources.pref_first_day_of_week
 import pano_scrobbler.composeapp.generated.resources.pref_imexport
 import pano_scrobbler.composeapp.generated.resources.pref_import
 import pano_scrobbler.composeapp.generated.resources.pref_link_heart_button_rating
+import pano_scrobbler.composeapp.generated.resources.pref_link_rating_to_loved
 import pano_scrobbler.composeapp.generated.resources.pref_locale
 import pano_scrobbler.composeapp.generated.resources.pref_master
 import pano_scrobbler.composeapp.generated.resources.pref_misc
@@ -135,7 +137,6 @@ import pano_scrobbler.composeapp.generated.resources.pref_prevent_duplicate_ambi
 import pano_scrobbler.composeapp.generated.resources.pref_privacy_policy
 import pano_scrobbler.composeapp.generated.resources.pref_scrobble_from
 import pano_scrobbler.composeapp.generated.resources.pref_search_in_source
-import pano_scrobbler.composeapp.generated.resources.pref_search_in_source_desc
 import pano_scrobbler.composeapp.generated.resources.pref_search_url_template
 import pano_scrobbler.composeapp.generated.resources.pref_show_scrobble_sources
 import pano_scrobbler.composeapp.generated.resources.pref_show_scrobble_sources_desc
@@ -188,6 +189,7 @@ fun PrefsScreen(
         p.searchUrlTemplate.takeIf { !p.usePlayFromSearchP }
     }
     val linkHeartButtonToRating by mainPrefs.data.collectAsStateWithInitialValue { it.linkHeartButtonToRating }
+    val linkRatingToLoved by mainPrefs.data.collectAsStateWithInitialValue { it.linkRatingToLoved }
     val firstDayOfWeek by mainPrefs.data.collectAsStateWithInitialValue { it.firstDayOfWeek }
     val locale by LocaleUtils.locale.collectAsStateWithLifecycle()
     val lastfmApiAlways by mainPrefs.data.collectAsStateWithInitialValue { it.lastfmApiAlways }
@@ -756,7 +758,7 @@ fun PrefsScreen(
             ) { title ->
                 SwitchPref(
                     text = title,
-                    summary = stringResource(Res.string.pref_search_in_source_desc),
+                    summary = stringResource(Res.string.apps_that_support_this),
                     value = searchInSource,
                     onNavigateToBilling = onNavigateToBilling.takeIf { !isLicenseValid },
                     enabled = showScrobbleSources,
@@ -782,15 +784,30 @@ fun PrefsScreen(
 
         if (!PlatformStuff.isTv && !PlatformStuff.isDesktop) {
             filteredItem(
-                "heart_button",
+                "heart_button_rating",
                 Res.string.pref_link_heart_button_rating
             ) { title ->
                 SwitchPref(
                     text = title,
-                    summary = stringResource(Res.string.pref_search_in_source_desc),
+                    summary = stringResource(Res.string.apps_that_support_this),
                     value = linkHeartButtonToRating,
                     onNavigateToBilling = onNavigateToBilling.takeIf { !isLicenseValid },
                     copyToSave = { copy(linkHeartButtonToRating = it) }
+                )
+            }
+        }
+
+        if (!PlatformStuff.isDesktop) {
+            filteredItem(
+                "rating_heart_button",
+                Res.string.pref_link_rating_to_loved
+            ) { title ->
+                SwitchPref(
+                    text = title,
+                    summary = stringResource(Res.string.apps_that_support_this),
+                    value = linkRatingToLoved,
+                    onNavigateToBilling = onNavigateToBilling.takeIf { !isLicenseValid },
+                    copyToSave = { copy(linkRatingToLoved = it) }
                 )
             }
         }

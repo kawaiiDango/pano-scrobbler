@@ -190,6 +190,7 @@ suspend fun listenForPlayingTrackEvents(
                         }
 
                         PlayingTrackNotifyEvent.TrackScrobbleLocked.LockState.SCROBBLED -> {
+                            scrobbleQueue.setLockedHash(null)
                             scrobbleQueue.remove(event.hash)
                             val trackInfo = mediaListener.findTrackerByHash(event.hash)?.trackInfo
 
@@ -197,7 +198,6 @@ suspend fun listenForPlayingTrackEvents(
                                 trackInfo.scrobbled()
                                 PanoNotifications.removeNotificationByKey(trackInfo.notiKey)
                             }
-                            scrobbleQueue.setLockedHash(null)
                         }
                     }
                 }
@@ -244,20 +244,19 @@ suspend fun listenForPlayingTrackEvents(
                     return@collect
                 }
 
-                tracker.trackInfo.updateUserProps(userLoved = loved)
-
                 val linkHeartButtonToRating =
-                    PlatformStuff.mainPrefs.data.map { it.linkHeartButtonToRating }.first()
-
-                if (linkHeartButtonToRating &&
                     VariantStuff.billingRepository.licenseState.filterNot { it == LicenseState.UNKNOWN }
-                        .first() == LicenseState.VALID
-                ) {
+                        .first() == LicenseState.VALID &&
+                            PlatformStuff.mainPrefs.data.map { it.linkHeartButtonToRating }.first()
+
+                if (linkHeartButtonToRating) {
                     if (loved)
                         tracker.love()
                     else
                         tracker.unlove()
                 }
+
+                tracker.trackInfo.loved(userLoved = loved, mayEcho = linkHeartButtonToRating)
 
                 globalTrackEventFlow.emit(tracker.trackInfo.toTrackPlayingEvent())
             }

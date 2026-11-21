@@ -26,6 +26,7 @@ import com.arn.scrobble.utils.VariantStuff
 
 @Composable
 fun AppTheme(
+    blurSubWindowPref: Boolean = false,
     onInitDone: () -> Unit = {},
     content: @Composable () -> Unit,
 ) {
@@ -46,9 +47,9 @@ fun AppTheme(
         it.themeBlurMainWindow
     }
     var osWindowBlur by rememberSaveable { mutableStateOf(false) }
-    val blurSubWindowPref by PlatformStuff.mainPrefs.data.collectAsStateWithInitialValue {
-        it.themeBlurSubWindow
-    }
+//    val blurSubWindowPref by PlatformStuff.mainPrefs.data.collectAsStateWithInitialValue {
+//        it.themeBlurSubWindow
+//    }
     val blurMainWindow by remember(blurMainWindowPref, osWindowBlur) {
         mutableStateOf(PlatformStuff.supportsBlur && blurMainWindowPref && osWindowBlur)
     }
@@ -215,7 +216,7 @@ private fun ColorScheme.withAlpha(alpha: Float, hasBlur: Boolean): ColorScheme {
     return copy(
         background = background.copy(alpha = alpha),
         surface = surface.copy(alpha = alpha),
-        surfaceContainerLow = surfaceContainerLow.copy(alpha = if (hasBlur) midAlpha else highAlpha),
+        surfaceContainerLow = surfaceContainerLow.copy(alpha = if (hasBlur) midAlpha else 1f), // bottom sheets
         surfaceContainerHigh = surfaceContainerHigh.copy(alpha = if (hasBlur) midAlpha else highAlpha),
         surfaceContainerHighest = surfaceContainerHighest.copy(alpha = if (hasBlur) midAlpha else highAlpha),
         surfaceContainer = surfaceContainer.copy(alpha = if (hasBlur) midAlpha else highAlpha),

@@ -34,7 +34,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.graphicsLayer
-import androidx.compose.ui.input.pointer.changedToDown
+import androidx.compose.ui.input.pointer.PointerEventPass
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
@@ -261,9 +261,11 @@ private fun Modifier.isDragHandle(onDragAllow: () -> Unit) =
     if (PlatformStuff.isDesktop)
         pointerInput(Unit) {
             awaitEachGesture {
-                val change = awaitFirstDown()
-                if (change.changedToDown())
-                    onDragAllow()
+                awaitFirstDown(
+                    requireUnconsumed = false, // the OutlinedToggleButton in Friends consumes it
+                    pass = PointerEventPass.Initial,
+                )
+                onDragAllow()
             }
         }
     else

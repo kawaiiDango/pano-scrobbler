@@ -25,6 +25,8 @@
 -dontwarn javax.annotation.**
 -dontwarn org.conscrypt.**
 -dontwarn org.slf4j.impl.StaticLoggerBinder
+# landed up in build/outputs/mapping/releaseGithub/missing_rules.txt
+-dontwarn java.lang.Runtime$Version
 
 # SIGSEGV https://issuetracker.google.com/issues/436756681
 -keep class okhttp3.internal.idn.IdnaMappingTable { *; }

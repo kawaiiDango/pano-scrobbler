@@ -25,6 +25,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
@@ -69,6 +70,7 @@ import com.arn.scrobble.utils.Stuff.collectAsStateWithInitialValue
 import com.arn.scrobble.utils.Stuff.setMidnight
 import com.arn.scrobble.utils.Stuff.timeToLocal
 import com.arn.scrobble.utils.Stuff.timeToUTC
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import org.jetbrains.compose.resources.PluralStringResource
@@ -388,15 +390,19 @@ fun TimePeriodSelectorRow(
 ) {
     val listState = rememberLazyListState()
     var selectedPeriodOffset by remember { mutableStateOf(IntOffset.Zero) }
-    var firstScrollDone by remember { mutableStateOf(false) }
+    var prevListIdx by remember { mutableStateOf<Int?>(null) }
 
-    LaunchedEffect(selectedPeriod) {
-        timePeriodsList.indexOf(selectedPeriod)
+    LaunchedEffect(selectedPeriod, listState) {
+        val idx = timePeriodsList.indexOf(selectedPeriod)
             .takeIf { it in timePeriodsList.indices }
-            ?.let { idx ->
-                val animate = firstScrollDone
-                firstScrollDone = true
-                listState.scrollToCenterItem(idx, animate = animate)
+        // Keep the selected item in the viewport
+        snapshotFlow { listState.layoutInfo.viewportSize }
+            .collectLatest {
+                if (idx != null) {
+                    val animate = prevListIdx != idx
+                    prevListIdx = idx
+                    listState.scrollToCenterItem(idx, animate = animate)
+                }
             }
     }
 

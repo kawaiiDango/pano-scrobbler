@@ -38,7 +38,6 @@ import androidx.compose.foundation.layout.ime
 import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.plus
-import androidx.compose.foundation.layout.requiredSize
 import androidx.compose.foundation.layout.safeContentPadding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.union
@@ -58,7 +57,9 @@ import androidx.compose.material3.FloatingToolbarDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
+import androidx.compose.material3.IconButtonDefaults.IconButtonWidthOption
 import androidx.compose.material3.LocalContentColor
+import androidx.compose.material3.LocalMinimumInteractiveComponentSize
 import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -156,6 +157,7 @@ import com.arn.scrobble.api.UserCached
 import com.arn.scrobble.charts.TimePeriodSelectorRow
 import com.arn.scrobble.icons.ArrowBackAutoMirrored
 import com.arn.scrobble.icons.Close
+import com.arn.scrobble.icons.Fullscreen
 import com.arn.scrobble.icons.Icons
 import com.arn.scrobble.icons.Minimize
 import com.arn.scrobble.icons.Search
@@ -210,6 +212,7 @@ import pano_scrobbler.composeapp.generated.resources.back
 import pano_scrobbler.composeapp.generated.resources.close
 import pano_scrobbler.composeapp.generated.resources.delete
 import pano_scrobbler.composeapp.generated.resources.download
+import pano_scrobbler.composeapp.generated.resources.expand
 import pano_scrobbler.composeapp.generated.resources.minimize
 import pano_scrobbler.composeapp.generated.resources.reload
 import pano_scrobbler.composeapp.generated.resources.update_available
@@ -1030,43 +1033,48 @@ private fun PanoTopAppBar(
     fun RowScope.ActionsContent() {
         if (windowTitleActions != null) {
             // show manual minimize, maximize, close buttons
-
-            val iconModifier = Modifier
-                .requiredSize(IconButtonDefaults.smallContainerSize())
-                .pointerHoverIcon(PointerIcon.Default)
-                .align(Alignment.Top)
-
-            IconButton(
-                shapes = IconButtonDefaults.shapes(),
-                onClick = windowTitleActions::minimize,
-                modifier = iconModifier
+            Row(
+                modifier = Modifier
+                    .align(Alignment.Top)
+                    .pointerHoverIcon(PointerIcon.Default)
             ) {
-                Icon(
-                    imageVector = Icons.Minimize,
-                    contentDescription = stringResource(Res.string.minimize),
-                )
-            }
+                CompositionLocalProvider(LocalMinimumInteractiveComponentSize provides 0.dp) { // removes padding between IconButtons
+                    val iconModifier = Modifier
+                        .size(IconButtonDefaults.smallContainerSize(IconButtonWidthOption.Narrow))
+                    val iconShapes = IconButtonDefaults.shapes()
+                    IconButton(
+                        shapes = iconShapes,
+                        onClick = windowTitleActions::minimize,
+                        modifier = iconModifier
+                    ) {
+                        Icon(
+                            imageVector = Icons.Minimize,
+                            contentDescription = stringResource(Res.string.minimize),
+                        )
+                    }
 
-//            IconButton(
-//                shapes = IconButtonDefaults.shapes(),
-//                onClick = windowTitleActions::maximizeRestore,
-//                modifier = iconModifier
-//            ) {
-//                Icon(
-//                    imageVector = Icons.Fullscreen,
-//                    contentDescription = stringResource(Res.string.expand)
-//                )
-//            }
+                    IconButton(
+                        shapes = iconShapes,
+                        onClick = windowTitleActions::maximizeRestore,
+                        modifier = iconModifier
+                    ) {
+                        Icon(
+                            imageVector = Icons.Fullscreen,
+                            contentDescription = stringResource(Res.string.expand)
+                        )
+                    }
 
-            IconButton(
-                shapes = IconButtonDefaults.shapes(),
-                onClick = windowTitleActions::close,
-                modifier = iconModifier
-            ) {
-                Icon(
-                    imageVector = Icons.Close,
-                    contentDescription = stringResource(Res.string.close)
-                )
+                    IconButton(
+                        shapes = iconShapes,
+                        onClick = windowTitleActions::close,
+                        modifier = iconModifier
+                    ) {
+                        Icon(
+                            imageVector = Icons.Close,
+                            contentDescription = stringResource(Res.string.close)
+                        )
+                    }
+                }
             }
         }
     }

@@ -1,6 +1,7 @@
 package com.arn.scrobble.media
 
 import android.media.MediaMetadata
+import android.media.Rating
 import androidx.core.net.toUri
 import com.arn.scrobble.api.listenbrainz.ListenBrainz
 import com.arn.scrobble.utils.MetadataUtils
@@ -18,6 +19,7 @@ actual fun transformMediaMetadata(
     var album = metadata.getString(MediaMetadata.METADATA_KEY_ALBUM)?.trim() ?: ""
     var title = metadata.getString(MediaMetadata.METADATA_KEY_TITLE)?.trim() ?: ""
     val trackNumber = metadata.getLong(MediaMetadata.METADATA_KEY_TRACK_NUMBER).toInt()
+    val userRating = metadata.getRating(MediaMetadata.METADATA_KEY_USER_RATING)
     // only remote images, used for the Discord Rich Presence
     val artUrl = arrayOf(
         MediaMetadata.METADATA_KEY_ART_URI,
@@ -175,6 +177,7 @@ actual fun transformMediaMetadata(
         duration = durationMillis,
         artUrl = artUrl,
         normalizedUrlHost = null,
+        userRating = userRating?.toFloat(),
         extraTags = extraTags
     )
 
@@ -198,6 +201,23 @@ private fun toRemoteImageUrl(uriString: String): String? {
     if (uri.getQueryParameter("_PROTOCOL_") != "https") return null
 
     return "https://$host${uri.encodedPath.orEmpty()}"
+}
+
+private fun Rating.toFloat(): Float? {
+    if (!isRated) return 0f
+
+    return when (ratingStyle) {
+        Rating.RATING_THUMB_UP_DOWN -> if (isThumbUp) 1f else 0f
+        Rating.RATING_HEART -> if (hasHeart()) 1f else 0f
+
+        // these can be -1 if unrated
+        Rating.RATING_3_STARS -> starRating / 3f
+        Rating.RATING_4_STARS -> starRating / 4f
+        Rating.RATING_5_STARS -> starRating / 5f
+        Rating.RATING_PERCENTAGE -> percentRating / 100f
+
+        else -> null
+    }
 }
 
 private const val METADATA_KEY_ADVERTISEMENT = "android.media.metadata.ADVERTISEMENT"

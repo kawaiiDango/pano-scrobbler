@@ -3,14 +3,17 @@ package com.arn.scrobble.edits
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.text.input.delete
 import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.foundation.text.input.setTextAndPlaceCursorAtEnd
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.FilledTonalButton
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -29,6 +32,7 @@ import com.arn.scrobble.db.BlockedMetadata
 import com.arn.scrobble.db.BlockedMetadataDao.Companion.insertLowerCase
 import com.arn.scrobble.db.PanoDb
 import com.arn.scrobble.icons.Block
+import com.arn.scrobble.icons.Check
 import com.arn.scrobble.icons.Icons
 import com.arn.scrobble.icons.SkipNext
 import com.arn.scrobble.icons.VolumeOffAutoMirrored
@@ -238,7 +242,7 @@ private fun BlockedMetadataAddContent(
 
         ErrorText(errorText)
 
-        OutlinedButton(
+        FilledTonalButton(
             shapes = ButtonDefaults.shapes(),
             onClick = {
                 if (!isLicenseValid) {
@@ -266,6 +270,12 @@ private fun BlockedMetadataAddContent(
             },
             modifier = Modifier.align(Alignment.End)
         ) {
+            Icon(
+                imageVector = Icons.Check,
+                contentDescription = null,
+                modifier = Modifier.size(ButtonDefaults.IconSize)
+            )
+            Spacer(Modifier.size(ButtonDefaults.IconSpacing))
             Text(text = stringResource(Res.string.block))
         }
     }

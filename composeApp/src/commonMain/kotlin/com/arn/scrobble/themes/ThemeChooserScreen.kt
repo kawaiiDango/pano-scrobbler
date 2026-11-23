@@ -363,7 +363,7 @@ fun ThemeChooserScreen(
                     default = null,
                     min = (MainPrefs.PREF_MIN_ALPHA * 100).toInt(),
                     max = (MainPrefs.PREF_MAX_ALPHA * 100).toInt(),
-                    increments = 5,
+                    increments = 1,
                     stringRepresentation = { "$it%" },
                     enabled = isLicenseValid,
                 )

@@ -3,13 +3,20 @@ package com.arn.scrobble.media
 
 import co.touchlab.kermit.Logger
 import com.arn.scrobble.BuildKonfig
+import com.arn.scrobble.api.ScrobbleEverywhere
+import com.arn.scrobble.billing.LicenseState
 import com.arn.scrobble.discordrpc.DiscordRpc
 import com.arn.scrobble.utils.PanoNotifications
 import com.arn.scrobble.utils.PlatformStuff
+import com.arn.scrobble.utils.Stuff
 import com.arn.scrobble.utils.Stuff.stateInWithCache
+import com.arn.scrobble.utils.VariantStuff
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.filterNot
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import kotlin.math.abs
@@ -196,7 +203,7 @@ abstract class MediaListener(
         var isMuted = false
         var lastDuration = trackInfo.durationMillis
             private set
-//        private var lastPosition = 0L
+        private var lastUserRating: Float? = null
 
         fun scrobble() {
             Logger.d { "playing: timePlayed=${trackInfo.timePlayed} title=${trackInfo.title} hash=${trackInfo.hash.toHexString()}" }
@@ -299,8 +306,9 @@ abstract class MediaListener(
                 }
             }
 
-            checkRatingChanged(sameAsOld)
+            checkRatingChanged(metadata.userRating, lastUserRating, sameAsOld)
 
+            lastUserRating = metadata.userRating
             lastDuration = metadata.duration
         }
 
@@ -410,6 +418,35 @@ abstract class MediaListener(
 
         }
 
+        private fun checkRatingChanged(newRating: Float?, oldRating: Float?, trackIsSame: Boolean) {
+            val ratingBool =
+                if (newRating != null && oldRating != null && newRating != oldRating && trackIsSame) {
+                    newRating >= 0.75f
+                } else {
+                    Logger.d { "newRating=$newRating, skipping" }
+                    return
+                }
+
+            if (trackInfo.userLovedMayEcho && trackInfo.userLoved != ratingBool || !trackInfo.userLovedMayEcho) {
+                Logger.d { "ratingEvent=$ratingBool" }
+                Stuff.appScope.launch(Dispatchers.IO) {
+                    val linkRatingToLoved =
+                        VariantStuff.billingRepository.licenseState.filterNot { it == LicenseState.UNKNOWN }
+                            .first() == LicenseState.VALID
+                                && PlatformStuff.mainPrefs.data.map { it.linkRatingToLoved }.first()
+                    if (linkRatingToLoved) {
+                        trackInfo.loved(userLoved = ratingBool, mayEcho = false)
+                        val trackPlaying = trackInfo.toTrackPlayingEvent()
+                        ScrobbleEverywhere.loveOrUnlove(
+                            trackPlaying.scrobbleData.toTrack().copy(msid = trackPlaying.msid),
+                            ratingBool
+                        )
+                        globalTrackEventFlow.emit(trackPlaying)
+                    }
+                }
+            }
+        }
+
         open fun pause() {
             if (lastPlaybackState == CommonPlaybackState.Playing) {
                 if (scrobbleQueue.has(trackInfo.lastScrobbleHash))
@@ -432,8 +469,6 @@ abstract class MediaListener(
         open fun stop() {
             DiscordRpc.paused(trackInfo.hash)
         }
-
-        protected open fun checkRatingChanged(trackIsSame: Boolean) {}
 
         abstract fun love()
         abstract fun unlove()

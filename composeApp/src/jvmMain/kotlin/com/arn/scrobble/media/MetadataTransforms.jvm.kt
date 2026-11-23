@@ -66,6 +66,7 @@ actual fun transformMediaMetadata(
         albumArtist = albumArtist,
         trackNumber = trackNumber,
         duration = durationMillis,
+        userRating = metadata.userRating,
         artUrl = metadata.artUrl,
         normalizedUrlHost = normalizedUrlHost,
     )

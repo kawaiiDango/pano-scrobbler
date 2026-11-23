@@ -148,7 +148,7 @@ class DiscordRpcAndroid(
             if (frame == null) return
             post {
                 if (currentCallback !== this@Callback) return@post // stale connection
-                Logger.withTag(TAG).d { "<- $frame" }
+//                Logger.withTag(TAG).d { "<- $frame" }
                 when (val decoded = decodeFrame(frame)) {
                     is RpcFrame.Ready -> {
                         ready = true
@@ -365,7 +365,7 @@ class DiscordRpcAndroid(
     private fun send(frame: String) {
         val conn = connection?.takeIf { ready } ?: return
         try {
-            Logger.withTag(TAG).d { "-> $frame" }
+//            Logger.withTag(TAG).d { "-> $frame" }
             conn.sendFrame(frame)
         } catch (e: RemoteException) {
             recordFailure(FailureKind.SERVICE_DIED)

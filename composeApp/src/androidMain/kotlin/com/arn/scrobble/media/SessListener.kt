@@ -3,7 +3,6 @@ package com.arn.scrobble.media
 import android.annotation.SuppressLint
 import android.media.AudioManager
 import android.media.MediaMetadata
-import android.media.Rating
 import android.media.session.MediaController
 import android.media.session.MediaSessionManager.OnActiveSessionsChangedListener
 import android.media.session.PlaybackState
@@ -11,8 +10,6 @@ import android.os.Build
 import android.os.Bundle
 import co.touchlab.kermit.Logger
 import com.arn.scrobble.BuildKonfig
-import com.arn.scrobble.api.ScrobbleEverywhere
-import com.arn.scrobble.billing.LicenseState
 import com.arn.scrobble.media.PlayerActions.love
 import com.arn.scrobble.media.PlayerActions.unlove
 import com.arn.scrobble.utils.AndroidStuff
@@ -22,14 +19,10 @@ import com.arn.scrobble.utils.PanoNotifications
 import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff
 import com.arn.scrobble.utils.Stuff.stateInWithCache
-import com.arn.scrobble.utils.VariantStuff
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.filterNot
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.getString
 import pano_scrobbler.composeapp.generated.resources.Res
@@ -206,9 +199,6 @@ class SessListener(
         trackInfo: PlayingTrackInfo,
     ) : SessionTracker(controller.sessionToken, trackInfo) {
 
-        private var lastRating: Rating? = null
-        private var ratingChangedTo: Boolean? = null
-
         override fun skip() {
             controller.transportControls.skipToNext()
 
@@ -241,50 +231,6 @@ class SessListener(
             }
         }
 
-        // null = take no action
-        private fun Rating.toBool(): Boolean? {
-            return when (ratingStyle) {
-                Rating.RATING_THUMB_UP_DOWN -> isThumbUp
-
-                Rating.RATING_HEART -> hasHeart()
-
-                Rating.RATING_3_STARS -> starRating == 3f
-
-                Rating.RATING_4_STARS -> starRating == 4f
-
-                Rating.RATING_5_STARS -> starRating >= 4f
-
-                Rating.RATING_PERCENTAGE -> percentRating >= 80f
-
-                else -> null
-            }
-        }
-
-        override fun checkRatingChanged(trackIsSame: Boolean) {
-            val ratingEvent = ratingChangedTo.takeIf { trackIsSame && it != null }
-
-            if (ratingEvent != null && (trackInfo.userLovedMayEcho && trackInfo.userLoved != ratingEvent || !trackInfo.userLovedMayEcho)) {
-                Logger.d { "ratingEvent=$ratingEvent" }
-                Stuff.appScope.launch(Dispatchers.IO) {
-                    val linkRatingToLoved =
-                        VariantStuff.billingRepository.licenseState.filterNot { it == LicenseState.VALID }
-                            .first() == LicenseState.VALID
-                                && PlatformStuff.mainPrefs.data.map { it.linkRatingToLoved }.first()
-                    if (linkRatingToLoved) {
-                        trackInfo.loved(userLoved = ratingEvent, mayEcho = false)
-                        val trackPlaying = trackInfo.toTrackPlayingEvent()
-                        ScrobbleEverywhere.loveOrUnlove(
-                            trackPlaying.scrobbleData.toTrack().copy(msid = trackPlaying.msid),
-                            ratingEvent
-                        )
-                        globalTrackEventFlow.emit(trackPlaying)
-                    }
-                }
-            } else {
-                Logger.d { "ratingEvent=$ratingEvent, skipping" }
-            }
-        }
-
         val callback = object : MediaController.Callback() {
 
             init {
@@ -302,20 +248,10 @@ class SessListener(
             override fun onMetadataChanged(metadata: MediaMetadata?) {
                 metadata ?: return
 
-
 //            if (BuildKonfig.DEBUG)
 //                metadata.dump()
 
                 val (metadataInfo, ignoreScrobble) = transformMediaMetadata(trackInfo, metadata)
-
-                val rating = metadata.getRating(MediaMetadata.METADATA_KEY_USER_RATING)
-
-                // Rating does not override equals
-                ratingChangedTo = if (rating?.toBool() != lastRating?.toBool())
-                    rating?.toBool()
-                else
-                    null
-                lastRating = rating
 
                 metadataChanged(metadataInfo, ignoreScrobble)
             }

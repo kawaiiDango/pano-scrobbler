@@ -99,6 +99,8 @@ actual object PlatformStuff {
     actual val supportsSpotifyRemote
         get() = !isTv
 
+    actual const val supportsMediaUserRating = true
+
     actual const val isDesktop = false
 
     actual suspend fun checkScrobblerState(requestRebind: Boolean): ScrobblerState {

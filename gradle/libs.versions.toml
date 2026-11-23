@@ -1,7 +1,7 @@
 [versions]
 targetSdk = "37"
 minSdk = "24"
-sdkMinor = "1"
+sdkMinor = "2"
 minSdkBaselineProfile = "28"
 # has an R8 optimization crash
 #android-application = "9.6.0-alpha03"

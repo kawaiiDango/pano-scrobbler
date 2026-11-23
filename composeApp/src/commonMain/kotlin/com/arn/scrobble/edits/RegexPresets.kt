@@ -38,9 +38,9 @@ class TitleParseException : IllegalStateException("Title parsing failed")
 
 object RegexPresets {
 
-    val defaultPresets = listOf(
-        RegexPreset.parse_title,
-        RegexPreset.parse_title_with_fallback,
+    val defaultPresets = listOfNotNull(
+        if (!PlatformStuff.isDesktop) RegexPreset.parse_title else null,
+        if (!PlatformStuff.isDesktop) RegexPreset.parse_title_with_fallback else null,
         RegexPreset.remastered,
         RegexPreset.explicit,
         RegexPreset.single_ep,
@@ -62,7 +62,8 @@ object RegexPresets {
 
     val filteredPresets by lazy {
         RegexPreset.entries.filterNot {
-            System.getProperty("os.name").startsWith("windows", ignoreCase = true) && it in applyOncePresets
+            System.getProperty("os.name")
+                .startsWith("windows", ignoreCase = true) && it in applyOncePresets
         }
     }
 

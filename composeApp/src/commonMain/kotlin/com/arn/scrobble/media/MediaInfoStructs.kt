@@ -13,6 +13,7 @@ data class MetadataInfo(
     val albumArtist: String,
     val trackNumber: Int,
     val duration: Long,
+    val userRating: Float?, // 0.0 to 1.0
     val artUrl: String?,
     val normalizedUrlHost: String?,
     val extraTags: Map<String, String> = emptyMap(),

@@ -38,6 +38,8 @@ expect object PlatformStuff {
 
     val supportsSpotifyRemote: Boolean
 
+    val supportsMediaUserRating: Boolean
+
     suspend fun checkScrobblerState(requestRebind: Boolean): ScrobblerState
 
     fun openInBrowser(url: String)

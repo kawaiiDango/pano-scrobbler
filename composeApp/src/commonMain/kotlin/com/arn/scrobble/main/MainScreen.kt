@@ -551,6 +551,9 @@ fun PanoAppContent(
             LocalNavigationType provides navigationType,
             LocalModalShownTracker provides modalShownCount,
         ) {
+            val showBottomBar =
+                navigationType == PanoNavigationType.BOTTOM_NAVIGATION && tabData != null && currentUser != null
+
             Scaffold(
                 containerColor = if (transparentScaffold)
                     Color.Transparent
@@ -619,9 +622,6 @@ fun PanoAppContent(
                         topAppBar(null)
                 },
                 bottomBar = {
-                    val showBottomBar =
-                        navigationType == PanoNavigationType.BOTTOM_NAVIGATION && tabData != null && currentUser != null
-
                     AnimatedVisibility(
                         visible = showBottomBar,
                         enter = fadeIn() + expandVertically(expandFrom = Alignment.Top) + slideInVertically { it / 2 },
@@ -709,8 +709,11 @@ fun PanoAppContent(
                     LocalNavDestBackground provides MaterialTheme.colorScheme.background
                         .let { if (transparentScaffold || it.alpha == 1f) it else Color.Transparent }
                 ) {
-                    val topPadding =
-                        PaddingValues(top = innerPadding.calculateTopPadding())
+                    // don't draw behind the top and bottom bars
+                    val navHostPadding = PaddingValues(
+                        top = innerPadding.calculateTopPadding(),
+                        bottom = if (showBottomBar) innerPadding.calculateBottomPadding() else 0.dp
+                    )
 
                     val navContentFocusRequester = remember { FocusRequester() }
 
@@ -760,8 +763,8 @@ fun PanoAppContent(
                                 user = if (!transparentScaffold) currentUser else null,
                                 containerColor = if (transparentScaffold && currentPanoRoute !is PanoRoute.Blank) Color.Unspecified else Color.Transparent,
                                 modifier = Modifier
-                                    .padding(topPadding)
-                                    .consumeWindowInsets(topPadding)
+                                    .padding(navHostPadding)
+                                    .consumeWindowInsets(navHostPadding)
                                     .onGloballyPositioned {
                                         navRailWidth = with(density) { it.size.width.toDp() }
                                     }
@@ -867,8 +870,8 @@ fun PanoAppContent(
                             ),
                             modifier = Modifier
                                 .widthIn(max = 960.dp)
-                                .padding(topPadding)
-                                .consumeWindowInsets(topPadding)
+                                .padding(navHostPadding)
+                                .consumeWindowInsets(navHostPadding)
                                 .focusRequester(navContentFocusRequester)
                                 .focusGroup(),
                         )
@@ -1436,7 +1439,7 @@ private fun PanoBottomNavigationBar(
 ) {
     val hasProfileButton = user != null
 
-    val containerColor = ShortNavigationBarDefaults.containerColor.makeOpaque()
+    val containerColor = ShortNavigationBarDefaults.containerColor
 
     ShortNavigationBar(
         containerColor = containerColor,

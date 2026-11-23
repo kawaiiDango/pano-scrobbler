@@ -797,7 +797,7 @@ fun PrefsScreen(
             }
         }
 
-        if (!PlatformStuff.isDesktop) {
+        if (PlatformStuff.supportsMediaUserRating) {
             filteredItem(
                 "rating_heart_button",
                 Res.string.pref_link_rating_to_loved

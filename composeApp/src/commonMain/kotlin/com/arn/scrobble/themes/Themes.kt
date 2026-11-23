@@ -26,7 +26,7 @@ import com.arn.scrobble.utils.VariantStuff
 
 @Composable
 fun AppTheme(
-    blurSubWindowPref: Boolean = false,
+    isDialogActivity: Boolean = false,
     onInitDone: () -> Unit = {},
     content: @Composable () -> Unit,
 ) {
@@ -50,6 +50,8 @@ fun AppTheme(
 //    val blurSubWindowPref by PlatformStuff.mainPrefs.data.collectAsStateWithInitialValue {
 //        it.themeBlurSubWindow
 //    }
+    val blurSubWindowPref = blurMainWindowPref
+
     val blurMainWindow by remember(blurMainWindowPref, osWindowBlur) {
         mutableStateOf(PlatformStuff.supportsBlur && blurMainWindowPref && osWindowBlur)
     }
@@ -148,7 +150,7 @@ fun AppTheme(
         dynamic && PlatformStuff.supportsDynamicColors -> {
             remember(isDark, alpha, blurSubWindow) {
                 getDynamicColorScheme(activity, isDark)
-                    .withAlpha(alpha, blurSubWindow)
+                    .withAlpha(alpha, blurSubWindow, isDialogActivity)
             }
         }
 
@@ -173,7 +175,7 @@ fun AppTheme(
                     isDark = isDark,
                     style = themeStyle,
                     contrastMode = contrastMode,
-                ).withAlpha(alpha, blurSubWindow)
+                ).withAlpha(alpha, blurSubWindow, isDialogActivity)
             }
         }
     }
@@ -205,7 +207,11 @@ fun AppTheme(
     }
 }
 
-private fun ColorScheme.withAlpha(alpha: Float, hasBlur: Boolean): ColorScheme {
+private fun ColorScheme.withAlpha(
+    alpha: Float,
+    hasBlur: Boolean,
+    transparentDialogBg: Boolean
+): ColorScheme {
     fun boostAlpha(alpha: Float, boost: Float) = alpha + (1f - alpha) * boost
 
     if (alpha == 1f && !hasBlur) return this
@@ -216,10 +222,10 @@ private fun ColorScheme.withAlpha(alpha: Float, hasBlur: Boolean): ColorScheme {
     return copy(
         background = background.copy(alpha = alpha),
         surface = surface.copy(alpha = alpha),
-        surfaceContainerLow = surfaceContainerLow.copy(alpha = if (hasBlur) midAlpha else 1f), // bottom sheets
+        surfaceContainer = surfaceContainer.copy(alpha = alpha), // if (hasBlur) midAlpha else highAlpha),
+        surfaceContainerLow = if (transparentDialogBg && hasBlur) surfaceContainerLow.copy(alpha = midAlpha) else surfaceContainerLow, // bottom sheets
         surfaceContainerHigh = surfaceContainerHigh.copy(alpha = if (hasBlur) midAlpha else highAlpha),
         surfaceContainerHighest = surfaceContainerHighest.copy(alpha = if (hasBlur) midAlpha else highAlpha),
-        surfaceContainer = surfaceContainer.copy(alpha = if (hasBlur) midAlpha else highAlpha),
         outlineVariant = if (alpha < 1f)
             lerp(outlineVariant, outline, alpha.coerceAtLeast(0.65f)) // fix for bad contrast
         else

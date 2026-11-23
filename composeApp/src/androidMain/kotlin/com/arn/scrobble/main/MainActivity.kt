@@ -45,7 +45,7 @@ open class MainActivity : ComponentActivity() {
 
         setContent {
             AppTheme(
-                blurSubWindowPref = isDialogActivity,
+                isDialogActivity = isDialogActivity,
                 onInitDone = { initDone = true }
             ) {
                 val themeAttributes = LocalThemeAttributes.current

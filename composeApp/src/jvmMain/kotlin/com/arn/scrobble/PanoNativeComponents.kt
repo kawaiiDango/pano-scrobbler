@@ -84,6 +84,7 @@ object PanoNativeComponents {
         albumArtist: String,
         trackNumber: Int,
         duration: Long,
+        userRating: Float,
         artUrl: String,
         trackUrl: String,
     ) {
@@ -93,6 +94,7 @@ object PanoNativeComponents {
             } // i.e. not localhost, IP address, etc
         val normalizedUrlHost = trackUrl.ifEmpty { null }
             ?.toHttpUrlOrNull()?.host
+        val userRating = userRating.takeIf { it >= 0f }
 
         val metadataInfo = MetadataInfo(
             title = title,
@@ -104,6 +106,7 @@ object PanoNativeComponents {
 
             // always null for windows
             artUrl = artUrl,
+            userRating = userRating,
             normalizedUrlHost = normalizedUrlHost,
         )
 

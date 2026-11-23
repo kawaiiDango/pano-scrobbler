@@ -53,6 +53,8 @@ actual object PlatformStuff {
 
     actual val supportsSpotifyRemote = DesktopStuff.IS_WINDOWS
 
+    actual val supportsMediaUserRating = DesktopStuff.IS_LINUX
+
     actual val appIdPlaceholder
         get() =
             if (DesktopStuff.IS_LINUX)

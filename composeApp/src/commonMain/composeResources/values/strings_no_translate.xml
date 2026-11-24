@@ -91,4 +91,11 @@ According to Google Play's policies, purchases made through Google Play cannot b
     <string name="demo_mode" translatable="false">Demo mode</string>
     <string name="copy_sk" translatable="false">Copy last.fm session key</string>
     <string name="delete_receipt" translatable="false">Delete receipt</string>
+    <string name="tealfm">teal.fm</string>
+    <string name="tealfm_handle">Atmosphere handle</string>
+    <string name="tealfm_handle_hint">For example, alice.bsky.social</string>
+    <string name="tealfm_app_password">App password</string>
+    <string name="tealfm_login_help">Use an app password from your account provider, not your main password. Your listens and now-playing status are public.\n\nTo include metadata for lookups, configure MusicBrainz.</string>
+    <string name="tealfm_create_app_password">Create a Bluesky app password</string>
+    <string name="retry_all_pending_now">Retry all pending scrobbles now</string>
 </resources>

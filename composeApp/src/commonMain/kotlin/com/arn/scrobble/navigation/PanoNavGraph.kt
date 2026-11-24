@@ -443,6 +443,14 @@ object PanoNavGraph {
             )
         }
 
+        entry<PanoRoute.LoginTeal> { route ->
+            onSetTitleString(route, accountTypeLabel(AccountType.TEALFM))
+            com.arn.scrobble.onboarding.TealLoginScreen(
+                onDone = goBack,
+                modifier = Modifier.navScrollableColumn()
+            )
+        }
+
         entry<PanoRoute.LoginPleroma> { route ->
             onSetTitleRes(route, Res.string.pleroma)
 

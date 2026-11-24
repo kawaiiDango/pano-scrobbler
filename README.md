@@ -111,7 +111,7 @@ you **automatic updates**.
 ### For all platforms (Windows, Linux, Android, Android TV):
 
 - No ads ever
-- Scrobbles to Lastfm, Librefm, ListenBrainz, Pleroma and other compatible services
+- Scrobbles to Lastfm, Librefm, ListenBrainz, teal.fm, Pleroma and other compatible services
 - View song, album, artist, album artist, and tag details
 - View scrobbles from a specific time, such as last year or last month
 - Extract or fix metadata such as "Remastered" with regex pattern edits

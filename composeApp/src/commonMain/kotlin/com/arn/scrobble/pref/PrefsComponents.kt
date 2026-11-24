@@ -558,10 +558,11 @@ fun AccountPref(
                                     dropdownShown = false
                                     Stuff.appScope.launch {
                                         PlatformStuff.mainPrefs.updateData { p ->
-                                            val accounts =
-                                                p.scrobbleAccounts.filter { it.type != type } +
-                                                        userAccount.copy(canScrobble = !userAccount.canScrobble)
-                                            p.copy(scrobbleAccounts = accounts)
+                                            // Use the current account: token refresh may have updated it
+                                            // since this menu was composed.
+                                            p.copy(scrobbleAccounts = p.scrobbleAccounts.map {
+                                                if (it.type == type) it.copy(canScrobble = !it.canScrobble) else it
+                                            })
                                         }
                                     }
                                 }

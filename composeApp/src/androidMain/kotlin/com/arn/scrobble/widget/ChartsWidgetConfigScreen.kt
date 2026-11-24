@@ -84,6 +84,7 @@ fun ChartsWidgetConfigScreen(
             .filterNot {
                 it.type in arrayOf(
                     AccountType.PLEROMA,
+                    AccountType.TEALFM,
                     AccountType.FILE,
                 )
             }

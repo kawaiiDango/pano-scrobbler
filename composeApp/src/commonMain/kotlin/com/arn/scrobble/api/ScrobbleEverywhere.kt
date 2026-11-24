@@ -271,7 +271,16 @@ object ScrobbleEverywhere {
             }.toMap()
     }
 
-    suspend fun scrobble(scrobbleData: ScrobbleData) {
+    suspend fun scrobble(scrobbleData: ScrobbleData) = scrobble(
+        scrobbleData, PanoDb.db, { Scrobblables.all }, PendingScrobblesWork::schedule,
+    )
+
+    internal suspend fun scrobble(
+        scrobbleData: ScrobbleData,
+        db: PanoDb,
+        accounts: () -> Collection<Scrobblable>,
+        schedulePending: (Boolean) -> Unit,
+    ) {
         Logger.i { "scrobble " + scrobbleData.artist + " - " + scrobbleData.track }
 
         // track player
@@ -280,19 +289,19 @@ object ScrobbleEverywhere {
                 timeMillis = scrobbleData.timestamp,
                 pkg = scrobbleData.appId
             )
-            PanoDb.db
+            db
                 .getScrobbleSourcesDao()
                 .insert(scrobbleSource)
         }
 
-        val scrobblelables = Scrobblables.all.filter { it.userAccount.canScrobble }
+        val scrobblelables = accounts().filter { it.userAccount.canScrobble }
 
         val scrobbleResults = scrobblelables
             .mapConcurrently(5) {
                 it to it.scrobble(scrobbleData)
             }.toMap()
 
-        val pendingScrobblesDao = PanoDb.db.getPendingScrobblesDao()
+        val pendingScrobblesDao = db.getPendingScrobblesDao()
 
         val failed = scrobbleResults.isEmpty() || scrobbleResults.values.any { !it.isSuccess }
 
@@ -309,17 +318,17 @@ object ScrobbleEverywhere {
             val exceptions = scrobbleResults.values.mapNotNull { it.exceptionOrNull() }
 
             pendingScrobblesDao.insert(scrobbleData, ScrobbleEvent.scrobble, services, exceptions)
-            PendingScrobblesWork.schedule(false)
+            schedulePending(false)
         } else {
             // all success
             if (pendingScrobblesDao.canForceRetry())
-                PendingScrobblesWork.schedule(true)
+                schedulePending(true)
         }
 
         // if it has album, update cache
 
         if (!scrobbleData.album.isNullOrEmpty()) {
-            PanoDb.db.getSeenEntitiesDao().saveRecentTracks(
+            db.getSeenEntitiesDao().saveRecentTracks(
                 listOf(scrobbleData.toTrack()),
                 mayHaveAlbumArt = false,
                 savedLoved = false,

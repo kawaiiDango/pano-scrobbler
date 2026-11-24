@@ -23,11 +23,16 @@ import pano_scrobbler.composeapp.generated.resources.pending_batch
 import pano_scrobbler.composeapp.generated.resources.submitting_loves
 import kotlin.time.Duration.Companion.milliseconds
 
-class PendingScrobblesWorker(
+class PendingScrobblesWorker internal constructor(
     override val setProgress: suspend (CommonWorkProgress) -> Unit,
+    database: () -> PanoDb,
+    private val accounts: () -> Collection<Scrobblable>,
 ) : CommonWorker {
+    constructor(setProgress: suspend (CommonWorkProgress) -> Unit) : this(
+        setProgress, { PanoDb.db }, { Scrobblables.all },
+    )
 
-    private val dao by lazy { PanoDb.db.getPendingScrobblesDao() }
+    private val dao by lazy { database().getPendingScrobblesDao() }
 
     private val failsMap = AccountType.entries.associateWith { 0 }.toMutableMap()
 
@@ -77,7 +82,7 @@ class PendingScrobblesWorker(
             val scrobbleResults = mutableMapOf<Scrobblable, Result<ScrobbleResult>>()
             // if an error occurs, there will be only one result
 
-            Scrobblables.all.forEach {
+            accounts().forEach {
                 val filteredData by lazy { filterForService(it, entries) }
                 if (filteredData.isNotEmpty()) {
                     val result = it.scrobble(filteredData.map { it.scrobbleData })
@@ -146,7 +151,7 @@ class PendingScrobblesWorker(
 
             val loveResults = mutableMapOf<Scrobblable, Result<ScrobbleResult>>()
 
-            Scrobblables.all.forEach {
+            accounts().forEach {
                 val shouldSubmit by lazy { filterOneForService(it, entry) }
                 if (shouldSubmit) {
                     val track = Track(
@@ -208,7 +213,7 @@ class PendingScrobblesWorker(
 
     private suspend fun deleteForLoggedOutServices() {
         val loggedOutAccounts =
-            AccountType.entries.toSet() - Scrobblables.all.map { it.userAccount.type }.toSet()
+            AccountType.entries.toSet() - accounts().map { it.userAccount.type }.toSet()
 
         val loggedOutAccountsBitset =
             AccountBitmaskConverter.accountTypesToBitMask(loggedOutAccounts)

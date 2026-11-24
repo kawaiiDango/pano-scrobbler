@@ -7,7 +7,10 @@ import com.arn.scrobble.api.UserCached
 import com.arn.scrobble.api.withScrobbleAccount
 import com.arn.scrobble.pref.MainPrefs
 import com.arn.scrobble.utils.PlatformStuff
+import io.ktor.client.HttpClient
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 
 /** The AT login is private to MainPrefs. Teal and Rocksky entries hold only its DID and PDS. */
 class AtprotoSessions(private val prefs: DataStore<MainPrefs> = PlatformStuff.mainPrefs) {
@@ -68,10 +71,51 @@ class AtprotoSessions(private val prefs: DataStore<MainPrefs> = PlatformStuff.ma
 
     internal suspend fun restore(account: UserAccountSerializable) = prefs.data.first().sessionFor(account)
 
+    internal suspend fun send(
+        account: UserAccountSerializable,
+        client: HttpClient,
+        action: suspend (AtprotoAppPasswordSession) -> Unit,
+    ) {
+        val initial = restore(account) ?: throw AtprotoReconnect()
+        try {
+            action(initial)
+        } catch (e: AtprotoXrpcError) {
+            if (!e.rejectedToken) throw e
+            action(refresh(account, client, initial))
+        }
+    }
+
+    // The reference PDS permits reuse of the previous refresh token during its rotation grace period.
+    // Never discard it on a transport failure, and never hold a preferences transaction over HTTP.
+    private suspend fun refresh(
+        account: UserAccountSerializable, http: HttpClient, expected: AtprotoAppPasswordSession,
+    ): AtprotoAppPasswordSession = refreshLock.withLock {
+        val current = restore(account) ?: throw AtprotoReconnect()
+        if (!current.sameTokens(expected)) return@withLock current
+        val rotated = try {
+            http.rotateAppPassword(expected.pds, expected.did, expected.refreshJwt)
+        } catch (e: AtprotoXrpcError) {
+            if (!e.rejectedToken) throw e
+            null
+        }
+        // Another process or a fresh sign-in may have updated this shared slot during the request.
+        val updated = prefs.updateData { p ->
+            if (p.sessionFor(account)?.sameTokens(expected) == true) p.copy(atprotoSession = rotated) else p
+        }
+        updated.sessionFor(account) ?: throw AtprotoReconnect()
+    }
+
     private fun MainPrefs.sessionFor(account: UserAccountSerializable) = atprotoSession?.takeIf { session ->
         account.type.isAtproto && session.matches(account) && scrobbleAccounts.any {
             it.type == account.type && session.matches(it)
         }
+    }
+
+    private fun AtprotoAppPasswordSession.sameTokens(other: AtprotoAppPasswordSession) =
+        accessJwt == other.accessJwt && refreshJwt == other.refreshJwt
+
+    private companion object {
+        val refreshLock = Mutex()
     }
 }
 

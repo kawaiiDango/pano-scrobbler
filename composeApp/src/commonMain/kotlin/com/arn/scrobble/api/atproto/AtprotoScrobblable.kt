@@ -49,11 +49,15 @@ val AccountType.playCollection: String
         else -> error("Not an AT Protocol history source")
     }
 
-/** Adapter for AT Protocol scrobble destinations (Teal and Rocksky). Public history reads don't use the session. */
-class AtprotoScrobblable(
+/** Submit completed plays to the verified PDS. Public history reads don't use the session. */
+class AtprotoScrobblable internal constructor(
     account: UserAccountSerializable,
-    private val client: () -> HttpClient = { Requesters.atprotoPublicRecentsClient },
+    private val client: () -> HttpClient,
+    private val writeClient: () -> HttpClient,
+    private val sessions: () -> AtprotoSessions,
 ) : Scrobblable(account) {
+    constructor(account: UserAccountSerializable, client: () -> HttpClient = { Requesters.atprotoPublicRecentsClient }) :
+        this(account, client, { Requesters.atprotoPdsClient }, { AtprotoSessions() })
     private val collection = account.type.playCollection
     private val pds = requireNotNull(account.apiRoot).trimEnd('/')
     private val did = account.authKey
@@ -158,9 +162,25 @@ class AtprotoScrobblable(
 
     override suspend fun updateNowPlaying(scrobbleData: ScrobbleData) = Result.success(ScrobbleResult(false))
 
-    override suspend fun scrobble(scrobbleData: ScrobbleData) = unavailable<ScrobbleResult>()
+    override suspend fun scrobble(scrobbleData: ScrobbleData): Result<ScrobbleResult> = try {
+        val rkey = scrobbleData.atprotoRecordKey()
+        val record = scrobbleData.atprotoPlay(userAccount.type)
+        val http = writeClient()
+        sessions().send(userAccount, http) { http.createPlay(it, collection, rkey, record) }
+        Result.success(ScrobbleResult(false))
+    } catch (e: CancellationException) {
+        throw e
+    } catch (e: Exception) {
+        Result.failure(e)
+    }
 
-    override suspend fun scrobble(scrobbleDatas: List<ScrobbleData>) = unavailable<ScrobbleResult>()
+    override suspend fun scrobble(scrobbleDatas: List<ScrobbleData>): Result<ScrobbleResult> {
+        for (play in scrobbleDatas) {
+            val result = scrobble(play)
+            if (result.isFailure) return result
+        }
+        return Result.success(ScrobbleResult(false))
+    }
 
     override suspend fun loveOrUnlove(track: Track, love: Boolean) = Result.success(ScrobbleResult(false))
     override suspend fun delete(track: Track) = unavailable<Nothing>()

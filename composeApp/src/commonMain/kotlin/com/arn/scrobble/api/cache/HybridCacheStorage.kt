@@ -1,5 +1,7 @@
 package com.arn.scrobble.api.cache
 
+import io.ktor.client.HttpClientConfig
+import io.ktor.client.plugins.cache.HttpCache
 import io.ktor.client.plugins.cache.storage.CacheStorage
 import io.ktor.client.plugins.cache.storage.CachedResponseData
 import io.ktor.client.plugins.cache.storage.FileStorage
@@ -7,6 +9,16 @@ import io.ktor.http.Url
 import kotlinx.coroutines.sync.Semaphore
 import kotlinx.io.files.Path
 import java.io.File
+
+internal fun HttpClientConfig<*>.installPanoHttpCache(cacheDir: File, publicOnly: Boolean = false) {
+    install(HttpCache) {
+        publicStorage(HybridCacheStorage(HttpMemoryCache(25), cacheDir))
+        if (publicOnly) {
+            isShared = true
+            privateStorage(CacheStorage.Disabled)
+        }
+    }
+}
 
 class HybridCacheStorage(
     private val memoryCache: CacheStorage,

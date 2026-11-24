@@ -2,8 +2,7 @@ package com.arn.scrobble.api
 
 import co.touchlab.kermit.Logger
 import com.arn.scrobble.BuildKonfig
-import com.arn.scrobble.api.cache.HttpMemoryCache
-import com.arn.scrobble.api.cache.HybridCacheStorage
+import com.arn.scrobble.api.cache.installPanoHttpCache
 import com.arn.scrobble.api.deezer.DeezerRequester
 import com.arn.scrobble.api.itunes.ItunesRequester
 import com.arn.scrobble.api.lastfm.ApiException
@@ -24,7 +23,6 @@ import io.ktor.client.engine.okhttp.OkHttp
 import io.ktor.client.plugins.HttpCallValidator
 import io.ktor.client.plugins.HttpTimeout
 import io.ktor.client.plugins.UserAgent
-import io.ktor.client.plugins.cache.HttpCache
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.request.HttpRequestBuilder
 import io.ktor.client.request.get
@@ -227,15 +225,7 @@ object Requesters {
             }
 
             if (!Stuff.isRunningInTest) {
-                install(HttpCache) {
-                    val cacheFile = File(PlatformStuff.cacheDir, "ktor")
-                    val memoryCache = HttpMemoryCache(25)
-                    val hybridCache = HybridCacheStorage(
-                        memoryCache = memoryCache,
-                        cacheFile,
-                    )
-                    publicStorage(hybridCache)
-                }
+                installPanoHttpCache(File(PlatformStuff.cacheDir, "ktor"))
             }
 
             install(CustomCachePlugin) {

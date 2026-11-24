@@ -13,16 +13,25 @@ import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpMethod
 import io.ktor.http.HttpProtocolVersion
 import io.ktor.http.HttpStatusCode
+import io.ktor.http.isSuccess
 import io.ktor.util.AttributeKey
+import io.ktor.utils.io.ByteReadChannel
 import io.ktor.utils.io.InternalAPI
+import io.ktor.utils.io.readBuffer
+import kotlinx.io.readByteArray
+import java.io.IOException
 
 class CustomCachePlugin(
-    private val policy: ExpirationPolicy
+    private val policy: ExpirationPolicy,
+    private val shouldStore: (HttpResponse) -> Boolean,
+    private val maxBodyBytes: Long?,
 ) {
     class Config {
         lateinit var policy: ExpirationPolicy
+        var shouldStore: (HttpResponse) -> Boolean = { true }
+        var maxBodyBytes: Long? = null
 
-        fun build(): CustomCachePlugin = CustomCachePlugin(policy)
+        fun build(): CustomCachePlugin = CustomCachePlugin(policy, shouldStore, maxBodyBytes)
     }
 
     companion object Feature : HttpClientPlugin<Config, CustomCachePlugin> {
@@ -40,19 +49,31 @@ class CustomCachePlugin(
                 if (cacheTime <= 0 || response.request.method != HttpMethod.Get) {
                     proceedWith(response)
                 } else {
-                    val cacheControl =
-                        CacheControl.MaxAge((cacheTime / 1000).toInt())
+                    val shouldStore = plugin.shouldStore(response)
+                    val cacheControl = if (shouldStore) CacheControl.MaxAge((cacheTime / 1000).toInt()).toString()
+                    else "no-store"
+                    // HttpCache buffers a successful response before the caller can read it.
+                    val originalContent = response.rawContent
+                    val cappedContent = if (shouldStore && plugin.maxBodyBytes != null && response.status.isSuccess()) {
+                        val body = originalContent.readBuffer(plugin.maxBodyBytes + 1)
+                        if (body.size > plugin.maxBodyBytes) {
+                            val error = IOException("HTTP cache response too large")
+                            originalContent.cancel(error)
+                            throw error
+                        }
+                        ByteReadChannel(body.readByteArray())
+                    } else originalContent
 
                     proceedWith(object : HttpResponse() {
                         override val call = response.call
 
-                        override val rawContent = response.rawContent
+                        override val rawContent = cappedContent
                         override val coroutineContext = response.coroutineContext
                         override val headers: Headers = HeadersBuilder().apply {
                             appendAll(response.headers)
                             remove(HttpHeaders.CacheControl)
                             remove(HttpHeaders.Pragma)
-                            append(HttpHeaders.CacheControl, cacheControl.toString())
+                            append(HttpHeaders.CacheControl, cacheControl)
                         }.build()
                         override val requestTime = response.requestTime
                         override val responseTime = response.responseTime

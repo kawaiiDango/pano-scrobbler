@@ -414,11 +414,11 @@ sealed interface PanoRoute : NavKey {
 
             AccountType.PLEROMA,
             AccountType.FILE,
-            AccountType.TEAL,
-            AccountType.ROCKSKY,
                 -> listOf(
                 PanoTab.ScrobblesNoSubtabs,
             )
+
+            AccountType.TEAL, AccountType.ROCKSKY -> listOf(PanoTab.RecentsOnly)
         }
     }
 

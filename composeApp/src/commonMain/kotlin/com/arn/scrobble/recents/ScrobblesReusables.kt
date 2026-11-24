@@ -490,7 +490,7 @@ fun PendingDropdownMenu(
     pendingScrobble: PendingScrobble,
     expanded: Boolean,
     onDismissRequest: () -> Unit,
-    onLove: ((Boolean) -> Unit),
+    onLove: ((Boolean) -> Unit)?,
     onDelete: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -528,7 +528,7 @@ fun PendingDropdownMenu(
             }
         },
     ) {
-        if (pendingScrobble.event == ScrobbleEvent.scrobble) {
+        if (pendingScrobble.event == ScrobbleEvent.scrobble && onLove != null) {
             item(
                 onClick = {
                     onLove(true)
@@ -760,6 +760,7 @@ fun LazyListScope.pendingScrobblesListItems(
     onItemClick: (MusicEntry) -> Unit,
     viewModel: ScrobblesVM,
     fetchAlbumImageIfMissing: Boolean = false,
+    canLove: Boolean = true,
 ) {
     if (items.isEmpty()) return
 
@@ -824,7 +825,7 @@ fun LazyListScope.pendingScrobblesListItems(
                     pendingScrobble = item,
                     expanded = menuShown,
                     onDismissRequest = { menuShown = false },
-                    onLove = {
+                    onLove = if (canLove) { love ->
                         viewModel.viewModelScope.launch(Dispatchers.IO) {
                             val track = Track(
                                 item.scrobbleData.track,
@@ -837,9 +838,9 @@ fun LazyListScope.pendingScrobblesListItems(
                                 Artist(item.scrobbleData.artist)
                             )
 
-                            ScrobbleEverywhere.loveOrUnlove(track, it)
+                            ScrobbleEverywhere.loveOrUnlove(track, love)
                         }
-                    },
+                    } else null,
                     onDelete = {
                         viewModel.viewModelScope.launch(Dispatchers.IO) {
                             PanoDb.db.getPendingScrobblesDao().delete(item)

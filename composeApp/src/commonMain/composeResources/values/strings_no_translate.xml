@@ -77,6 +77,7 @@
     <string name="atproto_sign_in_again">Sign in again</string>
     <string name="atproto_login_failed">Could not sign in. Check your handle and app password and try again.</string>
     <string name="atproto_public_history_disclosure" formatted="true">Pano publishes completed plays to your public %1$s history.</string>
+    <string name="atproto_public_recents">Public history from your AT Protocol server</string>
     <string name="atproto_reconnect_needed" formatted="true">Sign in again as %1$s.</string>
 
     <string name="billing_troubleshoot_non_play_purchases" translatable="false" formatted="true">Already paid without using Google Play?

@@ -2,6 +2,7 @@ package com.arn.scrobble.api
 
 import co.touchlab.kermit.Logger
 import com.arn.scrobble.BuildKonfig
+import com.arn.scrobble.api.atproto.atprotoRecentsClient
 import com.arn.scrobble.api.cache.installPanoHttpCache
 import com.arn.scrobble.api.deezer.DeezerRequester
 import com.arn.scrobble.api.itunes.ItunesRequester
@@ -212,6 +213,11 @@ object Requesters {
     private val _atprotoPdsClient = createBaseKtorClient(false, atprotoPublicDns, redirects = false)
     val atprotoPdsClient by _atprotoPdsClient
 
+    private val _atprotoPublicRecentsClient = invalidatableLazy {
+        atprotoPdsClient.atprotoRecentsClient(File(PlatformStuff.cacheDir, "ktor"))
+    }
+    internal val atprotoPublicRecentsClient by _atprotoPublicRecentsClient
+
     private fun createGenericKtorClient(trustAll: Boolean) = invalidatableLazy {
         val baseClient = if (trustAll) {
             val c by createBaseKtorClient(true)
@@ -257,6 +263,7 @@ object Requesters {
 
     private fun invalidateAll() {
         _baseKtorClient.invalidate()
+        _atprotoPublicRecentsClient.invalidate()
         _atprotoPdsClient.invalidate()
         _genericKtorClient.invalidate()
         _genericKtorTrustAllClient.invalidate()

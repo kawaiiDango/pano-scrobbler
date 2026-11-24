@@ -1334,7 +1334,7 @@ fun MusicEntry.generateKey(): String {
     val sep = "\u001F"
 
     val str = when (this) {
-        is Track -> "Track" + sep + date + sep + artist.name + sep + album?.name + sep + name
+        is Track -> atprotoUri ?: ("Track" + sep + date + sep + artist.name + sep + album?.name + sep + name)
         is Album -> "Album" + sep + artist?.name + sep + name
         is Artist -> "Artist" + sep + name
     }

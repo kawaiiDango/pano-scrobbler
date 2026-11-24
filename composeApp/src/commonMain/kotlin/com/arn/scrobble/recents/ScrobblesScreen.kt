@@ -14,6 +14,7 @@ import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MenuDefaults
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.VerticalDivider
 import androidx.compose.material3.pulltorefresh.PullToRefreshState
@@ -77,6 +78,7 @@ import org.jetbrains.compose.resources.pluralStringResource
 import org.jetbrains.compose.resources.stringResource
 import pano_scrobbler.composeapp.generated.resources.Res
 import pano_scrobbler.composeapp.generated.resources.also_available_on
+import pano_scrobbler.composeapp.generated.resources.atproto_public_recents
 import pano_scrobbler.composeapp.generated.resources.charts_custom
 import pano_scrobbler.composeapp.generated.resources.desktop
 import pano_scrobbler.composeapp.generated.resources.loved
@@ -104,8 +106,10 @@ fun ScrobblesScreen(
     viewModel: ScrobblesVM = viewModel(key = user.key<ScrobblesVM>()) { ScrobblesVM(user, null) },
 ) {
     val listState = rememberLazyListState()
-    var selectedType by rememberSaveable { mutableStateOf(PanoTab.Scrobbles.ScrobblesSubTabType.SCROBBLES) }
-    var timeJumpMillis by rememberSaveable { mutableStateOf<Long?>(null) }
+    val accountType by PlatformStuff.mainPrefs.data.collectAsStateWithInitialValue { it.currentAccountType }
+    val recentsOnlySource = accountType.takeIf { it.isAtproto }
+    var selectedType by rememberSaveable(recentsOnlySource) { mutableStateOf(PanoTab.Scrobbles.ScrobblesSubTabType.SCROBBLES) }
+    var timeJumpMillis by rememberSaveable(recentsOnlySource) { mutableStateOf<Long?>(null) }
     val tracks = viewModel.tracks.collectAsLazyPagingItems()
     val firstPageLoadedTime by viewModel.firstPageLoadedTime.collectAsStateWithLifecycle()
     val pendingScrobblesWithCount by
@@ -125,7 +129,6 @@ fun ScrobblesScreen(
         PlatformStuff.mainPrefs.data.collectAsStateWithInitialValue { it.showScrobbleSources }
     else
         remember { mutableStateOf(false) }
-    val accountType by PlatformStuff.mainPrefs.data.collectAsStateWithInitialValue { it.currentAccountType }
     val otherPlatformsLearnt by PlatformStuff.mainPrefs.data.collectAsStateWithInitialValue { it.desktopAppLearnt }
     var pendingScrobblesExpanded by rememberSaveable { mutableStateOf(false) }
     var scrollToTopOnLoad by rememberSaveable { mutableStateOf(true) }
@@ -135,7 +138,7 @@ fun ScrobblesScreen(
     var timeJumpMenuShown by rememberSaveable { mutableStateOf(false) }
     val pendingScrobblesHeader =
         stringResource(Res.string.pending_scrobbles) + ": " + pendingScrobblesCount
-    val canLove = accountType != AccountType.PLEROMA
+    val canLove = accountType != AccountType.PLEROMA && !accountType.isAtproto
 
     val scope = rememberCoroutineScope()
 
@@ -143,7 +146,7 @@ fun ScrobblesScreen(
         mutableStateOf(
             !PlatformStuff.isTv &&
                     selectedType != PanoTab.Scrobbles.ScrobblesSubTabType.LOVED &&
-                    accountType !in arrayOf(AccountType.FILE, AccountType.PLEROMA)
+                    accountType !in arrayOf(AccountType.FILE, AccountType.PLEROMA) && !accountType.isAtproto
         )
     }
 
@@ -267,7 +270,7 @@ fun ScrobblesScreen(
 
 
     ResultEffect<PullToRefreshResult> {
-        if (it.tab == PanoTab.Scrobbles || it.tab == PanoTab.ScrobblesNoSubtabs) {
+        if (it.tab in listOf(PanoTab.Scrobbles, PanoTab.ScrobblesNoSubtabs, PanoTab.RecentsOnly)) {
             if (tracks.loadState.refresh !is LoadState.Loading) {
                 tracks.refresh()
             }
@@ -372,6 +375,15 @@ fun ScrobblesScreen(
                 )
                     emptyText { stringResource(Res.string.no_scrobbles) }
 
+                if (accountType.isAtproto) {
+                    item("atproto_public_recents") {
+                        Text(
+                            stringResource(Res.string.atproto_public_recents),
+                            style = MaterialTheme.typography.bodySmall,
+                            modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
+                        )
+                    }
+                }
                 if (user.isSelf) {
                     when (val scrobblerState = scrobblerState) {
                         ScrobblerState.Disabled, ScrobblerState.NLSDisabled -> {
@@ -453,6 +465,7 @@ fun ScrobblesScreen(
                             onTrackClick(it as Track, null)
                         },
                         viewModel = viewModel,
+                        canLove = !accountType.isAtproto,
                     )
 
                     if (pendingScrobbles.isNotEmpty()) {

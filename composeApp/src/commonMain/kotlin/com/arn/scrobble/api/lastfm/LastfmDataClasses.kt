@@ -169,6 +169,8 @@ data class Track(
     @SerialName("@attr")
     override val _attr: MusicEntryAttr? = null,
     val isNowPlaying: Boolean = _attr?.nowplaying == true,
+    @Transient
+    val atprotoUri: String? = null,
 ) : MusicEntry() {
     fun copyImageToAlbum(): Track {
         if (album != null && _images != null) {

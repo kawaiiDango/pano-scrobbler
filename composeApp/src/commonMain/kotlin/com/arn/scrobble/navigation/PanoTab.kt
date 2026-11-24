@@ -67,6 +67,9 @@ sealed class PanoTab(
     }
 
     data object ScrobblesNoSubtabs : PanoTab(titleRes = Res.string.scrobbles, icon = Icons.History)
+    data object RecentsOnly : PanoTab(titleRes = Res.string.recents, icon = Icons.History), HasSubtabs {
+        override val subTabs = Scrobbles.subTabs.takeWhile { it.id <= Scrobbles.ScrobblesSubTabType.SCROBBLES.ordinal }
+    }
     data object Following : PanoTab(titleRes = Res.string.following, icon = Icons.Group)
     data object Charts : PanoTab(titleRes = Res.string.charts, icon = Icons.BarChart4Bars),
         PanoRoute.HasTimePeriods

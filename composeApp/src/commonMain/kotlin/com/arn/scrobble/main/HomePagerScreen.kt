@@ -48,7 +48,7 @@ fun HomePagerScreen(
         lastTabIdxRef = tabIdx
 
         val title = when (tabsList.getOrNull(tabIdx)) {
-            PanoTab.Scrobbles, PanoTab.ScrobblesNoSubtabs -> scrobblesTitle
+            PanoTab.Scrobbles, PanoTab.ScrobblesNoSubtabs, PanoTab.RecentsOnly -> scrobblesTitle
             PanoTab.Following -> followingTitle
             PanoTab.Charts -> chartsTitle
             else -> ""
@@ -78,7 +78,7 @@ fun HomePagerScreen(
         modifier = modifier,
     ) { page ->
         when (val tab = tabsList.getOrNull(page)) {
-            PanoTab.Scrobbles, PanoTab.ScrobblesNoSubtabs -> ScrobblesScreen(
+            PanoTab.Scrobbles, PanoTab.ScrobblesNoSubtabs, PanoTab.RecentsOnly -> ScrobblesScreen(
                 user = user,
                 pullToRefreshState = pullToRefreshState,
                 onSetRefreshing = { onSetRefreshing(tab, it) },

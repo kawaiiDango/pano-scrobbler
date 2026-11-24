@@ -1,6 +1,7 @@
 package com.arn.scrobble.api
 
 import co.touchlab.kermit.Logger
+import com.arn.scrobble.api.atproto.AtprotoScrobblable
 import com.arn.scrobble.api.cache.CacheStrategy
 import com.arn.scrobble.api.file.FileScrobblable
 import com.arn.scrobble.api.lastfm.Album
@@ -18,6 +19,7 @@ import com.arn.scrobble.api.listenbrainz.ListenBrainz
 import com.arn.scrobble.api.pleroma.Pleroma
 import com.arn.scrobble.charts.ListeningActivity
 import com.arn.scrobble.charts.TimePeriod
+import com.arn.scrobble.pref.MainPrefs
 import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff
 import com.arn.scrobble.utils.Stuff.stateInWithCache
@@ -164,9 +166,33 @@ enum class AccountType(val id: Int) {
 
     //    MALOJA(5),
     PLEROMA(6),
-    FILE(7);
+    FILE(7),
+    TEAL(10),
+    ROCKSKY(11);
 
-    val isCustom get() = this != LASTFM && this != LISTENBRAINZ && this != LIBREFM && this != FILE
+    val isAtproto get() = this == TEAL || this == ROCKSKY
+    val isCustom get() = this != LASTFM && this != LISTENBRAINZ && this != LIBREFM && this != FILE && !isAtproto
+}
+
+fun List<UserAccountSerializable>.withScrobbleAccount(account: UserAccountSerializable): List<UserAccountSerializable> {
+    val filtered = filterNot { it.type == account.type }
+    if (filtered.any { it.apiRoot == account.apiRoot && !(it.type.isAtproto && account.type.isAtproto) })
+        throw ApiException(-1, "Account already exists")
+    return filtered + account
+}
+
+internal fun MainPrefs.withoutScrobbleAccount(type: AccountType): MainPrefs {
+    val remainingAccounts = scrobbleAccounts.filterNot { it.type == type }
+    val selected = currentAccountType.takeIf { selected -> remainingAccounts.any { it.type == selected } }
+        ?: remainingAccounts.firstOrNull()?.type ?: AccountType.LASTFM
+    val removeAtprotoSession = type.isAtproto && remainingAccounts.none { it.type.isAtproto }
+    return copy(
+        scrobbleAccounts = remainingAccounts,
+        drawerData = drawerData - type,
+        currentAccountType = selected,
+        cookies = if (type == AccountType.LASTFM) emptyMap() else cookies,
+        atprotoSession = if (removeAtprotoSession) null else atprotoSession,
+    )
 }
 
 object Scrobblables {
@@ -202,38 +228,14 @@ object Scrobblables {
         get() = all.firstOrNull { it.userAccount.type == currentAccountType.value }
 
     suspend fun deleteAllByType(type: AccountType) {
-        PlatformStuff.mainPrefs.updateData {
-            val remainingAccounts = it.scrobbleAccounts.filterNot { it.type == type }
-            var currentAccountType = it.currentAccountType
-            if (remainingAccounts.find { it.type == currentAccountType } == null) {
-                // if current account type is not in the list, set it to the first one
-                currentAccountType = remainingAccounts.firstOrNull()?.type ?: AccountType.LASTFM
-            }
-            val remainingDrawerData = it.drawerData.filterKeys { it != type }
-
-            it.copy(
-                scrobbleAccounts = remainingAccounts,
-                drawerData = remainingDrawerData,
-                currentAccountType = currentAccountType,
-                cookies = if (type == AccountType.LASTFM)
-                    emptyMap()
-                else
-                    it.cookies
-            )
-        }
+        PlatformStuff.mainPrefs.updateData { it.withoutScrobbleAccount(type) }
     }
 
     suspend fun add(userAccount: UserAccountSerializable) {
+        require(!userAccount.type.isAtproto) { "Save AT Protocol destinations with their shared login" }
         PlatformStuff.mainPrefs.updateData {
-            // if same type already exists, remove it first
-            val filteredAccounts = it.scrobbleAccounts.filterNot { it.type == userAccount.type }
-
-            if (filteredAccounts.any { it.apiRoot == userAccount.apiRoot }) {
-                throw ApiException(-1, "Account already exists")
-            }
-
             it.copy(
-                scrobbleAccounts = filteredAccounts + userAccount,
+                scrobbleAccounts = it.scrobbleAccounts.withScrobbleAccount(userAccount),
                 currentAccountType = userAccount.type
             )
         }
@@ -255,6 +257,7 @@ object Scrobblables {
             AccountType.PLEROMA -> Pleroma(userAccount)
 
             AccountType.FILE -> FileScrobblable(userAccount)
+            AccountType.TEAL, AccountType.ROCKSKY -> AtprotoScrobblable(userAccount)
         }
     }
 }

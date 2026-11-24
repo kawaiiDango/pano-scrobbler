@@ -94,6 +94,7 @@ class DigestWorker(
             val limit = 3
             val scrobblable = Scrobblables.current
                 ?: throw IllegalStateException("Not logged in")
+            if (scrobblable.userAccount.type.isAtproto) return@supervisorScope
 
             val timeLastfmPeriod = TimePeriod(lastfmPeriod)
 

@@ -55,5 +55,6 @@ object LoginDestinations {
         AccountType.CUSTOM_LISTENBRAINZ_3 -> PanoRoute.LoginCustomListenBrainz(3)
         AccountType.PLEROMA -> PanoRoute.LoginPleroma
         AccountType.FILE -> PanoRoute.LoginFile
+        AccountType.TEAL, AccountType.ROCKSKY -> PanoRoute.LoginAtproto(accountType)
     }
 }

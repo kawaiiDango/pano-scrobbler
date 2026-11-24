@@ -1,5 +1,6 @@
 package com.arn.scrobble.pref
 
+import androidx.datastore.core.DataStore
 import com.arn.scrobble.BuildKonfig
 import com.arn.scrobble.db.ArtistWithDelimiters
 import com.arn.scrobble.db.BlockedMetadata
@@ -25,8 +26,10 @@ import kotlinx.serialization.json.encodeToStream
 import java.io.InputStream
 import java.io.OutputStream
 
-class ImExporter {
-    private val db = PanoDb.db
+class ImExporter(
+    private val db: PanoDb = PanoDb.db,
+    private val prefs: DataStore<MainPrefs> = PlatformStuff.mainPrefs,
+) {
     private val json by lazy {
         Json {
             ignoreUnknownKeys = true
@@ -47,7 +50,7 @@ class ImExporter {
             artists_with_delimiters = db.getArtistsWithDelimitersDao().allFlow().first()
                 .map { it.artist },
             scrobble_sources = null,
-            settings = PlatformStuff.mainPrefs.data.first().toPublicPrefs()
+            settings = prefs.data.first().toPublicPrefs()
         )
 
         // write to file
@@ -111,7 +114,7 @@ class ImExporter {
                 exportData.settings.extractFirstArtistPackages.filter(PlatformStuff::doesAppExist)
                     .toSet()
 
-            PlatformStuff.mainPrefs.updateData {
+            prefs.updateData {
                 it.updateFromPublicPrefs(
                     exportData.settings.copy(
                         allowedPackages = if (allowedPackagesFiltered.isEmpty() && exportData.settings.allowedPackages.isNotEmpty())

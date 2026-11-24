@@ -110,6 +110,9 @@ sealed interface PanoRoute : NavKey {
     data object LoginGnufm : PanoRoute
 
     @Serializable
+    data class LoginAtproto(val type: AccountType, val reconnect: Boolean = false) : PanoRoute
+
+    @Serializable
     data class AppList(
         val saveType: AppListSaveType,
         val packagesOverride: List<String>? = null,
@@ -411,6 +414,8 @@ sealed interface PanoRoute : NavKey {
 
             AccountType.PLEROMA,
             AccountType.FILE,
+            AccountType.TEAL,
+            AccountType.ROCKSKY,
                 -> listOf(
                 PanoTab.ScrobblesNoSubtabs,
             )

@@ -53,6 +53,7 @@ import com.arn.scrobble.utils.Stuff
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
 import pano_scrobbler.composeapp.generated.resources.Res
+import pano_scrobbler.composeapp.generated.resources.atproto_sign_in_again
 import pano_scrobbler.composeapp.generated.resources.move_left
 import pano_scrobbler.composeapp.generated.resources.move_right
 import pano_scrobbler.composeapp.generated.resources.no_apps_enabled
@@ -515,6 +516,15 @@ fun AccountPref(
                                 dropdownShown = false
                             }
                         ) {
+                            if (type.isAtproto) {
+                                item(
+                                    text = { Text(stringResource(Res.string.atproto_sign_in_again)) },
+                                    onClick = {
+                                        dropdownShown = false
+                                        onNavigate(PanoRoute.LoginAtproto(type, reconnect = true))
+                                    },
+                                )
+                            }
                             item(
                                 text = {
                                     Text(

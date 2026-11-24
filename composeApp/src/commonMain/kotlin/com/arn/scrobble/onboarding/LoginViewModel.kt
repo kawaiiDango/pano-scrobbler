@@ -8,6 +8,8 @@ import com.arn.scrobble.api.Scrobblables
 import com.arn.scrobble.api.UserAccountSerializable
 import com.arn.scrobble.api.UserAccountTemp
 import com.arn.scrobble.api.UserCached
+import com.arn.scrobble.api.atproto.AtprotoSessions
+import com.arn.scrobble.api.atproto.signInWithAppPassword
 import com.arn.scrobble.api.file.FileScrobblable
 import com.arn.scrobble.api.lastfm.ApiException
 import com.arn.scrobble.api.lastfm.GnuFm
@@ -17,7 +19,9 @@ import com.arn.scrobble.api.pleroma.Pleroma
 import com.arn.scrobble.api.pleroma.PleromaOauthClientCreds
 import com.arn.scrobble.utils.PlatformFile
 import com.arn.scrobble.utils.Stuff
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -26,6 +30,8 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.getString
 import pano_scrobbler.composeapp.generated.resources.Res
+import pano_scrobbler.composeapp.generated.resources.atproto_connect_failed
+import pano_scrobbler.composeapp.generated.resources.atproto_login_failed
 import pano_scrobbler.composeapp.generated.resources.failed_encode_url
 import pano_scrobbler.composeapp.generated.resources.required_fields_empty
 import java.io.IOException
@@ -40,6 +46,8 @@ class LoginViewModel : ViewModel() {
 
     private val _tokenResult = MutableStateFlow<Result<String>?>(null)
     val tokenResult = _tokenResult.asStateFlow()
+    private val atprotoSessions = AtprotoSessions()
+    private var atprotoJob: Job? = null
 
     fun gnufmLogin(
         apiRoot: String,
@@ -244,6 +252,48 @@ class LoginViewModel : ViewModel() {
                     FileScrobblable(toFileAccount)
                         .convert(fromFile, fromFormat)
                 }
+            _result.emit(res)
+        }
+    }
+
+    fun atprotoLogin(
+        handle: String,
+        password: String,
+        type: AccountType,
+        expectedDid: String?,
+    ) {
+        if (atprotoJob?.isActive == true) return
+        atprotoJob = viewModelScope.launch {
+            val res = if (handle.isNotBlank() && password.isNotBlank()) {
+                try {
+                    val normalizedHandle = handle.trim().removePrefix("@").lowercase()
+                    val session = signInWithAppPassword(normalizedHandle, password)
+                    atprotoSessions.connect(session, UserCached(normalizedHandle, "", "", "", 0), type, expectedDid)
+                    Result.success(Unit)
+                } catch (e: CancellationException) {
+                    throw e
+                } catch (_: Exception) {
+                    // Provider responses/exceptions can contain credentials. Surface a fixed message.
+                    Result.failure(IllegalStateException(getString(Res.string.atproto_login_failed)))
+                }
+            } else {
+                Result.failure(IllegalArgumentException(getString(Res.string.required_fields_empty)))
+            }
+            _result.emit(res)
+        }
+    }
+
+    fun atprotoConnectSaved(did: String, type: AccountType) {
+        if (atprotoJob?.isActive == true) return
+        atprotoJob = viewModelScope.launch {
+            val res = try {
+                atprotoSessions.connectSaved(did, type)
+                Result.success(Unit)
+            } catch (e: CancellationException) {
+                throw e
+            } catch (_: Exception) {
+                Result.failure(IllegalStateException(getString(Res.string.atproto_connect_failed)))
+            }
             _result.emit(res)
         }
     }

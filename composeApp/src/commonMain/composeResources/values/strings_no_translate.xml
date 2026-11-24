@@ -7,6 +7,8 @@
     <string name="listenbrainz" translatable="false">ListenBrainz</string>
     <string name="maloja" translatable="false">Maloja</string>
     <string name="pleroma" translatable="false">Pleroma</string>
+    <string name="teal" translatable="false">Teal</string>
+    <string name="rocksky" translatable="false">Rocksky</string>
     <string name="loading" translatable="false">…</string>
     <string name="export_file_name" translatable="false" formatted="true">pano_scrobbler_export_%1$s</string>
     <string name="edit_case_sensitive_aa" translatable="false">Aa</string>
@@ -66,6 +68,16 @@
 
     <string name="automation_cp_info">For Tasker, use Action > SQL Query. Set the mode to "URI Formatted", put any name in "Variable Array" and URI to one of these.</string>
     <string name="automation_replace_app_id" formatted="true" comment="%1$s is the literal text package_name on Android, APP_ID or MPRIS_ID on desktop">Replace %1$s with that of the app.</string>
+
+    <string name="atproto_handle">Handle</string>
+    <string name="atproto_app_password">App password</string>
+    <string name="atproto_app_password_info">Use an app password created in your AT Protocol account settings, not your main password.</string>
+    <string name="atproto_connect_as" formatted="true">Connect as %1$s</string>
+    <string name="atproto_connect_failed">Could not connect with the saved account. Try again.</string>
+    <string name="atproto_sign_in_again">Sign in again</string>
+    <string name="atproto_login_failed">Could not sign in. Check your handle and app password and try again.</string>
+    <string name="atproto_public_history_disclosure" formatted="true">Pano publishes completed plays to your public %1$s history.</string>
+    <string name="atproto_reconnect_needed" formatted="true">Sign in again as %1$s.</string>
 
     <string name="billing_troubleshoot_non_play_purchases" translatable="false" formatted="true">Already paid without using Google Play?
 

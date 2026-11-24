@@ -295,7 +295,7 @@ fun PanoAppContent(
         backStack.lastOrNull { !it.isModal() }
     }
 
-    val currentUser = remember(currentPanoRoute, currentAccountType) {
+    val currentUser = remember(currentPanoRoute, currentAccountType, userSelf) {
         backStack
             .filterIsInstance<PanoRoute.HasUser>()
             .lastOrNull()

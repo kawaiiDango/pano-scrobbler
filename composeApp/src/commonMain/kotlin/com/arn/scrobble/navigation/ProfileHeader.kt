@@ -507,17 +507,20 @@ private fun ColumnScope.ProfileLinks(
         modifier = Modifier
             .align(Alignment.CenterHorizontally)
     ) {
-        ButtonWithIcon(
-            icon = Icons.OpenInBrowser,
-            text = stringResource(Res.string.profile),
-            onClick = {
-                onOpenUrl(user.url)
-            }
-        )
+        if (user.url.isNotEmpty()) {
+            ButtonWithIcon(
+                icon = Icons.OpenInBrowser,
+                text = stringResource(Res.string.profile),
+                onClick = {
+                    onOpenUrl(user.url)
+                }
+            )
+        }
 
         if (accountType == AccountType.LASTFM ||
             accountType == AccountType.LIBREFM ||
-            accountType == AccountType.LISTENBRAINZ
+            accountType == AccountType.LISTENBRAINZ ||
+            accountType == AccountType.ROCKSKY
         ) {
             ButtonWithIcon(
                 icon = Icons.OpenInBrowser,
@@ -527,6 +530,7 @@ private fun ColumnScope.ProfileLinks(
                         AccountType.LASTFM -> "https://www.last.fm/user/${user.name}/listening-report/week"
                         AccountType.LIBREFM -> "https://libre.fm/user/${user.name}/stats"
                         AccountType.LISTENBRAINZ -> "https://listenbrainz.org/user/${user.name}/reports"
+                        AccountType.ROCKSKY -> "https://rocksky.app/charts"
                     }
                     onOpenUrl(url)
                 }

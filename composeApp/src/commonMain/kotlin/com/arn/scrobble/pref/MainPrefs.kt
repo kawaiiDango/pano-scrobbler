@@ -10,6 +10,7 @@ import com.arn.scrobble.api.AccountType
 import com.arn.scrobble.api.DrawerData
 import com.arn.scrobble.api.UserAccountSerializable
 import com.arn.scrobble.api.UserCached
+import com.arn.scrobble.api.atproto.AtprotoAppPasswordSession
 import com.arn.scrobble.api.lastfm.CookieSerializable
 import com.arn.scrobble.api.lastfm.LastfmPeriod
 import com.arn.scrobble.charts.TimePeriod
@@ -134,6 +135,7 @@ data class MainPrefs(
     val extractFirstArtistPackages: Set<String> = emptySet(),
     val discordRpc: DiscordRpcPrefs = DiscordRpcPrefs(),
     val proxy: ProxyPrefs = ProxyPrefs(),
+    val atprotoSession: AtprotoAppPasswordSession? = null,
 ) {
 
     @Serializable
@@ -251,6 +253,9 @@ data class MainPrefs(
     val currentAccount
         get() = scrobbleAccounts.firstOrNull { it.type == currentAccountType }
 
+    val atprotoAccount
+        get() = scrobbleAccounts.firstOrNull { it.type.isAtproto }
+
     val logToFileOnAndroid
         get() = (System.currentTimeMillis() - logToFileOnAndroidSince) <= 15.days.inWholeMilliseconds
 
@@ -353,8 +358,9 @@ data class MainPrefs(
             override suspend fun readFrom(input: InputStream) =
                 try {
                     Stuff.myJson.decodeFromStream<MainPrefs>(input)
-                } catch (e: SerializationException) {
-                    Logger.e(e) { "MainPrefs deserialization error" }
+                } catch (_: SerializationException) {
+                    // A decoder exception can contain credentials from the preferences JSON.
+                    Logger.e { "MainPrefs deserialization error" }
                     defaultValue
                 }
 

@@ -85,6 +85,8 @@ fun ChartsWidgetConfigScreen(
                 it.type in arrayOf(
                     AccountType.PLEROMA,
                     AccountType.FILE,
+                    AccountType.TEAL,
+                    AccountType.ROCKSKY,
                 )
             }
             .associate {

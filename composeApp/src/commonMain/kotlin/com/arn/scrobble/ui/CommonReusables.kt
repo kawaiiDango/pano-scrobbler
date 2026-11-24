@@ -163,7 +163,9 @@ import pano_scrobbler.composeapp.generated.resources.pleroma
 import pano_scrobbler.composeapp.generated.resources.pref_import
 import pano_scrobbler.composeapp.generated.resources.profile_pic
 import pano_scrobbler.composeapp.generated.resources.retry
+import pano_scrobbler.composeapp.generated.resources.rocksky
 import pano_scrobbler.composeapp.generated.resources.scrobble_to_file
+import pano_scrobbler.composeapp.generated.resources.teal
 import pano_scrobbler.composeapp.generated.resources.unsupported_api
 import pano_scrobbler.composeapp.generated.resources.yes
 import java.util.Calendar
@@ -805,6 +807,7 @@ fun VerifyButton(
     onDone: () -> Unit,
     modifier: Modifier = Modifier,
     onTrustAll: (() -> Unit)? = null,
+    buttonText: String = stringResource(Res.string.login_submit),
 ) {
     var verifying by rememberSaveable { mutableStateOf(false) }
     var errorText by rememberSaveable { mutableStateOf<String?>(null) }
@@ -868,7 +871,7 @@ fun VerifyButton(
                         if (gotTlsErrOnLocal) {
                             Text(stringResource(Res.string.add_exception))
                         } else {
-                            Text(stringResource(Res.string.login_submit), maxLines = 1)
+                            Text(buttonText, maxLines = 1)
                         }
                     }
                 }
@@ -1184,6 +1187,8 @@ fun accountTypeStringRes(accountType: AccountType): Pair<StringResource, StringR
 
         AccountType.PLEROMA -> Res.string.pleroma
         AccountType.FILE -> Res.string.scrobble_to_file
+        AccountType.TEAL -> Res.string.teal
+        AccountType.ROCKSKY -> Res.string.rocksky
     }
 
     val formatRes = when (accountType) {

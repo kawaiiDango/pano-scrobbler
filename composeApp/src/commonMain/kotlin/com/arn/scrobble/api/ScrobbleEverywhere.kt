@@ -242,6 +242,9 @@ object ScrobbleEverywhere {
             preprocessResult2
     }
 
+    suspend fun fetchDeezerAlbumArt(scrobbleData: ScrobbleData): String? =
+        fetchFromDeezer(scrobbleData).artUrl
+
     suspend fun fetchMissingMetadata(
         scrobbleData: ScrobbleData,
         canRequest: suspend () -> Boolean = ::throttledRequest,
@@ -540,6 +543,10 @@ object ScrobbleEverywhere {
         return AdditionalMetadataResult.Empty
     }
 
+    // Deezer titles carry suffixes like "(feat. X)" that scrobblers often omit
+    private fun String.comparableTitle(): String =
+        replace(Regex("""\s*[(\[][^)\]]*[)\]]"""), "").trim().ifEmpty { trim() }.lowercase()
+
     private suspend fun fetchFromDeezer(
         scrobbleData: ScrobbleData,
     ): AdditionalMetadataResult {
@@ -552,10 +559,10 @@ object ScrobbleEverywhere {
                 scrobbleData.track,
                 limit = 5
             ).onFailure {
-                Logger.w(it) { "Failed to search Deezer for track" }
+                Logger.w(it) { "Failed to search Deezer for track: $it" }
             }.onSuccess {
                 track = it.data.firstOrNull {
-                    it.title.equals(scrobbleData.track, ignoreCase = true)
+                    it.title.comparableTitle() == scrobbleData.track.comparableTitle()
                     // the album may be absent in scrobbleData, and the artist may contain multiple artists,
                     // so we don't check them here
                 }

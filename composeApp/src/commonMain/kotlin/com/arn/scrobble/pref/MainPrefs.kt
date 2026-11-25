@@ -141,7 +141,11 @@ data class MainPrefs(
         val enabled: Boolean = false,
         val statusLine: Int = Line.Line2.ordinal,
         val albumArt: Boolean = true,
-        val albumArtFromNowPlaying: Boolean = true,
+        val albumArtFallback: Boolean = true,
+        val albumArtFallbacks: List<ArtFallbackPref> = listOf(
+            ArtFallbackPref(ArtFallback.LASTFM_NOW_PLAYING, enabled = true),
+            ArtFallbackPref(ArtFallback.DEEZER, enabled = false),
+        ),
         val line1Format: String = $$"$title",
         val line2Format: String = $$"$artist",
         val line3Format: String = $$"$album",
@@ -154,6 +158,16 @@ data class MainPrefs(
         enum class ButtonType {
             PANO_SCROBBLER, LASTFM_PROFILE, LISTENBRAINZ_PROFILE, LIBREFM_PROFILE, NONE
         }
+
+        enum class ArtFallback {
+            LASTFM_NOW_PLAYING, DEEZER
+        }
+
+        @Serializable
+        data class ArtFallbackPref(
+            val source: ArtFallback,
+            val enabled: Boolean,
+        )
 
         enum class Line {
             None,

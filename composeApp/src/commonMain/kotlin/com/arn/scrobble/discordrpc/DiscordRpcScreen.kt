@@ -14,6 +14,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -27,6 +28,7 @@ import com.arn.scrobble.pref.DropdownPref
 import com.arn.scrobble.pref.MainPrefs
 import com.arn.scrobble.pref.SliderPref
 import com.arn.scrobble.pref.SwitchPref
+import com.arn.scrobble.pref.TextPref
 import com.arn.scrobble.ui.ErrorText
 import com.arn.scrobble.ui.HighlighterOutputTransformation
 import com.arn.scrobble.ui.PanoOutlinedTextField
@@ -37,8 +39,8 @@ import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
 import pano_scrobbler.composeapp.generated.resources.Res
 import pano_scrobbler.composeapp.generated.resources.album_art
-import pano_scrobbler.composeapp.generated.resources.album_art_now_playing
-import pano_scrobbler.composeapp.generated.resources.album_art_now_playing_desc
+import pano_scrobbler.composeapp.generated.resources.album_art_fallback
+import pano_scrobbler.composeapp.generated.resources.album_art_fallback_sources
 import pano_scrobbler.composeapp.generated.resources.appwidget_show
 import pano_scrobbler.composeapp.generated.resources.available_placeholders
 import pano_scrobbler.composeapp.generated.resources.button_url
@@ -102,6 +104,8 @@ fun DiscordRpcScreen(
     }
 
     val enabled = settings.enabled && discordAndroidInstalled
+    val lastfmSignedIn = AccountType.LASTFM in accountTypes
+    var showArtFallbackDialog by rememberSaveable { mutableStateOf(false) }
 
     DisposableEffect(Unit) {
         onDispose {
@@ -158,16 +162,41 @@ fun DiscordRpcScreen(
         )
 
         SwitchPref(
-            text = stringResource(Res.string.album_art_now_playing),
-            summary = stringResource(Res.string.album_art_now_playing_desc),
-            value = settings.albumArtFromNowPlaying,
+            text = stringResource(Res.string.album_art_fallback),
+            value = settings.albumArtFallback,
             enabled = enabled && settings.albumArt,
             copyToSave = {
                 copy(
-                    discordRpc = settings.copy(albumArtFromNowPlaying = it)
+                    discordRpc = settings.copy(albumArtFallback = it)
                 )
             }
         )
+
+        val artFallbackSummary = settings.albumArtFallbacks
+            .filter { it.enabled && it.source.isAvailable(lastfmSignedIn) }
+            .map { artFallbackLabel(it.source) }
+            .joinToString()
+        TextPref(
+            text = stringResource(Res.string.album_art_fallback_sources),
+            summary = artFallbackSummary.ifEmpty { null },
+            onClick = { showArtFallbackDialog = true },
+            enabled = enabled && settings.albumArt && settings.albumArtFallback,
+        )
+
+        if (showArtFallbackDialog) {
+            AlbumArtFallbackDialog(
+                fallbacks = settings.albumArtFallbacks.withAllArtFallbacks(),
+                lastfmSignedIn = lastfmSignedIn,
+                onChange = { list ->
+                    Stuff.appScope.launch {
+                        PlatformStuff.mainPrefs.updateData {
+                            it.copy(discordRpc = it.discordRpc.copy(albumArtFallbacks = list))
+                        }
+                    }
+                },
+                onDismiss = { showArtFallbackDialog = false },
+            )
+        }
 
         SwitchPref(
             text = stringResource(Res.string.show_track_url),

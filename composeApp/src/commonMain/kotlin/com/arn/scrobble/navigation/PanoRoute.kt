@@ -107,6 +107,9 @@ sealed interface PanoRoute : NavKey {
     data object LoginPleroma : PanoRoute
 
     @Serializable
+    data object LoginTeal : PanoRoute
+
+    @Serializable
     data object LoginGnufm : PanoRoute
 
     @Serializable
@@ -411,6 +414,7 @@ sealed interface PanoRoute : NavKey {
 
             AccountType.PLEROMA,
             AccountType.FILE,
+            AccountType.TEALFM,
                 -> listOf(
                 PanoTab.ScrobblesNoSubtabs,
             )

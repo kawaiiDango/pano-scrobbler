@@ -150,16 +150,6 @@ class ListenBrainz(userAccount: UserAccountSerializable) : Scrobblable(userAccou
     override suspend fun scrobble(scrobbleDatas: List<ScrobbleData>) =
         submitListens(scrobbleDatas, ListenBrainzListenType.import)
 
-    private suspend fun lookupMbid(track: Track): Result<ListenBrainzMbidLookup> {
-        return client.getResult<ListenBrainzMbidLookup>("metadata/lookup") {
-            parameter("artist_name", track.artist.name)
-            parameter("recording_name", track.name)
-            parameter("release_name", track.album?.name)
-            commonReq()
-        }
-//        200 OK – lookup succeeded, does not indicate whether a match was found or not
-    }
-
     private fun createImageUrls(releaseMbid: String?): ImagesUrls? {
         return if (releaseMbid != null) ImagesUrls(
             "https://coverartarchive.org/release/$releaseMbid/front-250",

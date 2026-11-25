@@ -6,6 +6,8 @@ import androidx.room3.ColumnTypeConverters
 import com.arn.scrobble.db.StringMapTypeConverter
 import kotlinx.serialization.Serializable
 
+internal const val FULL_ARTIST_CREDIT_TAG = "com.arn.scrobble.full_artist_credit"
+
 @Keep
 @Serializable
 data class ScrobbleData(

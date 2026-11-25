@@ -146,6 +146,7 @@ import kotlinx.serialization.SerializationException
 import okhttp3.HttpUrl.Companion.toHttpUrl
 import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringResource
+import pano_scrobbler.composeapp.generated.resources.tealfm
 import pano_scrobbler.composeapp.generated.resources.Res
 import pano_scrobbler.composeapp.generated.resources.add_exception
 import pano_scrobbler.composeapp.generated.resources.disable
@@ -1184,6 +1185,7 @@ fun accountTypeStringRes(accountType: AccountType): Pair<StringResource, StringR
 
         AccountType.PLEROMA -> Res.string.pleroma
         AccountType.FILE -> Res.string.scrobble_to_file
+        AccountType.TEALFM -> Res.string.tealfm
     }
 
     val formatRes = when (accountType) {

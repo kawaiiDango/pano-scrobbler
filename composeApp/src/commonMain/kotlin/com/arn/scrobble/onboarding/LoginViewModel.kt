@@ -41,6 +41,20 @@ class LoginViewModel : ViewModel() {
     private val _tokenResult = MutableStateFlow<Result<String>?>(null)
     val tokenResult = _tokenResult.asStateFlow()
 
+    private var tealLoginJob: kotlinx.coroutines.Job? = null
+
+    fun tealLogin(identifier: String, appPassword: String) {
+        if (tealLoginJob?.isActive == true) return
+        tealLoginJob = viewModelScope.launch {
+            val result = if (identifier.isBlank() || appPassword.isBlank()) {
+                Result.failure(IllegalArgumentException(getString(Res.string.required_fields_empty)))
+            } else {
+                com.arn.scrobble.api.teal.Teal.login(identifier.trim(), appPassword.trim())
+            }
+            _result.emit(result)
+        }
+    }
+
     fun gnufmLogin(
         apiRoot: String,
         username: String,

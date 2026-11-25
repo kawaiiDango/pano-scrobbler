@@ -164,9 +164,10 @@ enum class AccountType(val id: Int) {
 
     //    MALOJA(5),
     PLEROMA(6),
-    FILE(7);
+    FILE(7),
+    TEALFM(10);
 
-    val isCustom get() = this != LASTFM && this != LISTENBRAINZ && this != LIBREFM && this != FILE
+    val isCustom get() = this != LASTFM && this != LISTENBRAINZ && this != LIBREFM && this != FILE && this != TEALFM
 }
 
 object Scrobblables {
@@ -255,6 +256,7 @@ object Scrobblables {
             AccountType.PLEROMA -> Pleroma(userAccount)
 
             AccountType.FILE -> FileScrobblable(userAccount)
+            AccountType.TEALFM -> com.arn.scrobble.api.teal.Teal(userAccount)
         }
     }
 }

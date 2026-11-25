@@ -15,6 +15,7 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MenuDefaults
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.VerticalDivider
 import androidx.compose.material3.pulltorefresh.PullToRefreshState
 import androidx.compose.runtime.Composable
@@ -68,6 +69,7 @@ import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff
 import com.arn.scrobble.utils.Stuff.collectAsStateWithInitialValue
 import com.arn.scrobble.utils.Stuff.timeToLocal
+import com.arn.scrobble.work.CommonWorkState
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.StateFlow
@@ -84,6 +86,7 @@ import pano_scrobbler.composeapp.generated.resources.no_scrobbles
 import pano_scrobbler.composeapp.generated.resources.not_running
 import pano_scrobbler.composeapp.generated.resources.pending_scrobbles
 import pano_scrobbler.composeapp.generated.resources.recents
+import pano_scrobbler.composeapp.generated.resources.retry_all_pending_now
 import pano_scrobbler.composeapp.generated.resources.scrobbler_off
 import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.Duration.Companion.seconds
@@ -135,7 +138,7 @@ fun ScrobblesScreen(
     var timeJumpMenuShown by rememberSaveable { mutableStateOf(false) }
     val pendingScrobblesHeader =
         stringResource(Res.string.pending_scrobbles) + ": " + pendingScrobblesCount
-    val canLove = accountType != AccountType.PLEROMA
+    val canLove = accountType !in arrayOf(AccountType.PLEROMA, AccountType.TEALFM)
 
     val scope = rememberCoroutineScope()
 
@@ -143,7 +146,7 @@ fun ScrobblesScreen(
         mutableStateOf(
             !PlatformStuff.isTv &&
                     selectedType != PanoTab.Scrobbles.ScrobblesSubTabType.LOVED &&
-                    accountType !in arrayOf(AccountType.FILE, AccountType.PLEROMA)
+                    accountType !in arrayOf(AccountType.FILE, AccountType.PLEROMA, AccountType.TEALFM)
         )
     }
 
@@ -268,6 +271,7 @@ fun ScrobblesScreen(
 
     ResultEffect<PullToRefreshResult> {
         if (it.tab == PanoTab.Scrobbles || it.tab == PanoTab.ScrobblesNoSubtabs) {
+            viewModel.retryPendingScrobbles()
             if (tracks.loadState.refresh !is LoadState.Loading) {
                 tracks.refresh()
             }
@@ -296,6 +300,7 @@ fun ScrobblesScreen(
     ResultEffect<SubTabClickedResult> { res ->
         when (res.id) {
             PanoTab.Scrobbles.ScrobblesSubTabType.REFRESH.ordinal -> {
+                viewModel.retryPendingScrobbles()
                 if (tracks.loadState.refresh !is LoadState.Loading) {
                     tracks.refresh()
                     scrollToTopOnLoad = true
@@ -455,6 +460,16 @@ fun ScrobblesScreen(
                         viewModel = viewModel,
                     )
 
+                    if (pendingScrobblesCount > 0) {
+                        item("retry_all_pending") {
+                            val retryScheduling by viewModel.retryScheduling.collectAsStateWithLifecycle()
+                            val pendingWorkState by viewModel.pendingWorkState.collectAsStateWithLifecycle()
+                            TextButton(
+                                onClick = viewModel::retryAllPendingNow,
+                                enabled = !retryScheduling && pendingWorkState != CommonWorkState.RUNNING,
+                            ) { Text(stringResource(Res.string.retry_all_pending_now)) }
+                        }
+                    }
                     if (pendingScrobbles.isNotEmpty()) {
                         item("pending_divider") {
                             HorizontalDivider(

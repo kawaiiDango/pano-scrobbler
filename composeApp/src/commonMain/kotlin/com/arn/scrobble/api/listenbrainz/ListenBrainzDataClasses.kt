@@ -60,14 +60,27 @@ data class ListenBrainzAdditionalInfo(
 )
 
 @Serializable
-data class ListenBrainzMbidLookup(
-    val artist_credit_name: String?,
-    val artist_mbids: List<String>?,
-    val recording_mbid: String?,
-    val recording_name: String?,
-    val release_mbid: String?,
-    val release_name: String?,
-)
+internal data class ListenBrainzMbidLookup(
+    val artist_credit_name: String? = null,
+    val artist_mbids: List<String>? = null,
+    val recording_mbid: String? = null,
+    val recording_name: String? = null,
+    val release_mbid: String? = null,
+    val release_name: String? = null,
+    val metadata: Metadata? = null,
+) {
+    @Serializable
+    data class Metadata(val artist: ArtistCredit? = null, val recording: Recording? = null)
+
+    @Serializable
+    data class ArtistCredit(val artists: List<CreditedArtist> = emptyList())
+
+    @Serializable
+    data class CreditedArtist(val name: String, val artist_mbid: String)
+
+    @Serializable
+    data class Recording(val length: Long? = null)
+}
 
 @Serializable
 data class ListenBrainzFeedback(

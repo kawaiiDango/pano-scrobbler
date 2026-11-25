@@ -31,6 +31,7 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.emptyFlow
+import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flatMapLatest
@@ -39,6 +40,7 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import kotlinx.coroutines.withTimeoutOrNull
 import java.util.Calendar
 import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.Duration.Companion.seconds
@@ -48,6 +50,52 @@ class ScrobblesVM(
     val user: UserCached,
     track: Track?, // for track-specific scrobbles view
 ) : ViewModel() {
+    private val desktopWorkPollInterval = 500.milliseconds
+    private val _retryScheduling = MutableStateFlow(false)
+    val retryScheduling = _retryScheduling.asStateFlow()
+    val pendingWorkState = flow {
+        if (PlatformStuff.isDesktop) {
+            // Desktop's state() is a snapshot, not an observable stream.
+            while (true) {
+                emit(PendingScrobblesWork.state().first())
+                delay(desktopWorkPollInterval)
+            }
+        } else {
+            emitAll(PendingScrobblesWork.state())
+        }
+    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(replayExpirationMillis = 0), CommonWorkState.RUNNING)
+
+    fun retryPendingScrobbles() = schedulePendingRetry(overrideBackoff = false)
+
+    fun retryAllPendingNow() = schedulePendingRetry(overrideBackoff = true)
+
+    private fun schedulePendingRetry(overrideBackoff: Boolean) {
+        if (!user.isSelf || !_retryScheduling.compareAndSet(false, true)) return
+        viewModelScope.launch {
+            try {
+                val dao = PanoDb.db.getPendingScrobblesDao()
+                if (dao.count() == 0 || (!overrideBackoff && !dao.canForceRetry())) return@launch
+
+                var requested = false
+                withTimeoutOrNull(5.seconds) {
+                    // Subscribe before enqueueing; Android can report a new request with the same state.
+                    PendingScrobblesWork.state().first { state ->
+                        if (requested || state == CommonWorkState.RUNNING || !user.isSelf) return@first true
+                        PendingScrobblesWork.schedule(true)
+                        requested = true
+                        PlatformStuff.isDesktop // Desktop schedules synchronously and only emits once.
+                    }
+                }
+                if (requested) {
+                    // On desktop, wait through the scheduler's initial delay and the next state poll.
+                    delay(if (PlatformStuff.isDesktop) 5.seconds + desktopWorkPollInterval else 2.seconds)
+                }
+            } finally {
+                _retryScheduling.value = false
+            }
+        }
+    }
+
     private val androidDbPollRunning = MutableStateFlow(true)
     private val pendingScrobblesExpanded = MutableStateFlow(false)
     val pendingScrobblesPreviewCount = 3

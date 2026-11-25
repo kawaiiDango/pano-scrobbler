@@ -18,16 +18,22 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
+import kotlinx.coroutines.withTimeoutOrNull
 import kotlinx.serialization.json.*
 import java.io.File
 import java.io.IOException
 import kotlin.coroutines.cancellation.CancellationException
+import kotlin.math.abs
+import kotlin.time.Duration.Companion.seconds
 import kotlin.time.Instant
 
 class Teal internal constructor(
     userAccount: UserAccountSerializable,
     sessionStore: TealSessionStore? = null,
     httpClient: HttpClient? = null,
+    private val lookupAccount: suspend () -> UserAccountSerializable? = {
+        if (sessionStore == null) configuredLookupAccount() else null
+    },
 ) : Scrobblable(userAccount) {
     private val usePersistedAccounts = sessionStore == null
     private val store = sessionStore ?: TealAccountSessionStore(
@@ -45,6 +51,9 @@ class Teal internal constructor(
     }
     private val pages = mutableMapOf<Triple<Long, Long, Int>, MutableMap<Int, String?>>()
     private val pageLock = Mutex()
+    private val lookupResolver = httpClient?.let { http ->
+        ListenBrainzMbidResolver { request -> request(http) }
+    } ?: mbidResolver
 
     private inner class PlayEnrichment {
         private var loadedAccount = false
@@ -52,19 +61,28 @@ class Teal internal constructor(
         private var lookupBatch: ListenBrainzMbidResolver.Batch? = null
 
         suspend fun enrich(data: ScrobbleData): ScrobbleData {
-            if (!usePersistedAccounts || mbidUri(data.extraTags[ListenBrainz.MUSICBRAINZ_TRACKID]) != null) return data
+            if (mbidUri(data.extraTags[ListenBrainz.MUSICBRAINZ_TRACKID]) != null) return data
             if (!loadedAccount) {
                 lookupBatchStartupLock.withLock {
-                    account = configuredLookupAccount()
-                    lookupBatch = mbidResolver.startBatch(account)
+                    account = lookupAccount()
+                    lookupBatch = lookupResolver.startBatch(account)
                     loadedAccount = true
                 }
             }
-            val match = lookupBatch?.lookup?.invoke(data.artist, data.track, data.album) ?: return data
+            val lookupArtist = data.extraTags[FULL_ARTIST_CREDIT_TAG] ?: data.artist
+            val match = lookupBatch?.lookup?.invoke(lookupArtist, data.track, data.album) ?: return data
+            val credits = match.metadata?.artist?.artists.orEmpty()
+            val creditsMatch = credits.size > 1 &&
+                lookupArtist.trim().lowercase().split(artistCreditSeparator).sorted() ==
+                credits.map { it.name.trim().lowercase() }.sorted()
             if (mbidUri(match.recording_mbid) == null || !match.recording_name.matchesLookupName(data.track) ||
-                !match.artist_credit_name.matchesLookupName(data.artist)) return data
+                (!match.artist_credit_name.matchesLookupName(lookupArtist) && !creditsMatch)) return data
+            val length = match.metadata?.recording?.length
+            val duration = data.duration
+            if (length != null && length > 0 && duration != null && duration > 0 && abs(length - duration) > 10_000)
+                return data
             // A slow result from an old login must not enrich a play after account replacement.
-            val current = configuredLookupAccount()
+            val current = lookupAccount()
             if (current == null || current.authKey != account?.authKey || current.user.name != account?.user?.name) return data
 
             val tags = data.extraTags.toMutableMap()
@@ -74,7 +92,9 @@ class Teal internal constructor(
             add(ListenBrainz.MUSICBRAINZ_TRACKID, match.recording_mbid)
             if (data.album?.isNotBlank() == true && match.release_name.matchesLookupName(data.album))
                 add(ListenBrainz.MUSICBRAINZ_ALBUMID, match.release_mbid)
-            add(ListenBrainz.MUSICBRAINZ_ARTISTID, match.artist_mbids?.singleOrNull())
+            val artistId = credits.singleOrNull { it.name.matchesLookupName(data.artist) }?.artist_mbid
+                ?: match.artist_mbids?.singleOrNull()?.takeIf { match.artist_credit_name.matchesLookupName(data.artist) }
+            add(ListenBrainz.MUSICBRAINZ_ARTISTID, artistId)
             return data.copy(extraTags = tags)
         }
     }
@@ -105,12 +125,16 @@ class Teal internal constructor(
     }
 
     override suspend fun updateNowPlaying(scrobbleData: ScrobbleData): Result<ScrobbleResult> = result {
+        scrobbleData.validateTealFields()
+        // Leave time to publish before the playback queue's Now Playing deadline.
+        val enriched = withTimeoutOrNull(2.seconds) { PlayEnrichment().enrich(scrobbleData) }
+        val item = (enriched ?: scrobbleData).toTealRecord(agent)
         val now = System.currentTimeMillis()
         client.write(TEAL_STATUS, "self", buildJsonObject {
             put("\$type", TEAL_STATUS)
             put("time", Instant.fromEpochMilliseconds(now).toString())
             put("expiry", Instant.fromEpochMilliseconds(now + (scrobbleData.duration ?: 600_000L).coerceIn(30_000L, 600_000L)).toString())
-            put("item", JsonObject(scrobbleData.toTealRecord(agent).filterKeys { it != "\$type" }))
+            put("item", JsonObject(item.filterKeys { it != "\$type" }))
         })
         ScrobbleResult(false)
     }
@@ -206,6 +230,7 @@ class Teal internal constructor(
         }
         private val lookupBatchStartupLock = Mutex()
         private val mbidResolver by lazy { ListenBrainzMbidResolver(TealTransport::withClient) }
+        private val artistCreditSeparator = Regex("""\s*[,;、]\s*|\s+(?:&|x|and|feat\.?|ft\.?|featuring|with|/)\s+""")
         private val agent get() = "com.arn.scrobble/${BuildKonfig.VER_NAME}"
 
         suspend fun login(identifier: String, appPassword: String): Result<Unit> = result {

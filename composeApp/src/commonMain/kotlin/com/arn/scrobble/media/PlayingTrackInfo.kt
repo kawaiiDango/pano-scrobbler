@@ -1,5 +1,6 @@
 package com.arn.scrobble.media
 
+import com.arn.scrobble.api.lastfm.FULL_ARTIST_CREDIT_TAG
 import com.arn.scrobble.api.lastfm.ScrobbleData
 import com.arn.scrobble.utils.MetadataUtils
 import com.arn.scrobble.utils.PlatformStuff
@@ -73,6 +74,7 @@ class PlayingTrackInfo(
         private set
 
     private val extraTags: MutableMap<String, String> = mutableMapOf()
+    private var fullArtistCredit: String? = null
 
     var hash: Int = 0
         private set
@@ -130,6 +132,7 @@ class PlayingTrackInfo(
 
         this.extraTags.clear()
         this.extraTags.putAll(extraTags)
+        fullArtistCredit = null
 
         scrobbledState = ScrobbledState.NONE
         msid = null
@@ -238,7 +241,9 @@ class PlayingTrackInfo(
         timestamp = playStartTime,
         duration = durationMillis.takeIf { it > 0 },
         appId = appId,
-        extraTags = extraTags,
+        extraTags = if (useOriginals) extraTags else fullArtistCredit?.let {
+            extraTags + (FULL_ARTIST_CREDIT_TAG to it)
+        } ?: extraTags,
     )
 
     fun toTrackPlayingEvent() = PlayingTrackNotifyEvent.TrackPlaying(
@@ -262,6 +267,7 @@ class PlayingTrackInfo(
         title = sd.track
         album = sd.album.orEmpty()
         artist = sd.artist
+        fullArtistCredit = sd.extraTags[FULL_ARTIST_CREDIT_TAG]
         albumArtist = sd.albumArtist.orEmpty()
         userLoved = loved
 

@@ -134,6 +134,8 @@ internal class ListenBrainzMbidResolver(
                 parameters.append("artist_name", query.artist)
                 parameters.append("recording_name", query.recording)
                 query.release?.let { parameters.append("release_name", it) }
+                parameters.append("metadata", "true")
+                parameters.append("inc", "artist")
             }
         }
         if (response.status != HttpStatusCode.OK)

@@ -5,6 +5,7 @@ import co.touchlab.kermit.Logger
 import com.arn.scrobble.api.deezer.DeezerTrack
 import com.arn.scrobble.api.lastfm.Album
 import com.arn.scrobble.api.lastfm.Artist
+import com.arn.scrobble.api.lastfm.FULL_ARTIST_CREDIT_TAG
 import com.arn.scrobble.api.lastfm.ScrobbleData
 import com.arn.scrobble.api.lastfm.Track
 import com.arn.scrobble.api.steelseries.SteelSeriesReceiverServer
@@ -193,6 +194,10 @@ object ScrobbleEverywhere {
 
                 scrobbleData = scrobbleData.copy(
                     artist = firstArtist,
+                    extraTags = if (firstArtist != scrobbleData.artist)
+                        scrobbleData.extraTags + (FULL_ARTIST_CREDIT_TAG to scrobbleData.artist)
+                    else
+                        scrobbleData.extraTags,
                     albumArtist = if (scrobbleData.albumArtist == scrobbleData.artist && firstArtist != scrobbleData.artist)
                         firstArtist
                     else
@@ -224,7 +229,11 @@ object ScrobbleEverywhere {
         val preprocessResult2 =
             if (!preprocessResult.userEditsApplied && preprocessResult.presetsApplied) {
                 // don't try to parse title again here
-                performEditsAndBlocks(preprocessResult.scrobbleData, trackUrlDomain, false)
+                val edited = performEditsAndBlocks(preprocessResult.scrobbleData, trackUrlDomain, false)
+                if (edited.scrobbleData.artist == preprocessResult.scrobbleData.artist) edited
+                else edited.copy(scrobbleData = edited.scrobbleData.copy(
+                    extraTags = edited.scrobbleData.extraTags - FULL_ARTIST_CREDIT_TAG,
+                ))
             } else {
                 preprocessResult
             }

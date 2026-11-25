@@ -60,7 +60,8 @@ sealed interface DiscordActivity {
 //        val keepTill: Long?
         val isPlaying: Boolean,
         val showPausedForSecs: Int,
-        val canFetchArt: Boolean
+        val canFetchArt: Boolean,
+        val artFallbacks: List<MainPrefs.DiscordRpcPrefs.ArtFallback>
     ) : DiscordActivity {
 
         /** Returns the start and end times. The end time is 0 if it is unknown. */
@@ -245,7 +246,7 @@ object DiscordRpc {
                         activity.isPlaying &&
                         activity.canFetchArt
                     )
-                        fetchArt(activity.scrobbleData, activity.hash)
+                        fetchArt(activity.scrobbleData, activity.hash, activity.artFallbacks)
 
                     if (!succ) {
                         Logger.d { "DiscordRpc: retrying" }
@@ -270,21 +271,37 @@ object DiscordRpc {
             .launchIn(Stuff.appScope)
     }
 
-    // call this only on isPlaying=true. The art is from now playing
-    private suspend fun fetchArt(scrobbleData: ScrobbleData, hash: Int) {
-        val additionalMetadata = ScrobbleEverywhere.fetchNowPlayingAlbumArt(scrobbleData)
+    // call this only on isPlaying=true. Tries each enabled fallback in priority order until one has art
+    private suspend fun fetchArt(
+        scrobbleData: ScrobbleData,
+        hash: Int,
+        fallbacks: List<MainPrefs.DiscordRpcPrefs.ArtFallback>,
+    ) {
+        var artUrl: String? = null
+
+        for (source in fallbacks) {
+            artUrl = when (source) {
+                MainPrefs.DiscordRpcPrefs.ArtFallback.LASTFM_NOW_PLAYING ->
+                    ScrobbleEverywhere.fetchNowPlayingAlbumArt(scrobbleData).artUrl
+
+                MainPrefs.DiscordRpcPrefs.ArtFallback.DEEZER ->
+                    ScrobbleEverywhere.fetchDeezerAlbumArt(scrobbleData)
+            }
+            if (!artUrl.isNullOrEmpty())
+                break
+        }
 
         notifyPlayingTrackEvent(
             PlayingTrackNotifyEvent.ArtUrlFetched(
                 hash,
-                additionalMetadata.artUrl.orEmpty()
+                artUrl.orEmpty()
             )
         )
 
-        if (!additionalMetadata.artUrl.isNullOrEmpty()) {
-            Logger.d { "DiscordRpc artUrl fetched: ${additionalMetadata.artUrl}" }
+        if (!artUrl.isNullOrEmpty()) {
+            Logger.d { "DiscordRpc artUrl fetched: $artUrl" }
         } else {
-            Logger.e { "DiscordRpc artUrl: ${additionalMetadata.artUrl}" }
+            Logger.e { "DiscordRpc artUrl: $artUrl" }
         }
     }
 
@@ -310,6 +327,11 @@ object DiscordRpc {
         else
             ""
 
+        val artFallbacks = if (settings.albumArt && settings.albumArtFallback)
+            settings.albumArtFallbacks.filter { it.enabled }.map { it.source }
+        else
+            emptyList()
+
         return DiscordActivity.Activity(
             discordClientId = Stuff.DISCORD_CLIENT_ID,
             hash = hash,
@@ -327,9 +349,9 @@ object DiscordRpc {
             buttonUrl = buttonUrl,
             showPausedForSecs = settings.showPausedForSecs,
             isPlaying = true,
-            canFetchArt = settings.albumArt &&
-                    settings.albumArtFromNowPlaying &&
-                    trackPlaying.artUrlState == PlayingTrackInfo.ArtUrlState.CanFetch
+            canFetchArt = settings.albumArt && artFallbacks.isNotEmpty() &&
+                    trackPlaying.artUrlState.canFetch,
+            artFallbacks = artFallbacks,
         )
     }
 

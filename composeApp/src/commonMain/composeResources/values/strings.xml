@@ -378,6 +378,8 @@
     <string name="external_metadata" comment="Used to supplement partially missing metadata. Sources are Spotify, Deezer etc">External metadata sources</string>
     <string name="line_n" formatted="true" comment="%1$s is the line number, currently used in the context of Discord Rich Presence">Line %1$s</string>
     <string name="album_art_now_playing">Fetch album art from Now Playing, if required</string>
+    <string name="album_art_fallback">Fallback for album art</string>
+    <string name="album_art_fallback_sources">Fallback sources, in priority order</string>
     <string name="is_turned_off" formatted="true" comment="%1$s= the name of a web service, e.g. Spotify, %2$s=the section name in settings screen where this setting can be found">%1$s is turned off in %2$s</string>
     <string name="discord_compact_view_line">Show as "Listening to":</string>
     <string name="available_placeholders" formatted="true" comment="%1 = placeholder strings, e.g. $artist, $title etc.">Available placeholders: %1$s</string>

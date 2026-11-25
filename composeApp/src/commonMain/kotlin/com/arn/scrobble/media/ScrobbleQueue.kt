@@ -121,11 +121,8 @@ class ScrobbleQueue(
 
                 trackInfo.nowPlayingSubmitted(msid)
 
-                val lastfmNpSucc = npResults?.any { (k, v) ->
-                    k.userAccount.type == AccountType.LASTFM && v.isSuccess
-                } == true
-
-                if (lastfmNpSucc && trackInfo.artUrlState == PlayingTrackInfo.ArtUrlState.None) {
+                // fallbacks (Last.fm, Deezer, ...) may fetch art now; set after now playing so Last.fm sees the track
+                if (trackInfo.artUrlState == PlayingTrackInfo.ArtUrlState.None) {
                     trackInfo.setArtUrlState(PlayingTrackInfo.ArtUrlState.CanFetch)
                 }
 

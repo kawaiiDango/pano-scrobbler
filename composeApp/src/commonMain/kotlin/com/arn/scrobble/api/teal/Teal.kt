@@ -31,9 +31,6 @@ class Teal internal constructor(
     userAccount: UserAccountSerializable,
     sessionStore: TealSessionStore? = null,
     httpClient: HttpClient? = null,
-    private val lookupAccount: suspend () -> UserAccountSerializable? = {
-        if (sessionStore == null) configuredLookupAccount() else null
-    },
 ) : Scrobblable(userAccount) {
     private val usePersistedAccounts = sessionStore == null
     private val store = sessionStore ?: TealAccountSessionStore(
@@ -51,9 +48,6 @@ class Teal internal constructor(
     }
     private val pages = mutableMapOf<Triple<Long, Long, Int>, MutableMap<Int, String?>>()
     private val pageLock = Mutex()
-    private val lookupResolver = httpClient?.let { http ->
-        ListenBrainzMbidResolver { request -> request(http) }
-    } ?: mbidResolver
 
     private inner class PlayEnrichment {
         private var loadedAccount = false
@@ -61,11 +55,11 @@ class Teal internal constructor(
         private var lookupBatch: ListenBrainzMbidResolver.Batch? = null
 
         suspend fun enrich(data: ScrobbleData): ScrobbleData {
-            if (mbidUri(data.extraTags[ListenBrainz.MUSICBRAINZ_TRACKID]) != null) return data
+            if (!usePersistedAccounts || mbidUri(data.extraTags[ListenBrainz.MUSICBRAINZ_TRACKID]) != null) return data
             if (!loadedAccount) {
                 lookupBatchStartupLock.withLock {
-                    account = lookupAccount()
-                    lookupBatch = lookupResolver.startBatch(account)
+                    account = configuredLookupAccount()
+                    lookupBatch = mbidResolver.startBatch(account)
                     loadedAccount = true
                 }
             }
@@ -82,7 +76,7 @@ class Teal internal constructor(
             if (length != null && length > 0 && duration != null && duration > 0 && abs(length - duration) > 10_000)
                 return data
             // A slow result from an old login must not enrich a play after account replacement.
-            val current = lookupAccount()
+            val current = configuredLookupAccount()
             if (current == null || current.authKey != account?.authKey || current.user.name != account?.user?.name) return data
 
             val tags = data.extraTags.toMutableMap()

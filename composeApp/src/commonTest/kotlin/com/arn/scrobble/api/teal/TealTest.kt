@@ -7,45 +7,108 @@ import com.arn.scrobble.api.lastfm.ScrobbleData
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.mock.MockEngine
 import io.ktor.client.engine.mock.respond
+import io.ktor.client.request.HttpRequestData
+import io.ktor.http.HttpMethod
 import io.ktor.http.HttpStatusCode
+import io.ktor.http.content.OutgoingContent
 import io.ktor.http.content.TextContent
+import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
-import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withTimeout
 import kotlinx.serialization.json.*
 import java.io.IOException
+import java.util.concurrent.atomic.AtomicInteger
 import kotlin.test.*
+import kotlin.time.Duration.Companion.seconds
+import kotlin.time.Instant
 
 class TealTest {
     private val did = "did:plc:abcdefghijklmnopqrstuvwx"
     private val pds = "https://pds.example.com"
+    private val appPassword = "abcd-efgh-ijkl-mnop"
     private val track = ScrobbleData("Artist", "Song", "Album", 1_730_000_000_000,
         albumArtist = null, duration = 180_000, appId = "player")
     private fun session() = TealSession(did, "alice.example.com", pds, "old-access", "old-refresh")
-    private class Store(var value: TealSession) : TealSessionStore {
-        var saves = 0
+    private class Store(@Volatile var value: TealSession) : TealSessionStore {
+        val saves = AtomicInteger()
         override suspend fun load() = value
-        override suspend fun save(session: TealSession) { value = session; saves++ }
+        override suspend fun save(session: TealSession) {
+            value = session
+            saves.incrementAndGet()
+        }
     }
     private fun tokens(access: String = "new-access", refresh: String = "new-refresh") =
         """{"did":"$did","handle":"alice.example.com","accessJwt":"$access","refreshJwt":"$refresh"}"""
     private val written = """{"uri":"at://$did/$TEAL_PLAY/key","cid":"cid"}"""
+
+    private fun assertFailurePropagated(expected: IOException, actual: IOException) {
+        // Coroutine stack-trace recovery can wrap an exception in a copy of the same type.
+        assertTrue(generateSequence<Throwable>(actual) { it.cause }.any { it === expected })
+    }
+
+    private fun playRecordJson(
+        name: String = "Song",
+        playedTime: String = "2024-10-27T03:33:20Z",
+        agent: String = "pano/1",
+    ) = """
+        {
+          "${'$'}type":"fm.teal.feed.play",
+          "trackName":"$name",
+          "artists":[{"artistName":"Artist"}],
+          "releaseName":"Album",
+          "duration":180,
+          "playedTime":"$playedTime",
+          "submissionClientAgent":"$agent"
+        }
+    """.trimIndent()
+
+    private fun HttpRequestData.assertGetRecord(collection: String, key: String) {
+        assertEquals(HttpMethod.Get, method)
+        assertEquals("/xrpc/com.atproto.repo.getRecord", url.encodedPath)
+        assertEquals("pds.example.com", url.host)
+        assertEquals(did, url.parameters["repo"])
+        assertEquals(collection, url.parameters["collection"])
+        assertEquals(key, url.parameters["rkey"])
+    }
+
+    private fun didDocument(handle: String) = """
+        {
+          "id": "$did",
+          "alsoKnownAs": ["at://$handle"],
+          "service": [{"id":"#atproto_pds","type":"AtprotoPersonalDataServer","serviceEndpoint":"$pds"}]
+        }
+    """.trimIndent()
+
+    private fun HttpRequestData.assertPublicLookup(path: String, parameters: Set<String> = emptySet()) {
+        assertEquals(HttpMethod.Get, method)
+        assertEquals(path, url.encodedPath)
+        assertEquals(parameters, url.parameters.names())
+        assertNull(headers["Authorization"])
+        assertFalse(headers.entries().any { (_, values) -> values.any { appPassword in it } })
+        assertIs<OutgoingContent.NoContent>(body)
+    }
 
     @Test fun loginResolvesPdsAndSendsPasswordOnlyThere() = runBlocking<Unit> {
         var credentialsSent = false
         val http = HttpClient(MockEngine { req ->
             when (req.url.host) {
                 "public.api.bsky.app" -> {
-                    assertNull(req.headers["Authorization"])
+                    req.assertPublicLookup("/xrpc/com.atproto.identity.resolveHandle", setOf("handle"))
                     assertEquals("alice.example.com", req.url.parameters["handle"])
                     respond("""{"did":"$did"}""")
                 }
-                "plc.directory" -> respond("""{"id":"$did","alsoKnownAs":["at://alice.example.com"],"service":[{"id":"#atproto_pds","type":"AtprotoPersonalDataServer","serviceEndpoint":"$pds"}]}""")
+                "plc.directory" -> {
+                    req.assertPublicLookup("/$did")
+                    respond(didDocument("alice.example.com"))
+                }
                 "pds.example.com" -> {
+                    assertEquals(HttpMethod.Post, req.method)
+                    assertEquals("/xrpc/com.atproto.server.createSession", req.url.encodedPath)
                     val body = Json.parseToJsonElement((req.body as TextContent).text).jsonObject
                     assertEquals(did, body.string("identifier"))
-                    assertEquals("abcd-efgh-ijkl-mnop", body.string("password"))
+                    assertEquals(appPassword, body.string("password"))
                     credentialsSent = true
                     respond(tokens())
                 }
@@ -53,7 +116,7 @@ class TealTest {
             }
         }) { followRedirects = false }
         http.use {
-            val result = TealApiClient(it).login("@alice.example.com", "abcd-efgh-ijkl-mnop")
+            val result = TealApiClient(it).login("@alice.example.com", appPassword)
             assertTrue(credentialsSent)
             assertEquals(did, result.did)
             assertEquals(pds, result.pds)
@@ -66,7 +129,7 @@ class TealTest {
         val http = HttpClient(MockEngine { req ->
             when (req.url.host) {
                 "public.api.bsky.app" -> respond("""{"did":"$did"}""")
-                "plc.directory" -> respond("""{"id":"$did","alsoKnownAs":["at://somebody.example.com"]}""")
+                "plc.directory" -> respond(didDocument("somebody.example.com"))
                 else -> error("Credentials must not be sent")
             }
         })
@@ -75,31 +138,39 @@ class TealTest {
 
     @Test fun concurrentWritesRefreshOnceAndPersistRotatedTokens() = runBlocking<Unit> {
         val store = Store(session())
-        var refreshes = 0
-        var writes = 0
+        val writeCount = 8
+        val expiredWrites = AtomicInteger()
+        val allExpiredWritesStarted = CompletableDeferred<Unit>()
+        val refreshes = AtomicInteger()
+        val writes = AtomicInteger()
         val http = HttpClient(MockEngine { req ->
             if (req.url.encodedPath.endsWith("refreshSession")) {
-                refreshes++
+                refreshes.incrementAndGet()
                 assertEquals("Bearer old-refresh", req.headers["Authorization"])
                 respond(tokens())
             } else if (req.headers["Authorization"] == "Bearer old-access") {
+                if (expiredWrites.incrementAndGet() == writeCount) allExpiredWritesStarted.complete(Unit)
+                allExpiredWritesStarted.await()
                 respond("""{"error":"ExpiredToken"}""", HttpStatusCode.BadRequest)
             } else {
-                assertEquals(1, store.saves)
+                assertEquals(1, store.saves.get())
                 assertEquals("new-refresh", store.value.refreshJwt)
                 assertEquals("Bearer new-access", req.headers["Authorization"])
-                writes++
+                writes.incrementAndGet()
                 respond(written)
             }
         })
         http.use {
             // A preference update can create another adapter: both must share the session lock.
             val clients = listOf(TealApiClient(it, store), TealApiClient(it, store))
-            coroutineScope {
-                (0..7).map { i -> async { clients[i % 2].write(TEAL_PLAY, "key$i", track.toTealRecord("pano/1")) } }.awaitAll()
+            withTimeout(5.seconds) {
+                (0 until writeCount).map { i ->
+                    async { clients[i % 2].write(TEAL_PLAY, "key$i", track.toTealRecord("pano/1")) }
+                }.awaitAll()
             }
-            assertEquals(1, refreshes)
-            assertEquals(8, writes)
+            assertEquals(writeCount, expiredWrites.get())
+            assertEquals(1, refreshes.get())
+            assertEquals(writeCount, writes.get())
         }
     }
 
@@ -118,57 +189,106 @@ class TealTest {
     }
 
     @Test fun failedSessionSaveDoesNotUseUnpersistedTokens() = runBlocking<Unit> {
-        var calls = 0
+        val calls = mutableListOf<Pair<String, String?>>()
+        val saveFailure = IOException("Storage unavailable")
         val store = object : TealSessionStore {
             override suspend fun load() = session()
-            override suspend fun save(session: TealSession) { throw IOException("Storage unavailable") }
+            override suspend fun save(session: TealSession) {
+                assertEquals("new-access", session.accessJwt)
+                assertEquals("new-refresh", session.refreshJwt)
+                throw saveFailure
+            }
         }
         val http = HttpClient(MockEngine { req ->
-            calls++
-            if (req.url.encodedPath.endsWith("refreshSession")) respond(tokens())
-            else respond("""{"error":"ExpiredToken"}""", HttpStatusCode.BadRequest)
+            val path = req.url.encodedPath
+            calls += path to req.headers["Authorization"]
+            when (path) {
+                "/xrpc/com.atproto.repo.putRecord" -> respond("""{"error":"ExpiredToken"}""", HttpStatusCode.BadRequest)
+                "/xrpc/com.atproto.server.refreshSession" -> respond(tokens())
+                else -> error("Unexpected request $path")
+            }
         })
         http.use {
-            assertFailsWith<IOException> { TealApiClient(it, store).write(TEAL_PLAY, "key", track.toTealRecord("pano/1")) }
-            assertEquals(2, calls)
+            val error = assertFailsWith<IOException> {
+                TealApiClient(it, store).write(TEAL_PLAY, "key", track.toTealRecord("pano/1"))
+            }
+            assertFailurePropagated(saveFailure, error)
+            assertEquals(listOf<Pair<String, String?>>(
+                "/xrpc/com.atproto.repo.putRecord" to "Bearer old-access",
+                "/xrpc/com.atproto.server.refreshSession" to "Bearer old-refresh",
+            ), calls)
         }
     }
 
-    @Test fun uncertainWriteRetryReconcilesExistingRecordEvenAfterUpgrade() = runBlocking<Unit> {
-        val oldRecord = track.toTealRecord("pano/1")
-        val newRecord = track.toTealRecord("pano/2")
-        var saved: JsonObject? = null
-        var writes = 0
+    @Test fun retryOfSameListenReturnsExistingRecord() = runBlocking<Unit> {
+        val key = "3l7cfnrryyy22"
+        val uri = "at://$did/$TEAL_PLAY/$key"
+        val original = Json.parseToJsonElement(playRecordJson()).jsonObject
+        val retry = Json.parseToJsonElement(playRecordJson(agent = "pano/2")).jsonObject
+        val lostResponse = IOException("Response lost after commit")
+        val calls = mutableListOf<String>()
         val http = HttpClient(MockEngine { req ->
-            if (req.url.encodedPath.endsWith("getRecord")) {
-                respond(buildJsonObject { put("uri", "at://$did/$TEAL_PLAY/key"); put("value", saved!!) }.toString())
-            } else {
-                writes++
-                val body = Json.parseToJsonElement((req.body as TextContent).text).jsonObject
-                assertEquals(JsonNull, body["swapRecord"])
-                if (saved == null) {
-                    saved = body["record"]!!.jsonObject
-                    throw IOException("Response lost after commit")
+            val path = req.url.encodedPath
+            calls += path
+            when (path) {
+                "/xrpc/com.atproto.repo.putRecord" -> {
+                    assertEquals(HttpMethod.Post, req.method)
+                    val body = Json.parseToJsonElement((req.body as TextContent).text).jsonObject
+                    assertEquals(did, body["repo"]?.jsonPrimitive?.content)
+                    assertEquals(TEAL_PLAY, body["collection"]?.jsonPrimitive?.content)
+                    assertEquals(key, body["rkey"]?.jsonPrimitive?.content)
+                    assertEquals(JsonNull, body["swapRecord"])
+                    if (calls.size == 1) {
+                        assertEquals(original, body["record"])
+                        throw lostResponse
+                    }
+                    assertEquals(retry, body["record"])
+                    respond("""{"error":"InvalidSwap"}""", HttpStatusCode.BadRequest)
                 }
-                respond("""{"error":"InvalidSwap"}""", HttpStatusCode.BadRequest)
+                "/xrpc/com.atproto.repo.getRecord" -> {
+                    req.assertGetRecord(TEAL_PLAY, key)
+                    respond("""{"uri":"$uri","value":${playRecordJson()}}""")
+                }
+                else -> error("Unexpected request $path")
             }
         })
         http.use {
             val client = TealApiClient(it, Store(session()))
-            assertFailsWith<IOException> { client.write(TEAL_PLAY, track.tealRecordKey(), oldRecord, true) }
-            client.write(TEAL_PLAY, track.tealRecordKey(), newRecord, true)
-            assertEquals(2, writes)
-            assertEquals(oldRecord, saved)
+            val error = assertFailsWith<IOException> { client.write(TEAL_PLAY, key, original, true) }
+            assertFailurePropagated(lostResponse, error)
+            assertEquals(uri, client.write(TEAL_PLAY, key, retry, true)["uri"]?.jsonPrimitive?.content)
+            assertEquals(listOf(
+                "/xrpc/com.atproto.repo.putRecord",
+                "/xrpc/com.atproto.repo.putRecord",
+                "/xrpc/com.atproto.repo.getRecord",
+            ), calls)
         }
     }
 
     @Test fun recordCollisionDoesNotOverwriteAnotherListen() = runBlocking<Unit> {
+        val calls = mutableListOf<String>()
         val http = HttpClient(MockEngine { req ->
-            if (req.url.encodedPath.endsWith("getRecord")) respond("""{"value":{"trackName":"Other song"}}""")
-            else respond("""{"error":"InvalidSwap"}""", HttpStatusCode.BadRequest)
+            val path = req.url.encodedPath
+            calls += path
+            when (path) {
+                "/xrpc/com.atproto.repo.putRecord" -> {
+                    val body = Json.parseToJsonElement((req.body as TextContent).text).jsonObject
+                    assertEquals(JsonNull, body["swapRecord"])
+                    respond("""{"error":"InvalidSwap"}""", HttpStatusCode.BadRequest)
+                }
+                "/xrpc/com.atproto.repo.getRecord" -> {
+                    req.assertGetRecord(TEAL_PLAY, "key")
+                    respond("""{"uri":"at://$did/$TEAL_PLAY/key","value":${playRecordJson(name = "Other song")}}""")
+                }
+                else -> error("Unexpected request $path")
+            }
         })
         http.use {
-            assertFailsWith<IOException> { TealApiClient(it, Store(session())).write(TEAL_PLAY, "key", track.toTealRecord("pano/1"), true) }
+            val listen = Json.parseToJsonElement(playRecordJson()).jsonObject
+            assertFailsWith<TealRecordCollisionException> {
+                TealApiClient(it, Store(session())).write(TEAL_PLAY, "key", listen, true)
+            }
+            assertEquals(listOf("/xrpc/com.atproto.repo.putRecord", "/xrpc/com.atproto.repo.getRecord"), calls)
         }
     }
 
@@ -178,7 +298,6 @@ class TealTest {
         assertEquals("2024-10-27T03:33:20Z", value.string("playedTime"))
         assertEquals("Artist", value["artists"]!!.jsonArray.first().jsonObject.string("artistName"))
         val key = track.tealRecordKey()
-        assertEquals(13, key.length)
         assertTrue(key.matches(Regex("[234567a-z]{13}")))
         assertEquals(key, track.copy().tealRecordKey())
         assertNotEquals(key, track.copy(timestamp = track.timestamp + 1).tealRecordKey())
@@ -218,12 +337,14 @@ class TealTest {
             assertEquals("/xrpc/com.atproto.repo.listRecords", req.url.encodedPath)
             val cursor = req.url.parameters["cursor"]
             cursors += cursor
-            val index = if (cursor == null) 0 else 1
-            val value = track.copy(track = "Song $index", timestamp = track.timestamp - index * 1000).toTealRecord("pano/1")
-            respond(buildJsonObject {
-                putJsonArray("records") { add(buildJsonObject { put("uri", "at://$did/$TEAL_PLAY/key$index"); put("value", value) }) }
-                if (cursor == null) put("cursor", "opaque-cursor")
-            }.toString())
+            assertEquals(did, req.url.parameters["repo"])
+            assertEquals(TEAL_PLAY, req.url.parameters["collection"])
+            assertEquals("1", req.url.parameters["limit"])
+            when (cursor) {
+                null -> respond("""{"records":[{"uri":"at://$did/$TEAL_PLAY/key0","value":${playRecordJson("Song 0")}}],"cursor":"opaque-cursor"}""")
+                "opaque-cursor" -> respond("""{"records":[{"uri":"at://$did/$TEAL_PLAY/key1","value":${playRecordJson("Song 1", "2024-10-27T03:33:19Z")}}]}""")
+                else -> error("Unexpected cursor $cursor")
+            }
         })
         http.use {
             val teal = Teal(account(store.value), store, it)
@@ -236,28 +357,37 @@ class TealTest {
             assertEquals(listOf(null, "opaque-cursor"), cursors)
             val filtered = teal.getRecents(1, limit = 1, to = track.timestamp - 1).getOrThrow()
             assertEquals("Song 1", filtered.entries.single().name)
+            assertEquals(listOf(null, "opaque-cursor", null, "opaque-cursor"), cursors)
         }
     }
 
     @Test fun recentsIncludeOnlyUnexpiredNowPlaying() = runBlocking<Unit> {
         val store = Store(session())
-        var expires = System.currentTimeMillis() + 60_000
+        val nowMillis = System.currentTimeMillis()
+        val time = Instant.fromEpochMilliseconds(nowMillis)
+        var expires = Instant.fromEpochMilliseconds(nowMillis + 60_000)
         val http = HttpClient(MockEngine { req ->
-            if (req.url.encodedPath.endsWith("listRecords")) respond("""{"records":[]}""")
-            else respond(buildJsonObject {
-                put("value", buildJsonObject {
-                    put("time", kotlin.time.Instant.fromEpochMilliseconds(System.currentTimeMillis()).toString())
-                    put("expiry", kotlin.time.Instant.fromEpochMilliseconds(expires).toString())
-                    put("item", track.toTealRecord("pano/1"))
-                })
-            }.toString())
+            when (req.url.encodedPath) {
+                "/xrpc/com.atproto.repo.listRecords" -> respond("""{"records":[]}""")
+                "/xrpc/com.atproto.repo.getRecord" -> {
+                    req.assertGetRecord(TEAL_STATUS, "self")
+                    respond("""
+                        {"value":{"time":"$time","expiry":"$expires","item":{
+                          "trackName":"Current song","artists":[{"artistName":"Current artist"}],"duration":180
+                        }}}
+                    """.trimIndent())
+                }
+                else -> error("Unexpected request ${req.url.encodedPath}")
+            }
         })
         http.use {
             val teal = Teal(account(store.value), store, it)
             val now = teal.getRecents(1, includeNowPlaying = true).getOrThrow().entries.single()
+            assertEquals("Current song", now.name)
+            assertEquals("Current artist", now.artist.name)
             assertTrue(now.isNowPlaying)
             assertNull(now.date)
-            expires = System.currentTimeMillis() - 1
+            expires = Instant.fromEpochMilliseconds(nowMillis - 1)
             assertTrue(teal.getRecents(1, includeNowPlaying = true).getOrThrow().entries.isEmpty())
         }
     }

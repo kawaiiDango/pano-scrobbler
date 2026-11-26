@@ -7,7 +7,7 @@ import io.ktor.client.request.parameter
 class DeezerRequester {
     private val client get() = Requesters.genericKtorClient
 
-    suspend fun searchTrack(
+    suspend fun searchTracks(
         artist: String,
         track: String,
         limit: Int

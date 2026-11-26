@@ -163,11 +163,11 @@ enum class AccountType(val id: Int) {
     GNUFM(2),
 
     //    MALOJA(5),
+    TEALFM(10),
     PLEROMA(6),
-    FILE(7),
-    TEALFM(10);
+    FILE(7);
 
-    val isCustom get() = this != LASTFM && this != LISTENBRAINZ && this != LIBREFM && this != FILE && this != TEALFM
+    val isCustom get() = this == CUSTOM_LISTENBRAINZ || this == CUSTOM_LISTENBRAINZ_2 || this == CUSTOM_LISTENBRAINZ_3 || this == GNUFM
 }
 
 object Scrobblables {

@@ -13,6 +13,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
@@ -32,14 +35,15 @@ import com.arn.scrobble.ui.testTagsAsResId
 import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff
 import org.jetbrains.compose.resources.stringResource
-import pano_scrobbler.composeapp.generated.resources.tealfm_handle
-import pano_scrobbler.composeapp.generated.resources.tealfm_handle_hint
-import pano_scrobbler.composeapp.generated.resources.tealfm_app_password
-import pano_scrobbler.composeapp.generated.resources.tealfm_login_help
-import pano_scrobbler.composeapp.generated.resources.tealfm_create_app_password
 import pano_scrobbler.composeapp.generated.resources.Res
 import pano_scrobbler.composeapp.generated.resources.api_url
+import pano_scrobbler.composeapp.generated.resources.atproto_app_password
+import pano_scrobbler.composeapp.generated.resources.atproto_create_app_password
+import pano_scrobbler.composeapp.generated.resources.atproto_handle
+import pano_scrobbler.composeapp.generated.resources.atproto_login_help
+import pano_scrobbler.composeapp.generated.resources.for_example
 import pano_scrobbler.composeapp.generated.resources.listenbrainz_info
+import pano_scrobbler.composeapp.generated.resources.musicbrainz_lookup_help
 import pano_scrobbler.composeapp.generated.resources.password
 import pano_scrobbler.composeapp.generated.resources.pref_token_label
 import pano_scrobbler.composeapp.generated.resources.server_url
@@ -271,16 +275,26 @@ fun TealLoginScreen(
     val result by viewModel.result.collectAsStateWithLifecycle(null)
     val doLogin = { viewModel.tealLogin(identifier.text.toString(), appPassword.text.toString()) }
 
-    Column(verticalArrangement = Arrangement.spacedBy(16.dp), modifier = modifier.testTagsAsResId()) {
-        val help = stringResource(Res.string.tealfm_login_help)
-        Text(androidx.compose.ui.text.buildAnnotatedString {
+    Column(
+        verticalArrangement = Arrangement.spacedBy(16.dp),
+        modifier = modifier.testTagsAsResId()
+    ) {
+        val help = stringResource(Res.string.atproto_login_help)
+        Text(buildAnnotatedString {
             append(help)
             val start = help.indexOf("not")
-            if (start >= 0) addStyle(androidx.compose.ui.text.SpanStyle(fontWeight = androidx.compose.ui.text.font.FontWeight.Bold), start, start + 3)
+            if (start >= 0) addStyle(
+                SpanStyle(fontWeight = FontWeight.Bold),
+                start,
+                start + 3
+            )
         })
+
+        Text(stringResource(Res.string.musicbrainz_lookup_help))
+
         ButtonWithIcon(
             onClick = { PlatformStuff.openInBrowser("https://bsky.app/settings/app-passwords") },
-            text = stringResource(Res.string.tealfm_create_app_password),
+            text = stringResource(Res.string.atproto_create_app_password),
             icon = Icons.OpenInBrowser,
             maxLines = 3,
         )
@@ -288,8 +302,15 @@ fun TealLoginScreen(
             identifier,
             modifier = Modifier.fillMaxWidth().testTag("teal_handle"),
             singleLine = true,
-            label = { Text(stringResource(Res.string.tealfm_handle)) },
-            supportingText = { Text(stringResource(Res.string.tealfm_handle_hint)) },
+            label = { Text(stringResource(Res.string.atproto_handle)) },
+            supportingText = {
+                Text(
+                    stringResource(
+                        Res.string.for_example,
+                        "ilovetealfm.bsky.social"
+                    )
+                )
+            },
             keyboardOptions = KeyboardOptions(
                 keyboardType = KeyboardType.Uri,
                 capitalization = KeyboardCapitalization.None,
@@ -299,7 +320,7 @@ fun TealLoginScreen(
         PanoOutlinedSecureTextField(
             appPassword,
             modifier = Modifier.fillMaxWidth().testTag("teal_app_password"),
-            label = { Text(stringResource(Res.string.tealfm_app_password)) },
+            label = { Text(stringResource(Res.string.atproto_app_password)) },
             onKeyboardAction = { performDefaultAction -> doLogin(); performDefaultAction() },
         )
         VerifyButton(

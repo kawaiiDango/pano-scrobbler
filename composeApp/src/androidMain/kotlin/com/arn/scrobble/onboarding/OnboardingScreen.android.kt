@@ -54,7 +54,6 @@ import com.arn.scrobble.utils.PanoNotifications
 import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff
 import com.arn.scrobble.utils.Stuff.collectAsStateWithInitialValue
-import com.arn.scrobble.utils.VariantStuff
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -258,7 +257,7 @@ actual fun OnboardingScreen(
                 OnboardingStepType.BATTERY_OPTIMIZATIONS_IGNORE
             else null,
             OnboardingStepType.CHOOSE_APPS,
-            if (VariantStuff.isNonPlay)
+            if (!PlatformStuff.isTv && PlatformStuff.doesAppExist(Stuff.PACKAGE_DISCORD))
                 OnboardingStepType.DISCORD_RICH_PRESENCE
             else null,
             if (!PlatformStuff.isTv && Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU)

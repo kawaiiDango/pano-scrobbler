@@ -38,9 +38,9 @@ class TitleParseException : IllegalStateException("Title parsing failed")
 
 object RegexPresets {
 
-    val defaultPresets = listOfNotNull(
-        if (!PlatformStuff.isDesktop) RegexPreset.parse_title else null,
-        if (!PlatformStuff.isDesktop) RegexPreset.parse_title_with_fallback else null,
+    val defaultPresets = listOf(
+        RegexPreset.parse_title,
+        RegexPreset.parse_title_with_fallback,
         RegexPreset.remastered,
         RegexPreset.explicit,
         RegexPreset.single_ep,

@@ -65,7 +65,6 @@ import com.arn.scrobble.utils.PanoNotifications
 import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff
 import com.arn.scrobble.utils.Stuff.collectAsStateWithInitialValue
-import com.arn.scrobble.utils.VariantStuff
 import com.arn.scrobble.utils.setAppLocale
 import com.arn.scrobble.work.CommonWorkState
 import com.arn.scrobble.work.DigestWork
@@ -622,7 +621,7 @@ fun PrefsScreen(
             )
         }
 
-        if (!PlatformStuff.isTv && VariantStuff.isNonPlay) {
+        if (!PlatformStuff.isTv) {
             filteredItem("discord_rich_presence", Res.string.discord_rich_presence, null) { title ->
                 TextPref(
                     text = title,
@@ -953,7 +952,9 @@ fun PrefsScreen(
                 checkedValues = wikiLangs,
                 values = setOf("en") + Stuff.lastfmSupportedLanguageOverrides,
                 toLabel = { LocaleUtils.langCodesMap[it] ?: it },
+                toSummary = { it },
                 copyToSave = { copy(wikiLangs = it.ifEmpty { setOf("en") }) },
+                canReorder = true,
             )
         }
 

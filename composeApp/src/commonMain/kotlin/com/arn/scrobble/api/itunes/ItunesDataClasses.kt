@@ -19,6 +19,28 @@ data class ItunesTrack(
     val trackTimeMillis: Long? = null,
 )
 
+
+@Serializable
+data class ItunesAlbum(
+    val wrapperType: ItunesWrapperType,
+    // Always present for entity=album
+    val collectionId: Long,
+    val collectionName: String,
+    val artistName: String,
+    // "Album", "Compilation", ...
+    val collectionType: String? = null,
+    // Can be missing, e.g. on "Various Artists" compilations
+    val artistId: Long? = null,
+    // Only present on compilations / albums whose collection artist differs from the track artist
+    val collectionArtistId: Long? = null,
+    val collectionArtistName: String? = null,
+    val artworkUrl60: String? = null,
+    val artworkUrl100: String? = null,
+    // ISO-8601 UTC, e.g. "2011-01-01T08:00:00Z"
+//    val releaseDate: String? = null,
+//    val primaryGenreName: String? = null,
+)
+
 enum class ItunesWrapperType {
     track, collection, artist
 }
@@ -42,4 +64,10 @@ data class ItunesArtistResponse(
 data class ItunesTrackResponse(
     val resultCount: Int,
     val results: List<ItunesTrack>,
+)
+
+@Serializable
+data class ItunesAlbumResponse(
+    val resultCount: Int,
+    val results: List<ItunesAlbum>,
 )

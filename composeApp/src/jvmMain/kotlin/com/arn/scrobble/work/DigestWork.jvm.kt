@@ -3,7 +3,7 @@ package com.arn.scrobble.work
 import co.touchlab.kermit.Logger
 import com.arn.scrobble.BuildKonfig
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.combine
 
 
 actual object DigestWork : CommonWork {
@@ -37,12 +37,11 @@ actual object DigestWork : CommonWork {
     }
 
     override fun state(): Flow<CommonWorkState?> {
-        return flow {
-            emit(
-                DesktopWorkManager
-                    .state(DigestType.DIGEST_WEEKLY.name) ?: DesktopWorkManager
-                    .state(DigestType.DIGEST_MONTHLY.name)
-            )
+        return combine(
+            DesktopWorkManager.state(DigestType.DIGEST_MONTHLY.name),
+            DesktopWorkManager.state(DigestType.DIGEST_WEEKLY.name)
+        ) { weekly, monthly ->
+            weekly ?: monthly
         }
     }
 

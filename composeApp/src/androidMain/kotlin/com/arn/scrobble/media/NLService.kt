@@ -20,7 +20,6 @@ import com.arn.scrobble.utils.MetadataUtils
 import com.arn.scrobble.utils.PanoNotifications
 import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff
-import com.arn.scrobble.utils.VariantStuff
 import com.arn.scrobble.utils.applyAndroidLocaleLegacy
 import com.arn.scrobble.utils.getStringInDeviceLocale
 import kotlinx.coroutines.CoroutineScope
@@ -168,8 +167,7 @@ class NLService : NotificationListenerService() {
             listenForPlayingTrackEvents(scrobbleQueue, sessListener!!)
         }
 
-        if (VariantStuff.isNonPlay)
-            DiscordRpc.start()
+        DiscordRpc.start()
 
         Logger.i { "init" }
     }

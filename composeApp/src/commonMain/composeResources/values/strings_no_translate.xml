@@ -4,6 +4,7 @@
     <string name="spotify" translatable="false">Spotify</string>
     <string name="lastfm" translatable="false">Last.fm</string>
     <string name="librefm" translatable="false">Libre.fm</string>
+    <string name="tealfm" translatable="false">Teal.fm</string>
     <string name="listenbrainz" translatable="false">ListenBrainz</string>
     <string name="maloja" translatable="false">Maloja</string>
     <string name="pleroma" translatable="false">Pleroma</string>
@@ -56,13 +57,21 @@
     <string name="scrobble_sources">Scrobble sources</string>
     <string name="stop">Stop</string>
     <string name="persistent_noti_hide">You can hide it from system notification settings</string>
-    <string name="no_wiki" comment="artist/album/track wiki does not exist">No wiki</string>
-    <string name="wiki_lang_selector" comment="artist/album/track wiki">Last.fm wiki languages</string>
     <string name="notification_access_tv">This setting is usually at Apps > Special app access > Notification access</string>
-    <string name="supports_ambient_apps_desc">Requires notifications from these apps to be enabled.</string>
     <string name="blur" comment="blur effect in theme">Blur</string>
     <string name="pref_link_rating_to_loved">Liking a track on the media player also loves it on Pano Scrobbler</string>
     <string name="apps_that_support_this">For apps that support this</string>
+    <string name="atproto_handle" comment="like handle.bsky.social">Atmosphere handle</string>
+    <string name="for_example" formatted="true">For example, %1$d</string>
+    <string name="atproto_app_password">App password</string>
+    <string name="atproto_login_help">Use an app password from your account provider, not your main password. Your listens and now-playing status are public.</string>
+    <string name="musicbrainz_lookup_help">If metadata is missing, enable MusicBrainz lookup by adding a ListenBrainz account.</string>
+    <string name="atproto_create_app_password">Create an app password</string>
+    <string name="parse_error_desc">To always scrobble, turn off this regex rule</string>
+    <string name="discord_rpc_album_art_sources">Sources for album art</string>
+    <string name="lastfm_now_playing">last.fm now playing</string>
+    <string name="media_player_art_url">URL reported by media player</string>
+    <string name="always_enabled">Always enabled</string>
 
     <string name="automation_cp_info">For Tasker, use Action > SQL Query. Set the mode to "URI Formatted", put any name in "Variable Array" and URI to one of these.</string>
     <string name="automation_replace_app_id" formatted="true" comment="%1$s is the literal text package_name on Android, APP_ID or MPRIS_ID on desktop">Replace %1$s with that of the app.</string>
@@ -91,11 +100,4 @@ According to Google Play's policies, purchases made through Google Play cannot b
     <string name="demo_mode" translatable="false">Demo mode</string>
     <string name="copy_sk" translatable="false">Copy last.fm session key</string>
     <string name="delete_receipt" translatable="false">Delete receipt</string>
-    <string name="tealfm">teal.fm</string>
-    <string name="tealfm_handle">Atmosphere handle</string>
-    <string name="tealfm_handle_hint">For example, ilovetealfm.bsky.social</string>
-    <string name="tealfm_app_password">App password</string>
-    <string name="tealfm_login_help">Use an app password from your account provider, not your main password. Your listens and now-playing status are public.\n\nIf metadata is missing, configure MusicBrainz.</string>
-    <string name="tealfm_create_app_password">Create an app password</string>
-    <string name="retry_all_pending_now">Retry all pending scrobbles now</string>
 </resources>

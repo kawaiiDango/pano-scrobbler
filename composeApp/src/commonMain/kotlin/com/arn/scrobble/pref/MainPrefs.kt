@@ -141,7 +141,8 @@ data class MainPrefs(
         val enabled: Boolean = false,
         val statusLine: Int = Line.Line2.ordinal,
         val albumArt: Boolean = true,
-        val albumArtFromNowPlaying: Boolean = true,
+        // string, in case i change the enums
+        private val albumArtSources: Set<String> = setOf(AlbumArtSources.LastfmNowPlaying.name),
         val line1Format: String = $$"$title",
         val line2Format: String = $$"$artist",
         val line3Format: String = $$"$album",
@@ -151,6 +152,13 @@ data class MainPrefs(
         val lovedState: Boolean = true,
         val buttonType: String = ButtonType.PANO_SCROBBLER.name,
     ) {
+        val albumArtSourcesP
+            get() =
+                AlbumArtSources.entries
+                    .filterNot { it == AlbumArtSources.MediaPlayerUrl }
+                    .mapNotNull { if (it.name in albumArtSources) it else null }
+                    .toSet()
+
         enum class ButtonType {
             PANO_SCROBBLER, LASTFM_PROFILE, LISTENBRAINZ_PROFILE, LIBREFM_PROFILE, NONE
         }
@@ -159,6 +167,12 @@ data class MainPrefs(
             None,
             Line1,
             Line2,
+        }
+
+        enum class AlbumArtSources {
+            MediaPlayerUrl,
+            LastfmNowPlaying,
+            Deezer,
         }
     }
 

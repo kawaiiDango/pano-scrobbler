@@ -120,6 +120,7 @@ import coil3.compose.AsyncImage
 import com.arn.scrobble.api.AccountType
 import com.arn.scrobble.api.lastfm.ApiException
 import com.arn.scrobble.icons.ArrowDropDown
+import com.arn.scrobble.icons.Check
 import com.arn.scrobble.icons.Error
 import com.arn.scrobble.icons.Icons
 import com.arn.scrobble.icons.Info
@@ -146,7 +147,6 @@ import kotlinx.serialization.SerializationException
 import okhttp3.HttpUrl.Companion.toHttpUrl
 import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringResource
-import pano_scrobbler.composeapp.generated.resources.tealfm
 import pano_scrobbler.composeapp.generated.resources.Res
 import pano_scrobbler.composeapp.generated.resources.add_exception
 import pano_scrobbler.composeapp.generated.resources.disable
@@ -162,9 +162,11 @@ import pano_scrobbler.composeapp.generated.resources.no
 import pano_scrobbler.composeapp.generated.resources.ok
 import pano_scrobbler.composeapp.generated.resources.pleroma
 import pano_scrobbler.composeapp.generated.resources.pref_import
+import pano_scrobbler.composeapp.generated.resources.pref_login
 import pano_scrobbler.composeapp.generated.resources.profile_pic
 import pano_scrobbler.composeapp.generated.resources.retry
 import pano_scrobbler.composeapp.generated.resources.scrobble_to_file
+import pano_scrobbler.composeapp.generated.resources.tealfm
 import pano_scrobbler.composeapp.generated.resources.unsupported_api
 import pano_scrobbler.composeapp.generated.resources.yes
 import java.util.Calendar
@@ -869,6 +871,11 @@ fun VerifyButton(
                         if (gotTlsErrOnLocal) {
                             Text(stringResource(Res.string.add_exception))
                         } else {
+                            Icon(
+                                imageVector = Icons.Check,
+                                contentDescription = null,
+                            )
+                            Spacer(Modifier.size(ButtonDefaults.IconSpacing))
                             Text(stringResource(Res.string.login_submit), maxLines = 1)
                         }
                     }
@@ -990,6 +997,47 @@ fun ListLoadError(
                     contentDescription = stringResource(Res.string.retry)
                 )
             }
+        }
+    }
+}
+
+@Composable
+fun ListLoadReauthNeeded(
+    throwable: Throwable,
+    doNavigate: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    val errorText = remember(throwable) { throwable.redactedMessage }
+
+    Row(
+        modifier = modifier
+            .fillMaxSize()
+            .padding(16.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Icon(
+            imageVector = Icons.Error,
+            contentDescription = null,
+            tint = MaterialTheme.colorScheme.error,
+        )
+        Text(
+            text = errorText,
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.error,
+            maxLines = 2,
+            overflow = TextOverflow.Ellipsis,
+            modifier = Modifier
+                .weight(1f)
+                .padding(horizontal = 16.dp)
+        )
+
+        TextButton(
+            shapes = ButtonDefaults.shapes(),
+            onClick = doNavigate,
+        ) {
+            Text(
+                text = stringResource(Res.string.pref_login),
+            )
         }
     }
 }

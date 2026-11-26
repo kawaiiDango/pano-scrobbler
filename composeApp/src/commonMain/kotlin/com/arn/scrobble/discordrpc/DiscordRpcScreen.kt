@@ -25,6 +25,7 @@ import com.arn.scrobble.icons.Icons
 import com.arn.scrobble.icons.ResetSettings
 import com.arn.scrobble.pref.DropdownPref
 import com.arn.scrobble.pref.MainPrefs
+import com.arn.scrobble.pref.MultiSelectDropdownPref
 import com.arn.scrobble.pref.SliderPref
 import com.arn.scrobble.pref.SwitchPref
 import com.arn.scrobble.ui.ErrorText
@@ -37,21 +38,26 @@ import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
 import pano_scrobbler.composeapp.generated.resources.Res
 import pano_scrobbler.composeapp.generated.resources.album_art
-import pano_scrobbler.composeapp.generated.resources.album_art_now_playing
 import pano_scrobbler.composeapp.generated.resources.album_art_now_playing_desc
+import pano_scrobbler.composeapp.generated.resources.always_enabled
 import pano_scrobbler.composeapp.generated.resources.appwidget_show
 import pano_scrobbler.composeapp.generated.resources.available_placeholders
 import pano_scrobbler.composeapp.generated.resources.button_url
+import pano_scrobbler.composeapp.generated.resources.deezer
 import pano_scrobbler.composeapp.generated.resources.discord_app_name
 import pano_scrobbler.composeapp.generated.resources.discord_compact_view_line
+import pano_scrobbler.composeapp.generated.resources.discord_rpc_album_art_sources
 import pano_scrobbler.composeapp.generated.resources.enable
 import pano_scrobbler.composeapp.generated.resources.hide
 import pano_scrobbler.composeapp.generated.resources.lastfm
+import pano_scrobbler.composeapp.generated.resources.lastfm_now_playing
 import pano_scrobbler.composeapp.generated.resources.librefm
 import pano_scrobbler.composeapp.generated.resources.line_n
 import pano_scrobbler.composeapp.generated.resources.listenbrainz
 import pano_scrobbler.composeapp.generated.resources.loved
+import pano_scrobbler.composeapp.generated.resources.media_player_art_url
 import pano_scrobbler.composeapp.generated.resources.not_found
+import pano_scrobbler.composeapp.generated.resources.nothing
 import pano_scrobbler.composeapp.generated.resources.profile
 import pano_scrobbler.composeapp.generated.resources.reset
 import pano_scrobbler.composeapp.generated.resources.show_paused_for
@@ -157,14 +163,46 @@ fun DiscordRpcScreen(
             }
         )
 
-        SwitchPref(
-            text = stringResource(Res.string.album_art_now_playing),
-            summary = stringResource(Res.string.album_art_now_playing_desc),
-            value = settings.albumArtFromNowPlaying,
+        MultiSelectDropdownPref(
+            text = stringResource(Res.string.discord_rpc_album_art_sources),
+            checkedValues = (listOf(MainPrefs.DiscordRpcPrefs.AlbumArtSources.MediaPlayerUrl.name) +
+                    settings.albumArtSourcesP.map { it.name }).toSet(),
             enabled = enabled && settings.albumArt,
+            values = remember {
+                MainPrefs.DiscordRpcPrefs.AlbumArtSources.entries.map { it.name }.toSet()
+            },
+            disabledItems = setOf(
+                MainPrefs.DiscordRpcPrefs.AlbumArtSources.MediaPlayerUrl.name,
+            ),
+            toLabel = {
+                when (it) {
+                    MainPrefs.DiscordRpcPrefs.AlbumArtSources.LastfmNowPlaying.name ->
+                        stringResource(Res.string.lastfm_now_playing)
+
+                    MainPrefs.DiscordRpcPrefs.AlbumArtSources.MediaPlayerUrl.name ->
+                        stringResource(Res.string.media_player_art_url)
+
+                    MainPrefs.DiscordRpcPrefs.AlbumArtSources.Deezer.name ->
+                        stringResource(Res.string.deezer)
+
+                    else -> stringResource(Res.string.nothing)
+                }
+            },
+            toSupportingText = {
+                when (it) {
+                    MainPrefs.DiscordRpcPrefs.AlbumArtSources.LastfmNowPlaying.name ->
+                        stringResource(Res.string.album_art_now_playing_desc)
+
+                    MainPrefs.DiscordRpcPrefs.AlbumArtSources.MediaPlayerUrl.name ->
+                        stringResource(Res.string.always_enabled)
+
+                    else -> null
+                }
+            },
+            canReorder = false,
             copyToSave = {
                 copy(
-                    discordRpc = settings.copy(albumArtFromNowPlaying = it)
+                    discordRpc = settings.copy(albumArtSources = it)
                 )
             }
         )

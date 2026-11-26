@@ -18,7 +18,7 @@ import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
 import kotlinx.coroutines.withTimeoutOrNull
-import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.decodeFromJsonElement
 import kotlinx.serialization.json.jsonObject
 import java.io.IOException
 import java.security.MessageDigest
@@ -38,19 +38,22 @@ internal class ListenBrainzMbidResolver(
     private class Session(val fingerprint: String) {
         var authCooldownUntil = Duration.ZERO
     }
+
     private class LookupHttpFailure(val status: Int, val retryAfter: String?) : IOException()
 
     private val mutex = Mutex()
     private val clock = TimeSource.Monotonic.markNow()
     private val cache = LinkedHashMap<LookupKey, CachedLookup>(16, 0.75f, true)
-    private val inFlight = mutableMapOf<Pair<Session, LookupKey>, Deferred<ListenBrainzMbidLookup?>>()
+    private val inFlight =
+        mutableMapOf<Pair<Session, LookupKey>, Deferred<ListenBrainzMbidLookup?>>()
     private var activeSession: Session? = null
     private var cooldownUntil = Duration.ZERO
 
     suspend fun startBatch(account: UserAccountSerializable?): Batch? {
         val official = account?.takeIf(::isOfficialAccount)
         val fingerprint = official?.let {
-            MessageDigest.getInstance("SHA-256").digest("${it.user.name}\u0000${it.authKey}".encodeToByteArray()).toHexString()
+            MessageDigest.getInstance("SHA-256")
+                .digest("${it.user.name}\u0000${it.authKey}".encodeToByteArray()).toHexString()
         }
         val session = mutex.withLock {
             if (activeSession?.fingerprint != fingerprint) {
@@ -62,17 +65,31 @@ internal class ListenBrainzMbidResolver(
         val token = checkNotNull(official).authKey
         val batchLookups = mutableMapOf<LookupKey, ListenBrainzMbidLookup>()
         return Batch { artist, recording, release ->
-            val query = LookupKey(artist.trim(), recording.trim(), release?.trim()?.takeIf { it.isNotEmpty() })
-            val key = LookupKey(query.artist.lowercase(), query.recording.lowercase(), query.release?.lowercase())
+            val query = LookupKey(
+                artist.trim(),
+                recording.trim(),
+                release?.trim()?.takeIf { it.isNotEmpty() })
+            val key = LookupKey(
+                query.artist.lowercase(),
+                query.recording.lowercase(),
+                query.release?.lowercase()
+            )
             if (query.artist.isEmpty() || query.recording.isEmpty()) null
-            else batchLookups[key] ?: lookup(session, key, query, token)?.also { batchLookups[key] = it }
+            else batchLookups[key] ?: lookup(session, key, query, token)?.also {
+                batchLookups[key] = it
+            }
         }
     }
 
     // Each batch calls this sequentially; concurrent batches share the process cache and request jobs.
     class Batch internal constructor(val lookup: suspend (String, String, String?) -> ListenBrainzMbidLookup?)
 
-    private suspend fun lookup(session: Session, key: LookupKey, query: LookupKey, token: String): ListenBrainzMbidLookup? {
+    private suspend fun lookup(
+        session: Session,
+        key: LookupKey,
+        query: LookupKey,
+        token: String
+    ): ListenBrainzMbidLookup? {
         val flightKey = session to key
         val pending = mutex.withLock {
             if (activeSession !== session) return null
@@ -96,7 +113,12 @@ internal class ListenBrainzMbidResolver(
         return pending.await()
     }
 
-    private suspend fun fetch(session: Session, key: LookupKey, query: LookupKey, token: String): ListenBrainzMbidLookup? {
+    private suspend fun fetch(
+        session: Session,
+        key: LookupKey,
+        query: LookupKey,
+        token: String
+    ): ListenBrainzMbidLookup? {
         try {
             val result = withTimeoutOrNull(3.seconds) {
                 val match = request(query, token)
@@ -118,7 +140,9 @@ internal class ListenBrainzMbidResolver(
                 val failure = e as? LookupHttpFailure
                 when (failure?.status) {
                     401, 403 -> session.authCooldownUntil = now + 30.seconds
-                    429 -> cooldownUntil = maxOf(cooldownUntil, now + retryDelay(failure.retryAfter))
+                    429 -> cooldownUntil =
+                        maxOf(cooldownUntil, now + retryDelay(failure.retryAfter))
+
                     null, in 500..599 -> cooldownUntil = maxOf(cooldownUntil, now + 10.seconds)
                     else -> Unit
                 }
@@ -127,38 +151,46 @@ internal class ListenBrainzMbidResolver(
         }
     }
 
-    private suspend fun request(query: LookupKey, token: String): ListenBrainzMbidLookup? = withHttp { http ->
-        val response = http.get("${Stuff.LISTENBRAINZ_API_ROOT}1/metadata/lookup/") {
-            headers.append(HttpHeaders.Authorization, "Token $token")
-            url {
-                parameters.append("artist_name", query.artist)
-                parameters.append("recording_name", query.recording)
-                query.release?.let { parameters.append("release_name", it) }
-                parameters.append("metadata", "true")
-                parameters.append("inc", "artist")
+    private suspend fun request(query: LookupKey, token: String): ListenBrainzMbidLookup? =
+        withHttp { http ->
+            val response = http.get("${Stuff.LISTENBRAINZ_API_ROOT}1/metadata/lookup/") {
+                headers.append(HttpHeaders.Authorization, "Token $token")
+                url {
+                    parameters.append("artist_name", query.artist)
+                    parameters.append("recording_name", query.recording)
+                    query.release?.let { parameters.append("release_name", it) }
+                    parameters.append("metadata", "true")
+                    parameters.append("inc", "artist")
+                }
             }
+            if (response.status != HttpStatusCode.OK)
+                throw LookupHttpFailure(
+                    response.status.value,
+                    response.headers[HttpHeaders.RetryAfter]
+                )
+            val payload = json.parseToJsonElement(response.bodyAsText()).jsonObject
+            // ListenBrainz returns an empty object for a genuine no-match, not for a service error.
+            if (payload.isEmpty()) null else
+                json.decodeFromJsonElement<ListenBrainzMbidLookup>(payload)
+                    .also {
+                        if (it.recording_mbid.isNullOrBlank() || it.recording_name.isNullOrBlank() || it.artist_credit_name.isNullOrBlank())
+                            throw IOException("ListenBrainz returned an invalid lookup result.")
+                    }
         }
-        if (response.status != HttpStatusCode.OK)
-            throw LookupHttpFailure(response.status.value, response.headers[HttpHeaders.RetryAfter])
-        val payload = json.parseToJsonElement(response.bodyAsText()).jsonObject
-        // ListenBrainz returns an empty object for a genuine no-match, not for a service error.
-        if (payload.isEmpty()) null else json.decodeFromJsonElement(ListenBrainzMbidLookup.serializer(), payload).also {
-            if (it.recording_mbid.isNullOrBlank() || it.recording_name.isNullOrBlank() || it.artist_credit_name.isNullOrBlank())
-                throw IOException("ListenBrainz returned an invalid lookup result.")
-        }
-    }
 
     private fun retryDelay(header: String?): Duration {
         val value = header?.trim() ?: return 30.seconds
         value.toLongOrNull()?.takeIf { it >= 0 }?.let { return it.seconds }
-        val millis = runCatching { value.fromHttpToGmtDate().timestamp - System.currentTimeMillis() }.getOrNull()
+        val millis =
+            runCatching { value.fromHttpToGmtDate().timestamp - System.currentTimeMillis() }.getOrNull()
         return millis?.coerceAtLeast(0)?.milliseconds ?: 30.seconds
     }
 
     companion object {
-        private val json = Json { ignoreUnknownKeys = true }
+        private val json = Stuff.myJson
 
-        fun isOfficialAccount(account: UserAccountSerializable) = account.type == AccountType.LISTENBRAINZ &&
-            account.apiRoot == Stuff.LISTENBRAINZ_API_ROOT && account.authKey.isNotBlank()
+        fun isOfficialAccount(account: UserAccountSerializable) =
+            account.type == AccountType.LISTENBRAINZ &&
+                    account.apiRoot == Stuff.LISTENBRAINZ_API_ROOT && account.authKey.isNotBlank()
     }
 }

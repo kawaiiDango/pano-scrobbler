@@ -9,12 +9,14 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withTimeout
 import kotlin.coroutines.cancellation.CancellationException
 import kotlin.time.Duration.Companion.milliseconds
+import kotlin.time.Duration.Companion.minutes
 
 data class WorkState(
     val id: String,
@@ -56,38 +58,33 @@ object DesktopWorkManager {
     ) {
         var attempt = 0
         var backoffDelay = retryPolicy.initialDelayMillis
-        var result: CommonWorkerResult
 
         while (attempt < retryPolicy.maxAttempts) {
-            result = try {
-                withTimeout(120_000L) {
+            val result: CommonWorkerResult = try {
+                withTimeout(2.minutes) {
                     updateState(
                         id, WorkState(
                             id,
                             null,
-                            CommonWorkProgress("started", 0f)
+                            CommonWorkProgress("$id started", 0f)
                         )
                     )
-
-                    worker {
-                        setProgress(id, it)
-                    }
-                        .doWork().also { updateState(id, WorkState(id, it)) }
+                    worker { setProgress(id, it) }.doWork()
                 }
-                return
+            } catch (e: CancellationException) {
+                throw e
             } catch (e: Exception) {
-                if (e is CancellationException) {
-                    throw e
-                }
-
-                if (attempt >= retryPolicy.maxAttempts - 1) {
-                    updateState(id, WorkState(id, CommonWorkerResult.Failure(e.redactedMessage)))
-                    return
-                }
                 CommonWorkerResult.Failure(e.redactedMessage)
             }
 
+            delay(500.milliseconds) // bad workaround for stateflow conflate
             updateState(id, WorkState(id, result))
+
+            val isLastAttempt = attempt >= retryPolicy.maxAttempts - 1
+            if (result !is CommonWorkerResult.Retry && !(result is CommonWorkerResult.Failure && !isLastAttempt) ||
+                isLastAttempt
+            ) return
+
             attempt++
             delay(backoffDelay.milliseconds)
             backoffDelay = (backoffDelay * retryPolicy.backoffFactor).toLong()
@@ -100,17 +97,17 @@ object DesktopWorkManager {
         }
     }
 
-    fun state(id: String): CommonWorkState? {
-        val workState = _workStateFlow.value[id]
-
-        return if (workState != null &&
-            (workState.status == null || workState.status == CommonWorkerResult.Retry) &&
-            workState.progress == null
-        )
-            CommonWorkState.ENQUEUED
-        else
-            workState?.progress?.state
-    }
+    fun state(id: String): Flow<CommonWorkState?> =
+        _workStateFlow.map {
+            val s = it[id]
+            if (s != null &&
+                (s.status == null || s.status == CommonWorkerResult.Retry) &&
+                s.progress == null
+            )
+                CommonWorkState.ENQUEUED
+            else
+                s?.progress?.state
+        }.distinctUntilChanged()
 
     fun setProgress(id: String, progress: CommonWorkProgress) {
         updateState(id, WorkState(id, progress = progress))

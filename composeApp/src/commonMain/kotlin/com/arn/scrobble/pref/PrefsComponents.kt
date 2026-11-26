@@ -56,6 +56,7 @@ import pano_scrobbler.composeapp.generated.resources.Res
 import pano_scrobbler.composeapp.generated.resources.move_left
 import pano_scrobbler.composeapp.generated.resources.move_right
 import pano_scrobbler.composeapp.generated.resources.no_apps_enabled
+import pano_scrobbler.composeapp.generated.resources.nothing
 import pano_scrobbler.composeapp.generated.resources.pref_logout
 import pano_scrobbler.composeapp.generated.resources.reset
 import pano_scrobbler.composeapp.generated.resources.scrobbler_off
@@ -216,9 +217,13 @@ fun MultiSelectDropdownPref(
     text: String,
     checkedValues: Set<String>,
     values: Set<String>,
-    toLabel: (String) -> String,
+    toLabel: @Composable (String) -> String,
+    canReorder: Boolean, // false = keep the ordering from "values"
     copyToSave: MainPrefs.(Set<String>) -> MainPrefs,
     modifier: Modifier = Modifier,
+    toSummary: @Composable (String) -> String = toLabel,
+    toSupportingText: @Composable (String) -> String? = { null },
+    disabledItems: Set<String> = emptySet(),
     enabled: Boolean = true,
 ) {
     var expanded by remember { mutableStateOf(false) }
@@ -234,7 +239,8 @@ fun MultiSelectDropdownPref(
         onCheckedChange = { expanded = it },
         supportingContent = {
             Text(
-                text = checkedSet.joinToString(),
+                text = checkedSet.map { toSummary(it) }.joinToString()
+                    .ifEmpty { stringResource(Res.string.nothing) },
             )
         },
     ) {
@@ -252,7 +258,7 @@ fun MultiSelectDropdownPref(
                     PanoDropdownMenu(
                         expanded = true,
                         onDismissRequest = {
-                            Stuff.appScope.launch { mainPrefs.updateData { it.copyToSave(checkedSet) } }
+                            Stuff.appScope.launch { mainPrefs.updateData { it.copyToSave(checkedSet - disabledItems) } }
                             expanded = false
                         }
                     ) {
@@ -261,12 +267,20 @@ fun MultiSelectDropdownPref(
 
                             checkableItem(
                                 text = { Text(text = toLabel(value)) },
-                                checked = checked,
+                                supportingText = { toSupportingText(value)?.let { Text(it) } },
+                                enabled = value !in disabledItems,
+                                checked = value in disabledItems || checked,
                                 onCheckedChange = {
-                                    if (it) {
-                                        checkedSet += value
+                                    val newCheckedSet = if (it) {
+                                        checkedSet + value
                                     } else {
-                                        checkedSet -= value
+                                        checkedSet - value
+                                    }
+
+                                    checkedSet = if (canReorder) {
+                                        newCheckedSet
+                                    } else {
+                                        values intersect newCheckedSet
                                     }
                                 },
                                 trailingContent = if (checked) {

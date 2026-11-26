@@ -2,18 +2,22 @@ package com.arn.scrobble.recents
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.MenuDefaults
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -21,11 +25,13 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewModelScope
 import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
@@ -33,6 +39,7 @@ import androidx.paging.compose.itemKey
 import com.arn.scrobble.api.ScrobbleEvent
 import com.arn.scrobble.api.ScrobbleEverywhere
 import com.arn.scrobble.api.UserCached
+import com.arn.scrobble.api.file.FileScrobblable
 import com.arn.scrobble.api.lastfm.Album
 import com.arn.scrobble.api.lastfm.Artist
 import com.arn.scrobble.api.lastfm.MusicEntry
@@ -61,6 +68,7 @@ import com.arn.scrobble.navigation.PanoRoute
 import com.arn.scrobble.pref.AppItem
 import com.arn.scrobble.ui.ExpandableHeaderItem
 import com.arn.scrobble.ui.ListLoadError
+import com.arn.scrobble.ui.ListLoadReauthNeeded
 import com.arn.scrobble.ui.MusicEntryListItem
 import com.arn.scrobble.ui.PanoDropdownMenu
 import com.arn.scrobble.ui.accountTypeLabel
@@ -70,6 +78,7 @@ import com.arn.scrobble.utils.PanoTimeFormatter
 import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff
 import com.arn.scrobble.utils.Stuff.collectAsStateWithInitialValue
+import com.arn.scrobble.work.CommonWorkState
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
@@ -86,6 +95,7 @@ import pano_scrobbler.composeapp.generated.resources.last_error
 import pano_scrobbler.composeapp.generated.resources.love
 import pano_scrobbler.composeapp.generated.resources.more
 import pano_scrobbler.composeapp.generated.resources.network_error
+import pano_scrobbler.composeapp.generated.resources.retry
 import pano_scrobbler.composeapp.generated.resources.search
 import pano_scrobbler.composeapp.generated.resources.share
 import pano_scrobbler.composeapp.generated.resources.share_sig
@@ -447,6 +457,7 @@ private fun TrackDropdownMenu(
 
 fun LazyListScope.scrobblesPlaceholdersAndErrors(
     tracks: LazyPagingItems<TrackWrapper>,
+    onNavigate: (PanoRoute) -> Unit,
 ) {
     when {
         tracks.loadState.refresh is LoadState.Loading -> {
@@ -475,10 +486,20 @@ fun LazyListScope.scrobblesPlaceholdersAndErrors(
 
             if (error != null) {
                 item {
-                    ListLoadError(
-                        modifier = Modifier.animateItem(),
-                        throwable = error.error,
-                        onRetry = { tracks.retry() })
+                    val throwable = error.error
+                    when {
+                        throwable is FileScrobblable.FException ->
+                            ListLoadReauthNeeded(
+                                modifier = Modifier.animateItem(),
+                                throwable = throwable,
+                                doNavigate = { onNavigate(PanoRoute.LoginFile) })
+
+                        else ->
+                            ListLoadError(
+                                modifier = Modifier.animateItem(),
+                                throwable = throwable,
+                                onRetry = { tracks.retry() })
+                    }
                 }
             }
         }
@@ -774,19 +795,36 @@ fun LazyListScope.pendingScrobblesListItems(
         )
     }
 
-    if (lastErrored != null && !lastErrored.lastFailedReason.isNullOrEmpty()) {
+    if (lastErrored != null) {
         item(key = "pending_scrobble_last_error") {
-            Text(
-                "ⓘ " + stringResource(Res.string.last_error) + ": " +
-                        lastErrored.lastFailedReason,
-                maxLines = 2,
-                overflow = TextOverflow.MiddleEllipsis,
-                style = MaterialTheme.typography.bodyMediumEmphasized,
+            val retryScheduling by viewModel.retryScheduling.collectAsStateWithLifecycle()
+            val pendingWorkState by viewModel.pendingWorkState.collectAsStateWithLifecycle()
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier
-                    .animateItem()
                     .fillMaxWidth()
                     .padding(horizontal = 16.dp)
-            )
+                    .animateItem()
+            ) {
+                if (!lastErrored.lastFailedReason.isNullOrEmpty()) {
+                    Text(
+                        "ⓘ " + stringResource(Res.string.last_error) + ": " +
+                                lastErrored.lastFailedReason,
+                        maxLines = 2,
+                        overflow = TextOverflow.MiddleEllipsis,
+                        style = MaterialTheme.typography.bodyMediumEmphasized,
+                        modifier = Modifier
+                            .weight(1f)
+                    )
+                } else {
+                    Spacer(modifier = Modifier.weight(1f))
+                }
+                TextButton(
+                    onClick = viewModel::retryAllPendingNow,
+                    enabled = !retryScheduling && pendingWorkState != CommonWorkState.RUNNING,
+                    shapes = ButtonDefaults.shapes(),
+                ) { Text(stringResource(Res.string.retry)) }
+            }
         }
     }
 

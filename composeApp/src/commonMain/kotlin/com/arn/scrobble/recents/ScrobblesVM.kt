@@ -31,7 +31,6 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.emptyFlow
-import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flatMapLatest
@@ -50,20 +49,14 @@ class ScrobblesVM(
     val user: UserCached,
     track: Track?, // for track-specific scrobbles view
 ) : ViewModel() {
-    private val desktopWorkPollInterval = 500.milliseconds
     private val _retryScheduling = MutableStateFlow(false)
     val retryScheduling = _retryScheduling.asStateFlow()
-    val pendingWorkState = flow {
-        if (PlatformStuff.isDesktop) {
-            // Desktop's state() is a snapshot, not an observable stream.
-            while (true) {
-                emit(PendingScrobblesWork.state().first())
-                delay(desktopWorkPollInterval)
-            }
-        } else {
-            emitAll(PendingScrobblesWork.state())
-        }
-    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(replayExpirationMillis = 0), CommonWorkState.RUNNING)
+    val pendingWorkState = PendingScrobblesWork.state()
+        .stateIn(
+            viewModelScope,
+            SharingStarted.WhileSubscribed(replayExpirationMillis = 0),
+            CommonWorkState.RUNNING
+        )
 
     fun retryPendingScrobbles() = schedulePendingRetry(overrideBackoff = false)
 
@@ -83,12 +76,11 @@ class ScrobblesVM(
                         if (requested || state == CommonWorkState.RUNNING || !user.isSelf) return@first true
                         PendingScrobblesWork.schedule(true)
                         requested = true
-                        PlatformStuff.isDesktop // Desktop schedules synchronously and only emits once.
+                        true
                     }
                 }
                 if (requested) {
-                    // On desktop, wait through the scheduler's initial delay and the next state poll.
-                    delay(if (PlatformStuff.isDesktop) 5.seconds + desktopWorkPollInterval else 2.seconds)
+                    delay(2.seconds)
                 }
             } finally {
                 _retryScheduling.value = false

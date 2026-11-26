@@ -272,7 +272,7 @@ object DiscordRpc {
 
     // call this only on isPlaying=true. The art is from now playing
     private suspend fun fetchArt(scrobbleData: ScrobbleData, hash: Int) {
-        val additionalMetadata = ScrobbleEverywhere.fetchNowPlayingAlbumArt(scrobbleData)
+        val additionalMetadata = ScrobbleEverywhere.fetchAlbumArtForDiscordRpc(scrobbleData)
 
         notifyPlayingTrackEvent(
             PlayingTrackNotifyEvent.ArtUrlFetched(
@@ -328,7 +328,7 @@ object DiscordRpc {
             showPausedForSecs = settings.showPausedForSecs,
             isPlaying = true,
             canFetchArt = settings.albumArt &&
-                    settings.albumArtFromNowPlaying &&
+                    settings.albumArtSourcesP.isNotEmpty() &&
                     trackPlaying.artUrlState == PlayingTrackInfo.ArtUrlState.CanFetch
         )
     }

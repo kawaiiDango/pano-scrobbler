@@ -15,7 +15,7 @@ actual object PendingScrobblesWork : CommonWorkImpl(PendingScrobblesWorker.NAME)
 
         DesktopWorkManager.scheduleWork(
             uniqueName,
-            5 * 1000,
+            2 * 1000,
             { PendingScrobblesWorker(it) },
             retryPolicy,
             replace = force,

@@ -135,7 +135,7 @@ fun TrackHistoryScreen(
                 viewModel = viewModel,
             )
 
-            scrobblesPlaceholdersAndErrors(tracks = tracks)
+            scrobblesPlaceholdersAndErrors(tracks = tracks, onNavigate = onNavigate)
         }
     }
 }

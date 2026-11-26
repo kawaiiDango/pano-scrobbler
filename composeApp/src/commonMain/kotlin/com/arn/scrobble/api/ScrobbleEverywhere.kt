@@ -2,7 +2,7 @@ package com.arn.scrobble.api
 
 import androidx.collection.LruCache
 import co.touchlab.kermit.Logger
-import com.arn.scrobble.api.deezer.DeezerTrack
+import com.arn.scrobble.api.deezer.DeezerAlbum
 import com.arn.scrobble.api.lastfm.Album
 import com.arn.scrobble.api.lastfm.Artist
 import com.arn.scrobble.api.lastfm.FULL_ARTIST_CREDIT_TAG
@@ -19,6 +19,7 @@ import com.arn.scrobble.edits.RegexPreset
 import com.arn.scrobble.edits.RegexPresets
 import com.arn.scrobble.edits.TitleParseException
 import com.arn.scrobble.imageloader.StarMapper
+import com.arn.scrobble.pref.MainPrefs
 import com.arn.scrobble.utils.FirstArtistExtractor
 import com.arn.scrobble.utils.PlatformStuff
 import com.arn.scrobble.utils.Stuff
@@ -65,7 +66,7 @@ data class AdditionalMetadataResult(
 }
 
 object ScrobbleEverywhere {
-    private val deezerTracksCache = LruCache<String, DeezerTrack>(50)
+    private val deezerAlbumsCache = LruCache<String, DeezerAlbum>(50)
     private val lastfmAlbumsCache = LruCache<String, Album>(50)
     private var artistWithDelimitersMaxId: Int? = null
 
@@ -228,11 +229,14 @@ object ScrobbleEverywhere {
         val preprocessResult2 =
             if (!preprocessResult.userEditsApplied && preprocessResult.presetsApplied) {
                 // don't try to parse title again here
-                val edited = performEditsAndBlocks(preprocessResult.scrobbleData, trackUrlDomain, false)
+                val edited =
+                    performEditsAndBlocks(preprocessResult.scrobbleData, trackUrlDomain, false)
                 if (edited.scrobbleData.artist == preprocessResult.scrobbleData.artist) edited
-                else edited.copy(scrobbleData = edited.scrobbleData.copy(
-                    extraTags = edited.scrobbleData.extraTags - FULL_ARTIST_CREDIT_TAG,
-                ))
+                else edited.copy(
+                    scrobbleData = edited.scrobbleData.copy(
+                        extraTags = edited.scrobbleData.extraTags - FULL_ARTIST_CREDIT_TAG,
+                    )
+                )
             } else {
                 preprocessResult
             }
@@ -265,7 +269,7 @@ object ScrobbleEverywhere {
                                 ignoreCase = true
                             )
                     ) -> {
-                return fetchFromDeezer(scrobbleData)
+                return fetchTrackFromDeezer(scrobbleData)
             }
         }
 
@@ -481,7 +485,12 @@ object ScrobbleEverywhere {
         )
     }
 
-    suspend fun fetchNowPlayingAlbumArt(
+    // from bl4zee1g's fork
+    // Deezer titles carry suffixes like "(feat. X)" that scrobblers often omit
+    private fun String.comparableTitle(): String =
+        replace(Regex("""\s*[(\[][^)\]]*[)\]]"""), "").trim().ifEmpty { trim() }.lowercase()
+
+    suspend fun fetchAlbumArtForDiscordRpc(
         scrobbleData: ScrobbleData,
         canRequest: suspend () -> Boolean = ::throttledRequest,
     ): AdditionalMetadataResult {
@@ -495,7 +504,7 @@ object ScrobbleEverywhere {
 
         val album =
             lastfmAlbumsCache[cacheKeyAlbum] ?: scrobbleData.albumArtist?.let { albumArtist ->
-                lastfmAlbumsCache[createCacheKey(scrobbleData.album, albumArtist)]
+                lastfmAlbumsCache[createCacheKey(albumArtist, scrobbleData.album)]
             }
 
         if (album != null) {
@@ -521,10 +530,13 @@ object ScrobbleEverywhere {
                 artUrl = bestAlbum.artUrl,
             )
         }
+        val artSources =
+            PlatformStuff.mainPrefs.data.map { it.discordRpc.albumArtSourcesP }.first()
 
-        // look up online
-        if (PlatformStuff.mainPrefs.data.map { it.submitNowPlaying }.first()) {
-            Scrobblables.all.firstOrNull { it.userAccount.type == AccountType.LASTFM }
+        if (PlatformStuff.mainPrefs.data.map { it.submitNowPlaying }.first() &&
+            MainPrefs.DiscordRpcPrefs.AlbumArtSources.LastfmNowPlaying in artSources
+        ) {
+            Scrobblables.all.firstOrNull { it.userAccount.type == AccountType.LASTFM && it.userAccount.canScrobble }
                 ?.also {
                     if (!canRequest())
                         return AdditionalMetadataResult.FetchAgain
@@ -546,43 +558,55 @@ object ScrobbleEverywhere {
                 }
         }
 
+        if (MainPrefs.DiscordRpcPrefs.AlbumArtSources.Deezer in artSources && canRequest()) {
+            return fetchTrackFromDeezer(scrobbleData).copy(scrobbleData = null)
+        }
+
         return AdditionalMetadataResult.Empty
     }
 
-    private suspend fun fetchFromDeezer(
+    private suspend fun fetchTrackFromDeezer(
         scrobbleData: ScrobbleData,
     ): AdditionalMetadataResult {
-        val cacheKey = createCacheKey(scrobbleData.artist, scrobbleData.track)
-        var track = deezerTracksCache[cacheKey]
+        val artistName = scrobbleData.albumArtist ?: scrobbleData.artist
+        val trackCacheKey = createCacheKey(artistName, "tr:" + scrobbleData.track)
+        val albumCacheKey = if (scrobbleData.album != null)
+            createCacheKey(artistName, "al:" + scrobbleData.album)
+        else
+            null
+        var album = albumCacheKey?.let { deezerAlbumsCache[it] } ?: deezerAlbumsCache[trackCacheKey]
 
-        if (track == null) {
-            Requesters.deezerRequester.searchTrack(
+        if (album == null) {
+            Requesters.deezerRequester.searchTracks(
                 scrobbleData.artist,
                 scrobbleData.track,
                 limit = 5
             ).onFailure {
                 Logger.w(it) { "Failed to search Deezer for track" }
             }.onSuccess {
-                track = it.data.firstOrNull {
-                    it.title.equals(scrobbleData.track, ignoreCase = true)
+//                Logger.d { "deezer results: ${it.data.joinToString("\n")}" }
+                album = it.data.firstOrNull {
+                    it.title.comparableTitle() == scrobbleData.track.comparableTitle()
                     // the album may be absent in scrobbleData, and the artist may contain multiple artists,
                     // so we don't check them here
-                }
+                }?.album
             }
         }
 
-        if (track != null) {
-            deezerTracksCache.put(cacheKey, track)
-
+        if (album != null) {
             val sd = scrobbleData.copy(
-                artist = track.artist.name,
-                albumArtist = null,
-                album = scrobbleData.album ?: track.album.title
+                album = scrobbleData.album ?: album.title
+            )
+
+            deezerAlbumsCache.put(trackCacheKey, album)
+            deezerAlbumsCache.put(
+                albumCacheKey ?: createCacheKey(artistName, "al:" + sd.album),
+                album
             )
 
             return AdditionalMetadataResult(
                 scrobbleData = sd,
-                artUrl = track.album.cover_medium,
+                artUrl = album.cover_medium,
             )
         }
 

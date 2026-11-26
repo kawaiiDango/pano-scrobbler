@@ -117,6 +117,8 @@ class PlayingTrackInfo(
         extraTags: Map<String, String>,
         setPlayStartTime: Boolean = true
     ) {
+        val prevHash = hash
+
         origArtist = artist
         this.artist = artist
         origTitle = title
@@ -137,12 +139,16 @@ class PlayingTrackInfo(
         this.extraTags.putAll(extraTags)
         fullArtistCredit = null
 
-        scrobbledState = ScrobbledState.NONE
         msid = null
 
         if (setPlayStartTime) {
             playStartTime = if (isPlaying) System.currentTimeMillis() else 0L
             segmentStartTime = playStartTime
+        }
+
+        // if a radio station session disappears and reappears, don't count that as a repeat
+        if (prevHash != 0 || durationMillis > 0 || hash != lastScrobbleHash && lastScrobbleHash != 0) {
+            scrobbledState = ScrobbledState.NONE
         }
     }
 

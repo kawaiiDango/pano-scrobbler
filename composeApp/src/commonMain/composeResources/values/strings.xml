@@ -425,6 +425,9 @@
     <string name="forget_checked_websites" comment="Forget enabled/allowlisted websites">Forget checked websites</string>
     <string name="last_error" comment="most recent error, used for pending scrobbles as of now">Last error</string>
     <string name="rate_limit_warn">Submitting too many scrobbles in a day may cause the scrobbling service to reject them, increasing your backlog.</string>
+    <string name="no_wiki" comment="artist/album/track wiki does not exist">No wiki</string>
+    <string name="wiki_lang_selector" comment="artist/album/track wiki">Last.fm wiki languages</string>
+    <string name="supports_ambient_apps_desc">Requires notifications from these apps to be enabled.</string>
     <string name="unsupported_api" comment="currently used for custom ListenBrainz-like and last.fm-like logins. This is displayed when custom ones does not support the full feature set">This API may not be supported by the server. View on web.</string>
     <string name="get_pro">Support this app</string>
     <string name="one_time_purchase">One time</string>

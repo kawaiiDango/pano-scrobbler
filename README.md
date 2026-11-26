@@ -20,7 +20,8 @@
 winget install -e --id kawaiiDango.pano-scrobbler
 ```
 
-Windows releases are unsigned, so a SmartScreen warning about "Unknown Publisher" is normal.
+Windows releases are unsigned, so a SmartScreen or Smart App Control warning about "Unknown
+Publisher" is normal.
 
 The installer also has an "extract only, no install" mode for portable use.
 
@@ -71,8 +72,9 @@ github:kawaiiDango/pano-scrobbler-flake
 
 #### AppImage:
 
-The AppImage runs anywhere, requires no installation, has **automatic updates** and can optionally
-add itself to the **application launcher** for convenience. Just make it executable before running:
+The AppImage runs on modern distros, requires no installation, has **automatic updates** and can
+optionally add itself to the **application launcher** for convenience. Just make it executable
+before running:
 
 ```sh
 chmod +x pano-scrobbler-linux-*.AppImage
@@ -129,6 +131,7 @@ you **automatic updates**.
 
 ### For desktop and Android (except TV):
 
+- Customizable Discord Rich Presence
 - Scrobble to a CSV or JSONL file locally
 - Interactive notification - view song info, edit, love, cancel, or block songs directly from the
   notification
@@ -144,10 +147,6 @@ you **automatic updates**.
 - Charts as a customizable home-screen widget
 - Get your top scrobbles digests as a notification at the end of every week, month and year
 
-### Desktop only:
-
-- Customizable Discord Rich Presence
-
 ## Credits
 
 - YouTube title parser from [Web Scrobbler](https://github.com/web-scrobbler/web-scrobbler)
@@ -155,7 +154,6 @@ you **automatic updates**.
 - Icons from [pictogrammers.com](https://pictogrammers.com)
   and [Material Symbols](https://fonts.google.com/icons)
 - Genres filter from [everynoise.com](https://everynoise.com)
-- Tidal SteelSeries Integration from [TidalRPC](https://github.com/BitesizedLion/TidalRPC)
 - Artists list from [MusicBrainz](https://musicbrainz.org)
 
 Thanks to the
